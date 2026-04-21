@@ -1,0 +1,41 @@
+# EditorConfig — https://editorconfig.org
+# Consistent coding styles across editors and IDEs.
+
+root = true
+
+# Default for all files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# TypeScript
+[*.ts]
+indent_size = 2
+
+# HTML templates
+[*.html]
+indent_size = 2
+
+# SCSS / CSS
+[*.{scss,css}]
+indent_size = 2
+
+# JSON
+[*.json]
+indent_size = 2
+
+# YAML
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown — preserve trailing whitespace for line breaks
+[*.md]
+trim_trailing_whitespace = false
+
+# Batch / PowerShell
+[*.{bat,cmd,ps1}]
+end_of_line = crlf
