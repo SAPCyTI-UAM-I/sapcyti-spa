@@ -1,1 +1,38 @@
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  /* Usamos variables del tema Aura de PrimeNG para el fondo y tipografía */
+  background-color: var(--p-surface-100, #f8fafc);
+  font-family: var(--p-font-family, system-ui, sans-serif);
+}
 
+.card-banner {
+  height: 120px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  /* Colores primarios dinámicos del tema */
+  background: linear-gradient(135deg, var(--p-primary-400, #34d399), var(--p-primary-600, #059669));
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+}
+
+.description {
+  margin: 0;
+  color: var(--p-text-color, #334155);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
