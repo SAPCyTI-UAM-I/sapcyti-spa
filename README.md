@@ -1,86 +1,100 @@
-# SAPCyTI — SPA Frontend
+# SAPCyTI SPA
 
-> Sistema de Administración de Posgrado del PCyTI — Universidad Autónoma Metropolitana, Unidad Iztapalapa
+Este proyecto fue generado con [Angular CLI](https://github.com/angular/angular-cli) versión 21.2.10.
 
-## Overview
+## Configuración inicial del entorno
 
-Single Page Application (SPA) for the SAPCyTI graduate program management portal. Built with **Angular** following a **feature module** architecture with lazy loading.
+**1. Instalar NVM (Node Version Manager)**
 
-## Architecture
-
-- **Pattern:** Feature Modules with Lazy Loading
-- **Core/Shared Module pattern** for reusable services and components
-- **Multi-tenant support** via `X-Graduate-Id` HTTP header injection
-- **Full documentation:** [Architecture.md](../Docs/Design/Architecture.md)
-
-## Tech Stack
-
-| Component | Technology |
-|-----------|------------|
-| **Framework** | Angular 17+ |
-| **Language** | TypeScript 5.x (strict mode) |
-| **Styling** | SCSS |
-| **HTTP** | Angular HttpClient |
-| **Linting** | ESLint + @angular-eslint |
-| **Testing** | Karma + Jasmine |
-| **Coverage** | istanbul/nyc |
-
-## Prerequisites
-
-See [PREREQUISITES.md](../sapcyti-api/PREREQUISITES.md) for required tools and versions.
-
-## Quick Start
+**2. Instalar y configurar Node.js 22**
 
 ```bash
-# 1. Install dependencies
-npm install
+nvm install 22
+nvm use 22
+nvm alias default 22
+```
 
-# 2. Start development server
+**3. Activar Corepack y pnpm**
+Corepack permite gestionar `pnpm` directamente desde Node.js:
+
+```bash
+corepack enable pnpm
+```
+
+**4. Configurar el directorio global de pnpm**
+
+```bash
+pnpm setup
+source ~/.zshrc
+```
+
+**5. Instalar Angular CLI globalmente**
+
+```bash
+pnpm install -g @angular/cli
+ng config -g cli.packageManager pnpm
+```
+
+**6. Instalar dependencias del proyecto**
+
+```bash
+pnpm install
+```
+
+---
+
+## Servidor de desarrollo
+
+Para iniciar un servidor de desarrollo local, ejecuta:
+
+```bash
 ng serve
-
-# 3. Open in browser
-# http://localhost:4200
 ```
 
-## Development
+La aplicación estará disponible en [http://localhost:4200/](http://localhost:4200/).
+
+## Generación de código (Scaffolding)
+
+Angular CLI incluye herramientas de generación de código. Para crear un nuevo componente:
 
 ```bash
-# Run linter
-ng lint
+ng generate component nombre-del-componente
+```
 
-# Run tests
+Para ver la lista completa de esquemas de generación disponibles (como `directives`, `pipes`, o `services`), ejecuta:
+
+```bash
+ng generate --help
+```
+
+## Compilación (Build)
+
+Para compilar el proyecto:
+
+```bash
+ng build
+```
+
+Esto compilará el proyecto y almacenará los artefactos generados en el directorio `dist/`.
+
+## Pruebas unitarias
+
+Para ejecutar las pruebas unitarias utilizando [Vitest](https://vitest.dev/):
+
+```bash
 ng test
-
-# Run tests with coverage
-ng test --code-coverage
-
-# Build for production
-ng build --configuration production
-
-# Security audit
-npm audit --audit-level=critical
 ```
 
-## Project Structure
+## Pruebas e2e (End-to-End)
 
-```
-src/app/
-├── core/                   # Singleton services (TenantContext, Interceptors)
-│   ├── services/
-│   └── interceptors/
-├── shared/                 # Reusable components, pipes, directives
-│   ├── components/
-│   └── services/
-├── features/               # Feature modules (lazy-loaded)
-│   ├── dashboard/
-│   └── program-selection/
-└── shell/                  # Layout (top bar, sidebar, content area)
+Para las pruebas e2e, se debe instalar el navegador firefox para playwright:
+
+```bash
+npx playwright install firefox
 ```
 
-## Contributing
+Posteriormente, podremos ejecutar:
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on branching, commits, PRs, and code standards.
-
-## License
-
-MIT — See [LICENSE](LICENSE)
+```bash
+ng e2e
+```
