@@ -68,6 +68,22 @@ Para ver la lista completa de esquemas de generación disponibles (como `directi
 ng generate --help
 ```
 
+## Formateo (Prettier)
+
+El proyecto usa [Prettier](https://prettier.io/) con [`prettier-plugin-tailwindcss`](https://github.com/tailwindlabs/prettier-plugin-tailwindcss) para formateo consistente de código y ordenamiento automático de clases de Tailwind. La configuración se encuentra en `.prettierrc`.
+
+Para verificar el formato sin modificar archivos:
+
+```bash
+pnpm run lint
+```
+
+Para aplicar el formato automáticamente:
+
+```bash
+pnpm run format
+```
+
 ## Linting (ESLint)
 
 El proyecto usa [ESLint](https://eslint.org/) con [`@angular-eslint`](https://github.com/angular-eslint/angular-eslint) para análisis estático de código TypeScript y plantillas HTML. La configuración se encuentra en `eslint.config.mjs`.
