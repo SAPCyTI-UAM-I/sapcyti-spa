@@ -68,6 +68,22 @@ Para ver la lista completa de esquemas de generación disponibles (como `directi
 ng generate --help
 ```
 
+## Linting (ESLint)
+
+El proyecto usa [ESLint](https://eslint.org/) con [`@angular-eslint`](https://github.com/angular-eslint/angular-eslint) para análisis estático de código TypeScript y plantillas HTML. La configuración se encuentra en `eslint.config.mjs`.
+
+Para analizar el proyecto:
+
+```bash
+ng lint
+```
+
+Para corregir automáticamente los errores que ESLint pueda resolver:
+
+```bash
+ng lint --fix
+```
+
 ## Compilación (Build)
 
 Para compilar el proyecto:
