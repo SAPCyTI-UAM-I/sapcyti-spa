@@ -26,6 +26,9 @@ corepack enable pnpm
 ```bash
 pnpm setup
 source ~/.zshrc
+
+# o con bash
+source ~/.bashrc
 ```
 
 **5. Instalar Angular CLI globalmente**
@@ -40,8 +43,6 @@ ng config -g cli.packageManager pnpm
 ```bash
 pnpm install
 ```
-
----
 
 ## Servidor de desarrollo
 
