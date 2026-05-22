@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.angular/
+.git/
+.github/
+.idea/
+.vscode/
+*.md
+!README.md
+coverage/
+playwright-report/
+test-results/
+e2e/
+*.log
+.env
+.env.*
