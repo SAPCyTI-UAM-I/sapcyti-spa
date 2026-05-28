@@ -1,0 +1,52 @@
+{
+  "SHELL": {
+    "TOPBAR": {
+      "TITLE": "SAPCyTI",
+      "LOGOUT": "Cerrar sesión"
+    },
+    "MENU": {
+      "DASHBOARD": "Inicio",
+      "ENROLLMENT": "Inscripción",
+      "CATALOG": "Catálogo Académico"
+    }
+  },
+  "COMMON": {
+    "ERRORS": {
+      "ACCESS_DENIED": "Acceso denegado",
+      "ACCESS_DENIED_MSG": "No tienes permisos para acceder a esta página.",
+      "NOT_FOUND": "Página no encontrada",
+      "SERVER_ERROR": "Error del servidor"
+    },
+    "ACTIONS": {
+      "SAVE": "Guardar",
+      "CANCEL": "Cancelar",
+      "DELETE": "Eliminar",
+      "EDIT": "Editar",
+      "BACK": "Regresar"
+    }
+  },
+  "DASHBOARD": {
+    "PLACEHOLDER": {
+      "TITLE": "Inicio",
+      "MESSAGE": "Panel principal — próximamente"
+    }
+  },
+  "ENROLLMENT": {
+    "PLACEHOLDER": {
+      "TITLE": "Inscripción",
+      "MESSAGE": "Módulo de inscripción — próximamente"
+    }
+  },
+  "ACADEMIC_CATALOG": {
+    "PLACEHOLDER": {
+      "TITLE": "Catálogo Académico",
+      "MESSAGE": "Catálogo académico — próximamente"
+    }
+  },
+  "AUTH": {
+    "PLACEHOLDER": {
+      "TITLE": "Autenticación",
+      "MESSAGE": "Inicio de sesión — próximamente (Fase 6)"
+    }
+  }
+}

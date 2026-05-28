@@ -1,0 +1,52 @@
+{
+  "SHELL": {
+    "TOPBAR": {
+      "TITLE": "SAPCyTI",
+      "LOGOUT": "Sign out"
+    },
+    "MENU": {
+      "DASHBOARD": "Home",
+      "ENROLLMENT": "Enrollment",
+      "CATALOG": "Academic Catalog"
+    }
+  },
+  "COMMON": {
+    "ERRORS": {
+      "ACCESS_DENIED": "Access denied",
+      "ACCESS_DENIED_MSG": "You do not have permission to access this page.",
+      "NOT_FOUND": "Page not found",
+      "SERVER_ERROR": "Server error"
+    },
+    "ACTIONS": {
+      "SAVE": "Save",
+      "CANCEL": "Cancel",
+      "DELETE": "Delete",
+      "EDIT": "Edit",
+      "BACK": "Go back"
+    }
+  },
+  "DASHBOARD": {
+    "PLACEHOLDER": {
+      "TITLE": "Home",
+      "MESSAGE": "Dashboard — coming soon"
+    }
+  },
+  "ENROLLMENT": {
+    "PLACEHOLDER": {
+      "TITLE": "Enrollment",
+      "MESSAGE": "Enrollment module — coming soon"
+    }
+  },
+  "ACADEMIC_CATALOG": {
+    "PLACEHOLDER": {
+      "TITLE": "Academic Catalog",
+      "MESSAGE": "Academic catalog — coming soon"
+    }
+  },
+  "AUTH": {
+    "PLACEHOLDER": {
+      "TITLE": "Authentication",
+      "MESSAGE": "Login — coming soon (Phase 6)"
+    }
+  }
+}

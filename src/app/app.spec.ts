@@ -10,13 +10,6 @@ describe('App', () => {
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should have title signal', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app['title']()).toBe('sapcyti-spa');
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

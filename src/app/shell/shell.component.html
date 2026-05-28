@@ -1,0 +1,36 @@
+<div class="bg-surface-50 flex min-h-screen flex-col">
+  <p-toolbar class="border-surface-200 bg-surface-0 border-b">
+    <ng-template #start>
+      <span class="text-primary text-lg font-semibold">
+        {{ 'SHELL.TOPBAR.TITLE' | translate }}
+      </span>
+    </ng-template>
+    <ng-template #end>
+      <app-language-switcher />
+    </ng-template>
+  </p-toolbar>
+
+  <div class="flex flex-1">
+    <aside
+      class="border-surface-200 bg-surface-0 hidden w-64 shrink-0 border-r p-4 md:block"
+      aria-label="Main navigation"
+    >
+      <nav class="flex flex-col gap-2">
+        @for (item of menuItems; track item.route) {
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="bg-primary text-primary-contrast"
+            class="text-surface-700 hover:bg-surface-100 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+          >
+            <i [class]="item.icon" aria-hidden="true"></i>
+            <span>{{ item.labelKey | translate }}</span>
+          </a>
+        }
+      </nav>
+    </aside>
+
+    <main class="flex-1 p-4 md:p-6">
+      <router-outlet />
+    </main>
+  </div>
+</div>
