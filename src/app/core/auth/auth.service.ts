@@ -9,6 +9,7 @@ import { JwtClaims } from '../../models/jwt-claims.model';
 import { isRoleType, RoleType } from '../../models/role-type.model';
 import { TenantService } from '../http/tenant.service';
 import { decodeJwtPayload } from './jwt.util';
+import { matchesAnyRole } from './role-authorization.util';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
@@ -30,7 +31,11 @@ export class AuthStateService {
     }
 
     const roles = Array.isArray(role) ? role : [role];
-    return roles.includes(user.role);
+    return matchesAnyRole(user.role, roles);
+  }
+
+  getCurrentUser(): CurrentUser | null {
+    return this.currentUserSubject.getValue();
   }
 
   getAccessToken(): string | null {

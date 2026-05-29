@@ -1,14 +1,12 @@
 import { Routes } from '@angular/router';
 
-import { FeaturePlaceholderComponent } from '../../shared/components/feature-placeholder/feature-placeholder.component';
+import { guestAuthGuard } from '../../core/auth/guest-auth.guard';
 
 export const AUTH_ROUTES: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
-    path: '',
-    component: FeaturePlaceholderComponent,
-    data: {
-      titleKey: 'AUTH.PLACEHOLDER.TITLE',
-      messageKey: 'AUTH.PLACEHOLDER.MESSAGE',
-    },
+    path: 'login',
+    loadComponent: () => import('./login/login.component').then((m) => m.LoginComponent),
+    canActivate: [guestAuthGuard],
   },
 ];

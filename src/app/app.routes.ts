@@ -19,6 +19,9 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/enrollment/enrollment.routes').then((m) => m.ENROLLMENT_ROUTES),
         canActivate: [authGuard],
+        data: {
+          roles: ['STUDENT', 'PROFESSOR', 'COORDINATOR', 'ASSISTANT', 'SYSTEM_ADMIN'],
+        },
       },
       {
         path: 'academic-catalog',
@@ -27,6 +30,9 @@ export const routes: Routes = [
             (m) => m.ACADEMIC_CATALOG_ROUTES,
           ),
         canActivate: [authGuard],
+        data: {
+          roles: ['COORDINATOR', 'ASSISTANT', 'SYSTEM_ADMIN'],
+        },
       },
       {
         path: 'access-denied',

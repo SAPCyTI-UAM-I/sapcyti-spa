@@ -1,4 +1,29 @@
-import { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 
-// TODO: Phase 6 — implement real role check and JWT validation
-export const authGuard: CanActivateFn = () => true;
+import { RoleType } from '../../models/role-type.model';
+import { AuthStateService } from './auth.service';
+import { hasAppProfile, matchesAnyRole } from './role-authorization.util';
+
+export const authGuard: CanActivateFn = (route, state) => {
+  const auth = inject(AuthStateService);
+  const router = inject(Router);
+
+  if (!auth.isAuthenticated()) {
+    return router.createUrlTree(['/auth/login'], {
+      queryParams: { returnUrl: state.url },
+    });
+  }
+
+  const user = auth.getCurrentUser();
+  if (!user || !hasAppProfile(user.role)) {
+    return router.createUrlTree(['/access-denied']);
+  }
+
+  const allowedRoles = route.data['roles'] as RoleType[] | undefined;
+  if (allowedRoles?.length && !matchesAnyRole(user.role, allowedRoles)) {
+    return router.createUrlTree(['/access-denied']);
+  }
+
+  return true;
+};
