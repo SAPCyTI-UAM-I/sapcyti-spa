@@ -44,6 +44,26 @@
     }
   },
   "AUTH": {
+    "LOGIN": {
+      "BRAND": "SAPCyTI",
+      "SUBTITLE": "Graduate Portal — PCyTI UAM",
+      "TITLE": "Sign in",
+      "EMAIL": "Email",
+      "EMAIL_PLACEHOLDER": "student@email.uam.mx",
+      "PASSWORD": "Password",
+      "REMEMBER_ME": "Remember me",
+      "SUBMIT": "Sign in",
+      "CLEAR": "Clear",
+      "FORGOT_PASSWORD": "Forgot your password?",
+      "ERROR_INVALID_CREDENTIALS": "Invalid credentials. Please check your email and password.",
+      "ERROR_REQUIRED": "This field is required",
+      "FOOTER": {
+        "PRIVACY": "Privacy",
+        "SUPPORT": "Support",
+        "TERMS": "Terms",
+        "COPYRIGHT": "© 2024 SAPCyTI - Institutional Academic Portal"
+      }
+    },
     "PLACEHOLDER": {
       "TITLE": "Authentication",
       "MESSAGE": "Login — coming soon (Phase 6)"

@@ -44,6 +44,26 @@
     }
   },
   "AUTH": {
+    "LOGIN": {
+      "BRAND": "SAPCyTI",
+      "SUBTITLE": "Portal de Posgrado — PCyTI UAM",
+      "TITLE": "Iniciar sesión",
+      "EMAIL": "Correo electrónico",
+      "EMAIL_PLACEHOLDER": "alumno@correo.uam.mx",
+      "PASSWORD": "Contraseña",
+      "REMEMBER_ME": "Recordar sesión",
+      "SUBMIT": "Iniciar sesión",
+      "CLEAR": "Limpiar",
+      "FORGOT_PASSWORD": "¿Olvidó su contraseña?",
+      "ERROR_INVALID_CREDENTIALS": "Credenciales inválidas. Verifique su correo y contraseña.",
+      "ERROR_REQUIRED": "Este campo es obligatorio",
+      "FOOTER": {
+        "PRIVACY": "Privacidad",
+        "SUPPORT": "Soporte",
+        "TERMS": "Términos",
+        "COPYRIGHT": "© 2024 SAPCyTI - Portal Académico Institucional"
+      }
+    },
     "PLACEHOLDER": {
       "TITLE": "Autenticación",
       "MESSAGE": "Inicio de sesión — próximamente (Fase 6)"
