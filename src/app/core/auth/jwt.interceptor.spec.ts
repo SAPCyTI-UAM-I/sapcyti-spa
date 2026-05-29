@@ -3,17 +3,27 @@ import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TranslateService } from '@ngx-translate/core';
 
+import { AuthStateService } from './auth.service';
 import { jwtInterceptor } from './jwt.interceptor';
+
+const API_URL = 'http://localhost:8080/api/test';
+const LOGIN_URL = 'http://localhost:8080/api/auth/login';
 
 describe('jwtInterceptor', () => {
   let http: HttpClient;
   let httpMock: HttpTestingController;
+  let authState: { getAccessToken: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    authState = {
+      getAccessToken: vi.fn(() => null),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptors([jwtInterceptor])),
         provideHttpClientTesting(),
+        { provide: AuthStateService, useValue: authState },
         {
           provide: TranslateService,
           useValue: {
@@ -33,9 +43,42 @@ describe('jwtInterceptor', () => {
   });
 
   it('injects Accept-Language header from TranslateService', () => {
-    http.get('/api/test').subscribe();
-    const req = httpMock.expectOne('/api/test');
+    http.get(API_URL).subscribe();
+    const req = httpMock.expectOne(API_URL);
     expect(req.request.headers.get('Accept-Language')).toBe('en');
+    req.flush({});
+  });
+
+  it('enables withCredentials for API requests', () => {
+    http.get(API_URL).subscribe();
+    const req = httpMock.expectOne(API_URL);
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({});
+  });
+
+  it('does not enable withCredentials for non-API requests', () => {
+    http.get('/assets/i18n/es.json').subscribe();
+    const req = httpMock.expectOne('/assets/i18n/es.json');
+    expect(req.request.withCredentials).toBe(false);
+    req.flush({});
+  });
+
+  it('attaches Bearer token when authenticated', () => {
+    authState.getAccessToken.mockReturnValue('test-access-token');
+
+    http.get(API_URL).subscribe();
+    const req = httpMock.expectOne(API_URL);
+    expect(req.request.headers.get('Authorization')).toBe('Bearer test-access-token');
+    req.flush({});
+  });
+
+  it('does not attach Bearer token to login requests', () => {
+    authState.getAccessToken.mockReturnValue('test-access-token');
+
+    http.post(LOGIN_URL, {}).subscribe();
+    const req = httpMock.expectOne(LOGIN_URL);
+    expect(req.request.headers.get('Authorization')).toBeNull();
+    expect(req.request.withCredentials).toBe(true);
     req.flush({});
   });
 });
