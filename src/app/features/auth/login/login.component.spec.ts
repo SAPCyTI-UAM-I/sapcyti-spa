@@ -1,11 +1,12 @@
-import { provideHttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
+import { AUTH_USE_MOCK } from '../../../core/auth/auth.config';
 import { AuthStateService } from '../../../core/auth/auth.service';
 import { LoginComponent } from './login.component';
 
@@ -36,6 +37,7 @@ describe('LoginComponent', () => {
         provideHttpClientTesting(),
         provideRouter([]),
         { provide: AuthStateService, useValue: authState },
+        { provide: AUTH_USE_MOCK, useValue: false },
       ],
     }).compileComponents();
 

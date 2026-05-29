@@ -1,13 +1,28 @@
 {
   "SHELL": {
+    "BRAND": {
+      "TITLE": "SAPCyTI",
+      "SUBTITLE": "PCyTI — UAM"
+    },
     "TOPBAR": {
       "TITLE": "SAPCyTI",
       "LOGOUT": "Sign out"
     },
-    "MENU": {
-      "DASHBOARD": "Home",
+    "SECTIONS": {
+      "MAIN": "Main",
       "ENROLLMENT": "Enrollment",
-      "CATALOG": "Academic Catalog"
+      "ENROLLMENT_PROCESS": "Enrollment process",
+      "ACADEMIC_MANAGEMENT": "Academic management"
+    },
+    "MENU": {
+      "HOME": "Home",
+      "ENROLLMENT": "Enrollment",
+      "ADVISOR_APPROVAL": "Approve course selection",
+      "ENROLLMENT_FORM_PDF": "Enrollment form (PDF)",
+      "TERMS_OFFER": "Terms and academic offer",
+      "ENROLLMENT_STATUS": "Process status",
+      "STUDENTS": "Students",
+      "PROFESSORS": "Professors"
     }
   },
   "COMMON": {
@@ -26,18 +41,61 @@
     }
   },
   "DASHBOARD": {
+    "HOME": {
+      "PLACEHOLDER": "Role-based dashboard content — coming soon.",
+      "STUDENT": {
+        "TITLE": "Home",
+        "SUBTITLE": "Review the status of your term enrollment."
+      },
+      "PROFESSOR": {
+        "TITLE": "Home",
+        "SUBTITLE": "Review pending enrollment requests from your students."
+      },
+      "ASSISTANT": {
+        "TITLE": "Home",
+        "SUBTITLE": "Support enrollment workflows and program forms."
+      },
+      "COORDINATOR": {
+        "TITLE": "Home",
+        "SUBTITLE": "Welcome to the Academic Management Panel."
+      }
+    },
     "PLACEHOLDER": {
       "TITLE": "Home",
       "MESSAGE": "Dashboard — coming soon"
     }
   },
   "ENROLLMENT": {
+    "ADVISOR_APPROVAL": {
+      "TITLE": "Approve course selection",
+      "MESSAGE": "Advisor approval module — coming soon"
+    },
+    "FORM_PDF": {
+      "TITLE": "Enrollment form (PDF)",
+      "MESSAGE": "Form generation — coming soon"
+    },
+    "TERMS": {
+      "TITLE": "Terms and academic offer",
+      "MESSAGE": "Term management — coming soon"
+    },
+    "STATUS": {
+      "TITLE": "Process status",
+      "MESSAGE": "Status tracking — coming soon"
+    },
     "PLACEHOLDER": {
       "TITLE": "Enrollment",
       "MESSAGE": "Enrollment module — coming soon"
     }
   },
   "ACADEMIC_CATALOG": {
+    "STUDENTS": {
+      "TITLE": "Students",
+      "MESSAGE": "Student catalog — coming soon"
+    },
+    "PROFESSORS": {
+      "TITLE": "Professors",
+      "MESSAGE": "Professor catalog — coming soon"
+    },
     "PLACEHOLDER": {
       "TITLE": "Academic Catalog",
       "MESSAGE": "Academic catalog — coming soon"
@@ -55,6 +113,9 @@
       "SUBMIT": "Sign in",
       "CLEAR": "Clear",
       "FORGOT_PASSWORD": "Forgot your password?",
+      "MOCK_HINT": {
+        "TITLE": "Demo mode (no backend). Use any of these accounts:"
+      },
       "ERROR_INVALID_CREDENTIALS": "Invalid credentials. Please check your email and password.",
       "ERROR_REQUIRED": "This field is required",
       "FOOTER": {
@@ -63,6 +124,22 @@
         "TERMS": "Terms",
         "COPYRIGHT": "© 2024 SAPCyTI - Institutional Academic Portal"
       }
+    },
+    "FORGOT_PASSWORD": {
+      "TITLE": "Recover password",
+      "DESCRIPTION": "Enter your email address. If it exists in the system, you will receive instructions to reset your password.",
+      "EMAIL": "Email",
+      "EMAIL_PLACEHOLDER": "user@email.uam.mx",
+      "SUBMIT": "Send email",
+      "BACK_TO_LOGIN": "Back to sign in",
+      "ERROR_REQUIRED": "This field is required",
+      "ERROR_INVALID_EMAIL": "Enter a valid email address."
+    },
+    "FORGOT_PASSWORD_SENT": {
+      "TITLE": "Email sent",
+      "MESSAGE": "An email with password recovery instructions has been sent to the address provided, if it exists in the system.",
+      "SPAM_HINT": "Also check your spam folder.",
+      "BACK_TO_LOGIN": "Back to sign in"
     },
     "PLACEHOLDER": {
       "TITLE": "Authentication",

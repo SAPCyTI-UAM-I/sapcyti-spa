@@ -1,4 +1,80 @@
-/* You can add global styles to this file, and also import other style files */
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 @import 'primeicons/primeicons.css';
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-primary: #1e4d7b;
+  --color-brand-primary-hover: #163a5f;
+  --color-brand-primary-light: #3d6f9c;
+  --color-brand-primary-container: #e8f1f8;
+
+  --color-brand-surface: #ffffff;
+  --color-brand-surface-muted: #f7f8fa;
+  --color-brand-surface-subtle: #f0f4f8;
+  --color-brand-surface-container: #eff4ff;
+
+  --color-brand-outline: #e5e8eb;
+  --color-brand-outline-strong: #cbd5e1;
+
+  --color-brand-text: #1a1d21;
+  --color-brand-text-secondary: #5c6670;
+  --color-brand-text-tertiary: #94a3b8;
+
+  --color-brand-error: #b91c1c;
+  --color-brand-error-container: #fef2f2;
+  --color-brand-on-error-container: #991b1b;
+}
+
+html,
+body {
+  font-family: var(--font-sans);
+  color: var(--color-brand-text);
+  background-color: var(--color-brand-surface-muted);
+}
+
+.auth-card {
+  min-height: 0;
+}
+
+@media (min-width: 640px) {
+  .auth-card {
+    min-height: 32rem;
+  }
+}
+
+.auth-lang-switcher .p-selectbutton {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--color-brand-outline-strong);
+  border-radius: 0.5rem;
+  background-color: var(--color-brand-surface);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
+}
+
+.auth-lang-switcher .p-togglebutton {
+  min-width: 2.75rem;
+  border: 0;
+  border-radius: 0;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  color: var(--color-brand-text-secondary);
+  background: transparent;
+  box-shadow: none;
+}
+
+.auth-lang-switcher .p-togglebutton + .p-togglebutton {
+  border-left: 1px solid var(--color-brand-outline-strong);
+}
+
+.auth-lang-switcher .p-togglebutton.p-togglebutton-checked {
+  color: #ffffff;
+  background: var(--color-brand-primary);
+}
+
+.auth-lang-switcher .p-togglebutton:not(.p-togglebutton-checked):hover {
+  background: var(--color-brand-surface-subtle);
+}

@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TranslateService } from '@ngx-translate/core';
 
+import { LANGUAGE_STORAGE_KEY } from '../i18n/language.constants';
 import { AuthStateService } from './auth.service';
 import { jwtInterceptor } from './jwt.interceptor';
 
@@ -19,18 +19,13 @@ describe('jwtInterceptor', () => {
       getAccessToken: vi.fn(() => null),
     };
 
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, 'en');
+
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptors([jwtInterceptor])),
         provideHttpClientTesting(),
         { provide: AuthStateService, useValue: authState },
-        {
-          provide: TranslateService,
-          useValue: {
-            getCurrentLang: () => 'en',
-            getFallbackLang: () => 'es',
-          },
-        },
       ],
     });
 
@@ -40,9 +35,10 @@ describe('jwtInterceptor', () => {
 
   afterEach(() => {
     httpMock.verify();
+    localStorage.removeItem(LANGUAGE_STORAGE_KEY);
   });
 
-  it('injects Accept-Language header from TranslateService', () => {
+  it('injects Accept-Language header from stored language preference', () => {
     http.get(API_URL).subscribe();
     const req = httpMock.expectOne(API_URL);
     expect(req.request.headers.get('Accept-Language')).toBe('en');

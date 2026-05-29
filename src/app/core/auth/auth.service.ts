@@ -8,6 +8,8 @@ import { CurrentUser } from '../../models/current-user.model';
 import { JwtClaims } from '../../models/jwt-claims.model';
 import { isRoleType, RoleType } from '../../models/role-type.model';
 import { TenantService } from '../http/tenant.service';
+import { AUTH_USE_MOCK } from './auth.config';
+import { mockLogin, mockRequestPasswordReset } from './auth.mock';
 import { decodeJwtPayload } from './jwt.util';
 import { matchesAnyRole } from './role-authorization.util';
 
@@ -15,6 +17,7 @@ import { matchesAnyRole } from './role-authorization.util';
 export class AuthStateService {
   private readonly http = inject(HttpClient);
   private readonly tenantService = inject(TenantService);
+  private readonly useMock = inject(AUTH_USE_MOCK);
 
   private accessToken: string | null = null;
   private readonly currentUserSubject = new BehaviorSubject<CurrentUser | null>(null);
@@ -43,21 +46,37 @@ export class AuthStateService {
   }
 
   login(email: string, password: string, rememberMe = false): Observable<void> {
+    const login$ = this.useMock
+      ? mockLogin(email, password)
+      : this.http.post<AuthResponse>(
+          `${environment.apiBaseUrl}/auth/login`,
+          {
+            email,
+            password,
+            rememberMe,
+            deviceInfo: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+          },
+          { withCredentials: true },
+        );
+
+    return login$.pipe(
+      tap((response) => this.applyAuthSuccess(email, response)),
+      map(() => void 0),
+    );
+  }
+
+  requestPasswordReset(email: string): Observable<void> {
+    if (this.useMock) {
+      return mockRequestPasswordReset(email);
+    }
+
     return this.http
-      .post<AuthResponse>(
-        `${environment.apiBaseUrl}/auth/login`,
-        {
-          email,
-          password,
-          rememberMe,
-          deviceInfo: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
-        },
+      .post<void>(
+        `${environment.apiBaseUrl}/auth/forgot-password`,
+        { email },
         { withCredentials: true },
       )
-      .pipe(
-        tap((response) => this.applyAuthSuccess(email, response)),
-        map(() => void 0),
-      );
+      .pipe(map(() => void 0));
   }
 
   logout(): void {

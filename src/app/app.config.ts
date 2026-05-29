@@ -4,8 +4,12 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
-import Lara from '@primeuix/themes/lara';
 import { providePrimeNG } from 'primeng/config';
+
+import { environment } from '../environments/environment';
+import { AUTH_USE_MOCK } from './core/auth/auth.config';
+
+import { SapcytiPreset } from './core/theme/sapcyti-preset';
 
 import { routes } from './app.routes';
 import { jwtInterceptor } from './core/auth/jwt.interceptor';
@@ -17,19 +21,24 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([jwtInterceptor, tenantInterceptor, httpErrorInterceptor])),
+    { provide: AUTH_USE_MOCK, useValue: environment.mocks.auth },
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Lara,
+        preset: SapcytiPreset,
         options: {
           darkModeSelector: false,
         },
       },
     }),
-    provideTranslateService({
+    ...provideTranslateService({
       lang: 'es',
       fallbackLang: 'es',
-      loader: provideTranslateHttpLoader({ prefix: './assets/i18n/', suffix: '.json' }),
+    }),
+    ...provideTranslateHttpLoader({
+      prefix: '/assets/i18n/',
+      suffix: '.json',
+      useHttpBackend: true,
     }),
   ],
 };

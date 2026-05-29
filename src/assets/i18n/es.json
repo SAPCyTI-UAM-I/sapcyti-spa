@@ -1,13 +1,28 @@
 {
   "SHELL": {
+    "BRAND": {
+      "TITLE": "SAPCyTI",
+      "SUBTITLE": "PCyTI — UAM"
+    },
     "TOPBAR": {
       "TITLE": "SAPCyTI",
       "LOGOUT": "Cerrar sesión"
     },
-    "MENU": {
-      "DASHBOARD": "Inicio",
+    "SECTIONS": {
+      "MAIN": "Principal",
       "ENROLLMENT": "Inscripción",
-      "CATALOG": "Catálogo Académico"
+      "ENROLLMENT_PROCESS": "Proceso de inscripción",
+      "ACADEMIC_MANAGEMENT": "Gestión académica"
+    },
+    "MENU": {
+      "HOME": "Inicio",
+      "ENROLLMENT": "Inscripción",
+      "ADVISOR_APPROVAL": "Aprobar elección de UEAs",
+      "ENROLLMENT_FORM_PDF": "Formato de inscripción (PDF)",
+      "TERMS_OFFER": "Trimestres y oferta académica",
+      "ENROLLMENT_STATUS": "Estados del proceso",
+      "STUDENTS": "Alumnos",
+      "PROFESSORS": "Profesores"
     }
   },
   "COMMON": {
@@ -26,18 +41,61 @@
     }
   },
   "DASHBOARD": {
+    "HOME": {
+      "PLACEHOLDER": "Contenido del panel según su rol — próximamente.",
+      "STUDENT": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Consulte el estado de su inscripción trimestral."
+      },
+      "PROFESSOR": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Revise las solicitudes de inscripción pendientes de sus alumnos."
+      },
+      "ASSISTANT": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Apoye el proceso de inscripción y formatos del programa."
+      },
+      "COORDINATOR": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Bienvenido al Panel de Gestión Académica."
+      }
+    },
     "PLACEHOLDER": {
       "TITLE": "Inicio",
       "MESSAGE": "Panel principal — próximamente"
     }
   },
   "ENROLLMENT": {
+    "ADVISOR_APPROVAL": {
+      "TITLE": "Aprobar elección de UEAs",
+      "MESSAGE": "Módulo de aprobación — próximamente"
+    },
+    "FORM_PDF": {
+      "TITLE": "Formato de inscripción (PDF)",
+      "MESSAGE": "Generación de formatos — próximamente"
+    },
+    "TERMS": {
+      "TITLE": "Trimestres y oferta académica",
+      "MESSAGE": "Gestión de trimestres — próximamente"
+    },
+    "STATUS": {
+      "TITLE": "Estados del proceso",
+      "MESSAGE": "Seguimiento de estados — próximamente"
+    },
     "PLACEHOLDER": {
       "TITLE": "Inscripción",
       "MESSAGE": "Módulo de inscripción — próximamente"
     }
   },
   "ACADEMIC_CATALOG": {
+    "STUDENTS": {
+      "TITLE": "Alumnos",
+      "MESSAGE": "Catálogo de alumnos — próximamente"
+    },
+    "PROFESSORS": {
+      "TITLE": "Profesores",
+      "MESSAGE": "Catálogo de profesores — próximamente"
+    },
     "PLACEHOLDER": {
       "TITLE": "Catálogo Académico",
       "MESSAGE": "Catálogo académico — próximamente"
@@ -55,6 +113,9 @@
       "SUBMIT": "Iniciar sesión",
       "CLEAR": "Limpiar",
       "FORGOT_PASSWORD": "¿Olvidó su contraseña?",
+      "MOCK_HINT": {
+        "TITLE": "Modo demo (sin backend). Use cualquiera de estas cuentas:"
+      },
       "ERROR_INVALID_CREDENTIALS": "Credenciales inválidas. Verifique su correo y contraseña.",
       "ERROR_REQUIRED": "Este campo es obligatorio",
       "FOOTER": {
@@ -63,6 +124,22 @@
         "TERMS": "Términos",
         "COPYRIGHT": "© 2024 SAPCyTI - Portal Académico Institucional"
       }
+    },
+    "FORGOT_PASSWORD": {
+      "TITLE": "Recuperar contraseña",
+      "DESCRIPTION": "Ingrese su dirección de correo electrónico. Si existe en el sistema, recibirá un mensaje con instrucciones para restablecer su contraseña.",
+      "EMAIL": "Correo electrónico",
+      "EMAIL_PLACEHOLDER": "usuario@correo.uam.mx",
+      "SUBMIT": "Enviar correo",
+      "BACK_TO_LOGIN": "Volver al inicio de sesión",
+      "ERROR_REQUIRED": "Este campo es obligatorio",
+      "ERROR_INVALID_EMAIL": "Ingrese una dirección de correo válida."
+    },
+    "FORGOT_PASSWORD_SENT": {
+      "TITLE": "Correo enviado",
+      "MESSAGE": "Un correo electrónico con instrucciones para recuperar su contraseña ha sido enviado a la dirección indicada, si es que existe en el sistema.",
+      "SPAM_HINT": "Revise también su bandeja de correo no deseado.",
+      "BACK_TO_LOGIN": "Volver al inicio de sesión"
     },
     "PLACEHOLDER": {
       "TITLE": "Autenticación",

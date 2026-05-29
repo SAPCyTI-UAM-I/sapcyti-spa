@@ -7,17 +7,21 @@ import { LanguageSwitcherComponent } from '../language-switcher/language-switche
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LanguageSwitcherComponent],
   template: `
-    <div class="bg-surface-100 relative flex min-h-screen flex-col items-center justify-center p-6">
-      <div class="fixed top-6 right-6 z-10">
-        <app-language-switcher />
+    <div class="bg-brand-surface-muted flex min-h-dvh flex-col">
+      <div
+        class="mx-auto flex w-full max-w-[420px] flex-1 flex-col px-4 pt-5 pb-6 sm:px-6 sm:pt-8 sm:pb-10"
+      >
+        <header class="mb-4 flex shrink-0 items-center justify-end sm:mb-6">
+          <app-language-switcher variant="auth" />
+        </header>
+
+        <main class="w-full flex-1">
+          <ng-content />
+        </main>
       </div>
 
-      <main class="flex w-full flex-col items-center">
-        <ng-content />
-      </main>
-
       <footer
-        class="text-surface-500 fixed bottom-0 flex w-full flex-col items-center gap-2 pb-6 text-xs"
+        class="text-brand-text-secondary border-brand-outline mt-auto border-t px-4 py-5 text-xs sm:px-6 sm:py-6"
       >
         <ng-content select="[authFooter]" />
       </footer>

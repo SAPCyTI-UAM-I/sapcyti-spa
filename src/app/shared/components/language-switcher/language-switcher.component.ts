@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { SelectButton } from 'primeng/selectbutton';
 import { FormsModule } from '@angular/forms';
@@ -18,6 +18,10 @@ interface LanguageOption {
 @Component({
   selector: 'app-language-switcher',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'inline-flex',
+    '[class.auth-lang-switcher]': 'variant() === "auth"',
+  },
   imports: [SelectButton, FormsModule],
   template: `
     <p-selectbutton
@@ -32,6 +36,8 @@ interface LanguageOption {
   `,
 })
 export class LanguageSwitcherComponent implements OnInit {
+  readonly variant = input<'default' | 'auth'>('default');
+
   private readonly translate = inject(TranslateService);
 
   readonly options: LanguageOption[] = [

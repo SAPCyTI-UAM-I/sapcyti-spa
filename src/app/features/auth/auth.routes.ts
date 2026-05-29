@@ -9,4 +9,18 @@ export const AUTH_ROUTES: Routes = [
     loadComponent: () => import('./login/login.component').then((m) => m.LoginComponent),
     canActivate: [guestAuthGuard],
   },
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./forgot-password/forgot-password.component').then((m) => m.ForgotPasswordComponent),
+    canActivate: [guestAuthGuard],
+  },
+  {
+    path: 'forgot-password/sent',
+    loadComponent: () =>
+      import('./forgot-password-sent/forgot-password-sent.component').then(
+        (m) => m.ForgotPasswordSentComponent,
+      ),
+    canActivate: [guestAuthGuard],
+  },
 ];

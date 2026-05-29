@@ -2,8 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
 import { InputText } from 'primeng/inputtext';
@@ -12,6 +12,8 @@ import { Password } from 'primeng/password';
 import { finalize } from 'rxjs';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
+import { AUTH_USE_MOCK } from '../../../core/auth/auth.config';
+import { AUTH_MOCK_USERS } from '../../../core/auth/auth.mock';
 import { hasAppProfile } from '../../../core/auth/role-authorization.util';
 import { sanitizeReturnUrl } from '../../../core/auth/sanitize-return-url.util';
 import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
@@ -21,7 +23,8 @@ import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-la
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    TranslateModule,
+    TranslatePipe,
+    RouterLink,
     AuthPageLayoutComponent,
     InputText,
     Password,
@@ -37,6 +40,9 @@ export class LoginComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+
+  readonly authMockEnabled = inject(AUTH_USE_MOCK);
+  readonly mockUsers = AUTH_MOCK_USERS;
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -78,10 +84,6 @@ export class LoginComponent {
         next: () => this.handleLoginSuccess(),
         error: (error: HttpErrorResponse) => this.handleLoginError(error),
       });
-  }
-
-  onForgotPassword(event: Event): void {
-    event.preventDefault();
   }
 
   showFieldError(controlName: 'email' | 'password'): boolean {
