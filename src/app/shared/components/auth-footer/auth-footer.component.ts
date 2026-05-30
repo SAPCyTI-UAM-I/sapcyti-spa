@@ -6,11 +6,11 @@ import { TranslatePipe } from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     authFooter: '',
-    class: 'block w-full space-y-2',
+    class: 'block w-full',
   },
   imports: [TranslatePipe],
   template: `
-    <div class="flex flex-wrap justify-center gap-x-4 gap-y-2">
+    <div class="mb-xs gap-md flex flex-wrap justify-center">
       <span class="hover:underline">{{ 'AUTH.LOGIN.FOOTER.PRIVACY' | translate }}</span>
       <span class="hover:underline">{{ 'AUTH.LOGIN.FOOTER.SUPPORT' | translate }}</span>
       <span class="hover:underline">{{ 'AUTH.LOGIN.FOOTER.TERMS' | translate }}</span>

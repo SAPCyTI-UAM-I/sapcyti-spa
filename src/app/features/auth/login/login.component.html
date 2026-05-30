@@ -1,30 +1,32 @@
 <app-auth-page-layout>
-  <div class="auth-card border-brand-outline bg-brand-surface w-full rounded-xl border p-6 shadow-sm sm:p-10">
-    <header class="mb-5 sm:mb-6">
-      <div class="mb-1 flex items-center gap-1">
-        <span class="text-brand-primary text-lg font-bold tracking-tight sm:text-xl">
+  <div
+    class="auth-card border-outline bg-surface-container-lowest w-full rounded-xl border p-6 shadow-sm sm:p-[40px]"
+  >
+    <header class="mb-lg">
+      <div class="mb-xs gap-xs flex items-center">
+        <span class="text-headline-md text-primary font-headline-md font-bold tracking-tight">
           {{ 'AUTH.LOGIN.BRAND' | translate }}
         </span>
       </div>
-      <p class="text-brand-text-secondary mb-3 text-xs sm:mb-4">
+      <p class="text-caption text-text-secondary font-caption mb-md">
         {{ 'AUTH.LOGIN.SUBTITLE' | translate }}
       </p>
-      <h1 class="text-brand-primary text-lg font-semibold sm:text-xl">
+      <h1 class="text-h2 text-primary font-h2">
         {{ 'AUTH.LOGIN.TITLE' | translate }}
       </h1>
     </header>
 
     @if (authMockEnabled) {
       <div
-        class="border-brand-outline bg-brand-surface-subtle text-brand-text-secondary mb-4 rounded-lg border p-3 text-xs"
+        class="border-outline bg-surface-subtle text-text-secondary mb-md p-md text-caption font-caption rounded-lg border"
       >
-        <p class="text-brand-text mb-2 font-medium">
+        <p class="text-on-surface mb-sm font-medium">
           {{ 'AUTH.LOGIN.MOCK_HINT.TITLE' | translate }}
         </p>
         <ul class="space-y-1.5">
           @for (user of mockUsers; track user.email) {
-            <li class="break-all leading-relaxed">
-              <span class="text-brand-text font-medium">{{ user.role }}:</span>
+            <li class="leading-relaxed break-all">
+              <span class="text-on-surface font-medium">{{ user.role }}:</span>
               {{ user.email }} / {{ user.password }}
             </li>
           }
@@ -36,7 +38,9 @@
       <p-message
         severity="warn"
         icon="pi pi-lock"
-        [text]="('AUTH.LOGIN.ERROR_COOLDOWN' | translate).replace('{seconds}', '' + cooldownRemaining())"
+        [text]="
+          ('AUTH.LOGIN.ERROR_COOLDOWN' | translate).replace('{seconds}', '' + cooldownRemaining())
+        "
         styleClass="mb-4 w-full"
       />
     }
@@ -59,9 +63,9 @@
       />
     }
 
-    <form class="flex flex-col gap-4" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="flex flex-col gap-1">
-        <label class="text-brand-text text-sm font-medium" for="email">
+    <form class="gap-md flex flex-col" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="gap-xs flex flex-col">
+        <label class="text-label-md text-on-surface font-label-md" for="email">
           {{ 'AUTH.LOGIN.EMAIL' | translate }}
         </label>
         <input
@@ -77,8 +81,8 @@
         <app-field-error [control]="form.controls.email" [submitted]="submitted()" />
       </div>
 
-      <div class="flex flex-col gap-1">
-        <label class="text-brand-text text-sm font-medium" for="password">
+      <div class="gap-xs flex flex-col">
+        <label class="text-label-md text-on-surface font-label-md" for="password">
           {{ 'AUTH.LOGIN.PASSWORD' | translate }}
         </label>
         <p-password
@@ -93,20 +97,23 @@
         <app-field-error [control]="form.controls.password" [submitted]="submitted()" />
       </div>
 
-      <div class="flex items-center gap-2 pt-1">
+      <div class="gap-sm pt-xs flex items-center">
         <p-checkbox inputId="rememberMe" formControlName="rememberMe" [binary]="true" />
-        <label class="text-brand-text-secondary cursor-pointer text-sm" for="rememberMe">
+        <label
+          class="text-body-md text-on-surface-variant font-body-md cursor-pointer"
+          for="rememberMe"
+        >
           {{ 'AUTH.LOGIN.REMEMBER_ME' | translate }}
         </label>
       </div>
 
-      <div class="flex flex-col-reverse gap-3 pt-2 sm:min-h-10 sm:flex-row sm:gap-4">
+      <div class="gap-md pt-sm flex flex-col-reverse sm:min-h-10 sm:flex-row">
         <p-button
           type="button"
           [label]="'AUTH.LOGIN.CLEAR' | translate"
           severity="secondary"
           variant="outlined"
-          styleClass="w-full sm:w-[90px] sm:shrink-0 !text-brand-primary !border-brand-outline-strong"
+          styleClass="w-full sm:w-[90px] sm:shrink-0 !text-primary !border-outline-strong"
           (onClick)="onClear()"
         />
         <p-button
@@ -119,9 +126,9 @@
       </div>
     </form>
 
-    <div class="mt-6 text-center sm:mt-8">
+    <div class="mt-xl text-center">
       <a
-        class="text-brand-primary hover:text-brand-primary-hover inline-block text-sm font-medium hover:underline"
+        class="text-label-md text-primary hover:text-primary-hover font-label-md inline-block hover:underline"
         routerLink="/auth/forgot-password"
       >
         {{ 'AUTH.LOGIN.FORGOT_PASSWORD' | translate }}

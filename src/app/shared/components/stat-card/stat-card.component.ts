@@ -8,18 +8,15 @@ import { TranslatePipe } from '@ngx-translate/core';
   imports: [RouterLink, TranslatePipe],
   template: `
     <div
-      class="bg-surface-0 border-surface-200 hover:border-surface-300 flex h-full flex-col justify-between rounded-xl border p-6 transition-colors"
+      class="bg-surface border-outline hover:border-outline-strong p-lg flex h-full flex-col justify-between rounded-xl border transition-colors"
     >
-      <div class="mb-4 flex items-start justify-between">
-        <div
-          class="flex h-10 w-10 items-center justify-center rounded-lg"
-          [class]="iconBgClass()"
-        >
+      <div class="mb-md flex items-start justify-between">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg" [class]="iconBgClass()">
           <i [class]="icon() + ' ' + iconColorClass()" aria-hidden="true"></i>
         </div>
         @if (badgeKey()) {
           <span
-            class="rounded px-2 py-0.5 text-xs font-bold"
+            class="px-sm py-xs font-label-md rounded text-[12px] font-bold"
             [class]="badgeClass()"
           >
             {{ badgeKey()! | translate }}
@@ -28,22 +25,24 @@ import { TranslatePipe } from '@ngx-translate/core';
       </div>
 
       <div>
-        <span class="text-2xl font-bold" [class]="valueColorClass()">
+        <span class="text-stat-value font-stat-value" [class]="valueColorClass()">
           {{ value() }}
         </span>
-        <p class="text-surface-500 mt-1 text-sm">{{ labelKey() | translate }}</p>
+        <p class="text-body-md text-text-secondary font-body-md mt-xs">
+          {{ labelKey() | translate }}
+        </p>
       </div>
 
       @if (linkRoute()) {
-        <div class="border-surface-100 mt-4 border-t pt-4">
+        <div class="border-surface-muted mt-md pt-md border-t">
           <a
-            class="group flex items-center text-sm font-medium transition-colors"
+            class="text-label-md font-label-md group flex items-center transition-colors"
             [class]="linkColorClass()"
             [routerLink]="linkRoute()"
           >
             {{ linkKey()! | translate }}
             <i
-              class="pi pi-arrow-right ml-1 text-xs transition-transform group-hover:translate-x-1"
+              class="pi pi-arrow-right ml-xs text-[18px] transition-transform group-hover:translate-x-1"
               aria-hidden="true"
             ></i>
           </a>
@@ -60,9 +59,9 @@ export class StatCardComponent {
   readonly linkRoute = input<string>();
   readonly badgeKey = input<string>();
 
-  readonly iconBgClass = input('bg-primary/10');
+  readonly iconBgClass = input('bg-primary-container');
   readonly iconColorClass = input('text-primary');
   readonly valueColorClass = input('text-primary');
-  readonly linkColorClass = input('text-primary hover:text-primary/80');
-  readonly badgeClass = input('bg-primary/10 text-primary');
+  readonly linkColorClass = input('text-primary hover:text-primary-hover');
+  readonly badgeClass = input('bg-primary-container text-primary');
 }

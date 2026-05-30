@@ -21,10 +21,10 @@ import { ShellNavigation } from './shell-menu.model';
       @if (navigation(); as nav) {
         <ng-template pTemplate="header">
           <div class="px-1">
-            <h1 class="text-primary text-xl font-black tracking-tight">
+            <h1 class="text-h2 text-primary font-h2 font-black tracking-tight">
               {{ 'SHELL.BRAND.TITLE' | translate }}
             </h1>
-            <p class="text-surface-500 mt-1 text-xs">
+            <p class="text-caption text-text-secondary font-caption mt-xs">
               {{ 'SHELL.BRAND.SUBTITLE' | translate }}
             </p>
           </div>
@@ -39,8 +39,10 @@ import { ShellNavigation } from './shell-menu.model';
           />
 
           @for (section of nav.sections; track section.id) {
-            <div class="mt-4 px-3">
-              <span class="text-surface-400 text-[11px] font-bold tracking-wider uppercase">
+            <div class="mt-md mb-xs px-md py-sm">
+              <span
+                class="text-caption text-text-tertiary font-caption font-bold tracking-wider uppercase"
+              >
                 {{ section.labelKey | translate }}
               </span>
             </div>
@@ -55,7 +57,7 @@ import { ShellNavigation } from './shell-menu.model';
           }
         </nav>
 
-        <div class="border-surface-200 mt-auto border-t pt-4">
+        <div class="border-sidebar-border pt-md mt-auto border-t">
           <p-button
             type="button"
             [label]="'SHELL.TOPBAR.LOGOUT' | translate"

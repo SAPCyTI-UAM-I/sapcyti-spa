@@ -6,7 +6,9 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { Router } from '@angular/router';
 
+import { AuthStateService } from '../auth/auth.service';
 import { httpErrorInterceptor } from './http-error.interceptor';
 
 describe('httpErrorInterceptor', () => {
@@ -18,6 +20,8 @@ describe('httpErrorInterceptor', () => {
       providers: [
         provideHttpClient(withInterceptors([httpErrorInterceptor])),
         provideHttpClientTesting(),
+        { provide: AuthStateService, useValue: { logout: vi.fn() } },
+        { provide: Router, useValue: { navigateByUrl: vi.fn() } },
       ],
     });
 

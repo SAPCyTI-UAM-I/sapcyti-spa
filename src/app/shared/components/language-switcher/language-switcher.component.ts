@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { SelectButton } from 'primeng/selectbutton';
-import { FormsModule } from '@angular/forms';
 
 import {
   DEFAULT_LANGUAGE,
@@ -19,20 +17,27 @@ interface LanguageOption {
   selector: 'app-language-switcher',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'inline-flex',
+    class: 'inline-flex items-center gap-xs text-label-md font-label-md',
     '[class.auth-lang-switcher]': 'variant() === "auth"',
   },
-  imports: [SelectButton, FormsModule],
+  imports: [],
   template: `
-    <p-selectbutton
-      [options]="options"
-      [(ngModel)]="currentLang"
-      optionLabel="label"
-      optionValue="value"
-      [allowEmpty]="false"
-      aria-label="Language"
-      (ngModelChange)="onLanguageChange($event)"
-    />
+    @for (option of options; track option.value; let last = $last) {
+      <button
+        type="button"
+        class="hover:text-primary transition-colors"
+        [class.text-primary]="currentLang === option.value"
+        [class.text-text-secondary]="currentLang !== option.value"
+        [class.font-bold]="currentLang === option.value"
+        (click)="onLanguageChange(option.value)"
+      >
+        {{ option.label }}
+      </button>
+
+      @if (!last) {
+        <span class="text-outline-variant">|</span>
+      }
+    }
   `,
 })
 export class LanguageSwitcherComponent implements OnInit {

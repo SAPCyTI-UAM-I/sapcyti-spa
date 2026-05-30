@@ -59,11 +59,11 @@
       },
       "PROFESSOR": {
         "TITLE": "Inicio",
-        "SUBTITLE": "Revise las solicitudes de inscripción pendientes de sus alumnos."
+        "SUBTITLE": "Resumen de alumnos asesorados e inscripciones pendientes."
       },
       "ASSISTANT": {
         "TITLE": "Inicio",
-        "SUBTITLE": "Apoye el proceso de inscripción y formatos del programa."
+        "SUBTITLE": "Formatos de inscripción listos para generar."
       },
       "COORDINATOR": {
         "TITLE": "Inicio",
@@ -83,11 +83,34 @@
       "MY_ENROLLMENT": "Estado de mi inscripción",
       "MY_ENROLLMENT_LINK": "Ver inscripción",
       "MY_ADVISEES": "alumnos asesorados",
-      "MY_ADVISEES_LINK": "Ver solicitudes",
-      "PENDING_REVIEWS": "solicitudes pendientes",
-      "PENDING_REVIEWS_LINK": "Revisar solicitudes",
-      "SUPPORT_FORMATS": "formatos por procesar",
-      "SUPPORT_FORMATS_LINK": "Procesar formatos"
+      "MY_ADVISEES_LINK": "Ver alumnos",
+      "PENDING_REVIEWS": "selecciones de UEAs esperando aprobación",
+      "PENDING_REVIEWS_LINK": "Revisar ahora",
+      "SUPPORT_FORMATS": "alumnos listos para generar PDF",
+      "SUPPORT_FORMATS_LINK": "Generar formatos"
+    },
+    "STUDENT": {
+      "ENROLLMENT_TITLE": "Mi inscripción — Trimestre 26-I",
+      "NAME": "Juan Pérez García",
+      "REGISTRATION": "Matrícula: 223300456",
+      "STATUS": "Selección pendiente",
+      "STATUS_MESSAGE": "Seleccione sus UEAs y envíe su elección al asesor para continuar con su proceso.",
+      "ACTION": "Ir a inscripción",
+      "FUTURE_STATES": "Referencia Visual de Estados Futuros",
+      "PENDING_REVIEW": "Pendiente de revisión",
+      "APPROVED": "Aprobado",
+      "PHASE_2": "Fase 2",
+      "PHASE_3": "Fase 3"
+    },
+    "PROFESSOR": {
+      "ACTIVITY_TITLE": "Actividad Reciente",
+      "ACTIVITY_1": "Ana García envió su selección de UEAs para el trimestre 23-O.",
+      "ACTIVITY_1_TIME": "Hace 2 horas",
+      "ACTIVITY_2": "La selección de Roberto Jiménez fue aprobada correctamente.",
+      "ACTIVITY_2_TIME": "Ayer, 14:30",
+      "ACTIVITY_3": "Sistema: Se han subido los nuevos lineamientos de inscripción.",
+      "ACTIVITY_3_TIME": "Hace 2 días",
+      "ACTIVITY_ACTION": "Ver detalle"
     },
     "PLACEHOLDER": {
       "TITLE": "Inicio",
@@ -152,7 +175,7 @@
         "PRIVACY": "Privacidad",
         "SUPPORT": "Soporte",
         "TERMS": "Términos",
-        "COPYRIGHT": "© 2024 SAPCyTI - Portal Académico Institucional"
+        "COPYRIGHT": "© 2026 SAPCyTI — Portal Académico Institucional"
       }
     },
     "FORGOT_PASSWORD": {

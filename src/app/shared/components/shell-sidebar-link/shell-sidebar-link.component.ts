@@ -9,9 +9,9 @@ import { TranslateModule } from '@ngx-translate/core';
   template: `
     <a
       [routerLink]="route()"
-      routerLinkActive="border-primary bg-primary/10 text-primary border-l-4 font-semibold"
+      routerLinkActive="border-primary bg-primary-container text-primary border-l-4 font-bold"
       [routerLinkActiveOptions]="{ exact: exact() }"
-      class="text-surface-600 hover:bg-surface-100 mx-1 flex items-center gap-3 rounded-r-lg px-4 py-2 text-sm transition-colors"
+      class="text-label-md text-text-secondary font-label-md hover:bg-surface-subtle mx-sm gap-md px-md py-sm flex items-center rounded-lg transition-colors"
     >
       <i [class]="icon()" aria-hidden="true"></i>
       <span>{{ labelKey() | translate }}</span>

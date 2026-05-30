@@ -59,11 +59,11 @@
       },
       "PROFESSOR": {
         "TITLE": "Home",
-        "SUBTITLE": "Review pending enrollment requests from your students."
+        "SUBTITLE": "Summary of advised students and pending enrollments."
       },
       "ASSISTANT": {
         "TITLE": "Home",
-        "SUBTITLE": "Support enrollment workflows and program forms."
+        "SUBTITLE": "Enrollment forms ready to generate."
       },
       "COORDINATOR": {
         "TITLE": "Home",
@@ -83,11 +83,34 @@
       "MY_ENROLLMENT": "My enrollment status",
       "MY_ENROLLMENT_LINK": "View enrollment",
       "MY_ADVISEES": "advised students",
-      "MY_ADVISEES_LINK": "View requests",
-      "PENDING_REVIEWS": "pending requests",
-      "PENDING_REVIEWS_LINK": "Review requests",
-      "SUPPORT_FORMATS": "forms to process",
-      "SUPPORT_FORMATS_LINK": "Process forms"
+      "MY_ADVISEES_LINK": "View students",
+      "PENDING_REVIEWS": "UEA selections awaiting approval",
+      "PENDING_REVIEWS_LINK": "Review now",
+      "SUPPORT_FORMATS": "students ready to generate PDF",
+      "SUPPORT_FORMATS_LINK": "Generate forms"
+    },
+    "STUDENT": {
+      "ENROLLMENT_TITLE": "My enrollment — Term 26-I",
+      "NAME": "Juan Pérez García",
+      "REGISTRATION": "ID: 223300456",
+      "STATUS": "Selection pending",
+      "STATUS_MESSAGE": "Select your UEAs and submit your choice to your advisor to continue the process.",
+      "ACTION": "Go to enrollment",
+      "FUTURE_STATES": "Visual Reference of Future States",
+      "PENDING_REVIEW": "Pending review",
+      "APPROVED": "Approved",
+      "PHASE_2": "Phase 2",
+      "PHASE_3": "Phase 3"
+    },
+    "PROFESSOR": {
+      "ACTIVITY_TITLE": "Recent Activity",
+      "ACTIVITY_1": "Ana García submitted her UEA selection for term 23-O.",
+      "ACTIVITY_1_TIME": "2 hours ago",
+      "ACTIVITY_2": "Roberto Jiménez's selection was approved successfully.",
+      "ACTIVITY_2_TIME": "Yesterday, 14:30",
+      "ACTIVITY_3": "System: New enrollment guidelines have been uploaded.",
+      "ACTIVITY_3_TIME": "2 days ago",
+      "ACTIVITY_ACTION": "View detail"
     },
     "PLACEHOLDER": {
       "TITLE": "Home",
@@ -152,7 +175,7 @@
         "PRIVACY": "Privacy",
         "SUPPORT": "Support",
         "TERMS": "Terms",
-        "COPYRIGHT": "© 2024 SAPCyTI - Institutional Academic Portal"
+        "COPYRIGHT": "© 2026 SAPCyTI — Institutional Academic Portal"
       }
     },
     "FORGOT_PASSWORD": {
