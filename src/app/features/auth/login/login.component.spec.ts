@@ -52,6 +52,11 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('does not render demo accounts when auth mock is disabled', () => {
+    expect(component.authMockEnabled).toBe(false);
+    expect(fixture.nativeElement.textContent).not.toContain('student@uam.mx');
+  });
+
   it('does not call login when form is empty', () => {
     component.onSubmit();
     expect(authState.login).not.toHaveBeenCalled();

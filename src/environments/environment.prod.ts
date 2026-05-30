@@ -3,5 +3,6 @@ export const environment = {
   apiBaseUrl: '/api',
   mocks: {
     auth: false,
+    passwordRecovery: false,
   },
 };

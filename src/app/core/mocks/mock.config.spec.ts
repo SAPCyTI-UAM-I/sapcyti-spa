@@ -22,6 +22,7 @@ describe('mock.config', () => {
 
     const config = TestBed.inject(APP_MOCK_CONFIG);
     expect(config.auth).toBe(true);
+    expect(config.passwordRecovery).toBe(false);
     expect(isMockEnabled(config, 'auth')).toBe(true);
   });
 

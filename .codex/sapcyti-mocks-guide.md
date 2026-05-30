@@ -11,7 +11,7 @@ Mock feature flags are centralized in:
 The app receives environment-specific mock flags in:
 
 - `src/environments/environment.ts`
-  Development defaults. Auth mock is currently enabled here.
+  Development defaults. Auth mock is disabled here; password recovery mock is enabled because HU-02 backend recovery is out of scope.
 - `src/environments/environment.prod.ts`
   Production defaults. Mocks must stay disabled here unless explicitly required.
 
@@ -46,6 +46,15 @@ When `auth` is `false`, `AuthStateService` calls the real backend using
 The login page also reads `injectMockEnabled('auth')` to decide whether to show
 the demo-account helper.
 
+Password recovery uses a separate flag:
+
+```ts
+private readonly usePasswordRecoveryMock = injectMockEnabled('passwordRecovery');
+```
+
+This keeps HU-01 login connected to the real backend while the visual recovery
+flow can remain usable in development until HU-02 backend integration exists.
+
 ## Toggle Mocks
 
 To use mocked auth locally:
@@ -54,6 +63,7 @@ To use mocked auth locally:
 // src/environments/environment.ts
 mocks: {
   auth: true,
+  passwordRecovery: true,
 }
 ```
 
@@ -63,6 +73,7 @@ To call the real API locally:
 // src/environments/environment.ts
 mocks: {
   auth: false,
+  passwordRecovery: true,
 }
 ```
 
@@ -72,6 +83,7 @@ Production config should remain:
 // src/environments/environment.prod.ts
 mocks: {
   auth: false,
+  passwordRecovery: false,
 }
 ```
 

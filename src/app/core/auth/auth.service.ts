@@ -17,7 +17,8 @@ import { matchesAnyRole } from './role-authorization.util';
 export class AuthStateService {
   private readonly http = inject(HttpClient);
   private readonly tenantService = inject(TenantService);
-  private readonly useMock = injectMockEnabled('auth');
+  private readonly useAuthMock = injectMockEnabled('auth');
+  private readonly usePasswordRecoveryMock = injectMockEnabled('passwordRecovery');
 
   private accessToken: string | null = null;
   private tokenExpiresAt: number | null = null;
@@ -56,7 +57,7 @@ export class AuthStateService {
   }
 
   login(email: string, password: string, rememberMe = false): Observable<void> {
-    const login$ = this.useMock
+    const login$ = this.useAuthMock
       ? mockLogin(email, password)
       : this.http.post<AuthResponse>(
           `${environment.apiBaseUrl}/auth/login`,
@@ -76,7 +77,7 @@ export class AuthStateService {
   }
 
   requestPasswordReset(email: string): Observable<void> {
-    if (this.useMock) {
+    if (this.usePasswordRecoveryMock) {
       return mockRequestPasswordReset(email);
     }
 
