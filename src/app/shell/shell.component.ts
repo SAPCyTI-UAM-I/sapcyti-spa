@@ -4,8 +4,6 @@ import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
 
 import { AuthStateService } from '../core/auth/auth.service';
@@ -22,8 +20,6 @@ import { getShellNavigation } from './shell-menu.config';
     TranslateModule,
     Avatar,
     Button,
-    IconField,
-    InputIcon,
     InputText,
     LanguageSwitcherComponent,
     ShellMobileDrawerComponent,

@@ -155,7 +155,7 @@ const CARDS_BY_ROLE: Record<string, DashboardCard[]> = {
           </div>
 
           <div class="gap-xl flex flex-col items-start justify-between md:flex-row md:items-center">
-            <div class="gap-xs flex flex-col">
+            <div class="gap-xs flex min-w-0 flex-col">
               <span class="text-headline-sm text-on-surface font-headline-sm">
                 {{ 'DASHBOARD.STUDENT.NAME' | translate }}
               </span>
@@ -168,7 +168,7 @@ const CARDS_BY_ROLE: Record<string, DashboardCard[]> = {
             </div>
 
             <div
-              class="bg-surface-subtle gap-md p-md flex w-full flex-col rounded-lg md:w-auto md:items-end md:bg-transparent md:p-0"
+              class="bg-surface-subtle gap-md p-md flex w-full flex-col rounded-lg md:w-[360px] md:shrink-0 md:items-end md:bg-transparent md:p-0"
             >
               <div
                 class="border-warning/30 bg-warning/10 text-warning gap-sm px-md py-xs flex items-center rounded-full border"
@@ -179,12 +179,12 @@ const CARDS_BY_ROLE: Record<string, DashboardCard[]> = {
                 </span>
               </div>
               <p
-                class="text-body-md text-text-secondary font-body-md max-w-sm text-left md:text-right"
+                class="text-body-md text-text-secondary font-body-md w-full text-left md:text-right"
               >
                 {{ 'DASHBOARD.STUDENT.STATUS_MESSAGE' | translate }}
               </p>
               <a
-                class="bg-primary hover:bg-primary-hover text-on-primary text-label-md font-label-md gap-sm px-lg py-sm flex h-10 w-full items-center justify-center rounded-lg shadow-sm transition-colors md:w-auto"
+                class="bg-primary hover:bg-primary-hover text-on-primary text-label-md font-label-md gap-sm px-lg py-sm mt-xs flex h-10 w-full items-center justify-center rounded-lg shadow-sm transition-colors md:w-auto"
                 routerLink="/enrollment"
               >
                 {{ 'DASHBOARD.STUDENT.ACTION' | translate }}

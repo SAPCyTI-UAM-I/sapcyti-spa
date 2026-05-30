@@ -14,7 +14,6 @@ const STUDENT_NAV: ShellNavigation = {
   sections: [
     {
       id: 'student-main',
-      labelKey: 'SHELL.SECTIONS.MAIN',
       items: [
         {
           id: 'enrollment',

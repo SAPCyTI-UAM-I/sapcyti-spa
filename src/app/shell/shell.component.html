@@ -32,15 +32,18 @@
       </div>
 
       <div class="mx-lg hidden max-w-md flex-1 md:block">
-        <p-iconfield>
-          <p-inputicon styleClass="pi pi-search" />
+        <div class="relative w-full">
+          <i
+            class="pi pi-search text-text-tertiary left-sm absolute top-1/2 -translate-y-1/2"
+            aria-hidden="true"
+          ></i>
           <input
             pInputText
             type="text"
             class="bg-surface-muted pl-xl w-full"
             [placeholder]="'SHELL.TOPBAR.SEARCH_PLACEHOLDER' | translate"
           />
-        </p-iconfield>
+        </div>
       </div>
 
       <div class="gap-lg flex items-center">

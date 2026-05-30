@@ -9,7 +9,7 @@ export interface ShellNavLink {
 
 export interface ShellNavSection {
   id: string;
-  labelKey: string;
+  labelKey?: string;
   items: readonly ShellNavLink[];
 }
 

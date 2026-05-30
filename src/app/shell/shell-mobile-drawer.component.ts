@@ -39,13 +39,15 @@ import { ShellNavigation } from './shell-menu.model';
           />
 
           @for (section of nav.sections; track section.id) {
-            <div class="mt-md mb-xs px-md py-sm">
-              <span
-                class="text-caption text-text-tertiary font-caption font-bold tracking-wider uppercase"
-              >
-                {{ section.labelKey | translate }}
-              </span>
-            </div>
+            @if (section.labelKey) {
+              <div class="mt-md mb-xs px-md py-sm">
+                <span
+                  class="text-caption text-text-tertiary font-caption font-bold tracking-wider uppercase"
+                >
+                  {{ section.labelKey | translate }}
+                </span>
+              </div>
+            }
 
             @for (item of section.items; track item.id) {
               <app-shell-sidebar-link
