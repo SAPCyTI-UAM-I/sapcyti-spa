@@ -1,137 +1,128 @@
 <!DOCTYPE html>
-
 <html class="light" lang="es"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Dashboard del Profesor - SAPCyTI</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "tertiary-fixed-dim": "#c3c0ff",
-                    "on-tertiary-fixed": "#0f0069",
-                    "primary-fixed-dim": "#a0caff",
-                    "outline-variant": "#c2c7d0",
-                    "background": "#f8f9ff",
-                    "surface-container": "#e5eeff",
-                    "on-secondary-container": "#006f67",
-                    "on-tertiary-container": "#b6b4ff",
-                    "primary-container-strong": "#D4E6F4",
-                    "on-surface": "#0b1c30",
-                    "surface-container-low": "#eff4ff",
-                    "text-tertiary": "#94A3B8",
-                    "sidebar-border": "#E2E8F0",
-                    "secondary-fixed-dim": "#80d5cb",
-                    "tertiary-fixed": "#e2dfff",
-                    "tertiary": "#2000b1",
-                    "on-surface-variant": "#42474f",
-                    "on-primary": "#ffffff",
-                    "inverse-surface": "#213145",
-                    "primary": "#003660",
-                    "success": "#2D6A4F",
-                    "on-primary-container": "#95bef3",
-                    "outline-strong": "#CBD5E1",
-                    "info": "#2563EB",
-                    "inverse-on-surface": "#eaf1ff",
-                    "on-primary-fixed": "#001c37",
-                    "surface-tint": "#356190",
-                    "on-secondary-fixed-variant": "#00504a",
-                    "on-error": "#ffffff",
-                    "surface-subtle": "#F0F4F8",
-                    "on-secondary": "#ffffff",
-                    "surface-container-highest": "#d3e4fe",
-                    "outline": "#737780",
-                    "warning": "#B45309",
-                    "inverse-primary": "#a0caff",
-                    "secondary-fixed": "#9cf2e8",
-                    "primary-light": "#3D6F9C",
-                    "sidebar": "#FAFBFC",
-                    "primary-hover": "#163A5F",
-                    "error-container": "#ffdad6",
-                    "surface-dim": "#cbdbf5",
-                    "on-secondary-fixed": "#00201d",
-                    "secondary-container": "#99efe5",
-                    "primary-active": "#0F2D47",
-                    "surface-container-lowest": "#ffffff",
-                    "tertiary-container": "#382ad0",
-                    "on-tertiary": "#ffffff",
-                    "table-header": "#F8FAFC",
-                    "on-error-container": "#93000a",
-                    "surface-bright": "#f8f9ff",
-                    "on-primary-fixed-variant": "#184976",
-                    "primary-container": "#E8F1F8",
-                    "accent-muted": "#818CF8",
-                    "error": "#B91C1C",
-                    "surface-muted": "#F7F8FA",
-                    "text-secondary": "#5C6670",
-                    "surface-container-high": "#dce9ff",
-                    "on-background": "#0b1c30",
-                    "secondary": "#006a63",
-                    "surface": "#f8f9ff",
-                    "surface-variant": "#d3e4fe",
-                    "on-tertiary-fixed-variant": "#3323cc",
-                    "primary-fixed": "#d2e4ff"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.125rem",
-                    "lg": "0.25rem",
-                    "xl": "0.5rem",
-                    "full": "0.75rem"
-            },
-            "spacing": {
-                    "sm": "8px",
-                    "md": "16px",
-                    "gutter": "16px",
-                    "xs": "4px",
-                    "margin": "24px",
-                    "xxl": "48px",
-                    "xl": "32px",
-                    "lg": "24px"
-            },
-            "fontFamily": {
-                    "body-md": ["Inter"],
-                    "h2": ["Inter"],
-                    "headline-sm": ["Inter"],
-                    "stat-value": ["Inter"],
-                    "h3": ["Inter"],
-                    "caption": ["Inter"],
-                    "headline-lg": ["Inter"],
-                    "label-md": ["Inter"],
-                    "h1": ["Inter"],
-                    "headline-md": ["Inter"],
-                    "headline-lg-mobile": ["Inter"]
-            },
-            "fontSize": {
-                    "body-md": ["0.875rem", {"lineHeight": "1.5", "fontWeight": "400"}],
-                    "h2": ["1.25rem", {"lineHeight": "1.35", "fontWeight": "600"}],
-                    "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
-                    "stat-value": ["1.75rem", {"lineHeight": "1.2", "fontWeight": "700"}],
-                    "h3": ["1rem", {"lineHeight": "1.4", "fontWeight": "600"}],
-                    "caption": ["0.75rem", {"lineHeight": "1.4", "fontWeight": "400"}],
-                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                    "label-md": ["0.875rem", {"lineHeight": "1.4", "fontWeight": "500"}],
-                    "h1": ["1.5rem", {"lineHeight": "1.3", "fontWeight": "600"}],
-                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
-                    "headline-lg-mobile": ["20px", {"lineHeight": "26px", "fontWeight": "600"}]
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#dce9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface": "#f8f9ff",
+                        "secondary": "#006a63",
+                        "on-primary-fixed-variant": "#184976",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "tertiary-fixed-dim": "#c3c0ff",
+                        "sidebar": "#FAFBFC",
+                        "on-primary-container": "#95bef3",
+                        "surface-subtle": "#F0F4F8",
+                        "outline": "#737780",
+                        "on-secondary-fixed": "#00201d",
+                        "primary-container-strong": "#D4E6F4",
+                        "on-surface-variant": "#42474f",
+                        "primary": "#003660",
+                        "primary-active": "#0F2D47",
+                        "secondary-fixed": "#9cf2e8",
+                        "on-tertiary-fixed": "#0f0069",
+                        "primary-fixed-dim": "#a0caff",
+                        "on-tertiary-fixed-variant": "#3323cc",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#b6b4ff",
+                        "on-secondary-fixed-variant": "#00504a",
+                        "accent-muted": "#818CF8",
+                        "text-secondary": "#5C6670",
+                        "primary-container": "#E8F1F8",
+                        "tertiary": "#2000b1",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#99efe5",
+                        "tertiary-container": "#382ad0",
+                        "on-tertiary": "#ffffff",
+                        "text-tertiary": "#94A3B8",
+                        "on-secondary-container": "#006f67",
+                        "on-secondary": "#ffffff",
+                        "outline-strong": "#CBD5E1",
+                        "on-error": "#ffffff",
+                        "info": "#2563EB",
+                        "warning": "#B45309",
+                        "primary-light": "#3D6F9C",
+                        "table-header": "#F8FAFC",
+                        "sidebar-border": "#E2E8F0",
+                        "on-surface": "#0b1c30",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-background": "#0b1c30",
+                        "tertiary-fixed": "#e2dfff",
+                        "surface-dim": "#cbdbf5",
+                        "success": "#2D6A4F",
+                        "surface-bright": "#f8f9ff",
+                        "primary-fixed": "#d2e4ff",
+                        "surface-tint": "#356190",
+                        "primary-hover": "#163A5F",
+                        "outline-variant": "#c2c7d0",
+                        "surface-container-low": "#eff4ff",
+                        "surface-muted": "#F7F8FA",
+                        "surface-container": "#e5eeff",
+                        "on-primary-fixed": "#001c37",
+                        "error": "#B91C1C",
+                        "background": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "inverse-primary": "#a0caff",
+                        "secondary-fixed-dim": "#80d5cb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "xl": "32px",
+                        "margin": "24px",
+                        "xxl": "48px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "stat-value": ["Inter"],
+                        "label-md": ["Inter"],
+                        "h3": ["Inter"],
+                        "h1": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "h2": ["Inter"]
+                    },
+                    "fontSize": {
+                        "caption": ["0.75rem", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "stat-value": ["1.75rem", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-md": ["0.875rem", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "h3": ["1rem", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "h1": ["1.5rem", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["0.875rem", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["20px", { "lineHeight": "26px", "fontWeight": "600" }],
+                        "h2": ["1.25rem", { "lineHeight": "1.35", "fontWeight": "600" }]
+                    }
+                }
             }
-          },
-        },
-      }
+        }
     </script>
-<style>
-        .material-symbols-outlined {
-          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .material-symbols-outlined[data-weight="fill"] {
-            font-variation-settings: 'FILL' 1;
-        }
-    </style>
 </head>
 <body class="bg-surface-muted text-on-surface font-body-md min-h-screen flex">
 <!-- SideNavBar -->
@@ -208,54 +199,53 @@
 </div>
 </header>
 <!-- Dashboard Content -->
-<main class="flex-1 p-margin md:p-xl overflow-y-auto">
+<main class="flex-1 p-margin md:p-xl">
 <div class="mb-lg">
 <h1 class="font-headline-lg text-headline-lg text-on-surface">Inicio</h1>
 <p class="font-body-md text-body-md text-text-secondary mt-xs">Resumen de alumnos asesorados e inscripciones pendientes.</p>
 </div>
-<!-- Stats Grid -->
+<!-- Stats Grid — same card pattern as coordinator -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter lg:gap-margin">
 <!-- Card 1: Alumnos asesorados -->
-<div class="bg-surface rounded-xl p-md border border-outline flex flex-col justify-between hover:shadow-sm transition-shadow">
-<div class="flex items-start justify-between mb-md">
+<div class="bg-surface rounded-xl border border-outline p-lg flex flex-col justify-between h-full hover:border-outline-strong transition-colors">
+<div class="flex justify-between items-start mb-md">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-primary flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+</div>
+</div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Alumnos asesorados</h3>
-<p class="font-body-md text-body-md text-text-secondary">alumnos bajo tu asesoría</p>
+<h2 class="font-stat-value text-stat-value text-primary">12</h2>
+<p class="font-body-md text-body-md text-text-secondary mt-xs">alumnos bajo tu asesoría</p>
 </div>
-<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary">
-<span class="material-symbols-outlined" data-weight="fill">group</span>
-</div>
-</div>
-<div class="flex items-end justify-between">
-<span class="font-stat-value text-stat-value text-primary">12</span>
-<a class="font-label-md text-label-md text-primary hover:text-primary-hover flex items-center gap-xs" href="#">
-                                Ver alumnos <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+<div class="mt-md pt-md border-t border-surface-muted">
+<a class="font-label-md text-label-md text-primary hover:text-primary-hover flex items-center group" href="#">
+                            Ver alumnos <span class="material-symbols-outlined text-[18px] ml-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
 </a>
 </div>
 </div>
-<!-- Card 2: Pendientes -->
-<div class="bg-surface rounded-xl p-md border border-warning/30 flex flex-col justify-between hover:shadow-sm transition-shadow relative overflow-hidden">
+<!-- Card 2: Pendientes de revisión -->
+<div class="bg-surface rounded-xl border border-outline p-lg flex flex-col justify-between h-full hover:border-outline-strong transition-colors relative overflow-hidden">
 <div class="absolute top-0 right-0 w-32 h-32 bg-warning/5 rounded-bl-full -z-10"></div>
-<div class="flex items-start justify-between mb-md">
+<div class="flex justify-between items-start mb-md">
+<div class="w-10 h-10 rounded-lg bg-warning/10 text-warning flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment_late</span>
+</div>
+<span class="px-sm py-xs bg-warning/10 text-warning rounded font-label-md text-[12px] font-bold">Pendientes</span>
+</div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Pendientes de revisión</h3>
-<p class="font-body-md text-body-md text-text-secondary">selecciones de UEAs esperando aprobación</p>
+<h2 class="font-stat-value text-stat-value text-warning">3</h2>
+<p class="font-body-md text-body-md text-text-secondary mt-xs">selecciones de UEAs esperando aprobación</p>
 </div>
-<div class="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center text-warning">
-<span class="material-symbols-outlined" data-weight="fill">assignment_late</span>
-</div>
-</div>
-<div class="flex items-end justify-between">
-<span class="font-stat-value text-stat-value text-warning">3</span>
-<button class="bg-warning hover:bg-warning/90 text-on-primary font-label-md text-label-md py-sm px-md rounded-lg transition-colors flex items-center gap-xs">
-                                Revisar ahora <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-</button>
+<div class="mt-md pt-md border-t border-surface-muted">
+<a class="font-label-md text-label-md text-warning hover:text-warning/80 flex items-center group" href="#">
+                            Revisar ahora <span class="material-symbols-outlined text-[18px] ml-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
 </div>
 </div>
 </div>
 <!-- Recent Activity -->
 <div class="mt-lg bg-surface rounded-xl border border-outline overflow-hidden">
-<div class="px-md py-sm bg-table-header border-b border-outline">
+<div class="px-lg py-sm bg-table-header border-b border-outline">
 <h2 class="font-h2 text-h2 text-on-surface">Actividad Reciente</h2>
 </div>
 <div class="divide-y divide-sidebar-border">

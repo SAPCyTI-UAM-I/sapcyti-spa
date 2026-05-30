@@ -1,87 +1,81 @@
 <!DOCTYPE html>
-
 <html class="light" lang="es"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Dashboard del Asistente - SAPCyTI</title>
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Theme Configuration -->
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     "colors": {
-                        "primary-hover": "#163A5F",
-                        "on-tertiary-fixed-variant": "#3323cc",
-                        "on-primary-container": "#95bef3",
-                        "surface-dim": "#cbdbf5",
-                        "table-header": "#F8FAFC",
-                        "on-secondary-fixed-variant": "#00504a",
-                        "primary-container": "#E8F1F8",
-                        "secondary-fixed-dim": "#80d5cb",
-                        "secondary-container": "#CCFBF1",
-                        "surface-container": "#e5eeff",
-                        "on-surface": "#0b1c30",
-                        "sidebar": "#FAFBFC",
-                        "surface-variant": "#d3e4fe",
-                        "primary-fixed-dim": "#a0caff",
-                        "sidebar-border": "#E2E8F0",
-                        "surface-container-lowest": "#ffffff",
-                        "on-primary": "#ffffff",
-                        "error-container": "#ffdad6",
-                        "primary-active": "#0F2D47",
-                        "surface-tint": "#356190",
-                        "error": "#B91C1C",
-                        "on-primary-fixed-variant": "#184976",
-                        "text-tertiary": "#94A3B8",
-                        "on-primary-fixed": "#001c37",
-                        "primary": "#003660",
-                        "on-secondary-fixed": "#00201d",
-                        "tertiary-fixed-dim": "#c3c0ff",
-                        "info": "#2563EB",
-                        "surface-muted": "#F7F8FA",
-                        "success": "#2D6A4F",
-                        "outline": "#737780",
-                        "warning": "#B45309",
-                        "on-tertiary-container": "#b6b4ff",
-                        "tertiary-container": "#382ad0",
-                        "surface-subtle": "#F0F4F8",
-                        "tertiary-fixed": "#e2dfff",
-                        "on-tertiary": "#ffffff",
-                        "background": "#f8f9ff",
-                        "outline-variant": "#c2c7d0",
-                        "primary-container-strong": "#D4E6F4",
-                        "surface-container-low": "#eff4ff",
-                        "surface-container-high": "#dce9ff",
-                        "secondary": "#006a63",
-                        "primary-fixed": "#d2e4ff",
-                        "secondary-fixed": "#9cf2e8",
-                        "text-secondary": "#5C6670",
-                        "accent-muted": "#818CF8",
-                        "outline-strong": "#CBD5E1",
-                        "primary-light": "#3D6F9C",
                         "on-error-container": "#93000a",
-                        "inverse-surface": "#213145",
-                        "surface": "#f8f9ff",
-                        "on-background": "#0b1c30",
-                        "on-tertiary-fixed": "#0f0069",
-                        "on-surface-variant": "#42474f",
-                        "tertiary": "#2000b1",
-                        "on-error": "#ffffff",
-                        "surface-container-highest": "#d3e4fe",
-                        "on-secondary-container": "#006f67",
-                        "inverse-primary": "#a0caff",
+                        "surface-container-high": "#dce9ff",
                         "inverse-on-surface": "#eaf1ff",
+                        "surface": "#f8f9ff",
+                        "secondary": "#006a63",
+                        "on-primary-fixed-variant": "#184976",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "tertiary-fixed-dim": "#c3c0ff",
+                        "sidebar": "#FAFBFC",
+                        "on-primary-container": "#95bef3",
+                        "surface-subtle": "#F0F4F8",
+                        "outline": "#737780",
+                        "on-secondary-fixed": "#00201d",
+                        "primary-container-strong": "#D4E6F4",
+                        "on-surface-variant": "#42474f",
+                        "primary": "#003660",
+                        "primary-active": "#0F2D47",
+                        "secondary-fixed": "#9cf2e8",
+                        "on-tertiary-fixed": "#0f0069",
+                        "primary-fixed-dim": "#a0caff",
+                        "on-tertiary-fixed-variant": "#3323cc",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#b6b4ff",
+                        "on-secondary-fixed-variant": "#00504a",
+                        "accent-muted": "#818CF8",
+                        "text-secondary": "#5C6670",
+                        "primary-container": "#E8F1F8",
+                        "tertiary": "#2000b1",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#99efe5",
+                        "tertiary-container": "#382ad0",
+                        "on-tertiary": "#ffffff",
+                        "text-tertiary": "#94A3B8",
+                        "on-secondary-container": "#006f67",
+                        "on-secondary": "#ffffff",
+                        "outline-strong": "#CBD5E1",
+                        "on-error": "#ffffff",
+                        "info": "#2563EB",
+                        "warning": "#B45309",
+                        "primary-light": "#3D6F9C",
+                        "table-header": "#F8FAFC",
+                        "sidebar-border": "#E2E8F0",
+                        "on-surface": "#0b1c30",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-background": "#0b1c30",
+                        "tertiary-fixed": "#e2dfff",
+                        "surface-dim": "#cbdbf5",
+                        "success": "#2D6A4F",
                         "surface-bright": "#f8f9ff",
-                        "on-secondary": "#ffffff"
+                        "primary-fixed": "#d2e4ff",
+                        "surface-tint": "#356190",
+                        "primary-hover": "#163A5F",
+                        "outline-variant": "#c2c7d0",
+                        "surface-container-low": "#eff4ff",
+                        "surface-muted": "#F7F8FA",
+                        "surface-container": "#e5eeff",
+                        "on-primary-fixed": "#001c37",
+                        "error": "#B91C1C",
+                        "background": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "inverse-primary": "#a0caff",
+                        "secondary-fixed-dim": "#80d5cb"
                     },
                     "borderRadius": {
                         "DEFAULT": "0.125rem",
@@ -90,14 +84,14 @@
                         "full": "0.75rem"
                     },
                     "spacing": {
-                        "md": "16px",
-                        "xxl": "48px",
-                        "xl": "32px",
-                        "sm": "8px",
-                        "margin": "24px",
-                        "lg": "24px",
                         "gutter": "16px",
-                        "xs": "4px"
+                        "xl": "32px",
+                        "margin": "24px",
+                        "xxl": "48px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px"
                     },
                     "fontFamily": {
                         "caption": ["Inter"],
@@ -129,13 +123,6 @@
             }
         }
     </script>
-<style type="text/tailwindcss">
-        @layer utilities {
-            .font-variation-fill {
-                font-variation-settings: 'FILL' 1;
-            }
-        }
-    </style>
 </head>
 <body class="bg-surface-muted text-on-surface font-body-md min-h-screen flex">
 <!-- SideNavBar -->
