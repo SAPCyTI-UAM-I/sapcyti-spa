@@ -8,7 +8,7 @@ import { CurrentUser } from '../../models/current-user.model';
 import { JwtClaims } from '../../models/jwt-claims.model';
 import { isRoleType, RoleType } from '../../models/role-type.model';
 import { TenantService } from '../http/tenant.service';
-import { AUTH_USE_MOCK } from './auth.config';
+import { injectMockEnabled } from '../mocks/mock.config';
 import { mockLogin, mockRequestPasswordReset } from './auth.mock';
 import { decodeJwtPayload } from './jwt.util';
 import { matchesAnyRole } from './role-authorization.util';
@@ -17,7 +17,7 @@ import { matchesAnyRole } from './role-authorization.util';
 export class AuthStateService {
   private readonly http = inject(HttpClient);
   private readonly tenantService = inject(TenantService);
-  private readonly useMock = inject(AUTH_USE_MOCK);
+  private readonly useMock = injectMockEnabled('auth');
 
   private accessToken: string | null = null;
   private tokenExpiresAt: number | null = null;

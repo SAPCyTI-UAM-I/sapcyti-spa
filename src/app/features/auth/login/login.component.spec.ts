@@ -6,8 +6,8 @@ import { provideRouter, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
-import { AUTH_USE_MOCK } from '../../../core/auth/auth.config';
 import { AuthStateService } from '../../../core/auth/auth.service';
+import { provideAppMockConfig } from '../../../core/mocks/mock.config';
 import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
@@ -37,7 +37,7 @@ describe('LoginComponent', () => {
         provideHttpClientTesting(),
         provideRouter([]),
         { provide: AuthStateService, useValue: authState },
-        { provide: AUTH_USE_MOCK, useValue: false },
+        provideAppMockConfig({ auth: false }),
       ],
     }).compileComponents();
 

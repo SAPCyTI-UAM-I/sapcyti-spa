@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
 import { TenantService } from '../http/tenant.service';
-import { AUTH_USE_MOCK } from './auth.config';
+import { provideAppMockConfig } from '../mocks/mock.config';
 import { AuthStateService } from './auth.service';
 
 const LOGIN_URL = 'http://localhost:8080/api/auth/login';
@@ -25,7 +25,7 @@ describe('AuthStateService', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: AUTH_USE_MOCK, useValue: false },
+        provideAppMockConfig({ auth: false }),
       ],
     });
 

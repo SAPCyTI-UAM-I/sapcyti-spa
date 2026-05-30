@@ -7,7 +7,6 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { providePrimeNG } from 'primeng/config';
 
 import { environment } from '../environments/environment';
-import { AUTH_USE_MOCK } from './core/auth/auth.config';
 
 import { SapcytiPreset } from './core/theme/sapcyti-preset';
 
@@ -15,13 +14,14 @@ import { routes } from './app.routes';
 import { jwtInterceptor } from './core/auth/jwt.interceptor';
 import { tenantInterceptor } from './core/http/tenant.interceptor';
 import { httpErrorInterceptor } from './core/http/http-error.interceptor';
+import { provideAppMockConfig } from './core/mocks/mock.config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([jwtInterceptor, tenantInterceptor, httpErrorInterceptor])),
-    { provide: AUTH_USE_MOCK, useValue: environment.mocks.auth },
+    provideAppMockConfig(environment.mocks),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
