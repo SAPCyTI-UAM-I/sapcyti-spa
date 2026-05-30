@@ -11,9 +11,10 @@ describe('role-authorization.util', () => {
     expect(hasAppProfile('SYSTEM_ADMIN')).toBe(true);
   });
 
-  it('matchesAnyRole grants SYSTEM_ADMIN access to COORDINATOR routes', () => {
+  it('matchesAnyRole checks SYSTEM_ADMIN exactly like the backend effective authority', () => {
     const allowed: RoleType[] = ['COORDINATOR', 'ASSISTANT'];
-    expect(matchesAnyRole('SYSTEM_ADMIN', allowed)).toBe(true);
+    expect(matchesAnyRole('SYSTEM_ADMIN', allowed)).toBe(false);
+    expect(matchesAnyRole('SYSTEM_ADMIN', ['SYSTEM_ADMIN'])).toBe(true);
   });
 
   it('matchesAnyRole denies SPEAKER for any route', () => {

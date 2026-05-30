@@ -80,7 +80,7 @@ describe('authGuard', () => {
     expect(router.createUrlTree).toHaveBeenCalledWith(['/access-denied']);
   });
 
-  it('allows SYSTEM_ADMIN on COORDINATOR routes', () => {
+  it('redirects SYSTEM_ADMIN from COORDINATOR-only routes', () => {
     authState.isAuthenticated.mockReturnValue(true);
     authState.getCurrentUser.mockReturnValue({
       id: 3,
@@ -91,7 +91,20 @@ describe('authGuard', () => {
 
     const result = runGuard(['COORDINATOR', 'ASSISTANT']);
 
-    expect(result).toBe(true);
+    expect(router.createUrlTree).toHaveBeenCalledWith(['/access-denied']);
+    expect(result).toEqual({ commands: ['/access-denied'], extras: undefined });
+  });
+
+  it('allows SYSTEM_ADMIN when route explicitly includes it', () => {
+    authState.isAuthenticated.mockReturnValue(true);
+    authState.getCurrentUser.mockReturnValue({
+      id: 3,
+      email: 'admin@uam.mx',
+      role: 'SYSTEM_ADMIN',
+      graduateProgramId: null,
+    } satisfies CurrentUser);
+
+    expect(runGuard(['SYSTEM_ADMIN'])).toBe(true);
   });
 
   it('allows authenticated users when route has no role metadata', () => {

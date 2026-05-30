@@ -1,9 +1,9 @@
 import { getShellNavigation, resolveShellMenuRole } from './shell-menu.config';
 
 describe('shell-menu.config', () => {
-  it('maps SYSTEM_ADMIN to coordinator navigation', () => {
-    expect(resolveShellMenuRole('SYSTEM_ADMIN')).toBe('COORDINATOR');
-    expect(getShellNavigation('SYSTEM_ADMIN')?.sections).toHaveLength(2);
+  it('returns home-only navigation for SYSTEM_ADMIN', () => {
+    expect(resolveShellMenuRole('SYSTEM_ADMIN')).toBe('SYSTEM_ADMIN');
+    expect(getShellNavigation('SYSTEM_ADMIN')?.sections).toHaveLength(0);
   });
 
   it('returns null navigation for SPEAKER', () => {

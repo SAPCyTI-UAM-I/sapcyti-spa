@@ -9,9 +9,5 @@ export function matchesAnyRole(userRole: RoleType, allowedRoles: readonly RoleTy
     return false;
   }
 
-  if (userRole === 'SYSTEM_ADMIN') {
-    return allowedRoles.includes('SYSTEM_ADMIN') || allowedRoles.includes('COORDINATOR');
-  }
-
   return allowedRoles.includes(userRole);
 }

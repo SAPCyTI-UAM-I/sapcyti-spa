@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { authGuard } from './core/auth/auth.guard';
+import { ROUTE_PERMISSIONS } from './core/auth/rbac.policy';
 
 export const routes: Routes = [
   {
@@ -13,6 +14,9 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
         canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.dashboard,
+        },
       },
       {
         path: 'enrollment',
@@ -20,7 +24,7 @@ export const routes: Routes = [
           import('./features/enrollment/enrollment.routes').then((m) => m.ENROLLMENT_ROUTES),
         canActivate: [authGuard],
         data: {
-          roles: ['STUDENT', 'PROFESSOR', 'COORDINATOR', 'ASSISTANT', 'SYSTEM_ADMIN'],
+          roles: ROUTE_PERMISSIONS.enrollment,
         },
       },
       {
@@ -31,7 +35,7 @@ export const routes: Routes = [
           ),
         canActivate: [authGuard],
         data: {
-          roles: ['COORDINATOR', 'ASSISTANT', 'SYSTEM_ADMIN'],
+          roles: ROUTE_PERMISSIONS.academicCatalog,
         },
       },
       {

@@ -110,7 +110,13 @@ const COORDINATOR_NAV: ShellNavigation = {
   ],
 };
 
+const SYSTEM_ADMIN_NAV: ShellNavigation = {
+  home: HOME_LINK,
+  sections: [],
+};
+
 const NAV_BY_ROLE: Record<ShellMenuRole, ShellNavigation> = {
+  SYSTEM_ADMIN: SYSTEM_ADMIN_NAV,
   STUDENT: STUDENT_NAV,
   PROFESSOR: PROFESSOR_NAV,
   ASSISTANT: ASSISTANT_NAV,
@@ -120,10 +126,6 @@ const NAV_BY_ROLE: Record<ShellMenuRole, ShellNavigation> = {
 export function resolveShellMenuRole(role: RoleType): ShellMenuRole | null {
   if (role === 'SPEAKER') {
     return null;
-  }
-
-  if (role === 'SYSTEM_ADMIN') {
-    return 'COORDINATOR';
   }
 
   return role;
