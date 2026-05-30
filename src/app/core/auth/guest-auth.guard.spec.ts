@@ -49,7 +49,7 @@ describe('guestAuthGuard', () => {
     expect(result).toEqual({ commands: ['/dashboard'] });
   });
 
-  it('redirects authenticated SPEAKER to access-denied', () => {
+  it('redirects authenticated SPEAKER to dashboard', () => {
     authState.isAuthenticated.mockReturnValue(true);
     authState.getCurrentUser.mockReturnValue({
       id: 2,
@@ -60,6 +60,6 @@ describe('guestAuthGuard', () => {
 
     TestBed.runInInjectionContext(() => guestAuthGuard({} as never, {} as never));
 
-    expect(router.createUrlTree).toHaveBeenCalledWith(['/access-denied']);
+    expect(router.createUrlTree).toHaveBeenCalledWith(['/dashboard']);
   });
 });

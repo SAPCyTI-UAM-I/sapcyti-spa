@@ -18,4 +18,4 @@ export interface ShellNavigation {
   sections: readonly ShellNavSection[];
 }
 
-export type ShellMenuRole = Exclude<RoleType, 'SPEAKER'>;
+export type ShellMenuRole = RoleType;

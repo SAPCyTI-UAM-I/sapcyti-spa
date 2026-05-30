@@ -9,6 +9,13 @@ const HOME_LINK = {
   icon: 'pi pi-home',
 } as const;
 
+const PRESENTATIONS_LINK = {
+  id: 'presentations',
+  labelKey: 'SHELL.MENU.PRESENTATIONS',
+  route: '/presentations',
+  icon: 'pi pi-microphone',
+} as const;
+
 const STUDENT_NAV: ShellNavigation = {
   home: HOME_LINK,
   sections: [
@@ -62,6 +69,17 @@ const ASSISTANT_NAV: ShellNavigation = {
   ],
 };
 
+const SPEAKER_NAV: ShellNavigation = {
+  home: HOME_LINK,
+  sections: [
+    {
+      id: 'speaker-presentations',
+      labelKey: 'SHELL.SECTIONS.PRESENTATIONS',
+      items: [PRESENTATIONS_LINK],
+    },
+  ],
+};
+
 const COORDINATOR_NAV: ShellNavigation = {
   home: HOME_LINK,
   sections: [
@@ -107,12 +125,23 @@ const COORDINATOR_NAV: ShellNavigation = {
         },
       ],
     },
+    {
+      id: 'coordinator-presentations',
+      labelKey: 'SHELL.SECTIONS.PRESENTATIONS',
+      items: [PRESENTATIONS_LINK],
+    },
   ],
 };
 
 const SYSTEM_ADMIN_NAV: ShellNavigation = {
   home: HOME_LINK,
-  sections: [],
+  sections: [
+    {
+      id: 'system-admin-presentations',
+      labelKey: 'SHELL.SECTIONS.PRESENTATIONS',
+      items: [PRESENTATIONS_LINK],
+    },
+  ],
 };
 
 const NAV_BY_ROLE: Record<ShellMenuRole, ShellNavigation> = {
@@ -121,13 +150,10 @@ const NAV_BY_ROLE: Record<ShellMenuRole, ShellNavigation> = {
   PROFESSOR: PROFESSOR_NAV,
   ASSISTANT: ASSISTANT_NAV,
   COORDINATOR: COORDINATOR_NAV,
+  SPEAKER: SPEAKER_NAV,
 };
 
-export function resolveShellMenuRole(role: RoleType): ShellMenuRole | null {
-  if (role === 'SPEAKER') {
-    return null;
-  }
-
+export function resolveShellMenuRole(role: RoleType): ShellMenuRole {
   return role;
 }
 

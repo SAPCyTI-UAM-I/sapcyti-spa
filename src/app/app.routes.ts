@@ -39,6 +39,17 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'presentations',
+        loadChildren: () =>
+          import('./features/presentations/presentations.routes').then(
+            (m) => m.PRESENTATIONS_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.presentations,
+        },
+      },
+      {
         path: 'access-denied',
         loadComponent: () =>
           import('./shared/components/access-denied/access-denied.component').then(

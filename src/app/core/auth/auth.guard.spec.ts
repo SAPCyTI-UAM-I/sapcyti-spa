@@ -51,7 +51,7 @@ describe('authGuard', () => {
     });
   });
 
-  it('redirects SPEAKER to access-denied', () => {
+  it('allows SPEAKER on speaker routes', () => {
     authState.isAuthenticated.mockReturnValue(true);
     authState.getCurrentUser.mockReturnValue({
       id: 1,
@@ -60,7 +60,21 @@ describe('authGuard', () => {
       graduateProgramId: 1,
     } satisfies CurrentUser);
 
-    const result = runGuard();
+    const result = runGuard(['SPEAKER']);
+
+    expect(result).toBe(true);
+  });
+
+  it('redirects SPEAKER from routes without permission', () => {
+    authState.isAuthenticated.mockReturnValue(true);
+    authState.getCurrentUser.mockReturnValue({
+      id: 1,
+      email: 'speaker@uam.mx',
+      role: 'SPEAKER',
+      graduateProgramId: 1,
+    } satisfies CurrentUser);
+
+    const result = runGuard(['COORDINATOR']);
 
     expect(router.createUrlTree).toHaveBeenCalledWith(['/access-denied']);
     expect(result).toEqual({ commands: ['/access-denied'], extras: undefined });

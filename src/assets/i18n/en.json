@@ -15,7 +15,8 @@
       "MAIN": "Main",
       "ENROLLMENT": "Enrollment",
       "ENROLLMENT_PROCESS": "Enrollment process",
-      "ACADEMIC_MANAGEMENT": "Academic management"
+      "ACADEMIC_MANAGEMENT": "Academic management",
+      "PRESENTATIONS": "Presentations"
     },
     "MENU": {
       "HOME": "Home",
@@ -25,7 +26,8 @@
       "TERMS_OFFER": "Terms and academic offer",
       "ENROLLMENT_STATUS": "Process status",
       "STUDENTS": "Students",
-      "PROFESSORS": "Professors"
+      "PROFESSORS": "Professors",
+      "PRESENTATIONS": "Presentations"
     }
   },
   "COMMON": {
@@ -68,6 +70,14 @@
       "COORDINATOR": {
         "TITLE": "Home",
         "SUBTITLE": "Welcome to the Academic Management Panel."
+      },
+      "SYSTEM_ADMIN": {
+        "TITLE": "Home",
+        "SUBTITLE": "Oversee global configuration and system presentations."
+      },
+      "SPEAKER": {
+        "TITLE": "Home",
+        "SUBTITLE": "Review and manage your presentations."
       }
     },
     "CARDS": {
@@ -87,7 +97,9 @@
       "PENDING_REVIEWS": "UEA selections awaiting approval",
       "PENDING_REVIEWS_LINK": "Review now",
       "SUPPORT_FORMATS": "students ready to generate PDF",
-      "SUPPORT_FORMATS_LINK": "Generate forms"
+      "SUPPORT_FORMATS_LINK": "Generate forms",
+      "PRESENTATIONS": "Presentations",
+      "PRESENTATIONS_LINK": "View presentations"
     },
     "STUDENT": {
       "ENROLLMENT_TITLE": "My enrollment — Term 26-I",
@@ -151,6 +163,12 @@
     "PLACEHOLDER": {
       "TITLE": "Academic Catalog",
       "MESSAGE": "Academic catalog — coming soon"
+    }
+  },
+  "PRESENTATIONS": {
+    "PLACEHOLDER": {
+      "TITLE": "Presentations",
+      "MESSAGE": "Presentations module — coming soon"
     }
   },
   "AUTH": {

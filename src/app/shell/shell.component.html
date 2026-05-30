@@ -31,7 +31,7 @@
         </div>
       </div>
 
-      <div class="mx-lg hidden max-w-md flex-1 md:block">
+      <div class="mx-lg hidden w-[min(28rem,34vw)] md:block">
         <div class="relative w-full">
           <i
             class="pi pi-search text-text-tertiary left-sm absolute top-1/2 -translate-y-1/2"
@@ -41,8 +41,29 @@
             pInputText
             type="text"
             class="bg-surface-muted pl-xl w-full"
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+            (keydown.enter)="onSearchSubmit()"
             [placeholder]="'SHELL.TOPBAR.SEARCH_PLACEHOLDER' | translate"
           />
+          @if (searchResults().length > 0) {
+            <div
+              class="border-outline bg-surface absolute top-[calc(100%+8px)] left-0 z-50 w-full overflow-hidden rounded-lg border shadow-lg"
+            >
+              @for (result of searchResults(); track result.route) {
+                <button
+                  type="button"
+                  class="hover:bg-surface-subtle gap-sm px-md py-sm flex w-full items-center text-left transition-colors"
+                  (click)="navigateToSearchResult(result.route)"
+                >
+                  <i [class]="result.icon + ' text-primary text-[16px]'" aria-hidden="true"></i>
+                  <span class="text-label-md text-on-surface font-label-md">
+                    {{ result.label }}
+                  </span>
+                </button>
+              }
+            </div>
+          }
         </div>
       </div>
 

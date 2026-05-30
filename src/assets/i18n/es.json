@@ -15,7 +15,8 @@
       "MAIN": "Principal",
       "ENROLLMENT": "Inscripción",
       "ENROLLMENT_PROCESS": "Proceso de inscripción",
-      "ACADEMIC_MANAGEMENT": "Gestión académica"
+      "ACADEMIC_MANAGEMENT": "Gestión académica",
+      "PRESENTATIONS": "Ponencias"
     },
     "MENU": {
       "HOME": "Inicio",
@@ -25,7 +26,8 @@
       "TERMS_OFFER": "Trimestres y oferta académica",
       "ENROLLMENT_STATUS": "Estados del proceso",
       "STUDENTS": "Alumnos",
-      "PROFESSORS": "Profesores"
+      "PROFESSORS": "Profesores",
+      "PRESENTATIONS": "Ponencias"
     }
   },
   "COMMON": {
@@ -68,6 +70,14 @@
       "COORDINATOR": {
         "TITLE": "Inicio",
         "SUBTITLE": "Bienvenido al Panel de Gestión Académica."
+      },
+      "SYSTEM_ADMIN": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Supervise la configuración global y las ponencias del sistema."
+      },
+      "SPEAKER": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Consulte y gestione sus ponencias."
       }
     },
     "CARDS": {
@@ -87,7 +97,9 @@
       "PENDING_REVIEWS": "selecciones de UEAs esperando aprobación",
       "PENDING_REVIEWS_LINK": "Revisar ahora",
       "SUPPORT_FORMATS": "alumnos listos para generar PDF",
-      "SUPPORT_FORMATS_LINK": "Generar formatos"
+      "SUPPORT_FORMATS_LINK": "Generar formatos",
+      "PRESENTATIONS": "Ponencias",
+      "PRESENTATIONS_LINK": "Ver ponencias"
     },
     "STUDENT": {
       "ENROLLMENT_TITLE": "Mi inscripción — Trimestre 26-I",
@@ -151,6 +163,12 @@
     "PLACEHOLDER": {
       "TITLE": "Catálogo Académico",
       "MESSAGE": "Catálogo académico — próximamente"
+    }
+  },
+  "PRESENTATIONS": {
+    "PLACEHOLDER": {
+      "TITLE": "Ponencias",
+      "MESSAGE": "Módulo de ponencias — próximamente"
     }
   },
   "AUTH": {

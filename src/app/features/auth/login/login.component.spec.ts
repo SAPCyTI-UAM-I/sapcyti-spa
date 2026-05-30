@@ -99,7 +99,7 @@ describe('LoginComponent', () => {
     expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard');
   });
 
-  it('redirects SPEAKER users to access-denied', () => {
+  it('allows SPEAKER users to enter the app', () => {
     authState.getCurrentUser.mockReturnValue({
       id: 2,
       email: 'speaker@uam.mx',
@@ -110,6 +110,6 @@ describe('LoginComponent', () => {
     component.form.patchValue({ email: 'speaker@uam.mx', password: 'secret' });
     component.onSubmit();
 
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/access-denied');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard');
   });
 });

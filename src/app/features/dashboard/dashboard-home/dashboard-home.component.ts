@@ -123,11 +123,27 @@ const ASSISTANT_CARDS: DashboardCard[] = [
   },
 ];
 
+const PRESENTATION_CARDS: DashboardCard[] = [
+  {
+    icon: 'pi pi-microphone',
+    value: '26-I',
+    labelKey: 'DASHBOARD.CARDS.PRESENTATIONS',
+    linkKey: 'DASHBOARD.CARDS.PRESENTATIONS_LINK',
+    linkRoute: '/presentations',
+    iconBgClass: 'bg-primary-container',
+    iconColorClass: 'text-primary',
+    valueColorClass: 'text-primary',
+    linkColorClass: 'text-primary hover:text-primary-hover',
+  },
+];
+
 const CARDS_BY_ROLE: Record<string, DashboardCard[]> = {
   COORDINATOR: COORDINATOR_CARDS,
   STUDENT: STUDENT_CARDS,
   PROFESSOR: PROFESSOR_CARDS,
   ASSISTANT: ASSISTANT_CARDS,
+  SPEAKER: PRESENTATION_CARDS,
+  SYSTEM_ADMIN: PRESENTATION_CARDS,
 };
 
 @Component({

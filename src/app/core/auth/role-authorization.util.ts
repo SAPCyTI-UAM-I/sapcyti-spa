@@ -1,7 +1,7 @@
 import { RoleType } from '../../models/role-type.model';
 
 export function hasAppProfile(role: RoleType): boolean {
-  return role !== 'SPEAKER';
+  return Boolean(role);
 }
 
 export function matchesAnyRole(userRole: RoleType, allowedRoles: readonly RoleType[]): boolean {

@@ -1,14 +1,14 @@
 import { getShellNavigation, resolveShellMenuRole } from './shell-menu.config';
 
 describe('shell-menu.config', () => {
-  it('returns home-only navigation for SYSTEM_ADMIN', () => {
+  it('returns presentations navigation for SYSTEM_ADMIN', () => {
     expect(resolveShellMenuRole('SYSTEM_ADMIN')).toBe('SYSTEM_ADMIN');
-    expect(getShellNavigation('SYSTEM_ADMIN')?.sections).toHaveLength(0);
+    expect(getShellNavigation('SYSTEM_ADMIN')?.sections[0]?.items[0]?.route).toBe('/presentations');
   });
 
-  it('returns null navigation for SPEAKER', () => {
-    expect(resolveShellMenuRole('SPEAKER')).toBeNull();
-    expect(getShellNavigation('SPEAKER')).toBeNull();
+  it('returns presentations navigation for SPEAKER', () => {
+    expect(resolveShellMenuRole('SPEAKER')).toBe('SPEAKER');
+    expect(getShellNavigation('SPEAKER')?.sections[0]?.items[0]?.route).toBe('/presentations');
   });
 
   it('returns student menu with enrollment link', () => {
