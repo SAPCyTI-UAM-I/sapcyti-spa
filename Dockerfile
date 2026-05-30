@@ -7,7 +7,9 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-COPY . .
+COPY angular.json tsconfig.json tsconfig.app.json .postcssrc.json ./
+COPY public ./public
+COPY src ./src
 RUN pnpm run build
 
 FROM nginx:1.27-alpine

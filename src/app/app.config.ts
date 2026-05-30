@@ -11,9 +11,9 @@ import { environment } from '../environments/environment';
 import { SapcytiPreset } from './core/theme/sapcyti-preset';
 
 import { routes } from './app.routes';
-import { jwtInterceptor } from './core/auth/jwt.interceptor';
-import { tenantInterceptor } from './core/http/tenant.interceptor';
 import { httpErrorInterceptor } from './core/http/http-error.interceptor';
+import { jwtInterceptor } from './core/http/jwt.interceptor';
+import { tenantInterceptor } from './core/http/tenant.interceptor';
 import { provideAppMockConfig } from './core/mocks/mock.config';
 
 export const appConfig: ApplicationConfig = {

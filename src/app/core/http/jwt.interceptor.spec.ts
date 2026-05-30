@@ -3,7 +3,7 @@ import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { LANGUAGE_STORAGE_KEY } from '../i18n/language.constants';
-import { AuthStateService } from './auth.service';
+import { AuthStateService } from '../auth/auth.service';
 import { jwtInterceptor } from './jwt.interceptor';
 
 const API_URL = 'http://localhost:8080/api/test';

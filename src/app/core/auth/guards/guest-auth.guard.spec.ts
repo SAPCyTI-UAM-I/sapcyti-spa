@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
-import { CurrentUser } from '../../models/current-user.model';
-import { AuthStateService } from './auth.service';
+import { CurrentUser } from '../../../models/current-user.model';
+import { AuthStateService } from '../auth.service';
 import { guestAuthGuard } from './guest-auth.guard';
 
 describe('guestAuthGuard', () => {

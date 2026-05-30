@@ -34,7 +34,7 @@ describe('LanguageSwitcherComponent', () => {
     const fixture = TestBed.createComponent(LanguageSwitcherComponent);
     fixture.detectChanges();
     expect(translate.use).toHaveBeenCalledWith('es');
-    expect(fixture.componentInstance.currentLang).toBe('es');
+    expect(fixture.componentInstance.currentLang()).toBe('es');
   });
 
   it('persists language selection to localStorage', () => {

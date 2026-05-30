@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { Button } from 'primeng/button';
 
 import { ShellNavigation } from '../../../shell/shell-menu.model';
-import { ShellSidebarLinkComponent } from '../shell-sidebar-link/shell-sidebar-link.component';
+import { ShellNavContentComponent } from '../../../shell/shell-nav-content.component';
 
 @Component({
   selector: 'app-shell-sidebar-nav',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, Button, ShellSidebarLinkComponent],
+  imports: [TranslateModule, ShellNavContentComponent],
   template: `
     @if (navigation(); as nav) {
       <aside
@@ -24,46 +23,7 @@ import { ShellSidebarLinkComponent } from '../shell-sidebar-link/shell-sidebar-l
           </p>
         </div>
 
-        <nav class="gap-sm px-sm flex flex-1 flex-col overflow-y-auto">
-          <app-shell-sidebar-link
-            [route]="nav.home.route"
-            [labelKey]="nav.home.labelKey"
-            [icon]="nav.home.icon"
-            [exact]="true"
-          />
-
-          @for (section of nav.sections; track section.id) {
-            @if (section.labelKey) {
-              <div class="mt-md mb-xs px-md py-sm">
-                <span
-                  class="text-caption text-text-tertiary font-caption font-bold tracking-wider uppercase"
-                >
-                  {{ section.labelKey | translate }}
-                </span>
-              </div>
-            }
-
-            @for (item of section.items; track item.id) {
-              <app-shell-sidebar-link
-                [route]="item.route"
-                [labelKey]="item.labelKey"
-                [icon]="item.icon"
-              />
-            }
-          }
-        </nav>
-
-        <div class="border-sidebar-border px-gutter pt-md mt-auto border-t">
-          <p-button
-            type="button"
-            [label]="'SHELL.TOPBAR.LOGOUT' | translate"
-            icon="pi pi-sign-out"
-            severity="secondary"
-            variant="text"
-            styleClass="w-full justify-start"
-            (onClick)="logout.emit()"
-          />
-        </div>
+        <app-shell-nav-content [navigation]="nav" (logout)="logout.emit()" />
       </aside>
     }
   `,

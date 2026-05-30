@@ -9,9 +9,9 @@ import { JwtClaims } from '../../models/jwt-claims.model';
 import { isRoleType, RoleType } from '../../models/role-type.model';
 import { TenantService } from '../http/tenant.service';
 import { injectMockEnabled } from '../mocks/mock.config';
-import { mockLogin, mockRequestPasswordReset } from './auth.mock';
-import { decodeJwtPayload } from './jwt.util';
-import { matchesAnyRole } from './role-authorization.util';
+import { mockLogin, mockRequestPasswordReset } from './mock/auth.mock';
+import { decodeJwtPayload } from './utils/jwt.util';
+import { matchesAnyRole } from './utils/role-authorization.util';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {

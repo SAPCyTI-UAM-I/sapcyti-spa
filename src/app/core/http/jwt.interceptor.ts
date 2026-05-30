@@ -2,8 +2,8 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
+import { AuthStateService } from '../auth/auth.service';
 import { getRequestLanguage } from '../i18n/request-language.util';
-import { AuthStateService } from './auth.service';
 
 function isApiRequest(url: string): boolean {
   return url.startsWith(environment.apiBaseUrl) || url.startsWith('/api/');

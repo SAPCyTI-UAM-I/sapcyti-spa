@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { authGuard } from './core/auth/auth.guard';
+import { authGuard } from './core/auth/guards/auth.guard';
 import { ROUTE_PERMISSIONS } from './core/auth/rbac.policy';
 
 export const routes: Routes = [

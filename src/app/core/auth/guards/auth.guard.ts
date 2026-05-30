@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
-import { RoleType } from '../../models/role-type.model';
-import { AuthStateService } from './auth.service';
-import { hasAppProfile, matchesAnyRole } from './role-authorization.util';
+import { RoleType } from '../../../models/role-type.model';
+import { AuthStateService } from '../auth.service';
+import { hasAppProfile, matchesAnyRole } from '../utils/role-authorization.util';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const auth = inject(AuthStateService);

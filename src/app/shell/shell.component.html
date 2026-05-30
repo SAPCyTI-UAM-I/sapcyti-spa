@@ -33,19 +33,18 @@
 
       <div class="mx-lg hidden w-[min(28rem,34vw)] md:block">
         <div class="relative w-full">
-          <i
-            class="pi pi-search text-text-tertiary left-md pointer-events-none absolute top-1/2 z-10 -translate-y-1/2"
-            aria-hidden="true"
-          ></i>
-          <input
-            pInputText
-            type="text"
-            class="bg-surface-muted w-full pl-[3.25rem]"
-            [value]="searchQuery()"
-            (input)="onSearchInput($event)"
-            (keydown.enter)="onSearchSubmit()"
-            [placeholder]="'SHELL.TOPBAR.SEARCH_PLACEHOLDER' | translate"
-          />
+          <p-iconfield class="w-full">
+            <p-inputicon class="pi pi-search" />
+            <input
+              pInputText
+              type="text"
+              class="bg-surface-muted w-full"
+              [value]="searchQuery()"
+              (input)="onSearchInput($event)"
+              (keydown.enter)="onSearchSubmit()"
+              [placeholder]="'SHELL.TOPBAR.SEARCH_PLACEHOLDER' | translate"
+            />
+          </p-iconfield>
           @if (searchResults().length > 0) {
             <div
               class="border-outline bg-surface absolute top-[calc(100%+8px)] left-0 z-50 w-full overflow-hidden rounded-lg border shadow-lg"

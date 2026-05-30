@@ -73,13 +73,6 @@
   --radius-full: 9999px;
 
   /* PRIMARY scale */
-  --color-brand-primary: #1e4d7b;
-  --color-brand-primary-hover: #163a5f;
-  --color-brand-primary-active: #0f2d47;
-  --color-brand-primary-light: #3d6f9c;
-  --color-brand-primary-container: #e8f1f8;
-  --color-brand-primary-container-strong: #d4e6f4;
-  --color-brand-on-primary: #ffffff;
   --color-primary: #1e4d7b;
   --color-primary-hover: #163a5f;
   --color-primary-active: #0f2d47;
@@ -98,13 +91,6 @@
   --color-accent-muted: #818cf8;
 
   /* SURFACE scale */
-  --color-brand-surface: #ffffff;
-  --color-brand-surface-muted: #f7f8fa;
-  --color-brand-surface-subtle: #f0f4f8;
-  --color-brand-surface-container: #f0f4f8;
-  --color-brand-sidebar: #fafbfc;
-  --color-brand-sidebar-border: #e2e8f0;
-  --color-brand-topbar: #ffffff;
   --color-surface: #ffffff;
   --color-surface-elevated: #ffffff;
   --color-surface-muted: #f7f8fa;
@@ -123,16 +109,11 @@
   --color-table-row-stripe: #fafbfc;
 
   /* OUTLINE (surface.200 / surface.300) */
-  --color-brand-outline: #e5e8eb;
-  --color-brand-outline-strong: #cbd5e1;
   --color-outline: #e5e8eb;
   --color-outline-strong: #cbd5e1;
   --color-outline-variant: #cbd5e1;
 
   /* TEXT (surface.700 / surface.500 / surface.400) */
-  --color-brand-text: #1a1d21;
-  --color-brand-text-secondary: #5c6670;
-  --color-brand-text-tertiary: #94a3b8;
   --color-on-surface: #0b1c30;
   --color-on-surface-variant: #42474f;
   --color-on-background: #0b1c30;
@@ -142,12 +123,6 @@
   --color-text-on-primary: #ffffff;
 
   /* SEMANTIC */
-  --color-brand-error: #b91c1c;
-  --color-brand-error-container: #fef2f2;
-  --color-brand-on-error-container: #991b1b;
-  --color-brand-success: #2d6a4f;
-  --color-brand-warning: #b45309;
-  --color-brand-info: #2563eb;
   --color-error: #b91c1c;
   --color-error-strong: #991b1b;
   --color-error-container: #fef2f2;
@@ -341,4 +316,20 @@ body {
   top: 0;
   color: var(--color-primary);
   transform: translateY(-50%) scale(0.85);
+}
+
+/* PrimeNG IconField / InputIcon — keeps icon color consistent with design tokens */
+.p-iconfield {
+  display: flex;
+  width: 100%;
+  position: relative;
+}
+
+.p-iconfield .p-inputicon {
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+}
+
+.p-iconfield .p-inputtext {
+  width: 100%;
 }

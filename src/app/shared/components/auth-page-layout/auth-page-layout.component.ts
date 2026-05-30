@@ -19,7 +19,7 @@ import { LanguageSwitcherComponent } from '../language-switcher/language-switche
       </main>
 
       <footer
-        class="text-on-surface-variant pb-lg text-caption font-caption fixed bottom-0 left-0 w-full px-4"
+        class="text-on-surface-variant pb-lg text-caption font-caption px-gutter fixed bottom-0 left-0 w-full"
       >
         <ng-content select="[authFooter]" />
       </footer>

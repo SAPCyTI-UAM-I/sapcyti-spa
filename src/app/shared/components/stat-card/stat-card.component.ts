@@ -16,7 +16,7 @@ import { TranslatePipe } from '@ngx-translate/core';
         </div>
         @if (badgeKey()) {
           <span
-            class="px-sm py-xs font-label-md rounded text-[12px] font-bold"
+            class="px-sm py-xs font-label-md text-caption rounded font-bold"
             [class]="badgeClass()"
           >
             {{ badgeKey()! | translate }}

@@ -12,9 +12,9 @@ import { Password } from 'primeng/password';
 import { finalize } from 'rxjs';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
-import { AUTH_MOCK_USERS } from '../../../core/auth/auth.mock';
-import { hasAppProfile } from '../../../core/auth/role-authorization.util';
-import { sanitizeReturnUrl } from '../../../core/auth/sanitize-return-url.util';
+import { AUTH_MOCK_USERS } from '../../../core/auth/mock/auth.mock';
+import { hasAppProfile } from '../../../core/auth/utils/role-authorization.util';
+import { sanitizeReturnUrl } from '../../../core/auth/utils/sanitize-return-url.util';
 import { injectMockEnabled } from '../../../core/mocks/mock.config';
 import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
 import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import {
@@ -26,9 +26,9 @@ interface LanguageOption {
       <button
         type="button"
         class="hover:text-primary transition-colors"
-        [class.text-primary]="currentLang === option.value"
-        [class.text-text-secondary]="currentLang !== option.value"
-        [class.font-bold]="currentLang === option.value"
+        [class.text-primary]="currentLang() === option.value"
+        [class.text-text-secondary]="currentLang() !== option.value"
+        [class.font-bold]="currentLang() === option.value"
         (click)="onLanguageChange(option.value)"
       >
         {{ option.label }}
@@ -40,7 +40,7 @@ interface LanguageOption {
     }
   `,
 })
-export class LanguageSwitcherComponent implements OnInit {
+export class LanguageSwitcherComponent {
   readonly variant = input<'default' | 'auth'>('default');
 
   private readonly translate = inject(TranslateService);
@@ -50,11 +50,10 @@ export class LanguageSwitcherComponent implements OnInit {
     { label: 'EN', value: 'en' },
   ];
 
-  currentLang: SupportedLanguage = DEFAULT_LANGUAGE;
+  readonly currentLang = signal<SupportedLanguage>(this.readStoredLanguage());
 
-  ngOnInit(): void {
-    const stored = this.readStoredLanguage();
-    this.applyLanguage(stored);
+  constructor() {
+    this.applyLanguage(this.currentLang());
   }
 
   onLanguageChange(lang: SupportedLanguage): void {
@@ -63,7 +62,7 @@ export class LanguageSwitcherComponent implements OnInit {
   }
 
   private applyLanguage(lang: SupportedLanguage): void {
-    this.currentLang = lang;
+    this.currentLang.set(lang);
     this.translate.use(lang);
   }
 
