@@ -45,9 +45,16 @@ describe('jwtInterceptor', () => {
     req.flush({});
   });
 
-  it('enables withCredentials for API requests', () => {
+  it('does not enable withCredentials for non-auth API requests', () => {
     http.get(API_URL).subscribe();
     const req = httpMock.expectOne(API_URL);
+    expect(req.request.withCredentials).toBe(false);
+    req.flush({});
+  });
+
+  it('enables withCredentials for auth API requests', () => {
+    http.post(LOGIN_URL, {}).subscribe();
+    const req = httpMock.expectOne(LOGIN_URL);
     expect(req.request.withCredentials).toBe(true);
     req.flush({});
   });

@@ -100,6 +100,7 @@ export function mockLogin(email: string, password: string): Observable<AuthRespo
 }
 
 export function mockRequestPasswordReset(_email: string): Observable<void> {
+  void _email;
   return new Observable<void>((subscriber) => {
     setTimeout(() => {
       subscriber.next();

@@ -3,17 +3,23 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { Drawer } from 'primeng/drawer';
 
-import { ShellNavigation } from '../../../shell/shell-menu.model';
-import { ShellSidebarLinkComponent } from '../shell-sidebar-link/shell-sidebar-link.component';
+import { ShellSidebarLinkComponent } from '../shared/components/shell-sidebar-link/shell-sidebar-link.component';
+import { ShellNavigation } from './shell-menu.model';
 
 @Component({
   selector: 'app-shell-mobile-drawer',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslateModule, Button, Drawer, ShellSidebarLinkComponent],
   template: `
-    <p-drawer [(visible)]="visible" [modal]="true" [showCloseIcon]="true" styleClass="w-[280px]">
+    <p-drawer
+      [visible]="visible()"
+      (visibleChange)="visible.set($event)"
+      [modal]="true"
+      [closable]="true"
+      styleClass="w-[280px]"
+    >
       @if (navigation(); as nav) {
-        <ng-template #header>
+        <ng-template pTemplate="header">
           <div class="px-1">
             <h1 class="text-primary text-xl font-black tracking-tight">
               {{ 'SHELL.BRAND.TITLE' | translate }}
@@ -66,6 +72,6 @@ import { ShellSidebarLinkComponent } from '../shell-sidebar-link/shell-sidebar-l
 })
 export class ShellMobileDrawerComponent {
   readonly visible = model(false);
-  readonly navigation = input.required<ShellNavigation | null>();
+  readonly navigation = input<ShellNavigation | null>(null);
   readonly logout = output<void>();
 }

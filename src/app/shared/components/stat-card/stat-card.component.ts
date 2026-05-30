@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -6,7 +5,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   selector: 'app-stat-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, RouterLink, TranslatePipe],
+  imports: [RouterLink, TranslatePipe],
   template: `
     <div
       class="bg-surface-0 border-surface-200 hover:border-surface-300 flex h-full flex-col justify-between rounded-xl border p-6 transition-colors"
@@ -16,7 +15,7 @@ import { TranslatePipe } from '@ngx-translate/core';
           class="flex h-10 w-10 items-center justify-center rounded-lg"
           [class]="iconBgClass()"
         >
-          <i [class]="icon()" [ngClass]="iconColorClass()" aria-hidden="true"></i>
+          <i [class]="icon() + ' ' + iconColorClass()" aria-hidden="true"></i>
         </div>
         @if (badgeKey()) {
           <span
@@ -60,8 +59,6 @@ export class StatCardComponent {
   readonly linkKey = input<string>();
   readonly linkRoute = input<string>();
   readonly badgeKey = input<string>();
-
-  readonly color = input<'primary' | 'warning' | 'info' | 'success' | 'secondary'>('primary');
 
   readonly iconBgClass = input('bg-primary/10');
   readonly iconColorClass = input('text-primary');

@@ -10,7 +10,7 @@ import { InputText } from 'primeng/inputtext';
 
 import { AuthStateService } from '../core/auth/auth.service';
 import { LanguageSwitcherComponent } from '../shared/components/language-switcher/language-switcher.component';
-import { ShellMobileDrawerComponent } from '../shared/components/shell-mobile-drawer/shell-mobile-drawer.component';
+import { ShellMobileDrawerComponent } from './shell-mobile-drawer.component';
 import { ShellSidebarNavComponent } from '../shared/components/shell-sidebar-nav/shell-sidebar-nav.component';
 import { getShellNavigation } from './shell-menu.config';
 

@@ -2,7 +2,8 @@
   <app-shell-sidebar-nav [navigation]="navigation()" (logout)="onLogout()" />
 
   <app-shell-mobile-drawer
-    [(visible)]="mobileMenuOpen"
+    [visible]="mobileMenuOpen()"
+    (visibleChange)="mobileMenuOpen.set($event)"
     [navigation]="navigation()"
     (logout)="onLogout()"
   />
