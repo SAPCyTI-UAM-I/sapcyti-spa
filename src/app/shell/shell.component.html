@@ -34,13 +34,13 @@
       <div class="mx-lg hidden w-[min(28rem,34vw)] md:block">
         <div class="relative w-full">
           <i
-            class="pi pi-search text-text-tertiary left-sm absolute top-1/2 -translate-y-1/2"
+            class="pi pi-search text-text-tertiary left-md pointer-events-none absolute top-1/2 z-10 -translate-y-1/2"
             aria-hidden="true"
           ></i>
           <input
             pInputText
             type="text"
-            class="bg-surface-muted pl-xl w-full"
+            class="bg-surface-muted w-full pl-[3.25rem]"
             [value]="searchQuery()"
             (input)="onSearchInput($event)"
             (keydown.enter)="onSearchSubmit()"
