@@ -1,0 +1,71 @@
+import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { Button } from 'primeng/button';
+import { Drawer } from 'primeng/drawer';
+
+import { ShellNavigation } from '../../../shell/shell-menu.model';
+import { ShellSidebarLinkComponent } from '../shell-sidebar-link/shell-sidebar-link.component';
+
+@Component({
+  selector: 'app-shell-mobile-drawer',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslateModule, Button, Drawer, ShellSidebarLinkComponent],
+  template: `
+    <p-drawer [(visible)]="visible" [modal]="true" [showCloseIcon]="true" styleClass="w-[280px]">
+      @if (navigation(); as nav) {
+        <ng-template #header>
+          <div class="px-1">
+            <h1 class="text-primary text-xl font-black tracking-tight">
+              {{ 'SHELL.BRAND.TITLE' | translate }}
+            </h1>
+            <p class="text-surface-500 mt-1 text-xs">
+              {{ 'SHELL.BRAND.SUBTITLE' | translate }}
+            </p>
+          </div>
+        </ng-template>
+
+        <nav class="flex flex-1 flex-col gap-1 overflow-y-auto">
+          <app-shell-sidebar-link
+            [route]="nav.home.route"
+            [labelKey]="nav.home.labelKey"
+            [icon]="nav.home.icon"
+            [exact]="true"
+          />
+
+          @for (section of nav.sections; track section.id) {
+            <div class="mt-4 px-3">
+              <span class="text-surface-400 text-[11px] font-bold tracking-wider uppercase">
+                {{ section.labelKey | translate }}
+              </span>
+            </div>
+
+            @for (item of section.items; track item.id) {
+              <app-shell-sidebar-link
+                [route]="item.route"
+                [labelKey]="item.labelKey"
+                [icon]="item.icon"
+              />
+            }
+          }
+        </nav>
+
+        <div class="border-surface-200 mt-auto border-t pt-4">
+          <p-button
+            type="button"
+            [label]="'SHELL.TOPBAR.LOGOUT' | translate"
+            icon="pi pi-sign-out"
+            severity="secondary"
+            variant="text"
+            styleClass="w-full justify-start"
+            (onClick)="logout.emit()"
+          />
+        </div>
+      }
+    </p-drawer>
+  `,
+})
+export class ShellMobileDrawerComponent {
+  readonly visible = model(false);
+  readonly navigation = input.required<ShellNavigation | null>();
+  readonly logout = output<void>();
+}

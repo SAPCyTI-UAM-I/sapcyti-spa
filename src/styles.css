@@ -2,29 +2,45 @@
 @import 'tailwindcss';
 @import 'primeicons/primeicons.css';
 
+/*
+ * Tailwind @theme brand tokens — keep in sync with
+ * src/app/core/theme/design-tokens.ts (canonical source).
+ *
+ * Mapping:  brand-primary  = PRIMARY.500
+ *           brand-surface   = SURFACE.0
+ *           brand-text      = SURFACE.700   etc.
+ */
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand-primary: #1e4d7b;
-  --color-brand-primary-hover: #163a5f;
-  --color-brand-primary-light: #3d6f9c;
-  --color-brand-primary-container: #e8f1f8;
+  /* PRIMARY scale */
+  --color-brand-primary: #1E4D7B;
+  --color-brand-primary-hover: #163A5F;
+  --color-brand-primary-light: #3D6F9C;
+  --color-brand-primary-container: #E8F1F8;
 
-  --color-brand-surface: #ffffff;
-  --color-brand-surface-muted: #f7f8fa;
-  --color-brand-surface-subtle: #f0f4f8;
-  --color-brand-surface-container: #eff4ff;
+  /* SURFACE scale */
+  --color-brand-surface: #FFFFFF;
+  --color-brand-surface-muted: #F7F8FA;
+  --color-brand-surface-subtle: #F0F4F8;
+  --color-brand-surface-container: #F0F4F8;
 
-  --color-brand-outline: #e5e8eb;
-  --color-brand-outline-strong: #cbd5e1;
+  /* OUTLINE (surface.200 / surface.300) */
+  --color-brand-outline: #E5E8EB;
+  --color-brand-outline-strong: #CBD5E1;
 
-  --color-brand-text: #1a1d21;
-  --color-brand-text-secondary: #5c6670;
-  --color-brand-text-tertiary: #94a3b8;
+  /* TEXT (surface.700 / surface.500 / surface.400) */
+  --color-brand-text: #1A1D21;
+  --color-brand-text-secondary: #5C6670;
+  --color-brand-text-tertiary: #94A3B8;
 
-  --color-brand-error: #b91c1c;
-  --color-brand-error-container: #fef2f2;
-  --color-brand-on-error-container: #991b1b;
+  /* SEMANTIC */
+  --color-brand-error: #B91C1C;
+  --color-brand-error-container: #FEF2F2;
+  --color-brand-on-error-container: #991B1B;
+  --color-brand-success: #2D6A4F;
+  --color-brand-warning: #B45309;
+  --color-brand-info: #2563EB;
 }
 
 html,

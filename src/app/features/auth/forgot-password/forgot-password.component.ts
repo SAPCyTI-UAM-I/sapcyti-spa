@@ -9,7 +9,9 @@ import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
+import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
 import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
+import { FieldErrorComponent } from '../../../shared/components/field-error/field-error.component';
 
 @Component({
   selector: 'app-forgot-password',
@@ -18,7 +20,9 @@ import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-la
     ReactiveFormsModule,
     TranslatePipe,
     RouterLink,
+    AuthFooterComponent,
     AuthPageLayoutComponent,
+    FieldErrorComponent,
     InputText,
     Button,
     Message,

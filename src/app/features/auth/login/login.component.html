@@ -32,7 +32,16 @@
       </div>
     }
 
-    @if (credentialError()) {
+    @if (cooldownRemaining() > 0) {
+      <p-message
+        severity="warn"
+        icon="pi pi-lock"
+        [text]="('AUTH.LOGIN.ERROR_COOLDOWN' | translate).replace('{seconds}', '' + cooldownRemaining())"
+        styleClass="mb-4 w-full"
+      />
+    }
+
+    @if (credentialError() && cooldownRemaining() === 0) {
       <p-message
         severity="error"
         icon="pi pi-times-circle"
@@ -65,11 +74,7 @@
           [placeholder]="'AUTH.LOGIN.EMAIL_PLACEHOLDER' | translate"
           [class.p-invalid]="fieldInvalid('email')"
         />
-        @if (showFieldError('email')) {
-          <span class="text-brand-error text-xs">
-            {{ 'AUTH.LOGIN.ERROR_REQUIRED' | translate }}
-          </span>
-        }
+        <app-field-error [control]="form.controls.email" />
       </div>
 
       <div class="flex flex-col gap-1">
@@ -85,11 +90,7 @@
           fluid
           [inputStyleClass]="fieldInvalid('password') ? 'p-invalid w-full' : 'w-full'"
         />
-        @if (showFieldError('password')) {
-          <span class="text-brand-error text-xs">
-            {{ 'AUTH.LOGIN.ERROR_REQUIRED' | translate }}
-          </span>
-        }
+        <app-field-error [control]="form.controls.password" />
       </div>
 
       <div class="flex items-center gap-2 pt-1">
@@ -113,7 +114,7 @@
           [label]="'AUTH.LOGIN.SUBMIT' | translate"
           styleClass="w-full sm:flex-1"
           [loading]="submitting()"
-          [disabled]="submitting()"
+          [disabled]="submitting() || cooldownRemaining() > 0"
         />
       </div>
     </form>
@@ -128,12 +129,5 @@
     </div>
   </div>
 
-  <div authFooter class="flex flex-wrap justify-center gap-x-4 gap-y-2">
-    <span class="hover:underline">{{ 'AUTH.LOGIN.FOOTER.PRIVACY' | translate }}</span>
-    <span class="hover:underline">{{ 'AUTH.LOGIN.FOOTER.SUPPORT' | translate }}</span>
-    <span class="hover:underline">{{ 'AUTH.LOGIN.FOOTER.TERMS' | translate }}</span>
-  </div>
-  <p authFooter class="text-center text-balance">
-    {{ 'AUTH.LOGIN.FOOTER.COPYRIGHT' | translate }}
-  </p>
+  <app-auth-footer />
 </app-auth-page-layout>

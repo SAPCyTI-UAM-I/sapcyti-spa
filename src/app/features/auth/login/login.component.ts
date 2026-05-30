@@ -16,7 +16,9 @@ import { AUTH_USE_MOCK } from '../../../core/auth/auth.config';
 import { AUTH_MOCK_USERS } from '../../../core/auth/auth.mock';
 import { hasAppProfile } from '../../../core/auth/role-authorization.util';
 import { sanitizeReturnUrl } from '../../../core/auth/sanitize-return-url.util';
+import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
 import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
+import { FieldErrorComponent } from '../../../shared/components/field-error/field-error.component';
 
 @Component({
   selector: 'app-login',
@@ -25,7 +27,9 @@ import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-la
     ReactiveFormsModule,
     TranslatePipe,
     RouterLink,
+    AuthFooterComponent,
     AuthPageLayoutComponent,
+    FieldErrorComponent,
     InputText,
     Password,
     Checkbox,
@@ -55,6 +59,12 @@ export class LoginComponent {
   readonly serverError = signal(false);
   readonly submitted = signal(false);
 
+  private readonly MAX_ATTEMPTS = 3;
+  private readonly COOLDOWN_MS = 30_000;
+  private failedAttempts = 0;
+  readonly cooldownRemaining = signal(0);
+  private cooldownTimer: ReturnType<typeof setInterval> | null = null;
+
   onClear(): void {
     this.form.reset({ email: '', password: '', rememberMe: false });
     this.credentialError.set(false);
@@ -67,7 +77,7 @@ export class LoginComponent {
     this.credentialError.set(false);
     this.serverError.set(false);
 
-    if (this.form.invalid) {
+    if (this.form.invalid || this.cooldownRemaining() > 0) {
       return;
     }
 
@@ -96,6 +106,7 @@ export class LoginComponent {
   }
 
   private handleLoginSuccess(): void {
+    this.clearCooldown();
     const user = this.auth.getCurrentUser();
     if (!user || !hasAppProfile(user.role)) {
       void this.router.navigateByUrl('/access-denied');
@@ -109,9 +120,38 @@ export class LoginComponent {
   private handleLoginError(error: HttpErrorResponse): void {
     if (error.status === 401) {
       this.credentialError.set(true);
+      this.failedAttempts++;
+
+      if (this.failedAttempts >= this.MAX_ATTEMPTS) {
+        this.startCooldown();
+      }
       return;
     }
 
     this.serverError.set(true);
+  }
+
+  private startCooldown(): void {
+    this.cooldownRemaining.set(this.COOLDOWN_MS / 1000);
+
+    this.cooldownTimer = setInterval(() => {
+      const remaining = this.cooldownRemaining() - 1;
+      this.cooldownRemaining.set(remaining);
+
+      if (remaining <= 0) {
+        this.clearCooldown();
+      }
+    }, 1000);
+
+    this.destroyRef.onDestroy(() => this.clearCooldown());
+  }
+
+  private clearCooldown(): void {
+    if (this.cooldownTimer) {
+      clearInterval(this.cooldownTimer);
+      this.cooldownTimer = null;
+    }
+    this.failedAttempts = 0;
+    this.cooldownRemaining.set(0);
   }
 }

@@ -20,11 +20,21 @@ export class AuthStateService {
   private readonly useMock = inject(AUTH_USE_MOCK);
 
   private accessToken: string | null = null;
+  private tokenExpiresAt: number | null = null;
   private readonly currentUserSubject = new BehaviorSubject<CurrentUser | null>(null);
   readonly currentUser$ = this.currentUserSubject.asObservable();
 
   isAuthenticated(): boolean {
-    return this.accessToken !== null && this.currentUserSubject.value !== null;
+    if (this.accessToken === null || this.currentUserSubject.value === null) {
+      return false;
+    }
+
+    if (this.tokenExpiresAt !== null && Date.now() >= this.tokenExpiresAt) {
+      this.logout();
+      return false;
+    }
+
+    return true;
   }
 
   hasRole(role: RoleType | readonly RoleType[]): boolean {
@@ -81,6 +91,7 @@ export class AuthStateService {
 
   logout(): void {
     this.accessToken = null;
+    this.tokenExpiresAt = null;
     this.currentUserSubject.next(null);
     this.tenantService.clear();
   }
@@ -89,6 +100,9 @@ export class AuthStateService {
     this.accessToken = response.accessToken;
 
     const claims = decodeJwtPayload<JwtClaims>(response.accessToken);
+    this.tokenExpiresAt =
+      typeof claims.exp === 'number' ? claims.exp * 1000 : Date.now() + response.expiresIn * 1000;
+
     const role = isRoleType(response.role) ? response.role : claims.role;
 
     if (!isRoleType(role)) {

@@ -6,7 +6,10 @@
     },
     "TOPBAR": {
       "TITLE": "SAPCyTI",
-      "LOGOUT": "Cerrar sesión"
+      "LOGOUT": "Cerrar sesión",
+      "SEARCH_PLACEHOLDER": "Buscar alumnos, profesores, matrículas…",
+      "NOTIFICATIONS": "Notificaciones",
+      "MENU": "Menú"
     },
     "SECTIONS": {
       "MAIN": "Principal",
@@ -31,6 +34,13 @@
       "ACCESS_DENIED_MSG": "No tienes permisos para acceder a esta página.",
       "NOT_FOUND": "Página no encontrada",
       "SERVER_ERROR": "Error del servidor"
+    },
+    "VALIDATION": {
+      "REQUIRED": "Este campo es obligatorio.",
+      "EMAIL": "Ingrese una dirección de correo válida.",
+      "MINLENGTH": "El valor es demasiado corto.",
+      "MAXLENGTH": "El valor es demasiado largo.",
+      "PATTERN": "Formato inválido."
     },
     "ACTIONS": {
       "SAVE": "Guardar",
@@ -59,6 +69,25 @@
         "TITLE": "Inicio",
         "SUBTITLE": "Bienvenido al Panel de Gestión Académica."
       }
+    },
+    "CARDS": {
+      "STUDENTS_COUNT": "alumnos registrados",
+      "STUDENTS_LINK": "Ver alumnos",
+      "ACTIVE_TERM": "Proceso activo",
+      "ACTIVE_TERM_BADGE": "En inscripción",
+      "MANAGE_LINK": "Gestionar",
+      "PENDING_APPROVAL": "UEAs esperando aprobación del asesor",
+      "PENDING_LINK": "Revisar pendientes",
+      "FORMATS_READY": "alumnos con UEAs aprobadas",
+      "FORMATS_LINK": "Imprimir formatos",
+      "MY_ENROLLMENT": "Estado de mi inscripción",
+      "MY_ENROLLMENT_LINK": "Ver inscripción",
+      "MY_ADVISEES": "alumnos asesorados",
+      "MY_ADVISEES_LINK": "Ver solicitudes",
+      "PENDING_REVIEWS": "solicitudes pendientes",
+      "PENDING_REVIEWS_LINK": "Revisar solicitudes",
+      "SUPPORT_FORMATS": "formatos por procesar",
+      "SUPPORT_FORMATS_LINK": "Procesar formatos"
     },
     "PLACEHOLDER": {
       "TITLE": "Inicio",
@@ -117,6 +146,7 @@
         "TITLE": "Modo demo (sin backend). Use cualquiera de estas cuentas:"
       },
       "ERROR_INVALID_CREDENTIALS": "Credenciales inválidas. Verifique su correo y contraseña.",
+      "ERROR_COOLDOWN": "Demasiados intentos. Espere {seconds} segundos antes de intentar de nuevo.",
       "ERROR_REQUIRED": "Este campo es obligatorio",
       "FOOTER": {
         "PRIVACY": "Privacidad",

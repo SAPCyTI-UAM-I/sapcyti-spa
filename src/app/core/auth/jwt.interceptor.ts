@@ -9,6 +9,10 @@ function isApiRequest(url: string): boolean {
   return url.startsWith(environment.apiBaseUrl) || url.startsWith('/api/');
 }
 
+function isAuthEndpoint(url: string): boolean {
+  return url.includes('/auth/');
+}
+
 function isAuthLoginRequest(url: string): boolean {
   return url.includes('/auth/login');
 }
@@ -27,7 +31,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   return next(
     req.clone({
       headers,
-      withCredentials: isApiRequest(req.url),
+      withCredentials: isApiRequest(req.url) && isAuthEndpoint(req.url),
     }),
   );
 };

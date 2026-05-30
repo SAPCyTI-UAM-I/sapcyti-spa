@@ -6,7 +6,10 @@
     },
     "TOPBAR": {
       "TITLE": "SAPCyTI",
-      "LOGOUT": "Sign out"
+      "LOGOUT": "Sign out",
+      "SEARCH_PLACEHOLDER": "Search students, professors, records…",
+      "NOTIFICATIONS": "Notifications",
+      "MENU": "Menu"
     },
     "SECTIONS": {
       "MAIN": "Main",
@@ -31,6 +34,13 @@
       "ACCESS_DENIED_MSG": "You do not have permission to access this page.",
       "NOT_FOUND": "Page not found",
       "SERVER_ERROR": "Server error"
+    },
+    "VALIDATION": {
+      "REQUIRED": "This field is required.",
+      "EMAIL": "Enter a valid email address.",
+      "MINLENGTH": "The value is too short.",
+      "MAXLENGTH": "The value is too long.",
+      "PATTERN": "Invalid format."
     },
     "ACTIONS": {
       "SAVE": "Save",
@@ -59,6 +69,25 @@
         "TITLE": "Home",
         "SUBTITLE": "Welcome to the Academic Management Panel."
       }
+    },
+    "CARDS": {
+      "STUDENTS_COUNT": "registered students",
+      "STUDENTS_LINK": "View students",
+      "ACTIVE_TERM": "Active process",
+      "ACTIVE_TERM_BADGE": "Enrolling",
+      "MANAGE_LINK": "Manage",
+      "PENDING_APPROVAL": "UEAs awaiting advisor approval",
+      "PENDING_LINK": "Review pending",
+      "FORMATS_READY": "students with approved UEAs",
+      "FORMATS_LINK": "Print forms",
+      "MY_ENROLLMENT": "My enrollment status",
+      "MY_ENROLLMENT_LINK": "View enrollment",
+      "MY_ADVISEES": "advised students",
+      "MY_ADVISEES_LINK": "View requests",
+      "PENDING_REVIEWS": "pending requests",
+      "PENDING_REVIEWS_LINK": "Review requests",
+      "SUPPORT_FORMATS": "forms to process",
+      "SUPPORT_FORMATS_LINK": "Process forms"
     },
     "PLACEHOLDER": {
       "TITLE": "Home",
@@ -117,6 +146,7 @@
         "TITLE": "Demo mode (no backend). Use any of these accounts:"
       },
       "ERROR_INVALID_CREDENTIALS": "Invalid credentials. Please check your email and password.",
+      "ERROR_COOLDOWN": "Too many attempts. Please wait {seconds} seconds before trying again.",
       "ERROR_REQUIRED": "This field is required",
       "FOOTER": {
         "PRIVACY": "Privacy",
