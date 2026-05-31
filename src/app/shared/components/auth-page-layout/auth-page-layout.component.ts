@@ -8,11 +8,11 @@ import { LanguageSwitcherComponent } from '../language-switcher/language-switche
   imports: [LanguageSwitcherComponent],
   template: `
     <div class="bg-surface-muted text-on-surface font-body-md relative flex min-h-dvh flex-col">
-      <header class="top-lg right-lg fixed z-50 hidden sm:flex">
+      <header class="px-margin pt-lg flex w-full justify-end">
         <app-language-switcher variant="auth" />
       </header>
 
-      <main class="px-margin py-xxl flex w-full flex-1 items-center justify-center">
+      <main class="px-margin py-lg flex w-full flex-1 items-center justify-center">
         <div class="w-full max-w-[420px]">
           <ng-content />
         </div>
