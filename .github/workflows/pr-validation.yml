@@ -37,10 +37,7 @@ jobs:
 
       - name: Validate commit messages
         run: >
-          pnpm dlx
-          --package @commitlint/cli@19.8.1
-          --package @commitlint/config-conventional@19.8.1
-          commitlint
+          pnpm exec commitlint
           --from ${{ github.event.pull_request.base.sha }}
           --to ${{ github.event.pull_request.head.sha }}
 
