@@ -1,0 +1,220 @@
+{
+  "SHELL": {
+    "BRAND": {
+      "TITLE": "SAPCyTI",
+      "SUBTITLE": "PCyTI — UAM"
+    },
+    "TOPBAR": {
+      "TITLE": "SAPCyTI",
+      "LOGOUT": "Cerrar sesión",
+      "SEARCH_PLACEHOLDER": "Buscar alumnos, profesores, matrículas…",
+      "NOTIFICATIONS": "Notificaciones",
+      "MENU": "Menú"
+    },
+    "SECTIONS": {
+      "MAIN": "Principal",
+      "ENROLLMENT": "Inscripción",
+      "ENROLLMENT_PROCESS": "Proceso de inscripción",
+      "ACADEMIC_MANAGEMENT": "Gestión académica",
+      "PRESENTATIONS": "Ponencias"
+    },
+    "MENU": {
+      "HOME": "Inicio",
+      "ENROLLMENT": "Inscripción",
+      "ADVISOR_APPROVAL": "Aprobar elección de UEAs",
+      "ENROLLMENT_FORM_PDF": "Formato de inscripción (PDF)",
+      "TERMS_OFFER": "Trimestres y oferta académica",
+      "ENROLLMENT_STATUS": "Estados del proceso",
+      "STUDENTS": "Alumnos",
+      "PROFESSORS": "Profesores",
+      "PRESENTATIONS": "Ponencias"
+    }
+  },
+  "COMMON": {
+    "ERRORS": {
+      "ACCESS_DENIED": "Acceso denegado",
+      "ACCESS_DENIED_MSG": "No tienes permisos para acceder a esta página.",
+      "NOT_FOUND": "Página no encontrada",
+      "SERVER_ERROR": "Error del servidor"
+    },
+    "VALIDATION": {
+      "REQUIRED": "Este campo es obligatorio.",
+      "EMAIL": "Ingrese una dirección de correo válida.",
+      "MINLENGTH": "El valor es demasiado corto.",
+      "MAXLENGTH": "El valor es demasiado largo.",
+      "PATTERN": "Formato inválido."
+    },
+    "ACTIONS": {
+      "SAVE": "Guardar",
+      "CANCEL": "Cancelar",
+      "DELETE": "Eliminar",
+      "EDIT": "Editar",
+      "BACK": "Regresar"
+    }
+  },
+  "DASHBOARD": {
+    "HOME": {
+      "PLACEHOLDER": "Contenido del panel según su rol — próximamente.",
+      "STUDENT": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Consulte el estado de su inscripción trimestral."
+      },
+      "PROFESSOR": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Resumen de alumnos asesorados e inscripciones pendientes."
+      },
+      "ASSISTANT": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Formatos de inscripción listos para generar."
+      },
+      "COORDINATOR": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Bienvenido al Panel de Gestión Académica."
+      },
+      "SYSTEM_ADMIN": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Supervise la configuración global y las ponencias del sistema."
+      },
+      "SPEAKER": {
+        "TITLE": "Inicio",
+        "SUBTITLE": "Consulte y gestione sus ponencias."
+      }
+    },
+    "CARDS": {
+      "STUDENTS_COUNT": "alumnos registrados",
+      "STUDENTS_LINK": "Ver alumnos",
+      "ACTIVE_TERM": "Proceso activo",
+      "ACTIVE_TERM_BADGE": "En inscripción",
+      "MANAGE_LINK": "Gestionar",
+      "PENDING_APPROVAL": "UEAs esperando aprobación del asesor",
+      "PENDING_LINK": "Revisar pendientes",
+      "FORMATS_READY": "alumnos con UEAs aprobadas",
+      "FORMATS_LINK": "Imprimir formatos",
+      "MY_ENROLLMENT": "Estado de mi inscripción",
+      "MY_ENROLLMENT_LINK": "Ver inscripción",
+      "MY_ADVISEES": "alumnos asesorados",
+      "MY_ADVISEES_LINK": "Ver alumnos",
+      "PENDING_REVIEWS": "selecciones de UEAs esperando aprobación",
+      "PENDING_REVIEWS_LINK": "Revisar ahora",
+      "SUPPORT_FORMATS": "alumnos listos para generar PDF",
+      "SUPPORT_FORMATS_LINK": "Generar formatos",
+      "PRESENTATIONS": "Ponencias",
+      "PRESENTATIONS_LINK": "Ver ponencias"
+    },
+    "STUDENT": {
+      "ENROLLMENT_TITLE": "Mi inscripción — Trimestre 26-I",
+      "NAME": "Juan Pérez García",
+      "REGISTRATION": "Matrícula: 223300456",
+      "STATUS": "Selección pendiente",
+      "STATUS_MESSAGE": "Seleccione sus UEAs y envíe su elección al asesor para continuar con su proceso.",
+      "ACTION": "Ir a inscripción",
+      "FUTURE_STATES": "Referencia Visual de Estados Futuros",
+      "PENDING_REVIEW": "Pendiente de revisión",
+      "APPROVED": "Aprobado",
+      "PHASE_2": "Fase 2",
+      "PHASE_3": "Fase 3"
+    },
+    "PROFESSOR": {
+      "ACTIVITY_TITLE": "Actividad Reciente",
+      "ACTIVITY_1": "Ana García envió su selección de UEAs para el trimestre 23-O.",
+      "ACTIVITY_1_TIME": "Hace 2 horas",
+      "ACTIVITY_2": "La selección de Roberto Jiménez fue aprobada correctamente.",
+      "ACTIVITY_2_TIME": "Ayer, 14:30",
+      "ACTIVITY_3": "Sistema: Se han subido los nuevos lineamientos de inscripción.",
+      "ACTIVITY_3_TIME": "Hace 2 días",
+      "ACTIVITY_ACTION": "Ver detalle"
+    },
+    "PLACEHOLDER": {
+      "TITLE": "Inicio",
+      "MESSAGE": "Panel principal — próximamente"
+    }
+  },
+  "ENROLLMENT": {
+    "ADVISOR_APPROVAL": {
+      "TITLE": "Aprobar elección de UEAs",
+      "MESSAGE": "Módulo de aprobación — próximamente"
+    },
+    "FORM_PDF": {
+      "TITLE": "Formato de inscripción (PDF)",
+      "MESSAGE": "Generación de formatos — próximamente"
+    },
+    "TERMS": {
+      "TITLE": "Trimestres y oferta académica",
+      "MESSAGE": "Gestión de trimestres — próximamente"
+    },
+    "STATUS": {
+      "TITLE": "Estados del proceso",
+      "MESSAGE": "Seguimiento de estados — próximamente"
+    },
+    "PLACEHOLDER": {
+      "TITLE": "Inscripción",
+      "MESSAGE": "Módulo de inscripción — próximamente"
+    }
+  },
+  "ACADEMIC_CATALOG": {
+    "STUDENTS": {
+      "TITLE": "Alumnos",
+      "MESSAGE": "Catálogo de alumnos — próximamente"
+    },
+    "PROFESSORS": {
+      "TITLE": "Profesores",
+      "MESSAGE": "Catálogo de profesores — próximamente"
+    },
+    "PLACEHOLDER": {
+      "TITLE": "Catálogo Académico",
+      "MESSAGE": "Catálogo académico — próximamente"
+    }
+  },
+  "PRESENTATIONS": {
+    "PLACEHOLDER": {
+      "TITLE": "Ponencias",
+      "MESSAGE": "Módulo de ponencias — próximamente"
+    }
+  },
+  "AUTH": {
+    "LOGIN": {
+      "BRAND": "SAPCyTI",
+      "SUBTITLE": "Portal de Posgrado — PCyTI UAM",
+      "TITLE": "Iniciar sesión",
+      "EMAIL": "Correo electrónico",
+      "EMAIL_PLACEHOLDER": "alumno@correo.uam.mx",
+      "PASSWORD": "Contraseña",
+      "REMEMBER_ME": "Recordar sesión",
+      "SUBMIT": "Iniciar sesión",
+      "CLEAR": "Limpiar",
+      "FORGOT_PASSWORD": "¿Olvidó su contraseña?",
+      "MOCK_HINT": {
+        "TITLE": "Modo demo (sin backend). Use cualquiera de estas cuentas:"
+      },
+      "ERROR_INVALID_CREDENTIALS": "Credenciales inválidas. Verifique su correo y contraseña.",
+      "ERROR_COOLDOWN": "Demasiados intentos. Espere {seconds} segundos antes de intentar de nuevo.",
+      "ERROR_REQUIRED": "Este campo es obligatorio",
+      "FOOTER": {
+        "PRIVACY": "Privacidad",
+        "SUPPORT": "Soporte",
+        "TERMS": "Términos",
+        "COPYRIGHT": "© 2026 SAPCyTI — Portal Académico Institucional"
+      }
+    },
+    "FORGOT_PASSWORD": {
+      "TITLE": "Recuperar contraseña",
+      "DESCRIPTION": "Ingrese su dirección de correo electrónico. Si existe en el sistema, recibirá un mensaje con instrucciones para restablecer su contraseña.",
+      "EMAIL": "Correo electrónico",
+      "EMAIL_PLACEHOLDER": "usuario@correo.uam.mx",
+      "SUBMIT": "Enviar correo",
+      "BACK_TO_LOGIN": "Volver al inicio de sesión",
+      "ERROR_REQUIRED": "Este campo es obligatorio",
+      "ERROR_INVALID_EMAIL": "Ingrese una dirección de correo válida."
+    },
+    "FORGOT_PASSWORD_SENT": {
+      "TITLE": "Correo enviado",
+      "MESSAGE": "Un correo electrónico con instrucciones para recuperar su contraseña ha sido enviado a la dirección indicada, si es que existe en el sistema.",
+      "SPAM_HINT": "Revise también su bandeja de correo no deseado.",
+      "BACK_TO_LOGIN": "Volver al inicio de sesión"
+    },
+    "PLACEHOLDER": {
+      "TITLE": "Autenticación",
+      "MESSAGE": "Inicio de sesión — próximamente (Fase 6)"
+    }
+  }
+}

@@ -1,16 +1,48 @@
+# Dependencias y compilación
 node_modules/
 dist/
 .angular/
+coverage/
+
+# Entornos de desarrollo y editores
 .git/
 .github/
-.idea/
+.husky/
 .vscode/
-*.md
-!README.md
-coverage/
+.cursor/
+.codex/
+.agents/
+.idea/
+
+# Pruebas (Testing)
 playwright-report/
 test-results/
 e2e/
-*.log
+src/**/*.spec.ts
+tsconfig.spec.json
+
+# Documentación y Diseño
+design/
+docs/
+LICENSE
+CHANGELOG.md
+CONTRIBUTING.md
+TECH_DEBT.md
+
+# Archivos Markdown (Ignora todos menos README.md)
+*.md
+!README.md
+
+# Configuración de herramientas
+commitlint.config.js
+eslint.config.mjs
+playwright.config.ts
+
+# Variables de entorno (Seguridad)
 .env
 .env.*
+
+# Logs
+*.log
+npm-debug.log
+pnpm-debug.log

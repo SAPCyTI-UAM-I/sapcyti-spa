@@ -1,26 +1,22 @@
-# SPEC-010 — multi-stage: pnpm build → Nginx static + edge config
-# Build context: sapcyti-spa/ (referenced from sapcyti-api/docker-compose.yml)
-
 FROM node:22-alpine AS build
+
 WORKDIR /app
 
-RUN corepack enable \
-    && corepack prepare pnpm@10.33.2 --activate
+RUN corepack enable
 
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-COPY . .
+COPY angular.json tsconfig.json tsconfig.app.json .postcssrc.json ./
+COPY public ./public
+COPY src ./src
 RUN pnpm run build
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.27-alpine
 
-RUN apk add --no-cache curl
+ENV PORT=80
+ENV API_UPSTREAM=http://api:8080
 
 COPY --from=build /app/dist/sapcyti-spa/browser /usr/share/nginx/html
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD curl -f http://localhost/ || exit 1
+COPY nginx/default.conf.template /etc/nginx/templates-spa/default.conf.template
+COPY --chmod=755 nginx/render-default-conf.sh /docker-entrypoint.d/10-render-spa-nginx.sh
