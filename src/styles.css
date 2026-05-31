@@ -318,6 +318,18 @@ body {
   transform: translateY(-50%) scale(0.85);
 }
 
+.shell-mobile-drawer {
+  display: flex;
+  flex-direction: column;
+}
+
+.shell-mobile-drawer .p-drawer-content {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
 /* PrimeNG IconField / InputIcon — keeps icon color consistent with design tokens */
 .p-iconfield {
   display: flex;

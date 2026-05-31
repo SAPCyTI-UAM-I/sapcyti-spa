@@ -15,7 +15,7 @@ import { ShellNavigation } from './shell-menu.model';
       (visibleChange)="visible.set($event)"
       [modal]="true"
       [closable]="true"
-      styleClass="w-[280px]"
+      styleClass="shell-mobile-drawer w-[280px] max-w-[calc(100vw-32px)]"
     >
       @if (navigation(); as nav) {
         <ng-template pTemplate="header">

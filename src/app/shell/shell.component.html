@@ -8,11 +8,11 @@
     (logout)="onLogout()"
   />
 
-  <div class="flex min-h-screen flex-1 flex-col md:ml-[280px]">
+  <div class="flex min-h-screen min-w-0 flex-1 flex-col md:ml-[280px]">
     <header
-      class="border-outline bg-surface px-lg sticky top-0 z-40 flex h-16 items-center justify-between border-b"
+      class="border-outline bg-surface px-gutter sm:px-lg sticky top-0 z-40 flex h-16 min-w-0 items-center justify-between border-b"
     >
-      <div class="gap-md flex items-center">
+      <div class="gap-md flex min-w-0 items-center">
         <p-button
           class="md:hidden"
           icon="pi pi-bars"
@@ -66,7 +66,7 @@
         </div>
       </div>
 
-      <div class="gap-lg flex items-center">
+      <div class="gap-sm sm:gap-lg flex shrink-0 items-center">
         <app-language-switcher />
 
         <p-button
@@ -87,7 +87,7 @@
       </div>
     </header>
 
-    <main class="p-margin md:p-xl flex-1">
+    <main class="p-gutter md:p-xl min-w-0 flex-1 overflow-x-hidden">
       <router-outlet />
     </main>
   </div>
