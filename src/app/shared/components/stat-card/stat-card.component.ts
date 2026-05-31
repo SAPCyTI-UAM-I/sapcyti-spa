@@ -6,17 +6,23 @@ import { TranslatePipe } from '@ngx-translate/core';
   selector: 'app-stat-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslatePipe],
+  host: {
+    class: 'block min-w-0',
+  },
   template: `
     <div
-      class="bg-surface border-outline hover:border-outline-strong p-lg flex h-full flex-col justify-between rounded-xl border transition-colors"
+      class="bg-surface border-outline hover:border-outline-strong p-lg flex h-full min-w-0 flex-col justify-between rounded-xl border transition-colors"
     >
-      <div class="mb-md flex items-start justify-between">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg" [class]="iconBgClass()">
+      <div class="mb-md gap-md flex min-w-0 items-start justify-between">
+        <div
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+          [class]="iconBgClass()"
+        >
           <i [class]="icon() + ' ' + iconColorClass()" aria-hidden="true"></i>
         </div>
         @if (badgeKey()) {
           <span
-            class="px-sm py-xs font-label-md text-caption rounded font-bold"
+            class="px-sm py-xs font-label-md text-caption max-w-full rounded font-bold"
             [class]="badgeClass()"
           >
             {{ badgeKey()! | translate }}
@@ -24,11 +30,11 @@ import { TranslatePipe } from '@ngx-translate/core';
         }
       </div>
 
-      <div>
-        <span class="text-stat-value font-stat-value" [class]="valueColorClass()">
+      <div class="min-w-0">
+        <span class="text-stat-value font-stat-value break-words" [class]="valueColorClass()">
           {{ value() }}
         </span>
-        <p class="text-body-md text-text-secondary font-body-md mt-xs">
+        <p class="text-body-md text-text-secondary font-body-md mt-xs break-words">
           {{ labelKey() | translate }}
         </p>
       </div>
@@ -36,13 +42,13 @@ import { TranslatePipe } from '@ngx-translate/core';
       @if (linkRoute()) {
         <div class="border-surface-muted mt-md pt-md border-t">
           <a
-            class="text-label-md font-label-md group flex items-center transition-colors"
+            class="text-label-md font-label-md group gap-xs flex min-w-0 items-center transition-colors"
             [class]="linkColorClass()"
             [routerLink]="linkRoute()"
           >
-            {{ linkKey()! | translate }}
+            <span class="min-w-0 break-words">{{ linkKey()! | translate }}</span>
             <i
-              class="pi pi-arrow-right ml-xs text-[18px] transition-transform group-hover:translate-x-1"
+              class="pi pi-arrow-right shrink-0 text-[18px] transition-transform group-hover:translate-x-1"
               aria-hidden="true"
             ></i>
           </a>
