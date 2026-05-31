@@ -15,6 +15,9 @@ import { ShellNavigation } from './shell-menu.model';
   selector: 'app-shell-nav-content',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslateModule, Button, ShellSidebarLinkComponent],
+  host: {
+    class: 'flex min-h-0 flex-1 flex-col',
+  },
   template: `
     <nav class="gap-sm px-sm flex flex-1 flex-col overflow-y-auto">
       <app-shell-sidebar-link
