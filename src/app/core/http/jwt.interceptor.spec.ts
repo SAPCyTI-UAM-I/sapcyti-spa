@@ -8,6 +8,7 @@ import { jwtInterceptor } from './jwt.interceptor';
 
 const API_URL = 'http://localhost:8080/api/test';
 const LOGIN_URL = 'http://localhost:8080/api/auth/login';
+const REFRESH_URL = 'http://localhost:8080/api/auth/refresh';
 
 describe('jwtInterceptor', () => {
   let http: HttpClient;
@@ -80,6 +81,16 @@ describe('jwtInterceptor', () => {
 
     http.post(LOGIN_URL, {}).subscribe();
     const req = httpMock.expectOne(LOGIN_URL);
+    expect(req.request.headers.get('Authorization')).toBeNull();
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({});
+  });
+
+  it('does not attach Bearer token to refresh requests', () => {
+    authState.getAccessToken.mockReturnValue('test-access-token');
+
+    http.post(REFRESH_URL, {}).subscribe();
+    const req = httpMock.expectOne(REFRESH_URL);
     expect(req.request.headers.get('Authorization')).toBeNull();
     expect(req.request.withCredentials).toBe(true);
     req.flush({});

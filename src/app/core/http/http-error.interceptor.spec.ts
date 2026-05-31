@@ -14,14 +14,19 @@ import { httpErrorInterceptor } from './http-error.interceptor';
 describe('httpErrorInterceptor', () => {
   let http: HttpClient;
   let httpMock: HttpTestingController;
+  let authState: { logout: ReturnType<typeof vi.fn> };
+  let router: { navigateByUrl: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    authState = { logout: vi.fn() };
+    router = { navigateByUrl: vi.fn() };
+
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptors([httpErrorInterceptor])),
         provideHttpClientTesting(),
-        { provide: AuthStateService, useValue: { logout: vi.fn() } },
-        { provide: Router, useValue: { navigateByUrl: vi.fn() } },
+        { provide: AuthStateService, useValue: authState },
+        { provide: Router, useValue: router },
       ],
     });
 
@@ -46,5 +51,22 @@ describe('httpErrorInterceptor', () => {
     req.flush('fail', { status: 500, statusText: 'Server Error' });
 
     expect(captured?.status).toBe(500);
+  });
+
+  it('does not logout or redirect when refresh returns 401', () => {
+    let captured: HttpErrorResponse | undefined;
+
+    http.post('/api/auth/refresh', {}).subscribe({
+      error: (error: HttpErrorResponse) => {
+        captured = error;
+      },
+    });
+
+    const req = httpMock.expectOne('/api/auth/refresh');
+    req.flush('fail', { status: 401, statusText: 'Unauthorized' });
+
+    expect(captured?.status).toBe(401);
+    expect(authState.logout).not.toHaveBeenCalled();
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
   });
 });

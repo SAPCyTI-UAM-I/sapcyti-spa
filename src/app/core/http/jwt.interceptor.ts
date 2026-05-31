@@ -13,8 +13,10 @@ function isAuthEndpoint(url: string): boolean {
   return url.includes('/auth/');
 }
 
-function isAuthLoginRequest(url: string): boolean {
-  return url.includes('/auth/login');
+function shouldSkipBearer(url: string): boolean {
+  return (
+    url.includes('/auth/login') || url.includes('/auth/refresh') || url.includes('/auth/logout')
+  );
 }
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
@@ -24,7 +26,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   let headers = req.headers.set('Accept-Language', lang);
   const token = auth.getAccessToken();
 
-  if (token && isApiRequest(req.url) && !isAuthLoginRequest(req.url)) {
+  if (token && isApiRequest(req.url) && !shouldSkipBearer(req.url)) {
     headers = headers.set('Authorization', `Bearer ${token}`);
   }
 

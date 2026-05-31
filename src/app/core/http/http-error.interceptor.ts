@@ -5,8 +5,10 @@ import { catchError, throwError } from 'rxjs';
 
 import { AuthStateService } from '../auth/auth.service';
 
-function isAuthLoginRequest(url: string): boolean {
-  return url.includes('/auth/login');
+function isAuthSessionRequest(url: string): boolean {
+  return (
+    url.includes('/auth/login') || url.includes('/auth/refresh') || url.includes('/auth/logout')
+  );
 }
 
 export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
@@ -15,7 +17,7 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !isAuthLoginRequest(req.url)) {
+      if (error.status === 401 && !isAuthSessionRequest(req.url)) {
         auth.logout();
         void router.navigateByUrl('/auth/login');
       }

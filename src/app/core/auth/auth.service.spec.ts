@@ -8,7 +8,10 @@ import { AppMockConfig, provideAppMockConfig } from '../mocks/mock.config';
 import { AuthStateService } from './auth.service';
 
 const LOGIN_URL = 'http://localhost:8080/api/auth/login';
+const REFRESH_URL = 'http://localhost:8080/api/auth/refresh';
 const FORGOT_PASSWORD_URL = 'http://localhost:8080/api/auth/forgot-password';
+const REMEMBER_SESSION_KEY = 'sapcyti.auth.rememberSession';
+const REMEMBERED_EMAIL_KEY = 'sapcyti.auth.rememberedEmail';
 
 function createTestJwt(payload: object): string {
   const header = btoa(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
@@ -37,6 +40,8 @@ describe('AuthStateService', () => {
 
   afterEach(() => {
     httpMock.verify();
+    localStorage.removeItem(REMEMBER_SESSION_KEY);
+    localStorage.removeItem(REMEMBERED_EMAIL_KEY);
   });
 
   it('reports not authenticated initially', () => {
@@ -82,6 +87,8 @@ describe('AuthStateService', () => {
     expect(service.hasRole('COORDINATOR')).toBe(true);
     expect(service.hasRole('STUDENT')).toBe(false);
     expect(tenantService.get()).toBe(3);
+    expect(localStorage.getItem(REMEMBER_SESSION_KEY)).toBe('true');
+    expect(localStorage.getItem(REMEMBERED_EMAIL_KEY)).toBe('coord@uam.mx');
 
     const user = await firstValueFrom(service.currentUser$);
     expect(user).toEqual({
@@ -112,6 +119,74 @@ describe('AuthStateService', () => {
       graduateProgramId: null,
     });
     expect(tenantService.get()).toBeNull();
+  });
+
+  it('login clears remembered session when remember me is false', async () => {
+    localStorage.setItem(REMEMBER_SESSION_KEY, 'true');
+    localStorage.setItem(REMEMBERED_EMAIL_KEY, 'previous@uam.mx');
+    const accessToken = createTestJwt({
+      sub: '1',
+      role: 'STUDENT',
+      graduateProgramId: 2,
+    });
+
+    const loginPromise = firstValueFrom(service.login('student@uam.mx', 'secret', false));
+    const req = httpMock.expectOne(LOGIN_URL);
+    req.flush({ accessToken, expiresIn: 900, role: 'STUDENT' });
+    await loginPromise;
+
+    expect(localStorage.getItem(REMEMBER_SESSION_KEY)).toBeNull();
+    expect(localStorage.getItem(REMEMBERED_EMAIL_KEY)).toBeNull();
+  });
+
+  it('does not restore a session when remember me was not selected', async () => {
+    await firstValueFrom(service.restoreRememberedSession());
+
+    httpMock.expectNone(REFRESH_URL);
+    expect(service.isAuthenticated()).toBe(false);
+  });
+
+  it('restores a remembered session using the refresh endpoint', async () => {
+    localStorage.setItem(REMEMBER_SESSION_KEY, 'true');
+    localStorage.setItem(REMEMBERED_EMAIL_KEY, 'coord@uam.mx');
+    const accessToken = createTestJwt({
+      sub: '7',
+      role: 'COORDINATOR',
+      graduateProgramId: 3,
+    });
+
+    const restorePromise = firstValueFrom(service.restoreRememberedSession());
+    const req = httpMock.expectOne(REFRESH_URL);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.withCredentials).toBe(true);
+    expect(req.request.body).toEqual({});
+
+    req.flush({ accessToken, expiresIn: 900, role: 'COORDINATOR' });
+    await restorePromise;
+
+    expect(service.isAuthenticated()).toBe(true);
+    expect(service.getAccessToken()).toBe(accessToken);
+    expect(service.getCurrentUser()).toEqual({
+      id: 7,
+      email: 'coord@uam.mx',
+      role: 'COORDINATOR',
+      graduateProgramId: 3,
+    });
+    expect(tenantService.get()).toBe(3);
+  });
+
+  it('clears remembered session when refresh is rejected', async () => {
+    localStorage.setItem(REMEMBER_SESSION_KEY, 'true');
+    localStorage.setItem(REMEMBERED_EMAIL_KEY, 'coord@uam.mx');
+
+    const restorePromise = firstValueFrom(service.restoreRememberedSession());
+    const req = httpMock.expectOne(REFRESH_URL);
+    req.flush({ message: 'Invalid refresh token' }, { status: 401, statusText: 'Unauthorized' });
+    await restorePromise;
+
+    expect(service.isAuthenticated()).toBe(false);
+    expect(localStorage.getItem(REMEMBER_SESSION_KEY)).toBeNull();
+    expect(localStorage.getItem(REMEMBERED_EMAIL_KEY)).toBeNull();
   });
 
   it('uses auth mock when only auth mock is enabled', async () => {
@@ -163,6 +238,8 @@ describe('AuthStateService', () => {
     expect(service.isAuthenticated()).toBe(false);
     expect(service.getAccessToken()).toBeNull();
     expect(tenantService.get()).toBeNull();
+    expect(localStorage.getItem(REMEMBER_SESSION_KEY)).toBeNull();
+    expect(localStorage.getItem(REMEMBERED_EMAIL_KEY)).toBeNull();
     await expect(firstValueFrom(service.currentUser$)).resolves.toBeNull();
   });
 });

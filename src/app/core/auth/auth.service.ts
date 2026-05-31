@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { AuthResponse } from '../../models/auth-response.model';
@@ -12,6 +12,9 @@ import { injectMockEnabled } from '../mocks/mock.config';
 import { mockLogin, mockRequestPasswordReset } from './mock/auth.mock';
 import { decodeJwtPayload } from './utils/jwt.util';
 import { matchesAnyRole } from './utils/role-authorization.util';
+
+const REMEMBER_SESSION_KEY = 'sapcyti.auth.rememberSession';
+const REMEMBERED_EMAIL_KEY = 'sapcyti.auth.rememberedEmail';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
@@ -31,7 +34,7 @@ export class AuthStateService {
     }
 
     if (this.tokenExpiresAt !== null && Date.now() >= this.tokenExpiresAt) {
-      this.logout();
+      this.clearRuntimeSession();
       return false;
     }
 
@@ -71,9 +74,30 @@ export class AuthStateService {
         );
 
     return login$.pipe(
-      tap((response) => this.applyAuthSuccess(email, response)),
+      tap((response) => {
+        this.applyAuthSuccess(email, response);
+        this.updateRememberedSession(email, rememberMe);
+      }),
       map(() => void 0),
     );
+  }
+
+  restoreRememberedSession(): Observable<void> {
+    const rememberedEmail = this.getRememberedEmail();
+    if (this.useAuthMock || !this.shouldRestoreRememberedSession() || !rememberedEmail) {
+      return of(void 0);
+    }
+
+    return this.http
+      .post<AuthResponse>(`${environment.apiBaseUrl}/auth/refresh`, {}, { withCredentials: true })
+      .pipe(
+        tap((response) => this.applyAuthSuccess(rememberedEmail, response)),
+        map(() => void 0),
+        catchError(() => {
+          this.logout();
+          return of(void 0);
+        }),
+      );
   }
 
   requestPasswordReset(email: string): Observable<void> {
@@ -91,10 +115,62 @@ export class AuthStateService {
   }
 
   logout(): void {
+    this.clearRememberedSession();
+    this.clearRuntimeSession();
+  }
+
+  private clearRuntimeSession(): void {
     this.accessToken = null;
     this.tokenExpiresAt = null;
     this.currentUserSubject.next(null);
     this.tenantService.clear();
+  }
+
+  private updateRememberedSession(email: string, rememberMe: boolean): void {
+    if (!rememberMe) {
+      this.clearRememberedSession();
+      return;
+    }
+
+    this.writeStorage(REMEMBER_SESSION_KEY, 'true');
+    this.writeStorage(REMEMBERED_EMAIL_KEY, email.trim().toLowerCase());
+  }
+
+  private shouldRestoreRememberedSession(): boolean {
+    return this.readStorage(REMEMBER_SESSION_KEY) === 'true';
+  }
+
+  private getRememberedEmail(): string | null {
+    return this.readStorage(REMEMBERED_EMAIL_KEY);
+  }
+
+  private clearRememberedSession(): void {
+    this.removeStorage(REMEMBER_SESSION_KEY);
+    this.removeStorage(REMEMBERED_EMAIL_KEY);
+  }
+
+  private readStorage(key: string): string | null {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
+  private writeStorage(key: string, value: string): void {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // Persistence is best-effort; authentication still works with in-memory state.
+    }
+  }
+
+  private removeStorage(key: string): void {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Ignore storage failures in restricted browser contexts.
+    }
   }
 
   private applyAuthSuccess(email: string, response: AuthResponse): void {
