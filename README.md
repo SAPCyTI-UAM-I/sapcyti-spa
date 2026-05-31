@@ -108,7 +108,46 @@ Para compilar el proyecto:
 ng build
 ```
 
-Esto compilará el proyecto y almacenará los artefactos generados en el directorio `dist/`.
+Esto compilará el proyecto y almacenará los artefactos generados en el directorio `dist/sapcyti-spa/browser`.
+
+## Docker / full stack (SPEC-010)
+
+The production image is built from this repo and orchestrated by **`sapcyti-api/docker-compose.yml`** (service `edge`). Clone layout:
+
+```text
+SAP/
+├── sapcyti-api/    ← docker compose -f docker-compose.yml up --build
+└── sapcyti-spa/    ← build context ../sapcyti-spa
+```
+
+### Build edge image only
+
+```bash
+docker build -t sapcyti-spa:local .
+```
+
+Artifacts: `dist/sapcyti-spa/browser` copied into Nginx; [`docker/nginx/default.conf`](docker/nginx/default.conf) proxies `/api/` → `api:8080`.
+
+### Run with the full stack
+
+From `sapcyti-api/`:
+
+```bash
+cp .env.docker.example .env   # or Copy-Item on Windows
+docker compose -f docker-compose.yml up --build
+```
+
+Open [http://localhost](http://localhost). Production build uses `apiBaseUrl: '/api'` in [`src/environments/environment.prod.ts`](src/environments/environment.prod.ts) (same-origin via Nginx).
+
+### Optional Playwright shell smoke
+
+With the stack running:
+
+```bash
+pnpm exec playwright test e2e/smoke-shell.spec.ts
+```
+
+Asserts `[data-testid="app-shell"]` on the root shell container.
 
 ## Pruebas unitarias
 
