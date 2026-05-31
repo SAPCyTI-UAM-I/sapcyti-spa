@@ -15,5 +15,11 @@ fi
 
 export PORT="${PORT:-80}"
 export API_UPSTREAM="${API_UPSTREAM:-http://api:8080}"
+export NGINX_RESOLVER="${NGINX_RESOLVER:-$(awk '/^nameserver / { print $2 }' /etc/resolv.conf | paste -sd ' ' -)}"
 
-envsubst '${PORT} ${API_UPSTREAM}' < "$template_path" > "$output_path"
+if [ -z "$NGINX_RESOLVER" ]; then
+  NGINX_RESOLVER="127.0.0.11 1.1.1.1"
+  export NGINX_RESOLVER
+fi
+
+envsubst '${PORT} ${API_UPSTREAM} ${NGINX_RESOLVER}' < "$template_path" > "$output_path"
