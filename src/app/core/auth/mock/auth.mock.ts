@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { delay, Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 
 import { AuthResponse } from '../../../models/auth-response.model';
 import { RoleType } from '../../../models/role-type.model';
@@ -50,8 +50,6 @@ export const AUTH_MOCK_USERS: readonly AuthMockUser[] = [
   },
 ];
 
-const MOCK_LATENCY_MS = 350;
-
 function createMockAccessToken(user: AuthMockUser): string {
   const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
   const payload = btoa(
@@ -84,27 +82,36 @@ export function mockLogin(email: string, password: string): Observable<AuthRespo
           statusText: 'Unauthorized',
           url: '/mock/auth/login',
         }),
-    ).pipe(delay(MOCK_LATENCY_MS));
+    );
   }
 
-  return new Observable<AuthResponse>((subscriber) => {
-    setTimeout(() => {
-      subscriber.next({
-        accessToken: createMockAccessToken(user),
-        expiresIn: 900,
-        role: user.role,
-      });
-      subscriber.complete();
-    }, MOCK_LATENCY_MS);
+  return of({
+    accessToken: createMockAccessToken(user),
+    expiresIn: 900,
+    role: user.role,
   });
 }
 
 export function mockRequestPasswordReset(_email: string): Observable<void> {
   void _email;
-  return new Observable<void>((subscriber) => {
-    setTimeout(() => {
-      subscriber.next();
-      subscriber.complete();
-    }, MOCK_LATENCY_MS);
-  });
+  return of(void 0);
+}
+
+export const MOCK_VALID_RESET_TOKEN = 'mock-valid-reset-token';
+
+export function mockResetPassword(token: string, _newPassword: string): Observable<void> {
+  void _newPassword;
+  if (token !== MOCK_VALID_RESET_TOKEN) {
+    return throwError(
+      () =>
+        new HttpErrorResponse({
+          status: 400,
+          statusText: 'Bad Request',
+          url: '/mock/auth/reset-password',
+          error: { code: 'INVALID_TOKEN' },
+        }),
+    );
+  }
+
+  return of(void 0);
 }

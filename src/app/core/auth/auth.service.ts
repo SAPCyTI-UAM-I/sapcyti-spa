@@ -9,7 +9,7 @@ import { JwtClaims } from '../../models/jwt-claims.model';
 import { isRoleType, RoleType } from '../../models/role-type.model';
 import { TenantService } from '../http/tenant.service';
 import { injectMockEnabled } from '../mocks/mock.config';
-import { mockLogin, mockRequestPasswordReset } from './mock/auth.mock';
+import { mockLogin, mockRequestPasswordReset, mockResetPassword } from './mock/auth.mock';
 import { decodeJwtPayload } from './utils/jwt.util';
 import { matchesAnyRole } from './utils/role-authorization.util';
 
@@ -109,6 +109,20 @@ export class AuthStateService {
       .post<void>(
         `${environment.apiBaseUrl}/auth/forgot-password`,
         { email },
+        { withCredentials: true },
+      )
+      .pipe(map(() => void 0));
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<void> {
+    if (this.usePasswordRecoveryMock) {
+      return mockResetPassword(token, newPassword);
+    }
+
+    return this.http
+      .post<void>(
+        `${environment.apiBaseUrl}/auth/reset-password`,
+        { token, newPassword },
         { withCredentials: true },
       )
       .pipe(map(() => void 0));
