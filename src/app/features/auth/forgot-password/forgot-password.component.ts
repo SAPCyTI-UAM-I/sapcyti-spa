@@ -62,7 +62,16 @@ export class ForgotPasswordComponent {
       )
       .subscribe({
         next: () => void this.router.navigate(['/auth/forgot-password/sent']),
-        error: () => this.serverError.set(true),
+        error: (err: { status?: number }) => {
+          // Per HU-02 security requirement: never reveal whether the email exists.
+          // 4xx responses (including 404) navigate to the sent screen just like success.
+          // Only genuine server/network failures (5xx or no status) show an error.
+          if (err?.status && err.status < 500) {
+            void this.router.navigate(['/auth/forgot-password/sent']);
+          } else {
+            this.serverError.set(true);
+          }
+        },
       });
   }
 
