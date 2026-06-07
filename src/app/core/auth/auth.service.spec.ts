@@ -10,6 +10,7 @@ import { AuthStateService } from './auth.service';
 const LOGIN_URL = 'http://localhost:8080/api/auth/login';
 const REFRESH_URL = 'http://localhost:8080/api/auth/refresh';
 const FORGOT_PASSWORD_URL = 'http://localhost:8080/api/auth/forgot-password';
+const RESET_PASSWORD_URL = 'http://localhost:8080/api/auth/reset-password';
 const REMEMBER_SESSION_KEY = 'sapcyti.auth.rememberSession';
 const REMEMBERED_EMAIL_KEY = 'sapcyti.auth.rememberedEmail';
 
@@ -219,6 +220,27 @@ describe('AuthStateService', () => {
     await firstValueFrom(service.requestPasswordReset('student@uam.mx'));
 
     httpMock.expectNone(FORGOT_PASSWORD_URL);
+  });
+
+  it('resetPassword calls backend when password recovery mock is disabled', async () => {
+    const resetPromise = firstValueFrom(service.resetPassword('valid-token', 'NewS3cur3!Pass'));
+
+    const req = httpMock.expectOne(RESET_PASSWORD_URL);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.withCredentials).toBe(true);
+    expect(req.request.body).toEqual({ token: 'valid-token', newPassword: 'NewS3cur3!Pass' });
+    req.flush(null);
+
+    await resetPromise;
+  });
+
+  it('resetPassword uses password recovery mock independently from auth mock', async () => {
+    TestBed.resetTestingModule();
+    setup({ auth: false, passwordRecovery: true });
+
+    await firstValueFrom(service.resetPassword('mock-valid-reset-token', 'NewS3cur3!Pass'));
+
+    httpMock.expectNone(RESET_PASSWORD_URL);
   });
 
   it('logout clears session and tenant context', async () => {

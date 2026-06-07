@@ -9,7 +9,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   template: `
     @if (shouldShow()) {
       @for (key of errorKeys(); track key) {
-        <small class="text-brand-error mt-1 block text-xs">
+        <small class="text-error mt-1 block text-xs">
           {{ 'COMMON.VALIDATION.' + key | translate }}
         </small>
       }

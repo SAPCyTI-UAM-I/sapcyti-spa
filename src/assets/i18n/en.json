@@ -42,7 +42,8 @@
       "EMAIL": "Enter a valid email address.",
       "MINLENGTH": "The value is too short.",
       "MAXLENGTH": "The value is too long.",
-      "PATTERN": "Invalid format."
+      "PATTERN": "Invalid format.",
+      "PASSWORDS_MISMATCH": "Passwords do not match."
     },
     "ACTIONS": {
       "SAVE": "Save",
@@ -210,6 +211,21 @@
       "TITLE": "Email sent",
       "MESSAGE": "An email with password recovery instructions has been sent to the address provided, if it exists in the system.",
       "SPAM_HINT": "Also check your spam folder.",
+      "BACK_TO_LOGIN": "Back to sign in"
+    },
+    "RESET_PASSWORD": {
+      "TITLE": "Reset password",
+      "DESCRIPTION": "Enter your new password. It must be at least 8 characters long.",
+      "NEW_PASSWORD": "New password",
+      "NEW_PASSWORD_PLACEHOLDER": "Enter your new password",
+      "CONFIRM_PASSWORD": "Confirm password",
+      "CONFIRM_PASSWORD_PLACEHOLDER": "Repeat your new password",
+      "PASSWORD_MIN_LENGTH": "Must be at least 8 characters. {remaining} remaining.",
+      "SUBMIT": "Reset password",
+      "SUCCESS": "Your password has been reset successfully.",
+      "INVALID_TOKEN": "The recovery link is invalid or has already been used.",
+      "EXPIRED_TOKEN": "The recovery link has expired.",
+      "REQUEST_NEW_LINK": "Request a new link",
       "BACK_TO_LOGIN": "Back to sign in"
     },
     "PLACEHOLDER": {
