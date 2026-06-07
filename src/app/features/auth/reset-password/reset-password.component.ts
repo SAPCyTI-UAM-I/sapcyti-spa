@@ -164,8 +164,8 @@ export class ResetPasswordComponent implements OnInit {
       )
       .subscribe({
         next: () => void this.router.navigate(['/auth/login']),
-        error: (err: { status?: number; error?: { code?: string } }) => {
-          const code = err?.error?.code;
+        error: (err: { status?: number; error?: { code?: string; error?: string } }) => {
+          const code = err?.error?.code ?? err?.error?.error;
           if (code === 'EXPIRED_TOKEN') {
             this.resetError.set('expired_token');
           } else if (err?.status === 400 && (code === 'INVALID_TOKEN' || code === 'TOKEN_USED')) {

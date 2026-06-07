@@ -15,6 +15,9 @@ import { matchesAnyRole } from './utils/role-authorization.util';
 
 const REMEMBER_SESSION_KEY = 'sapcyti.auth.rememberSession';
 const REMEMBERED_EMAIL_KEY = 'sapcyti.auth.rememberedEmail';
+interface ForgotPasswordResponse {
+  message: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
@@ -106,7 +109,7 @@ export class AuthStateService {
     }
 
     return this.http
-      .post<void>(
+      .post<ForgotPasswordResponse>(
         `${environment.apiBaseUrl}/auth/forgot-password`,
         { email },
         { withCredentials: true },

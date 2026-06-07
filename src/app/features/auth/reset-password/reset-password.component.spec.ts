@@ -143,6 +143,24 @@ describe('ResetPasswordComponent', () => {
     expect(component.resetError()).toBe('invalid_token');
   });
 
+  it('shows invalid_token error on 400 payload with error field', async () => {
+    await setup('bad-token');
+    component.token.set('bad-token');
+    authState.resetPassword.mockReturnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 400,
+            statusText: 'Bad Request',
+            error: { error: 'INVALID_TOKEN' },
+          }),
+      ),
+    );
+    component.form.patchValue({ newPassword: 'ValidPass1!', confirmPassword: 'ValidPass1!' });
+    component.onSubmit();
+    expect(component.resetError()).toBe('invalid_token');
+  });
+
   it('shows expired_token error on 400 EXPIRED_TOKEN', async () => {
     await setup('expired-token');
     component.token.set('expired-token');
