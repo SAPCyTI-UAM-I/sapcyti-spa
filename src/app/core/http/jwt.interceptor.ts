@@ -2,21 +2,12 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
+import { isAuthEndpoint, shouldSkipBearer } from '../auth/auth.endpoints';
 import { AuthStateService } from '../auth/auth.service';
 import { getRequestLanguage } from '../i18n/request-language.util';
 
 function isApiRequest(url: string): boolean {
   return url.startsWith(environment.apiBaseUrl) || url.startsWith('/api/');
-}
-
-function isAuthEndpoint(url: string): boolean {
-  return url.includes('/auth/');
-}
-
-function shouldSkipBearer(url: string): boolean {
-  return (
-    url.includes('/auth/login') || url.includes('/auth/refresh') || url.includes('/auth/logout')
-  );
 }
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {

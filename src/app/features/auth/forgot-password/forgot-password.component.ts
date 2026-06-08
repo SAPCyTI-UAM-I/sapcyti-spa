@@ -8,7 +8,8 @@ import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
-import { AuthStateService } from '../../../core/auth/auth.service';
+import { resolveForgotPasswordOutcome } from '../../../core/auth/utils/forgot-password-outcome.util';
+import { PasswordRecoveryService } from '../../../core/auth/password-recovery.service';
 import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
 import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
 import { FieldErrorComponent } from '../../../shared/components/field-error/field-error.component';
@@ -31,7 +32,7 @@ import { FieldErrorComponent } from '../../../shared/components/field-error/fiel
 })
 export class ForgotPasswordComponent {
   private readonly fb = inject(NonNullableFormBuilder);
-  private readonly auth = inject(AuthStateService);
+  private readonly passwordRecovery = inject(PasswordRecoveryService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -54,7 +55,7 @@ export class ForgotPasswordComponent {
     this.submitting.set(true);
     const { email } = this.form.getRawValue();
 
-    this.auth
+    this.passwordRecovery
       .requestPasswordReset(email)
       .pipe(
         finalize(() => this.submitting.set(false)),
@@ -62,11 +63,8 @@ export class ForgotPasswordComponent {
       )
       .subscribe({
         next: () => void this.router.navigate(['/auth/forgot-password/sent']),
-        error: (err: { status?: number }) => {
-          // Per HU-02 security requirement: never reveal whether the email exists.
-          // 4xx responses (including 404) navigate to the sent screen just like success.
-          // Only genuine server/network failures (5xx or no status) show an error.
-          if (err?.status && err.status < 500) {
+        error: (err) => {
+          if (resolveForgotPasswordOutcome(err) === 'navigate_sent') {
             void this.router.navigate(['/auth/forgot-password/sent']);
           } else {
             this.serverError.set(true);

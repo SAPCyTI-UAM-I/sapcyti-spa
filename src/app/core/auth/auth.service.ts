@@ -1,30 +1,26 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 
-import { environment } from '../../../environments/environment';
 import { AuthResponse } from '../../models/auth-response.model';
 import { CurrentUser } from '../../models/current-user.model';
 import { JwtClaims } from '../../models/jwt-claims.model';
 import { isRoleType, RoleType } from '../../models/role-type.model';
 import { TenantService } from '../http/tenant.service';
 import { injectMockEnabled } from '../mocks/mock.config';
-import { mockLogin, mockRequestPasswordReset, mockResetPassword } from './mock/auth.mock';
+import { AUTH_ENDPOINTS } from './auth.endpoints';
+import { mockLogin } from './mock/auth.mock';
 import { decodeJwtPayload } from './utils/jwt.util';
 import { matchesAnyRole } from './utils/role-authorization.util';
 
 const REMEMBER_SESSION_KEY = 'sapcyti.auth.rememberSession';
 const REMEMBERED_EMAIL_KEY = 'sapcyti.auth.rememberedEmail';
-interface ForgotPasswordResponse {
-  message: string;
-}
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
   private readonly http = inject(HttpClient);
   private readonly tenantService = inject(TenantService);
   private readonly useAuthMock = injectMockEnabled('auth');
-  private readonly usePasswordRecoveryMock = injectMockEnabled('passwordRecovery');
 
   private accessToken: string | null = null;
   private tokenExpiresAt: number | null = null;
@@ -66,7 +62,7 @@ export class AuthStateService {
     const login$ = this.useAuthMock
       ? mockLogin(email, password)
       : this.http.post<AuthResponse>(
-          `${environment.apiBaseUrl}/auth/login`,
+          AUTH_ENDPOINTS.login,
           {
             email,
             password,
@@ -92,46 +88,52 @@ export class AuthStateService {
     }
 
     return this.http
-      .post<AuthResponse>(`${environment.apiBaseUrl}/auth/refresh`, {}, { withCredentials: true })
+      .post<AuthResponse>(AUTH_ENDPOINTS.refresh, {}, { withCredentials: true })
       .pipe(
         tap((response) => this.applyAuthSuccess(rememberedEmail, response)),
         map(() => void 0),
         catchError(() => {
-          this.logout();
+          this.clearSessionState();
           return of(void 0);
         }),
       );
   }
 
-  requestPasswordReset(email: string): Observable<void> {
-    if (this.usePasswordRecoveryMock) {
-      return mockRequestPasswordReset(email);
+  silentRefresh(): Observable<void> {
+    if (this.useAuthMock) {
+      return of(void 0);
+    }
+
+    const email = this.currentUserSubject.value?.email ?? this.getRememberedEmail();
+    if (!email) {
+      return this.logout();
     }
 
     return this.http
-      .post<ForgotPasswordResponse>(
-        `${environment.apiBaseUrl}/auth/forgot-password`,
-        { email },
-        { withCredentials: true },
-      )
-      .pipe(map(() => void 0));
+      .post<AuthResponse>(AUTH_ENDPOINTS.refresh, {}, { withCredentials: true })
+      .pipe(
+        tap((response) => this.applyAuthSuccess(email, response)),
+        map(() => void 0),
+        catchError((error) =>
+          this.logout().pipe(switchMap(() => throwError(() => error))),
+        ),
+      );
   }
 
-  resetPassword(token: string, newPassword: string): Observable<void> {
-    if (this.usePasswordRecoveryMock) {
-      return mockResetPassword(token, newPassword);
-    }
+  logout(): Observable<void> {
+    const logout$ = this.useAuthMock
+      ? of(void 0)
+      : this.http
+          .post<void>(AUTH_ENDPOINTS.logout, {}, { withCredentials: true })
+          .pipe(
+            map(() => void 0),
+            catchError(() => of(void 0)),
+          );
 
-    return this.http
-      .post<void>(
-        `${environment.apiBaseUrl}/auth/reset-password`,
-        { token, newPassword },
-        { withCredentials: true },
-      )
-      .pipe(map(() => void 0));
+    return logout$.pipe(finalize(() => this.clearSessionState()));
   }
 
-  logout(): void {
+  private clearSessionState(): void {
     this.clearRememberedSession();
     this.clearRuntimeSession();
   }

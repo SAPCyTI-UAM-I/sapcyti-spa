@@ -13,6 +13,7 @@ import { LanguageSwitcherComponent } from '../shared/components/language-switche
 import { ShellMobileDrawerComponent } from './shell-mobile-drawer.component';
 import { ShellSidebarNavComponent } from '../shared/components/shell-sidebar-nav/shell-sidebar-nav.component';
 import { getShellNavigation } from './shell-menu.config';
+import { logoutAndNavigateToLogin } from '../core/auth/utils/logout-navigation.util';
 
 @Component({
   selector: 'app-shell',
@@ -98,8 +99,7 @@ export class ShellComponent {
   }
 
   onLogout(): void {
-    this.auth.logout();
-    void this.router.navigateByUrl('/auth/login');
+    logoutAndNavigateToLogin(this.auth, this.router);
   }
 
   private normalizeSearch(value: string): string {
