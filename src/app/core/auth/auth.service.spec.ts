@@ -4,29 +4,21 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
 import { TenantService } from '../http/tenant.service';
-import { AppMockConfig, provideAppMockConfig } from '../mocks/mock.config';
+import { provideAppMockConfig } from '../mocks/mock.config';
 import { AuthStateService } from './auth.service';
-
-const LOGIN_URL = 'http://localhost:8080/api/auth/login';
-const REFRESH_URL = 'http://localhost:8080/api/auth/refresh';
-const LOGOUT_URL = 'http://localhost:8080/api/auth/logout';
-const FORGOT_PASSWORD_URL = 'http://localhost:8080/api/auth/forgot-password';
-const RESET_PASSWORD_URL = 'http://localhost:8080/api/auth/reset-password';
-const REMEMBER_SESSION_KEY = 'sapcyti.auth.rememberSession';
-const REMEMBERED_EMAIL_KEY = 'sapcyti.auth.rememberedEmail';
-
-function createTestJwt(payload: object): string {
-  const header = btoa(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
-  const body = btoa(JSON.stringify(payload));
-  return `${header}.${body}.test-signature`;
-}
+import {
+  AUTH_STORAGE_KEYS,
+  AUTH_TEST_ENDPOINTS,
+  clearAuthStorage,
+  createTestJwt,
+} from '../../testing/auth-test.util';
 
 describe('AuthStateService', () => {
   let service: AuthStateService;
   let httpMock: HttpTestingController;
   let tenantService: TenantService;
 
-  function setup(mocks: Partial<AppMockConfig> = { auth: false }): void {
+  function setup(mocks: { auth?: boolean; passwordRecovery?: boolean } = { auth: false }): void {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting(), provideAppMockConfig(mocks)],
     });
@@ -42,8 +34,7 @@ describe('AuthStateService', () => {
 
   afterEach(() => {
     httpMock.verify();
-    localStorage.removeItem(REMEMBER_SESSION_KEY);
-    localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+    clearAuthStorage();
   });
 
   it('reports not authenticated initially', () => {
@@ -67,7 +58,7 @@ describe('AuthStateService', () => {
 
     const loginPromise = firstValueFrom(service.login('coord@uam.mx', 'secret', true));
 
-    const req = httpMock.expectOne(LOGIN_URL);
+    const req = httpMock.expectOne(AUTH_TEST_ENDPOINTS.login);
     expect(req.request.method).toBe('POST');
     expect(req.request.withCredentials).toBe(true);
     expect(req.request.body).toMatchObject({
@@ -89,8 +80,8 @@ describe('AuthStateService', () => {
     expect(service.hasRole('COORDINATOR')).toBe(true);
     expect(service.hasRole('STUDENT')).toBe(false);
     expect(tenantService.get()).toBe(3);
-    expect(localStorage.getItem(REMEMBER_SESSION_KEY)).toBe('true');
-    expect(localStorage.getItem(REMEMBERED_EMAIL_KEY)).toBe('coord@uam.mx');
+    expect(localStorage.getItem(AUTH_STORAGE_KEYS.rememberSession)).toBe('true');
+    expect(localStorage.getItem(AUTH_STORAGE_KEYS.rememberedEmail)).toBe('coord@uam.mx');
 
     const user = await firstValueFrom(service.currentUser$);
     expect(user).toEqual({
@@ -109,7 +100,7 @@ describe('AuthStateService', () => {
     });
 
     const loginPromise = firstValueFrom(service.login('system_admin@uam.mx', 'secret'));
-    const req = httpMock.expectOne(LOGIN_URL);
+    const req = httpMock.expectOne(AUTH_TEST_ENDPOINTS.login);
     req.flush({ accessToken, expiresIn: 900, role: 'SYSTEM_ADMIN' });
 
     await loginPromise;
@@ -124,8 +115,8 @@ describe('AuthStateService', () => {
   });
 
   it('login clears remembered session when remember me is false', async () => {
-    localStorage.setItem(REMEMBER_SESSION_KEY, 'true');
-    localStorage.setItem(REMEMBERED_EMAIL_KEY, 'previous@uam.mx');
+    localStorage.setItem(AUTH_STORAGE_KEYS.rememberSession, 'true');
+    localStorage.setItem(AUTH_STORAGE_KEYS.rememberedEmail, 'previous@uam.mx');
     const accessToken = createTestJwt({
       sub: '1',
       role: 'STUDENT',
@@ -133,24 +124,24 @@ describe('AuthStateService', () => {
     });
 
     const loginPromise = firstValueFrom(service.login('student@uam.mx', 'secret', false));
-    const req = httpMock.expectOne(LOGIN_URL);
+    const req = httpMock.expectOne(AUTH_TEST_ENDPOINTS.login);
     req.flush({ accessToken, expiresIn: 900, role: 'STUDENT' });
     await loginPromise;
 
-    expect(localStorage.getItem(REMEMBER_SESSION_KEY)).toBeNull();
-    expect(localStorage.getItem(REMEMBERED_EMAIL_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTH_STORAGE_KEYS.rememberSession)).toBeNull();
+    expect(localStorage.getItem(AUTH_STORAGE_KEYS.rememberedEmail)).toBeNull();
   });
 
   it('does not restore a session when remember me was not selected', async () => {
     await firstValueFrom(service.restoreRememberedSession());
 
-    httpMock.expectNone(REFRESH_URL);
+    httpMock.expectNone(AUTH_TEST_ENDPOINTS.refresh);
     expect(service.isAuthenticated()).toBe(false);
   });
 
   it('restores a remembered session using the refresh endpoint', async () => {
-    localStorage.setItem(REMEMBER_SESSION_KEY, 'true');
-    localStorage.setItem(REMEMBERED_EMAIL_KEY, 'coord@uam.mx');
+    localStorage.setItem(AUTH_STORAGE_KEYS.rememberSession, 'true');
+    localStorage.setItem(AUTH_STORAGE_KEYS.rememberedEmail, 'coord@uam.mx');
     const accessToken = createTestJwt({
       sub: '7',
       role: 'COORDINATOR',
@@ -158,7 +149,7 @@ describe('AuthStateService', () => {
     });
 
     const restorePromise = firstValueFrom(service.restoreRememberedSession());
-    const req = httpMock.expectOne(REFRESH_URL);
+    const req = httpMock.expectOne(AUTH_TEST_ENDPOINTS.refresh);
     expect(req.request.method).toBe('POST');
     expect(req.request.withCredentials).toBe(true);
     expect(req.request.body).toEqual({});
@@ -178,17 +169,17 @@ describe('AuthStateService', () => {
   });
 
   it('clears remembered session when refresh is rejected', async () => {
-    localStorage.setItem(REMEMBER_SESSION_KEY, 'true');
-    localStorage.setItem(REMEMBERED_EMAIL_KEY, 'coord@uam.mx');
+    localStorage.setItem(AUTH_STORAGE_KEYS.rememberSession, 'true');
+    localStorage.setItem(AUTH_STORAGE_KEYS.rememberedEmail, 'coord@uam.mx');
 
     const restorePromise = firstValueFrom(service.restoreRememberedSession());
-    const req = httpMock.expectOne(REFRESH_URL);
+    const req = httpMock.expectOne(AUTH_TEST_ENDPOINTS.refresh);
     req.flush({ message: 'Invalid refresh token' }, { status: 401, statusText: 'Unauthorized' });
     await restorePromise;
 
     expect(service.isAuthenticated()).toBe(false);
-    expect(localStorage.getItem(REMEMBER_SESSION_KEY)).toBeNull();
-    expect(localStorage.getItem(REMEMBERED_EMAIL_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTH_STORAGE_KEYS.rememberSession)).toBeNull();
+    expect(localStorage.getItem(AUTH_STORAGE_KEYS.rememberedEmail)).toBeNull();
   });
 
   it('uses auth mock when only auth mock is enabled', async () => {
@@ -199,49 +190,7 @@ describe('AuthStateService', () => {
 
     expect(service.getCurrentUser()?.role).toBe('STUDENT');
     expect(service.getAccessToken()).toContain('.');
-    httpMock.expectNone(LOGIN_URL);
-  });
-
-  it('requestPasswordReset calls backend when password recovery mock is disabled', async () => {
-    const resetPromise = firstValueFrom(service.requestPasswordReset('student@uam.mx'));
-
-    const req = httpMock.expectOne(FORGOT_PASSWORD_URL);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.withCredentials).toBe(true);
-    expect(req.request.body).toEqual({ email: 'student@uam.mx' });
-    req.flush(null);
-
-    await resetPromise;
-  });
-
-  it('requestPasswordReset uses password recovery mock independently from auth mock', async () => {
-    TestBed.resetTestingModule();
-    setup({ auth: false, passwordRecovery: true });
-
-    await firstValueFrom(service.requestPasswordReset('student@uam.mx'));
-
-    httpMock.expectNone(FORGOT_PASSWORD_URL);
-  });
-
-  it('resetPassword calls backend when password recovery mock is disabled', async () => {
-    const resetPromise = firstValueFrom(service.resetPassword('valid-token', 'NewS3cur3!Pass'));
-
-    const req = httpMock.expectOne(RESET_PASSWORD_URL);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.withCredentials).toBe(true);
-    expect(req.request.body).toEqual({ token: 'valid-token', newPassword: 'NewS3cur3!Pass' });
-    req.flush(null);
-
-    await resetPromise;
-  });
-
-  it('resetPassword uses password recovery mock independently from auth mock', async () => {
-    TestBed.resetTestingModule();
-    setup({ auth: false, passwordRecovery: true });
-
-    await firstValueFrom(service.resetPassword('mock-valid-reset-token', 'NewS3cur3!Pass'));
-
-    httpMock.expectNone(RESET_PASSWORD_URL);
+    httpMock.expectNone(AUTH_TEST_ENDPOINTS.login);
   });
 
   it('silentRefresh updates access token and user context', async () => {
@@ -258,12 +207,12 @@ describe('AuthStateService', () => {
     });
 
     const loginPromise = firstValueFrom(service.login('student@uam.mx', 'secret'));
-    const loginReq = httpMock.expectOne(LOGIN_URL);
+    const loginReq = httpMock.expectOne(AUTH_TEST_ENDPOINTS.login);
     loginReq.flush({ accessToken: initialToken, expiresIn: 900, role: 'STUDENT' });
     await loginPromise;
 
     const refreshPromise = firstValueFrom(service.silentRefresh());
-    const refreshReq = httpMock.expectOne(REFRESH_URL);
+    const refreshReq = httpMock.expectOne(AUTH_TEST_ENDPOINTS.refresh);
     expect(refreshReq.request.method).toBe('POST');
     expect(refreshReq.request.withCredentials).toBe(true);
     refreshReq.flush({ accessToken: refreshedToken, expiresIn: 900, role: 'STUDENT' });
@@ -281,15 +230,15 @@ describe('AuthStateService', () => {
     });
 
     const loginPromise = firstValueFrom(service.login('student@uam.mx', 'secret'));
-    const loginReq = httpMock.expectOne(LOGIN_URL);
+    const loginReq = httpMock.expectOne(AUTH_TEST_ENDPOINTS.login);
     loginReq.flush({ accessToken: initialToken, expiresIn: 900, role: 'STUDENT' });
     await loginPromise;
 
     const refreshPromise = firstValueFrom(service.silentRefresh());
-    const refreshReq = httpMock.expectOne(REFRESH_URL);
+    const refreshReq = httpMock.expectOne(AUTH_TEST_ENDPOINTS.refresh);
     refreshReq.flush({ message: 'Invalid refresh token' }, { status: 401, statusText: 'Unauthorized' });
 
-    const logoutReq = httpMock.expectOne(LOGOUT_URL);
+    const logoutReq = httpMock.expectOne(AUTH_TEST_ENDPOINTS.logout);
     expect(logoutReq.request.method).toBe('POST');
     logoutReq.flush(null);
 
@@ -305,12 +254,12 @@ describe('AuthStateService', () => {
     });
 
     const loginPromise = firstValueFrom(service.login('student@uam.mx', 'secret'));
-    const req = httpMock.expectOne(LOGIN_URL);
+    const req = httpMock.expectOne(AUTH_TEST_ENDPOINTS.login);
     req.flush({ accessToken, expiresIn: 900, role: 'STUDENT' });
     await loginPromise;
 
     const logoutPromise = firstValueFrom(service.logout());
-    const logoutReq = httpMock.expectOne(LOGOUT_URL);
+    const logoutReq = httpMock.expectOne(AUTH_TEST_ENDPOINTS.logout);
     expect(logoutReq.request.method).toBe('POST');
     expect(logoutReq.request.withCredentials).toBe(true);
     logoutReq.flush(null);
@@ -319,8 +268,8 @@ describe('AuthStateService', () => {
     expect(service.isAuthenticated()).toBe(false);
     expect(service.getAccessToken()).toBeNull();
     expect(tenantService.get()).toBeNull();
-    expect(localStorage.getItem(REMEMBER_SESSION_KEY)).toBeNull();
-    expect(localStorage.getItem(REMEMBERED_EMAIL_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTH_STORAGE_KEYS.rememberSession)).toBeNull();
+    expect(localStorage.getItem(AUTH_STORAGE_KEYS.rememberedEmail)).toBeNull();
     await expect(firstValueFrom(service.currentUser$)).resolves.toBeNull();
   });
 });

@@ -3,13 +3,8 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, finalize, shareReplay, switchMap, throwError } from 'rxjs';
 
+import { isAuthSessionRequest } from '../auth/auth.endpoints';
 import { AuthStateService } from '../auth/auth.service';
-
-function isAuthSessionRequest(url: string): boolean {
-  return (
-    url.includes('/auth/login') || url.includes('/auth/refresh') || url.includes('/auth/logout')
-  );
-}
 
 const RETRY_HEADER = 'x-sapcyti-auth-retry';
 let refreshInFlight$: ReturnType<AuthStateService['silentRefresh']> | null = null;

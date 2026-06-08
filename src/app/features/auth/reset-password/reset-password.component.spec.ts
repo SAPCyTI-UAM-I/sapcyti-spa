@@ -6,7 +6,7 @@ import { convertToParamMap, provideRouter, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
-import { AuthStateService } from '../../../core/auth/auth.service';
+import { PasswordRecoveryService } from '../../../core/auth/password-recovery.service';
 import { provideAppMockConfig } from '../../../core/mocks/mock.config';
 import { ResetPasswordComponent } from './reset-password.component';
 
@@ -21,11 +21,11 @@ function makeActivatedRouteStub(token: string | null) {
 describe('ResetPasswordComponent', () => {
   let fixture: ComponentFixture<ResetPasswordComponent>;
   let component: ResetPasswordComponent;
-  let authState: { resetPassword: ReturnType<typeof vi.fn> };
+  let passwordRecovery: { resetPassword: ReturnType<typeof vi.fn> };
   let router: Router;
 
   async function setup(token: string | null = 'mock-valid-reset-token'): Promise<void> {
-    authState = { resetPassword: vi.fn(() => of(void 0)) };
+    passwordRecovery = { resetPassword: vi.fn(() => of(void 0)) };
 
     await TestBed.configureTestingModule({
       imports: [ResetPasswordComponent, TranslateModule.forRoot()],
@@ -33,7 +33,7 @@ describe('ResetPasswordComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
-        { provide: AuthStateService, useValue: authState },
+        { provide: PasswordRecoveryService, useValue: passwordRecovery },
         { provide: 'ActivatedRoute', useValue: makeActivatedRouteStub(token) },
         provideAppMockConfig({ passwordRecovery: false }),
       ],
@@ -62,13 +62,13 @@ describe('ResetPasswordComponent', () => {
   it('shows invalid-token message when no token in URL', async () => {
     await setup(null);
     expect(component.token()).toBeNull();
-    expect(authState.resetPassword).not.toHaveBeenCalled();
+    expect(passwordRecovery.resetPassword).not.toHaveBeenCalled();
   });
 
   it('does not submit when form is empty', async () => {
     await setup();
     component.onSubmit();
-    expect(authState.resetPassword).not.toHaveBeenCalled();
+    expect(passwordRecovery.resetPassword).not.toHaveBeenCalled();
     expect(component.newPasswordShowError()).toBe(true);
     expect(component.confirmPasswordShowError()).toBe(true);
   });
@@ -77,7 +77,7 @@ describe('ResetPasswordComponent', () => {
     await setup();
     component.form.patchValue({ newPassword: 'short', confirmPassword: 'short' });
     component.onSubmit();
-    expect(authState.resetPassword).not.toHaveBeenCalled();
+    expect(passwordRecovery.resetPassword).not.toHaveBeenCalled();
     expect(component.newPasswordShowError()).toBe(true);
   });
 
@@ -114,7 +114,7 @@ describe('ResetPasswordComponent', () => {
     component.token.set('my-token');
     component.form.patchValue({ newPassword: 'ValidPass1!', confirmPassword: 'ValidPass1!' });
     component.onSubmit();
-    expect(authState.resetPassword).toHaveBeenCalledWith('my-token', 'ValidPass1!');
+    expect(passwordRecovery.resetPassword).toHaveBeenCalledWith('my-token', 'ValidPass1!');
   });
 
   it('navigates to login on success', async () => {
@@ -128,7 +128,7 @@ describe('ResetPasswordComponent', () => {
   it('shows invalid_token error on 400 INVALID_TOKEN', async () => {
     await setup('bad-token');
     component.token.set('bad-token');
-    authState.resetPassword.mockReturnValue(
+    passwordRecovery.resetPassword.mockReturnValue(
       throwError(
         () =>
           new HttpErrorResponse({
@@ -146,7 +146,7 @@ describe('ResetPasswordComponent', () => {
   it('shows invalid_token error on 400 payload with error field', async () => {
     await setup('bad-token');
     component.token.set('bad-token');
-    authState.resetPassword.mockReturnValue(
+    passwordRecovery.resetPassword.mockReturnValue(
       throwError(
         () =>
           new HttpErrorResponse({
@@ -164,7 +164,7 @@ describe('ResetPasswordComponent', () => {
   it('shows expired_token error on 400 EXPIRED_TOKEN', async () => {
     await setup('expired-token');
     component.token.set('expired-token');
-    authState.resetPassword.mockReturnValue(
+    passwordRecovery.resetPassword.mockReturnValue(
       throwError(
         () =>
           new HttpErrorResponse({
@@ -182,7 +182,7 @@ describe('ResetPasswordComponent', () => {
   it('shows server error on unexpected failure', async () => {
     await setup('good-token');
     component.token.set('good-token');
-    authState.resetPassword.mockReturnValue(
+    passwordRecovery.resetPassword.mockReturnValue(
       throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Internal Server Error' })),
     );
     component.form.patchValue({ newPassword: 'ValidPass1!', confirmPassword: 'ValidPass1!' });

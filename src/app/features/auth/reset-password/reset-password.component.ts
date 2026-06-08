@@ -8,14 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import {
-  AbstractControl,
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
@@ -23,23 +16,15 @@ import { Message } from 'primeng/message';
 import { Password } from 'primeng/password';
 import { finalize } from 'rxjs';
 
-import { AuthStateService } from '../../../core/auth/auth.service';
+import { PasswordRecoveryService } from '../../../core/auth/password-recovery.service';
+import { passwordsMatchValidator } from '../../../core/auth/utils/passwords-match.validator';
+import {
+  mapResetPasswordError,
+  ResetErrorType,
+} from '../../../core/auth/utils/reset-password-error.util';
 import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
 import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
 import { FieldErrorComponent } from '../../../shared/components/field-error/field-error.component';
-
-function passwordsMatchValidator(): ValidatorFn {
-  return (group: AbstractControl): ValidationErrors | null => {
-    const newPassword = group.get('newPassword')?.value as string;
-    const confirmPassword = group.get('confirmPassword')?.value as string;
-    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
-      return { PASSWORDS_MISMATCH: true };
-    }
-    return null;
-  };
-}
-
-export type ResetErrorType = 'server' | 'invalid_token' | 'expired_token' | null;
 
 @Component({
   selector: 'app-reset-password',
@@ -59,7 +44,7 @@ export type ResetErrorType = 'server' | 'invalid_token' | 'expired_token' | null
 })
 export class ResetPasswordComponent implements OnInit {
   private readonly fb = inject(NonNullableFormBuilder);
-  private readonly auth = inject(AuthStateService);
+  private readonly passwordRecovery = inject(PasswordRecoveryService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -74,7 +59,7 @@ export class ResetPasswordComponent implements OnInit {
 
   readonly submitting = signal(false);
   readonly submitted = signal(false);
-  readonly resetError = signal<ResetErrorType>(null);
+  readonly resetError = signal<ResetErrorType | null>(null);
   readonly token = signal<string | null>(null);
 
   /**
@@ -156,7 +141,7 @@ export class ResetPasswordComponent implements OnInit {
     this.submitting.set(true);
     const { newPassword } = this.form.getRawValue();
 
-    this.auth
+    this.passwordRecovery
       .resetPassword(currentToken, newPassword)
       .pipe(
         finalize(() => this.submitting.set(false)),
@@ -164,16 +149,7 @@ export class ResetPasswordComponent implements OnInit {
       )
       .subscribe({
         next: () => void this.router.navigate(['/auth/login']),
-        error: (err: { status?: number; error?: { code?: string; error?: string } }) => {
-          const code = err?.error?.code ?? err?.error?.error;
-          if (code === 'EXPIRED_TOKEN') {
-            this.resetError.set('expired_token');
-          } else if (err?.status === 400 && (code === 'INVALID_TOKEN' || code === 'TOKEN_USED')) {
-            this.resetError.set('invalid_token');
-          } else {
-            this.resetError.set('server');
-          }
-        },
+        error: (err) => this.resetError.set(mapResetPasswordError(err)),
       });
   }
 }

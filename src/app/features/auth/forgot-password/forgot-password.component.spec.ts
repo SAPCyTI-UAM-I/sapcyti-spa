@@ -4,23 +4,23 @@ import { provideRouter, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
-import { AuthStateService } from '../../../core/auth/auth.service';
+import { PasswordRecoveryService } from '../../../core/auth/password-recovery.service';
 import { ForgotPasswordComponent } from './forgot-password.component';
 
 describe('ForgotPasswordComponent', () => {
   let fixture: ComponentFixture<ForgotPasswordComponent>;
   let component: ForgotPasswordComponent;
-  let authState: { requestPasswordReset: ReturnType<typeof vi.fn> };
+  let passwordRecovery: { requestPasswordReset: ReturnType<typeof vi.fn> };
   let router: Router;
 
   async function setup(): Promise<void> {
-    authState = {
+    passwordRecovery = {
       requestPasswordReset: vi.fn(() => of(void 0)),
     };
 
     await TestBed.configureTestingModule({
       imports: [ForgotPasswordComponent, TranslateModule.forRoot()],
-      providers: [provideRouter([]), { provide: AuthStateService, useValue: authState }],
+      providers: [provideRouter([]), { provide: PasswordRecoveryService, useValue: passwordRecovery }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ForgotPasswordComponent);
@@ -36,14 +36,14 @@ describe('ForgotPasswordComponent', () => {
 
     component.onSubmit();
 
-    expect(authState.requestPasswordReset).toHaveBeenCalledWith('student@uam.mx');
+    expect(passwordRecovery.requestPasswordReset).toHaveBeenCalledWith('student@uam.mx');
     expect(router.navigate).toHaveBeenCalledWith(['/auth/forgot-password/sent']);
     expect(component.serverError()).toBe(false);
   });
 
   it('navigates to sent screen on 4xx to preserve anti-enumeration behavior', async () => {
     await setup();
-    authState.requestPasswordReset.mockReturnValue(
+    passwordRecovery.requestPasswordReset.mockReturnValue(
       throwError(
         () =>
           new HttpErrorResponse({
@@ -63,7 +63,7 @@ describe('ForgotPasswordComponent', () => {
 
   it('shows server error on 5xx or network failure', async () => {
     await setup();
-    authState.requestPasswordReset.mockReturnValue(
+    passwordRecovery.requestPasswordReset.mockReturnValue(
       throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Internal Server Error' })),
     );
     component.form.patchValue({ email: 'student@uam.mx' });
