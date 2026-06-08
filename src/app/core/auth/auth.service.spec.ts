@@ -9,6 +9,7 @@ import { AuthStateService } from './auth.service';
 
 const LOGIN_URL = 'http://localhost:8080/api/auth/login';
 const REFRESH_URL = 'http://localhost:8080/api/auth/refresh';
+const LOGOUT_URL = 'http://localhost:8080/api/auth/logout';
 const FORGOT_PASSWORD_URL = 'http://localhost:8080/api/auth/forgot-password';
 const RESET_PASSWORD_URL = 'http://localhost:8080/api/auth/reset-password';
 const REMEMBER_SESSION_KEY = 'sapcyti.auth.rememberSession';
@@ -243,7 +244,60 @@ describe('AuthStateService', () => {
     httpMock.expectNone(RESET_PASSWORD_URL);
   });
 
-  it('logout clears session and tenant context', async () => {
+  it('silentRefresh updates access token and user context', async () => {
+    const initialToken = createTestJwt({
+      sub: '1',
+      role: 'STUDENT',
+      graduateProgramId: 2,
+    });
+    const refreshedToken = createTestJwt({
+      sub: '1',
+      role: 'STUDENT',
+      graduateProgramId: 2,
+      exp: Math.floor(Date.now() / 1000) + 900,
+    });
+
+    const loginPromise = firstValueFrom(service.login('student@uam.mx', 'secret'));
+    const loginReq = httpMock.expectOne(LOGIN_URL);
+    loginReq.flush({ accessToken: initialToken, expiresIn: 900, role: 'STUDENT' });
+    await loginPromise;
+
+    const refreshPromise = firstValueFrom(service.silentRefresh());
+    const refreshReq = httpMock.expectOne(REFRESH_URL);
+    expect(refreshReq.request.method).toBe('POST');
+    expect(refreshReq.request.withCredentials).toBe(true);
+    refreshReq.flush({ accessToken: refreshedToken, expiresIn: 900, role: 'STUDENT' });
+    await refreshPromise;
+
+    expect(service.getAccessToken()).toBe(refreshedToken);
+    expect(service.getCurrentUser()?.email).toBe('student@uam.mx');
+  });
+
+  it('silentRefresh logs out and rethrows when refresh fails', async () => {
+    const initialToken = createTestJwt({
+      sub: '1',
+      role: 'STUDENT',
+      graduateProgramId: 2,
+    });
+
+    const loginPromise = firstValueFrom(service.login('student@uam.mx', 'secret'));
+    const loginReq = httpMock.expectOne(LOGIN_URL);
+    loginReq.flush({ accessToken: initialToken, expiresIn: 900, role: 'STUDENT' });
+    await loginPromise;
+
+    const refreshPromise = firstValueFrom(service.silentRefresh());
+    const refreshReq = httpMock.expectOne(REFRESH_URL);
+    refreshReq.flush({ message: 'Invalid refresh token' }, { status: 401, statusText: 'Unauthorized' });
+
+    const logoutReq = httpMock.expectOne(LOGOUT_URL);
+    expect(logoutReq.request.method).toBe('POST');
+    logoutReq.flush(null);
+
+    await expect(refreshPromise).rejects.toBeTruthy();
+    expect(service.isAuthenticated()).toBe(false);
+  });
+
+  it('logout calls backend and clears session and tenant context', async () => {
     const accessToken = createTestJwt({
       sub: '1',
       role: 'STUDENT',
@@ -255,7 +309,12 @@ describe('AuthStateService', () => {
     req.flush({ accessToken, expiresIn: 900, role: 'STUDENT' });
     await loginPromise;
 
-    service.logout();
+    const logoutPromise = firstValueFrom(service.logout());
+    const logoutReq = httpMock.expectOne(LOGOUT_URL);
+    expect(logoutReq.request.method).toBe('POST');
+    expect(logoutReq.request.withCredentials).toBe(true);
+    logoutReq.flush(null);
+    await logoutPromise;
 
     expect(service.isAuthenticated()).toBe(false);
     expect(service.getAccessToken()).toBeNull();

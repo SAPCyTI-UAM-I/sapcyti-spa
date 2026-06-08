@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { AuthResponse } from '../../models/auth-response.model';
@@ -97,9 +97,30 @@ export class AuthStateService {
         tap((response) => this.applyAuthSuccess(rememberedEmail, response)),
         map(() => void 0),
         catchError(() => {
-          this.logout();
+          this.clearSessionState();
           return of(void 0);
         }),
+      );
+  }
+
+  silentRefresh(): Observable<void> {
+    if (this.useAuthMock) {
+      return of(void 0);
+    }
+
+    const email = this.currentUserSubject.value?.email ?? this.getRememberedEmail();
+    if (!email) {
+      return this.logout();
+    }
+
+    return this.http
+      .post<AuthResponse>(`${environment.apiBaseUrl}/auth/refresh`, {}, { withCredentials: true })
+      .pipe(
+        tap((response) => this.applyAuthSuccess(email, response)),
+        map(() => void 0),
+        catchError((error) =>
+          this.logout().pipe(switchMap(() => throwError(() => error))),
+        ),
       );
   }
 
@@ -131,7 +152,20 @@ export class AuthStateService {
       .pipe(map(() => void 0));
   }
 
-  logout(): void {
+  logout(): Observable<void> {
+    const logout$ = this.useAuthMock
+      ? of(void 0)
+      : this.http
+          .post<void>(`${environment.apiBaseUrl}/auth/logout`, {}, { withCredentials: true })
+          .pipe(
+            map(() => void 0),
+            catchError(() => of(void 0)),
+          );
+
+    return logout$.pipe(finalize(() => this.clearSessionState()));
+  }
+
+  private clearSessionState(): void {
     this.clearRememberedSession();
     this.clearRuntimeSession();
   }

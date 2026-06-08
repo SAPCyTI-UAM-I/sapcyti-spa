@@ -5,6 +5,7 @@ import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
+import { logoutAndNavigateToLogin } from '../../../core/auth/utils/logout-navigation.util';
 
 @Component({
   selector: 'app-access-denied',
@@ -43,7 +44,6 @@ export class AccessDeniedComponent {
   private readonly router = inject(Router);
 
   goToLogin(): void {
-    this.auth.logout();
-    void this.router.navigateByUrl('/auth/login');
+    logoutAndNavigateToLogin(this.auth, this.router);
   }
 }
