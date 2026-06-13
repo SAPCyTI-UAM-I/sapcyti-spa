@@ -3,8 +3,10 @@ export const environment = {
   apiBaseUrl: 'http://localhost:8080/api',
   mocks: {
     /** Set to false to call the real API at apiBaseUrl. */
-    auth: false,
+    auth: true,
     /** Use backend HU-02 by default; switch to true only for local mock demos. */
     passwordRecovery: false,
+    /** Use local mocks for student registration. */
+    studentRegistration: true,
   },
 };

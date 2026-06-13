@@ -3,6 +3,7 @@ import { inject, InjectionToken, Provider } from '@angular/core';
 export interface AppMockConfig {
   readonly auth: boolean;
   readonly passwordRecovery: boolean;
+  readonly studentRegistration: boolean;
 }
 
 export type MockFeature = keyof AppMockConfig;
@@ -10,6 +11,7 @@ export type MockFeature = keyof AppMockConfig;
 export const DEFAULT_APP_MOCK_CONFIG: AppMockConfig = {
   auth: false,
   passwordRecovery: false,
+  studentRegistration: false,
 };
 
 export const APP_MOCK_CONFIG = new InjectionToken<AppMockConfig>('APP_MOCK_CONFIG', {

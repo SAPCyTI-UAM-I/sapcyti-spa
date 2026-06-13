@@ -12,11 +12,12 @@ export const ACADEMIC_CATALOG_ROUTES: Routes = [
   },
   {
     path: 'students',
-    component: FeaturePlaceholderComponent,
+    loadComponent: () =>
+      import('./components/student-registration/student-registration.component').then(
+        (m) => m.StudentRegistrationComponent,
+      ),
     canActivate: [authGuard],
     data: {
-      titleKey: 'ACADEMIC_CATALOG.STUDENTS.TITLE',
-      messageKey: 'ACADEMIC_CATALOG.STUDENTS.MESSAGE',
       roles: ROUTE_PERMISSIONS.academicCatalog,
     },
   },

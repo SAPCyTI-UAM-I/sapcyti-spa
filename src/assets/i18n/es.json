@@ -155,7 +155,38 @@
   "ACADEMIC_CATALOG": {
     "STUDENTS": {
       "TITLE": "Alumnos",
-      "MESSAGE": "Catálogo de alumnos — próximamente"
+      "CREATE": {
+        "TITLE": "Registrar Alumno",
+        "SUBTITLE": "Ingrese los datos personales y académicos del nuevo alumno. La contraseña se autogenerará de forma segura.",
+        "PERSONAL_SECTION": "Datos Personales",
+        "FIRST_NAME": "Nombre(s)",
+        "FIRST_NAME_PLACEHOLDER": "Ej. Juan",
+        "FIRST_LAST_NAME": "Apellido Paterno",
+        "FIRST_LAST_NAME_PLACEHOLDER": "Ej. Pérez",
+        "SECOND_LAST_NAME": "Apellido Materno",
+        "SECOND_LAST_NAME_PLACEHOLDER": "Ej. García",
+        "EMAIL": "Correo Electrónico",
+        "EMAIL_PLACEHOLDER": "alumno@correo.uam.mx",
+        "NATIONALITY": "Nacionalidad",
+        "NATIONALITY_PLACEHOLDER": "Seleccione nacionalidad",
+        "ACADEMIC_SECTION": "Programa Académico",
+        "ENROLLMENT_ID": "Matrícula",
+        "ENROLLMENT_ID_PLACEHOLDER": "Ej. 223300456",
+        "UNDERGRADUATE_DEGREE": "Carrera de Licenciatura",
+        "UNDERGRADUATE_DEGREE_PLACEHOLDER": "Ej. Licenciatura en Computación",
+        "PROGRAM_TYPE": "Tipo de Programa",
+        "PROGRAM_TYPE_PLACEHOLDER": "Seleccione el posgrado",
+        "ADMISSION_DATE": "Fecha de Ingreso",
+        "ADMISSION_DATE_PLACEHOLDER": "Seleccione la fecha de admisión",
+        "SUCCESS_DIALOG": {
+          "TITLE": "Registro Completado",
+          "SUBTITLE": "Alumno registrado con éxito",
+          "MESSAGE": "El alumno ha sido registrado en el sistema. A continuación se muestra su contraseña temporal autogenerada de acceso único. Cópiela antes de continuar.",
+          "COPY_TOOLTIP": "Copiar al portapapeles",
+          "WARNING": "IMPORTANTE: Por motivos de seguridad, esta contraseña no volverá a mostrarse en el sistema.",
+          "CLOSE": "Entendido y Cerrar"
+        }
+      }
     },
     "PROFESSORS": {
       "TITLE": "Profesores",
