@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
@@ -19,6 +20,7 @@ describe('ProfessorRegistrationComponent', () => {
       imports: [ProfessorRegistrationComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
         provideRouter([]),
+        MessageService,
         { provide: ProfessorService, useValue: service },
         {
           provide: AuthStateService,

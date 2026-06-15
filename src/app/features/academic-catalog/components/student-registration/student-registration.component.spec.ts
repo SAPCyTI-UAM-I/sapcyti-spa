@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
@@ -26,6 +27,7 @@ describe('StudentRegistrationComponent', () => {
       imports: [StudentRegistrationComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
         provideRouter([]),
+        MessageService,
         { provide: StudentService, useValue: service },
         {
           provide: AuthStateService,

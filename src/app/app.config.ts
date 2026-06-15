@@ -9,6 +9,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import { firstValueFrom } from 'rxjs';
 
@@ -32,6 +33,7 @@ export const appConfig: ApplicationConfig = {
       firstValueFrom(inject(AuthStateService).restoreRememberedSession()),
     ),
     provideHttpClient(withInterceptors([jwtInterceptor, tenantInterceptor, httpErrorInterceptor])),
+    MessageService,
     provideAppMockConfig(environment.mocks),
     ...DATA_LAYER_PROVIDERS,
     provideAnimationsAsync(),

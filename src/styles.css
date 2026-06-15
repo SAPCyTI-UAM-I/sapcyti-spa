@@ -355,3 +355,61 @@ body {
 .p-iconfield .p-inputtext {
   width: 100%;
 }
+
+/* Copy-to-clipboard affordance: a periodic attention wiggle that rests between
+   cycles, plus a quick "pop" played on a successful copy. */
+@keyframes copy-attention {
+  0%,
+  80%,
+  100% {
+    transform: rotate(0);
+  }
+  83% {
+    transform: rotate(-14deg);
+  }
+  87% {
+    transform: rotate(11deg);
+  }
+  91% {
+    transform: rotate(-8deg);
+  }
+  95% {
+    transform: rotate(5deg);
+  }
+}
+
+.copy-attention {
+  animation: copy-attention 1.3s ease-in-out infinite;
+}
+
+@keyframes copy-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.15);
+  }
+  60% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Declared after .copy-attention so it wins while present, then the wiggle resumes. */
+.copy-pop {
+  animation: copy-pop 200ms ease-out;
+}
+
+.copy-icon {
+  display: inline-block;
+  font-size: 1.7rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy-attention,
+  .copy-pop {
+    animation: none;
+  }
+}
