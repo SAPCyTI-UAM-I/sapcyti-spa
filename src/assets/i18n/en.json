@@ -1,346 +1,346 @@
 {
-  "SHELL": {
-    "BRAND": {
-      "TITLE": "SAPCyTI",
-      "SUBTITLE": "PCyTI — UAM"
-    },
-    "TOPBAR": {
-      "TITLE": "SAPCyTI",
-      "LOGOUT": "Sign out",
-      "SEARCH_PLACEHOLDER": "Search students, professors, records…",
-      "NOTIFICATIONS": "Notifications",
-      "MENU": "Menu"
-    },
-    "SECTIONS": {
-      "MAIN": "Main",
-      "ENROLLMENT": "Enrollment",
-      "ENROLLMENT_PROCESS": "Enrollment process",
-      "ACADEMIC_MANAGEMENT": "Academic management",
-      "PRESENTATIONS": "Presentations",
-      "ACCOUNT": "Account"
-    },
-    "MENU": {
-      "HOME": "Home",
-      "ENROLLMENT": "Enrollment",
-      "ADVISOR_APPROVAL": "Approve course selection",
-      "ENROLLMENT_FORM_PDF": "Enrollment form (PDF)",
-      "TERMS_OFFER": "Terms and academic offer",
-      "ENROLLMENT_STATUS": "Process status",
-      "STUDENTS": "Students",
-      "PROFESSORS": "Professors",
-      "PRESENTATIONS": "Presentations",
-      "CHANGE_PASSWORD": "Change password"
-    }
-  },
-  "COMMON": {
-    "ERRORS": {
-      "ACCESS_DENIED": "Access denied",
-      "ACCESS_DENIED_MSG": "You do not have permission to access this page.",
-      "NOT_FOUND": "Page not found",
-      "SERVER_ERROR": "Server error"
-    },
-    "VALIDATION": {
-      "REQUIRED": "This field is required.",
-      "EMAIL": "Enter a valid email address.",
-      "MINLENGTH": "The value is too short.",
-      "MAXLENGTH": "The value is too long.",
-      "PATTERN": "Invalid format.",
-      "PASSWORDS_MISMATCH": "Passwords do not match."
-    },
-    "ACTIONS": {
-      "SAVE": "Save",
-      "CANCEL": "Cancel",
-      "DELETE": "Delete",
-      "EDIT": "Edit",
-      "BACK": "Go back",
-      "SEARCH": "Search",
-      "CLEAR": "Clear",
-      "RETRY": "Retry",
-      "NEXT": "Next",
-      "CONFIRM": "Confirm"
-    },
-    "STATES": {
-      "LOADING": "Loading..."
-    }
-  },
-  "DASHBOARD": {
-    "HOME": {
-      "PLACEHOLDER": "Role-based dashboard content — coming soon.",
-      "STUDENT": {
-        "TITLE": "Home",
-        "SUBTITLE": "Review the status of your term enrollment."
-      },
-      "PROFESSOR": {
-        "TITLE": "Home",
-        "SUBTITLE": "Summary of advised students and pending enrollments."
-      },
-      "ASSISTANT": {
-        "TITLE": "Home",
-        "SUBTITLE": "Enrollment forms ready to generate."
-      },
-      "COORDINATOR": {
-        "TITLE": "Home",
-        "SUBTITLE": "Welcome to the Academic Management Panel."
-      },
-      "SYSTEM_ADMIN": {
-        "TITLE": "Home",
-        "SUBTITLE": "Oversee global configuration and system presentations."
-      },
-      "SPEAKER": {
-        "TITLE": "Home",
-        "SUBTITLE": "Review and manage your presentations."
-      }
-    },
-    "CARDS": {
-      "STUDENTS_COUNT": "registered students",
-      "STUDENTS_LINK": "View students",
-      "ACTIVE_TERM": "Active process",
-      "ACTIVE_TERM_BADGE": "Enrolling",
-      "MANAGE_LINK": "Manage",
-      "PENDING_APPROVAL": "UEAs awaiting advisor approval",
-      "PENDING_LINK": "Review pending",
-      "FORMATS_READY": "students with approved UEAs",
-      "FORMATS_LINK": "Print forms",
-      "MY_ENROLLMENT": "My enrollment status",
-      "MY_ENROLLMENT_LINK": "View enrollment",
-      "MY_ADVISEES": "advised students",
-      "MY_ADVISEES_LINK": "View students",
-      "PENDING_REVIEWS": "UEA selections awaiting approval",
-      "PENDING_REVIEWS_LINK": "Review now",
-      "SUPPORT_FORMATS": "students ready to generate PDF",
-      "SUPPORT_FORMATS_LINK": "Generate forms",
-      "PRESENTATIONS": "Presentations",
-      "PRESENTATIONS_LINK": "View presentations"
-    },
-    "STUDENT": {
-      "ENROLLMENT_TITLE": "My enrollment — Term 26-I",
-      "NAME": "Juan Pérez García",
-      "REGISTRATION": "ID: 223300456",
-      "STATUS": "Selection pending",
-      "STATUS_MESSAGE": "Select your UEAs and submit your choice to your advisor to continue the process.",
-      "ACTION": "Go to enrollment",
-      "FUTURE_STATES": "Visual Reference of Future States",
-      "PENDING_REVIEW": "Pending review",
-      "APPROVED": "Approved",
-      "PHASE_2": "Phase 2",
-      "PHASE_3": "Phase 3"
-    },
-    "PROFESSOR": {
-      "ACTIVITY_TITLE": "Recent Activity",
-      "ACTIVITY_1": "Ana García submitted her UEA selection for term 23-O.",
-      "ACTIVITY_1_TIME": "2 hours ago",
-      "ACTIVITY_2": "Roberto Jiménez's selection was approved successfully.",
-      "ACTIVITY_2_TIME": "Yesterday, 14:30",
-      "ACTIVITY_3": "System: New enrollment guidelines have been uploaded.",
-      "ACTIVITY_3_TIME": "2 days ago",
-      "ACTIVITY_ACTION": "View detail"
-    },
-    "PLACEHOLDER": {
-      "TITLE": "Home",
-      "MESSAGE": "Dashboard — coming soon"
-    }
-  },
-  "ENROLLMENT": {
-    "ADVISOR_APPROVAL": {
-      "TITLE": "Approve course selection",
-      "MESSAGE": "Advisor approval module — coming soon"
-    },
-    "FORM_PDF": {
-      "TITLE": "Enrollment form (PDF)",
-      "MESSAGE": "Form generation — coming soon"
-    },
-    "TERMS": {
-      "TITLE": "Terms and academic offer",
-      "MESSAGE": "Term management — coming soon"
-    },
-    "STATUS": {
-      "TITLE": "Process status",
-      "MESSAGE": "Status tracking — coming soon"
-    },
-    "PLACEHOLDER": {
-      "TITLE": "Enrollment",
-      "MESSAGE": "Enrollment module — coming soon"
-    }
-  },
   "ACADEMIC_CATALOG": {
-    "STUDENTS": {
-      "LIST": {
-        "TITLE": "Students",
-        "SUBTITLE": "Browse and manage graduate students.",
-        "CREATE": "Create student",
-        "SEARCH": "Search by name, email or enrollment ID",
-        "EMPTY": "No students were found."
-      },
-      "CREATE": {
-        "TITLE": "Register student",
-        "SUBTITLE": "Complete the information and confirm registration. A password will be generated automatically.",
-        "PERSONAL_SECTION": "Personal data",
-        "ACADEMIC_SECTION": "Academic information"
-      }
+    "COLUMNS": {
+      "ACTIONS": "Actions",
+      "ADMISSION": "Admission",
+      "EMAIL": "Email",
+      "EMPLOYEE_NUMBER": "Employee number",
+      "ENROLLMENT": "Enrollment ID",
+      "NAME": "Name",
+      "PROGRAM": "Program",
+      "STATUS": "Status"
     },
-    "PROFESSORS": {
-      "LIST": {
-        "TITLE": "Professors",
-        "SUBTITLE": "Browse and manage graduate professors.",
-        "CREATE": "Create professor",
-        "SEARCH": "Search by name, email or employee number",
-        "EMPTY": "No professors were found."
-      },
-      "CREATE": {
-        "TITLE": "Register professor",
-        "SUBTITLE": "Complete the institutional data and confirm registration."
-      }
+    "ERRORS": {
+      "duplicate_email": "The email address is already registered.",
+      "duplicate_employee": "The employee number is already registered.",
+      "duplicate_enrollment": "The enrollment ID is already registered.",
+      "reference_not_found": "The requested graduate program was not found.",
+      "server": "An error occurred while saving the information."
     },
     "FIELDS": {
-      "FIRST_NAME": "First name",
-      "FIRST_LAST_NAME": "First last name",
-      "SECOND_LAST_NAME": "Second last name",
-      "EMAIL": "Email",
-      "NATIONALITY": "Nationality",
-      "ENROLLMENT_ID": "Enrollment ID",
-      "UNDERGRADUATE_DEGREE": "Undergraduate degree",
-      "PROGRAM_TYPE": "Program type",
       "ADMISSION_DATE": "Admission date",
-      "EMPLOYEE_NUMBER": "Employee number"
-    },
-    "COLUMNS": {
-      "NAME": "Name",
       "EMAIL": "Email",
-      "ENROLLMENT": "Enrollment ID",
       "EMPLOYEE_NUMBER": "Employee number",
-      "PROGRAM": "Program",
-      "ADMISSION": "Admission",
-      "STATUS": "Status",
-      "ACTIONS": "Actions"
+      "ENROLLMENT_ID": "Enrollment ID",
+      "FIRST_LAST_NAME": "First last name",
+      "FIRST_NAME": "First name",
+      "NATIONALITY": "Nationality",
+      "PROGRAM_TYPE": "Program type",
+      "SECOND_LAST_NAME": "Second last name",
+      "UNDERGRADUATE_DEGREE": "Undergraduate degree"
     },
     "FILTERS": {
       "ALL": "All",
       "PROGRAM_TYPE": "Program type",
       "STATUS": "Status"
     },
+    "PAGINATION": {
+      "TOTAL": "Total"
+    },
+    "PROFESSORS": {
+      "CREATE": {
+        "SUBTITLE": "Complete the institutional data and confirm registration.",
+        "TITLE": "Register professor"
+      },
+      "LIST": {
+        "CREATE": "Create professor",
+        "EMPTY": "No professors were found.",
+        "SEARCH": "Search by name, email or employee number",
+        "SUBTITLE": "Browse and manage graduate professors.",
+        "TITLE": "Professors"
+      }
+    },
     "PROGRAM_TYPES": {
-      "MAESTRIA": "Master's",
-      "DOCTORADO": "Doctorate"
+      "DOCTORADO": "Doctorate",
+      "MAESTRIA": "Master's"
+    },
+    "STATES": {
+      "LOAD_ERROR": "The catalog could not be loaded."
     },
     "STATUS": {
       "ACTIVE": "Active",
       "INACTIVE": "Inactive"
     },
-    "STATES": {
-      "LOAD_ERROR": "The catalog could not be loaded."
-    },
-    "PAGINATION": {
-      "TOTAL": "Total"
-    },
-    "WIZARD": {
-      "STEP_1": "Personal data",
-      "STEP_2": "Academic information",
-      "STEP_3": "Confirmation",
-      "INSTITUTIONAL": "Institutional data",
-      "CONFIRM_TITLE": "Review the information before confirming"
-    },
-    "ERRORS": {
-      "duplicate_email": "The email address is already registered.",
-      "duplicate_enrollment": "The enrollment ID is already registered.",
-      "duplicate_employee": "The employee number is already registered.",
-      "reference_not_found": "The requested graduate program was not found.",
-      "server": "An error occurred while saving the information."
+    "STUDENTS": {
+      "CREATE": {
+        "ACADEMIC_SECTION": "Academic information",
+        "PERSONAL_SECTION": "Personal data",
+        "SUBTITLE": "Complete the information and confirm registration. A password will be generated automatically.",
+        "TITLE": "Register student"
+      },
+      "LIST": {
+        "CREATE": "Create student",
+        "EMPTY": "No students were found.",
+        "SEARCH": "Search by name, email or enrollment ID",
+        "SUBTITLE": "Browse and manage graduate students.",
+        "TITLE": "Students"
+      }
     },
     "TEMP_PASSWORD": {
-      "TITLE": "Registration completed",
-      "SUBTITLE": "The account was created successfully",
-      "MESSAGE": "This temporary password is shown only once. Copy it before continuing.",
-      "COPY": "Copy to clipboard",
+      "CLOSE": "Understood",
       "COPIED": "Password copied.",
-      "WARNING": "For security, the password will not be shown again.",
-      "CLOSE": "Understood"
+      "COPY": "Copy to clipboard",
+      "MESSAGE": "This temporary password is shown only once. Copy it before continuing.",
+      "SUBTITLE": "The account was created successfully",
+      "TITLE": "Registration completed",
+      "WARNING": "For security, the password will not be shown again."
+    },
+    "WIZARD": {
+      "CONFIRM_TITLE": "Review the information before confirming",
+      "INSTITUTIONAL": "Institutional data",
+      "STEP_1": "Personal data",
+      "STEP_2": "Academic information",
+      "STEP_3": "Confirmation"
     }
   },
   "ACCOUNT": {
     "PASSWORD": {
-      "SELF_TITLE": "Change my password",
-      "ADMIN_TITLE": "Change user password",
-      "SELF_DESCRIPTION": "Enter your current password and choose a new one.",
-      "ADMIN_DESCRIPTION": "Choose a new password for the selected user.",
-      "CURRENT": "Current password",
-      "NEW": "New password",
-      "CONFIRM": "Confirm new password",
-      "TARGET_USER": "Target user",
-      "SUBMIT": "Change password",
       "ADMIN_ACTION": "Change password",
-      "SUCCESS": "The password was updated.",
+      "ADMIN_DESCRIPTION": "Choose a new password for the selected user.",
+      "ADMIN_TITLE": "Change user password",
+      "CONFIRM": "Confirm new password",
+      "CURRENT": "Current password",
       "ERRORS": {
         "current_password": "The current password is incorrect.",
-        "user_not_found": "The requested user was not found.",
-        "server": "The password could not be changed."
-      }
-    }
-  },
-  "PRESENTATIONS": {
-    "PLACEHOLDER": {
-      "TITLE": "Presentations",
-      "MESSAGE": "Presentations module — coming soon"
+        "server": "The password could not be changed.",
+        "user_not_found": "The requested user was not found."
+      },
+      "NEW": "New password",
+      "SELF_DESCRIPTION": "Enter your current password and choose a new one.",
+      "SELF_TITLE": "Change my password",
+      "SUBMIT": "Change password",
+      "SUCCESS": "The password was updated.",
+      "TARGET_USER": "Target user"
     }
   },
   "AUTH": {
+    "FORGOT_PASSWORD": {
+      "BACK_TO_LOGIN": "Back to sign in",
+      "DESCRIPTION": "Enter your email address. If it exists in the system, you will receive instructions to reset your password.",
+      "EMAIL": "Email",
+      "EMAIL_PLACEHOLDER": "user@email.uam.mx",
+      "ERROR_INVALID_EMAIL": "Enter a valid email address.",
+      "ERROR_REQUIRED": "This field is required",
+      "SUBMIT": "Send email",
+      "TITLE": "Recover password"
+    },
+    "FORGOT_PASSWORD_SENT": {
+      "BACK_TO_LOGIN": "Back to sign in",
+      "MESSAGE": "An email with password recovery instructions has been sent to the address provided, if it exists in the system.",
+      "SPAM_HINT": "Also check your spam folder.",
+      "TITLE": "Email sent"
+    },
     "LOGIN": {
       "BRAND": "SAPCyTI",
-      "SUBTITLE": "Graduate Portal — PCyTI UAM",
-      "TITLE": "Sign in",
+      "CLEAR": "Clear",
       "EMAIL": "Email",
       "EMAIL_PLACEHOLDER": "student@email.uam.mx",
-      "PASSWORD": "Password",
-      "REMEMBER_ME": "Remember me",
-      "SUBMIT": "Sign in",
-      "CLEAR": "Clear",
+      "ERROR_COOLDOWN": "Too many attempts. Please wait {seconds} seconds before trying again.",
+      "ERROR_INVALID_CREDENTIALS": "Invalid credentials. Please check your email and password.",
+      "ERROR_REQUIRED": "This field is required",
+      "FOOTER": {
+        "COPYRIGHT": "© 2026 SAPCyTI — Institutional Academic Portal",
+        "PRIVACY": "Privacy",
+        "SUPPORT": "Support",
+        "TERMS": "Terms"
+      },
       "FORGOT_PASSWORD": "Forgot your password?",
       "MOCK_HINT": {
         "TITLE": "Demo mode (no backend). Use any of these accounts:"
       },
-      "ERROR_INVALID_CREDENTIALS": "Invalid credentials. Please check your email and password.",
-      "ERROR_COOLDOWN": "Too many attempts. Please wait {seconds} seconds before trying again.",
-      "ERROR_REQUIRED": "This field is required",
-      "FOOTER": {
-        "PRIVACY": "Privacy",
-        "SUPPORT": "Support",
-        "TERMS": "Terms",
-        "COPYRIGHT": "© 2026 SAPCyTI — Institutional Academic Portal"
-      }
-    },
-    "FORGOT_PASSWORD": {
-      "TITLE": "Recover password",
-      "DESCRIPTION": "Enter your email address. If it exists in the system, you will receive instructions to reset your password.",
-      "EMAIL": "Email",
-      "EMAIL_PLACEHOLDER": "user@email.uam.mx",
-      "SUBMIT": "Send email",
-      "BACK_TO_LOGIN": "Back to sign in",
-      "ERROR_REQUIRED": "This field is required",
-      "ERROR_INVALID_EMAIL": "Enter a valid email address."
-    },
-    "FORGOT_PASSWORD_SENT": {
-      "TITLE": "Email sent",
-      "MESSAGE": "An email with password recovery instructions has been sent to the address provided, if it exists in the system.",
-      "SPAM_HINT": "Also check your spam folder.",
-      "BACK_TO_LOGIN": "Back to sign in"
-    },
-    "RESET_PASSWORD": {
-      "TITLE": "Reset password",
-      "DESCRIPTION": "Enter your new password. It must be at least 8 characters long.",
-      "NEW_PASSWORD": "New password",
-      "NEW_PASSWORD_PLACEHOLDER": "Enter your new password",
-      "CONFIRM_PASSWORD": "Confirm password",
-      "CONFIRM_PASSWORD_PLACEHOLDER": "Repeat your new password",
-      "PASSWORD_MIN_LENGTH": "Must be at least 8 characters. {remaining} remaining.",
-      "SUBMIT": "Reset password",
-      "SUCCESS": "Your password has been reset successfully.",
-      "INVALID_TOKEN": "The recovery link is invalid or has already been used.",
-      "EXPIRED_TOKEN": "The recovery link has expired.",
-      "REQUEST_NEW_LINK": "Request a new link",
-      "BACK_TO_LOGIN": "Back to sign in"
+      "PASSWORD": "Password",
+      "REMEMBER_ME": "Remember me",
+      "SUBMIT": "Sign in",
+      "SUBTITLE": "Graduate Portal — PCyTI UAM",
+      "TITLE": "Sign in"
     },
     "PLACEHOLDER": {
-      "TITLE": "Authentication",
-      "MESSAGE": "Login — coming soon (Phase 6)"
+      "MESSAGE": "Login — coming soon (Phase 6)",
+      "TITLE": "Authentication"
+    },
+    "RESET_PASSWORD": {
+      "BACK_TO_LOGIN": "Back to sign in",
+      "CONFIRM_PASSWORD": "Confirm password",
+      "CONFIRM_PASSWORD_PLACEHOLDER": "Repeat your new password",
+      "DESCRIPTION": "Enter your new password. It must be at least 8 characters long.",
+      "EXPIRED_TOKEN": "The recovery link has expired.",
+      "INVALID_TOKEN": "The recovery link is invalid or has already been used.",
+      "NEW_PASSWORD": "New password",
+      "NEW_PASSWORD_PLACEHOLDER": "Enter your new password",
+      "PASSWORD_MIN_LENGTH": "Must be at least 8 characters. {remaining} remaining.",
+      "REQUEST_NEW_LINK": "Request a new link",
+      "SUBMIT": "Reset password",
+      "SUCCESS": "Your password has been reset successfully.",
+      "TITLE": "Reset password"
+    }
+  },
+  "COMMON": {
+    "ACTIONS": {
+      "BACK": "Go back",
+      "CANCEL": "Cancel",
+      "CLEAR": "Clear",
+      "CONFIRM": "Confirm",
+      "DELETE": "Delete",
+      "EDIT": "Edit",
+      "NEXT": "Next",
+      "RETRY": "Retry",
+      "SAVE": "Save",
+      "SEARCH": "Search"
+    },
+    "ERRORS": {
+      "ACCESS_DENIED": "Access denied",
+      "ACCESS_DENIED_MSG": "You do not have permission to access this page.",
+      "NOT_FOUND": "Page not found",
+      "SERVER_ERROR": "Server error"
+    },
+    "STATES": {
+      "LOADING": "Loading..."
+    },
+    "VALIDATION": {
+      "EMAIL": "Enter a valid email address.",
+      "MAXLENGTH": "The value is too long.",
+      "MINLENGTH": "The value is too short.",
+      "PASSWORDS_MISMATCH": "Passwords do not match.",
+      "PATTERN": "Invalid format.",
+      "REQUIRED": "This field is required."
+    }
+  },
+  "DASHBOARD": {
+    "CARDS": {
+      "ACTIVE_TERM": "Active process",
+      "ACTIVE_TERM_BADGE": "Enrolling",
+      "FORMATS_LINK": "Print forms",
+      "FORMATS_READY": "students with approved UEAs",
+      "MANAGE_LINK": "Manage",
+      "MY_ADVISEES": "advised students",
+      "MY_ADVISEES_LINK": "View students",
+      "MY_ENROLLMENT": "My enrollment status",
+      "MY_ENROLLMENT_LINK": "View enrollment",
+      "PENDING_APPROVAL": "UEAs awaiting advisor approval",
+      "PENDING_LINK": "Review pending",
+      "PENDING_REVIEWS": "UEA selections awaiting approval",
+      "PENDING_REVIEWS_LINK": "Review now",
+      "PRESENTATIONS": "Presentations",
+      "PRESENTATIONS_LINK": "View presentations",
+      "STUDENTS_COUNT": "registered students",
+      "STUDENTS_LINK": "View students",
+      "SUPPORT_FORMATS": "students ready to generate PDF",
+      "SUPPORT_FORMATS_LINK": "Generate forms"
+    },
+    "HOME": {
+      "ASSISTANT": {
+        "SUBTITLE": "Enrollment forms ready to generate.",
+        "TITLE": "Home"
+      },
+      "COORDINATOR": {
+        "SUBTITLE": "Welcome to the Academic Management Panel.",
+        "TITLE": "Home"
+      },
+      "PLACEHOLDER": "Role-based dashboard content — coming soon.",
+      "PROFESSOR": {
+        "SUBTITLE": "Summary of advised students and pending enrollments.",
+        "TITLE": "Home"
+      },
+      "SPEAKER": {
+        "SUBTITLE": "Review and manage your presentations.",
+        "TITLE": "Home"
+      },
+      "STUDENT": {
+        "SUBTITLE": "Review the status of your term enrollment.",
+        "TITLE": "Home"
+      },
+      "SYSTEM_ADMIN": {
+        "SUBTITLE": "Oversee global configuration and system presentations.",
+        "TITLE": "Home"
+      }
+    },
+    "PLACEHOLDER": {
+      "MESSAGE": "Dashboard — coming soon",
+      "TITLE": "Home"
+    },
+    "PROFESSOR": {
+      "ACTIVITY_1": "Ana García submitted her UEA selection for term 23-O.",
+      "ACTIVITY_1_TIME": "2 hours ago",
+      "ACTIVITY_2": "Roberto Jiménez's selection was approved successfully.",
+      "ACTIVITY_2_TIME": "Yesterday, 14:30",
+      "ACTIVITY_3": "System: New enrollment guidelines have been uploaded.",
+      "ACTIVITY_3_TIME": "2 days ago",
+      "ACTIVITY_ACTION": "View detail",
+      "ACTIVITY_TITLE": "Recent Activity"
+    },
+    "STUDENT": {
+      "ACTION": "Go to enrollment",
+      "APPROVED": "Approved",
+      "ENROLLMENT_TITLE": "My enrollment — Term 26-I",
+      "FUTURE_STATES": "Visual Reference of Future States",
+      "NAME": "Juan Pérez García",
+      "PENDING_REVIEW": "Pending review",
+      "PHASE_2": "Phase 2",
+      "PHASE_3": "Phase 3",
+      "REGISTRATION": "ID: 223300456",
+      "STATUS": "Selection pending",
+      "STATUS_MESSAGE": "Select your UEAs and submit your choice to your advisor to continue the process."
+    }
+  },
+  "ENROLLMENT": {
+    "ADVISOR_APPROVAL": {
+      "MESSAGE": "Advisor approval module — coming soon",
+      "TITLE": "Approve course selection"
+    },
+    "FORM_PDF": {
+      "MESSAGE": "Form generation — coming soon",
+      "TITLE": "Enrollment form (PDF)"
+    },
+    "PLACEHOLDER": {
+      "MESSAGE": "Enrollment module — coming soon",
+      "TITLE": "Enrollment"
+    },
+    "STATUS": {
+      "MESSAGE": "Status tracking — coming soon",
+      "TITLE": "Process status"
+    },
+    "TERMS": {
+      "MESSAGE": "Term management — coming soon",
+      "TITLE": "Terms and academic offer"
+    }
+  },
+  "PRESENTATIONS": {
+    "PLACEHOLDER": {
+      "MESSAGE": "Presentations module — coming soon",
+      "TITLE": "Presentations"
+    }
+  },
+  "SHELL": {
+    "BRAND": {
+      "SUBTITLE": "PCyTI — UAM",
+      "TITLE": "SAPCyTI"
+    },
+    "MENU": {
+      "ADVISOR_APPROVAL": "Approve course selection",
+      "CHANGE_PASSWORD": "Change password",
+      "ENROLLMENT": "Enrollment",
+      "ENROLLMENT_FORM_PDF": "Enrollment form (PDF)",
+      "ENROLLMENT_STATUS": "Process status",
+      "HOME": "Home",
+      "PRESENTATIONS": "Presentations",
+      "PROFESSORS": "Professors",
+      "STUDENTS": "Students",
+      "TERMS_OFFER": "Terms and academic offer"
+    },
+    "SECTIONS": {
+      "ACADEMIC_MANAGEMENT": "Academic management",
+      "ACCOUNT": "Account",
+      "ENROLLMENT": "Enrollment",
+      "ENROLLMENT_PROCESS": "Enrollment process",
+      "MAIN": "Main",
+      "PRESENTATIONS": "Presentations"
+    },
+    "TOPBAR": {
+      "LOGOUT": "Sign out",
+      "MENU": "Menu",
+      "NOTIFICATIONS": "Notifications",
+      "SEARCH_PLACEHOLDER": "Search students, professors, records…",
+      "TITLE": "SAPCyTI"
     }
   }
 }

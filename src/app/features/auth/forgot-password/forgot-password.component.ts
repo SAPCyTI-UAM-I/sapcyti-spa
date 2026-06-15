@@ -13,6 +13,7 @@ import { PasswordRecoveryService } from '../../../core/auth/password-recovery.se
 import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
 import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
 import { FieldErrorComponent } from '../../../shared/components/field-error/field-error.component';
+import { isFieldInvalid } from '../../../shared/utils/field-error.util';
 
 @Component({
   selector: 'app-forgot-password',
@@ -43,6 +44,7 @@ export class ForgotPasswordComponent {
   readonly submitting = signal(false);
   readonly serverError = signal(false);
   readonly submitted = signal(false);
+  readonly isFieldInvalid = isFieldInvalid;
 
   onSubmit(): void {
     this.submitted.set(true);
@@ -71,9 +73,5 @@ export class ForgotPasswordComponent {
           }
         },
       });
-  }
-
-  showFieldError(): boolean {
-    return this.submitted() && this.form.controls.email.invalid;
   }
 }

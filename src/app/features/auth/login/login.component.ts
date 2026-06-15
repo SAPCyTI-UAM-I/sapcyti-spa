@@ -13,12 +13,14 @@ import { finalize } from 'rxjs';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
 import { AUTH_MOCK_USERS } from '../../../core/auth/mock/auth.mock';
+import { createLoginCooldown } from '../../../core/auth/utils/login-cooldown';
 import { hasAppProfile } from '../../../core/auth/utils/role-authorization.util';
 import { sanitizeReturnUrl } from '../../../core/auth/utils/sanitize-return-url.util';
 import { injectMockEnabled } from '../../../core/mocks/mock.config';
 import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
 import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
 import { FieldErrorComponent } from '../../../shared/components/field-error/field-error.component';
+import { isFieldInvalid } from '../../../shared/utils/field-error.util';
 
 @Component({
   selector: 'app-login',
@@ -47,6 +49,7 @@ export class LoginComponent {
 
   readonly authMockEnabled = injectMockEnabled('auth');
   readonly mockUsers = AUTH_MOCK_USERS;
+  readonly cooldown = createLoginCooldown(this.destroyRef);
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -59,17 +62,14 @@ export class LoginComponent {
   readonly serverError = signal(false);
   readonly submitted = signal(false);
 
-  private readonly MAX_ATTEMPTS = 3;
-  private readonly COOLDOWN_MS = 30_000;
-  private failedAttempts = 0;
-  readonly cooldownRemaining = signal(0);
-  private cooldownTimer: ReturnType<typeof setInterval> | null = null;
+  readonly isFieldInvalid = isFieldInvalid;
 
   onClear(): void {
     this.form.reset({ email: '', password: '', rememberMe: false });
     this.credentialError.set(false);
     this.serverError.set(false);
     this.submitted.set(false);
+    this.cooldown.clear();
   }
 
   onSubmit(): void {
@@ -77,7 +77,7 @@ export class LoginComponent {
     this.credentialError.set(false);
     this.serverError.set(false);
 
-    if (this.form.invalid || this.cooldownRemaining() > 0) {
+    if (this.form.invalid || this.cooldown.isActive()) {
       return;
     }
 
@@ -96,17 +96,8 @@ export class LoginComponent {
       });
   }
 
-  showFieldError(controlName: 'email' | 'password'): boolean {
-    const control = this.form.controls[controlName];
-    return this.submitted() && control.invalid;
-  }
-
-  fieldInvalid(controlName: 'email' | 'password'): boolean {
-    return this.showFieldError(controlName) || this.credentialError();
-  }
-
   private handleLoginSuccess(): void {
-    this.clearCooldown();
+    this.cooldown.clear();
     const user = this.auth.getCurrentUser();
     if (!user || !hasAppProfile(user.role)) {
       void this.router.navigateByUrl('/access-denied');
@@ -120,38 +111,10 @@ export class LoginComponent {
   private handleLoginError(error: HttpErrorResponse): void {
     if (error.status === 401) {
       this.credentialError.set(true);
-      this.failedAttempts++;
-
-      if (this.failedAttempts >= this.MAX_ATTEMPTS) {
-        this.startCooldown();
-      }
+      this.cooldown.recordFailedAttempt();
       return;
     }
 
     this.serverError.set(true);
-  }
-
-  private startCooldown(): void {
-    this.cooldownRemaining.set(this.COOLDOWN_MS / 1000);
-
-    this.cooldownTimer = setInterval(() => {
-      const remaining = this.cooldownRemaining() - 1;
-      this.cooldownRemaining.set(remaining);
-
-      if (remaining <= 0) {
-        this.clearCooldown();
-      }
-    }, 1000);
-
-    this.destroyRef.onDestroy(() => this.clearCooldown());
-  }
-
-  private clearCooldown(): void {
-    if (this.cooldownTimer) {
-      clearInterval(this.cooldownTimer);
-      this.cooldownTimer = null;
-    }
-    this.failedAttempts = 0;
-    this.cooldownRemaining.set(0);
   }
 }

@@ -26,8 +26,8 @@
       [placeholder]="'ACADEMIC_CATALOG.PROFESSORS.LIST.SEARCH' | translate"
     />
     <p-select formControlName="active" [options]="statuses" optionValue="value" fluid>
-      <ng-template #selectedItem let-option>{{ option?.label | translate }}</ng-template>
-      <ng-template #item let-option>{{ option.label | translate }}</ng-template>
+      <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
+      <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
     </p-select>
     <div class="gap-sm flex">
       <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />

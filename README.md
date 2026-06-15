@@ -100,6 +100,24 @@ Para corregir automáticamente los errores que ESLint pueda resolver:
 ng lint --fix
 ```
 
+## Internacionalización (i18n)
+
+Traducciones en `src/assets/i18n/es.json` y `en.json`. El proyecto verifica que ambos archivos tengan **exactamente el mismo conjunto de claves**.
+
+Verificar paridad (incluido en `pnpm run lint`):
+
+```bash
+pnpm run i18n:check
+```
+
+Ordenar JSON y regenerar tipos TypeScript (`I18nKey` en `src/app/core/i18n/i18n-keys.generated.ts`) tras añadir o renombrar claves:
+
+```bash
+pnpm run i18n:sync
+```
+
+Script: `scripts/i18n-check.mjs` (flags `--sort`, `--types`). Convenciones detalladas en [`conventions.md`](conventions.md).
+
 ## Compilación (Build)
 
 Para compilar el proyecto:

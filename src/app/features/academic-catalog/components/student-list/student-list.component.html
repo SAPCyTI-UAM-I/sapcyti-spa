@@ -32,9 +32,9 @@
       fluid
     >
       <ng-template #selectedItem let-option>
-        {{ option?.label | translate }}
+        {{ option?.labelKey | translate }}
       </ng-template>
-      <ng-template #item let-option>{{ option.label | translate }}</ng-template>
+      <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
     </p-select>
     <p-select
       formControlName="active"
@@ -44,9 +44,9 @@
       fluid
     >
       <ng-template #selectedItem let-option>
-        {{ option?.label | translate }}
+        {{ option?.labelKey | translate }}
       </ng-template>
-      <ng-template #item let-option>{{ option.label | translate }}</ng-template>
+      <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
     </p-select>
     <div class="gap-sm flex">
       <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />

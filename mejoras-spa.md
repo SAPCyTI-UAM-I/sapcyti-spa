@@ -36,8 +36,8 @@ switch** sin tocar el contrato de `environment`.
 - [x] **Fase 0** — Línea base y red de seguridad (lint/test/build verdes, baseline, reglas de no-regresión)
 - [x] **Fase 1** — Capa de datos uniforme: abstracción Repository (HTTP impl + Mock impl) seleccionada por DI token; centralizar endpoints
 - [x] **Fase 2** — Genéricos `academic-catalog`: base list (paginación/filtros) + base registration; separar mock store por entidad
-- [ ] **Fase 3** — Formularios/validación unificados: `FieldErrorComponent` en todos; extraer wizard multistep y cooldown
-- [ ] **Fase 4** — i18n robusto: tipado de claves + script de paridad es↔en + mover labels hardcodeados
+- [x] **Fase 3** — Formularios/validación unificados: `FieldErrorComponent` en todos; extraer wizard multistep y cooldown
+- [x] **Fase 4** — i18n robusto: tipado de claves + script de paridad es↔en + mover labels hardcodeados
 - [ ] **Fase 5** — Design system: sacar Tailwind de configs TS; reutilizar `stat-card`/tokens
 - [ ] **Fase 6** — Estructura/barrels + reglas ESLint anti-acoplamiento + strict TS
 - [ ] **Fase 7** — Consolidación de Docs (specs duplicadas) y poblar `TECH_DEBT.md`
@@ -202,9 +202,9 @@ Tareas:
 4.4 Ordena alfabéticamente y normaliza ambos JSON sin perder claves.
 
 DoD Fase 4:
-- [ ] es.json y en.json con paridad verificada por script
-- [ ] Sin labels de UI hardcodeados en archivos `.ts`
-- [ ] Script documentado; lint/test/build verdes
+- [x] es.json y en.json con paridad verificada por script
+- [x] Sin labels de UI hardcodeados en archivos `.ts`
+- [x] Script documentado; lint/test/build verdes
 
 ============================================================
 ## FASE 5 — Design system / presentación fuera de la config

@@ -34,18 +34,21 @@
       </div>
     }
 
-    @if (cooldownRemaining() > 0) {
+    @if (cooldown.remainingSeconds() > 0) {
       <p-message
         severity="warn"
         icon="pi pi-lock"
         [text]="
-          ('AUTH.LOGIN.ERROR_COOLDOWN' | translate).replace('{seconds}', '' + cooldownRemaining())
+          ('AUTH.LOGIN.ERROR_COOLDOWN' | translate).replace(
+            '{seconds}',
+            '' + cooldown.remainingSeconds()
+          )
         "
         styleClass="mb-4 w-full"
       />
     }
 
-    @if (credentialError() && cooldownRemaining() === 0) {
+    @if (credentialError() && cooldown.remainingSeconds() === 0) {
       <p-message
         severity="error"
         icon="pi pi-times-circle"
@@ -76,7 +79,7 @@
           autocomplete="username"
           class="w-full"
           [placeholder]="'AUTH.LOGIN.EMAIL_PLACEHOLDER' | translate"
-          [class.p-invalid]="fieldInvalid('email')"
+          [class.p-invalid]="isFieldInvalid(form.controls.email, submitted(), credentialError())"
         />
         <app-field-error [control]="form.controls.email" [submitted]="submitted()" />
       </div>
@@ -92,7 +95,11 @@
           [feedback]="false"
           [toggleMask]="true"
           fluid
-          [inputStyleClass]="fieldInvalid('password') ? 'p-invalid w-full' : 'w-full'"
+          [inputStyleClass]="
+            isFieldInvalid(form.controls.password, submitted(), credentialError())
+              ? 'p-invalid w-full'
+              : 'w-full'
+          "
         />
         <app-field-error [control]="form.controls.password" [submitted]="submitted()" />
       </div>
@@ -121,7 +128,7 @@
           [label]="'AUTH.LOGIN.SUBMIT' | translate"
           styleClass="w-full sm:flex-1"
           [loading]="submitting()"
-          [disabled]="submitting() || cooldownRemaining() > 0"
+          [disabled]="submitting() || cooldown.isActive()"
         />
       </div>
     </form>

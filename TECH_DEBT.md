@@ -7,7 +7,7 @@
 | Check | Result |
 |-------|--------|
 | `pnpm run lint` | ✅ Green |
-| `pnpm test` | ✅ Green — 118 tests (30 files) |
+| `pnpm test` | ✅ Green — 126 tests (33 files) |
 | `ng build` | ✅ Green (bundle budget warning: 538 kB > 500 kB) |
 
 ## Refactor backlog (mejoras-spa.md)
@@ -19,10 +19,10 @@
 | TD-003 | `AcademicCatalogMockStore` mezcla students + professors (SRP) | Medium | Una clase, dos entidades | Mock store difícil de extender | ~~Fase 2~~ ✅ Resuelto 2026-06-15 |
 | TD-004 | Endpoints fragmentados sin barrels | Medium | URLs repartidas en `*.endpoints.ts` por feature | Riesgo de URLs inconsistentes | Fase 1 ✅ URLs centralizadas en `core/api/api-endpoints.ts`; barrels pendiente Fase 6 |
 | TD-005 | Paginación/filtros reimplementados en cada list component | Medium | Lógica copiada; no usa `p-paginator` | UI inconsistente potencial | ~~Fase 2~~ ✅ Base `CatalogListBase`; `p-paginator` diferido |
-| TD-006 | Manejo de errores de validación inconsistente entre formularios | Medium | `FieldErrorComponent` no usado uniformemente | UX de errores variable | Fase 3 |
-| TD-007 | i18n frágil (sin tipado ni verificación de paridad es/en) | Medium | Labels hardcodeados en arrays TS | Claves huérfanas o faltantes | Fase 4 |
+| TD-006 | Manejo de errores de validación inconsistente entre formularios | Medium | `FieldErrorComponent` no usado uniformemente | UX de errores variable | ~~Fase 3~~ ✅ Resuelto 2026-06-15 |
+| TD-007 | i18n frágil (sin tipado ni verificación de paridad es/en) | Medium | Labels hardcodeados en arrays TS | Claves huérfanas o faltantes | ~~Fase 4~~ ✅ Resuelto 2026-06-15 |
 | TD-008 | Presentación (Tailwind) en configs TS (`dashboard-home.config`) | Low | Datos mezclados con clases CSS | Config difícil de reutilizar | Fase 5 |
-| TD-009 | `login` con `setInterval` imperativo embebido en componente | Low | Lógica no testeable aisladamente | Cooldown difícil de reutilizar | Fase 3 |
+| TD-009 | `login` con `setInterval` imperativo embebido en componente | Low | Lógica no testeable aisladamente | Cooldown difícil de reutilizar | ~~Fase 3~~ ✅ Resuelto 2026-06-15 |
 | TD-010 | Specs duplicadas SPEC-016A/017A/018A con contenido distinto (Docs/) | Medium | Dos archivos por spec, md5 distintos | Confusión sobre contrato canónico | Fase 7 (Docs) |
 
 ## Priority Levels

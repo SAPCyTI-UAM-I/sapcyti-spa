@@ -8,6 +8,7 @@ import { of, throwError } from 'rxjs';
 
 import { PasswordRecoveryService } from '../../../core/auth/password-recovery.service';
 import { provideAppMockConfig } from '../../../core/mocks/mock.config';
+import { shouldShowFieldError } from '../../../shared/utils/field-error.util';
 import { ResetPasswordComponent } from './reset-password.component';
 
 function makeActivatedRouteStub(token: string | null) {
@@ -71,8 +72,12 @@ describe('ResetPasswordComponent', () => {
     await setup();
     component.onSubmit();
     expect(passwordRecovery.resetPassword).not.toHaveBeenCalled();
-    expect(component.newPasswordShowError()).toBe(true);
-    expect(component.confirmPasswordShowError()).toBe(true);
+    expect(shouldShowFieldError(component.form.controls.newPassword, component.submitted())).toBe(
+      true,
+    );
+    expect(
+      shouldShowFieldError(component.form.controls.confirmPassword, component.submitted()),
+    ).toBe(true);
   });
 
   it('does not submit when password is too short', async () => {
@@ -80,7 +85,9 @@ describe('ResetPasswordComponent', () => {
     component.form.patchValue({ newPassword: 'short', confirmPassword: 'short' });
     component.onSubmit();
     expect(passwordRecovery.resetPassword).not.toHaveBeenCalled();
-    expect(component.newPasswordShowError()).toBe(true);
+    expect(shouldShowFieldError(component.form.controls.newPassword, component.submitted())).toBe(
+      true,
+    );
   });
 
   it('shows passwords-mismatch as user types without needing submit', async () => {
@@ -99,16 +106,24 @@ describe('ResetPasswordComponent', () => {
 
   it('shows newPassword error in real time without submit', async () => {
     await setup();
-    component.form.patchValue({ newPassword: 'short' });
-    expect(component.newPasswordShowError()).toBe(true);
+    component.form.controls.newPassword.patchValue('short');
+    component.form.controls.newPassword.markAsDirty();
+    expect(shouldShowFieldError(component.form.controls.newPassword, component.submitted())).toBe(
+      true,
+    );
   });
 
   it('clears newPassword error when password reaches minimum length', async () => {
     await setup();
-    component.form.patchValue({ newPassword: 'short' });
-    expect(component.newPasswordShowError()).toBe(true);
-    component.form.patchValue({ newPassword: 'LongEnough1!' });
-    expect(component.newPasswordShowError()).toBe(false);
+    component.form.controls.newPassword.patchValue('short');
+    component.form.controls.newPassword.markAsDirty();
+    expect(shouldShowFieldError(component.form.controls.newPassword, component.submitted())).toBe(
+      true,
+    );
+    component.form.controls.newPassword.patchValue('LongEnough1!');
+    expect(shouldShowFieldError(component.form.controls.newPassword, component.submitted())).toBe(
+      false,
+    );
   });
 
   it('calls resetPassword with token and new password on valid submit', async () => {

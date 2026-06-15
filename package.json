@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "e2e": "ng e2e",
-    "lint": "ng lint && prettier --check \"src/**/*.{ts,html,css,json}\"",
+    "lint": "ng lint && prettier --check \"src/**/*.{ts,html,css,json}\" && pnpm run i18n:check",
+    "i18n:check": "node scripts/i18n-check.mjs",
+    "i18n:sync": "node scripts/i18n-check.mjs --sort --types",
     "format": "prettier --write \"src/**/*.{ts,html,css,json}\""
   },
   "private": true,

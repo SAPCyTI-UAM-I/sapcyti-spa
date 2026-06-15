@@ -8,6 +8,7 @@ import { of, throwError } from 'rxjs';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
 import { provideAppMockConfig } from '../../../core/mocks/mock.config';
+import { shouldShowFieldError } from '../../../shared/utils/field-error.util';
 import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
@@ -60,8 +61,10 @@ describe('LoginComponent', () => {
   it('does not call login when form is empty', () => {
     component.onSubmit();
     expect(authState.login).not.toHaveBeenCalled();
-    expect(component.showFieldError('email')).toBe(true);
-    expect(component.showFieldError('password')).toBe(true);
+    expect(shouldShowFieldError(component.form.controls.email, component.submitted())).toBe(true);
+    expect(shouldShowFieldError(component.form.controls.password, component.submitted())).toBe(
+      true,
+    );
   });
 
   it('clears the form and error state', () => {
