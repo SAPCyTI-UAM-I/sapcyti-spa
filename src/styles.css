@@ -208,6 +208,11 @@ body {
   width: 100%;
 }
 
+/* The show/hide-password eye is clickable — show the pointer cursor on hover. */
+.p-password-toggle-mask-icon {
+  cursor: pointer;
+}
+
 .p-button {
   min-height: 40px;
   border-radius: var(--radius-lg);
