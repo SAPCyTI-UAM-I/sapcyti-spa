@@ -16,7 +16,7 @@ import { Password } from 'primeng/password';
 import { finalize } from 'rxjs';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
-import { createSubmittedPasswordsMismatch } from '../../../core/auth/utils';
+import { createPairedPasswordFormFeedback } from '../../../core/auth/utils';
 import { passwordsMatchValidator } from '../../../core/auth/utils';
 import { getApiErrorCode, getHttpStatus } from '../../../core/http/utils/parse-api-error.util';
 import { FieldErrorComponent } from '../../../shared/components';
@@ -61,7 +61,10 @@ export class PasswordChangeComponent {
     this.administrative ? 'ACCOUNT.PASSWORD.ADMIN_TITLE' : 'ACCOUNT.PASSWORD.SELF_TITLE',
   );
   readonly isFieldInvalid = isFieldInvalid;
-  readonly passwordsMismatch = createSubmittedPasswordsMismatch(this.form, this.submitted);
+
+  private readonly passwordFeedback = createPairedPasswordFormFeedback(this.form, this.submitted);
+  readonly passwordsMismatch = this.passwordFeedback.passwordsMismatch;
+  readonly confirmFieldInvalid = this.passwordFeedback.confirmFieldInvalid;
 
   constructor() {
     if (!this.administrative) {

@@ -106,6 +106,7 @@
         "user_not_found": "No se encontró el usuario solicitado."
       },
       "NEW": "Nueva contraseña",
+      "NEW_MIN_LENGTH": "Debe tener al menos 8 caracteres. Faltan {{remaining}}.",
       "SELF_DESCRIPTION": "Ingrese su contraseña actual y defina una nueva.",
       "SELF_TITLE": "Cambiar mi contraseña",
       "SUBMIT": "Cambiar contraseña",
@@ -167,7 +168,7 @@
       "INVALID_TOKEN": "El enlace de recuperación no es válido o ya fue utilizado.",
       "NEW_PASSWORD": "Nueva contraseña",
       "NEW_PASSWORD_PLACEHOLDER": "Ingrese su nueva contraseña",
-      "PASSWORD_MIN_LENGTH": "Debe tener al menos 8 caracteres. Faltan {remaining}.",
+      "PASSWORD_MIN_LENGTH": "Debe tener al menos 8 caracteres. Faltan {{remaining}}.",
       "REQUEST_NEW_LINK": "Solicitar un nuevo enlace",
       "SUBMIT": "Restablecer contraseña",
       "SUCCESS": "Su contraseña ha sido restablecida correctamente.",

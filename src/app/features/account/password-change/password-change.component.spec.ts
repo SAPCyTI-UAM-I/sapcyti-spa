@@ -1,10 +1,12 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
+import { minLengthRemaining, shouldShowFieldError } from '../../../shared/utils/field-error.util';
 import { PasswordChangeService } from '../services/password-change.service';
 import { PasswordChangeComponent } from './password-change.component';
 
@@ -86,5 +88,80 @@ describe('PasswordChangeComponent', () => {
     });
     component.submit();
     expect(service.changePassword).not.toHaveBeenCalled();
+  });
+
+  it('reports remaining characters reactively as the new password is typed', async () => {
+    const { component } = await createComponent(null);
+    component.form.controls.newPassword.patchValue('short');
+    component.form.controls.newPassword.markAsDirty();
+    expect(shouldShowFieldError(component.form.controls.newPassword, component.submitted())).toBe(
+      true,
+    );
+    expect(minLengthRemaining(component.form.controls.newPassword)).toBe(3);
+
+    component.form.controls.newPassword.patchValue('LongEnough1!');
+    expect(minLengthRemaining(component.form.controls.newPassword)).toBeNull();
+    expect(shouldShowFieldError(component.form.controls.newPassword, component.submitted())).toBe(
+      false,
+    );
+  });
+
+  it('shows mismatch reactively while typing and clears it once they match', async () => {
+    const { component } = await createComponent(null);
+    component.form.patchValue({ newPassword: 'ValidPass1!', confirmPassword: 'Different1!' });
+    expect(component.passwordsMismatch()).toBe(true);
+    expect(component.confirmFieldInvalid()).toBe(true);
+
+    component.form.patchValue({ confirmPassword: 'ValidPass1!' });
+    expect(component.passwordsMismatch()).toBe(false);
+    expect(component.confirmFieldInvalid()).toBe(false);
+  });
+
+  it('maps current-password error code to the current_password error', async () => {
+    const { component, service } = await createComponent(null);
+    service.changePassword.mockReturnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 400,
+            statusText: 'Bad Request',
+            error: { code: 'CURRENT_PASSWORD_INCORRECT' },
+          }),
+      ),
+    );
+    component.form.patchValue({
+      currentPassword: 'wrong-password',
+      newPassword: 'new-password',
+      confirmPassword: 'new-password',
+    });
+    component.submit();
+    expect(component.error()).toBe('current_password');
+  });
+
+  it('maps a 404 response to the user_not_found error', async () => {
+    const { component, service } = await createComponent('201');
+    service.changePassword.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 404, statusText: 'Not Found' })),
+    );
+    component.form.patchValue({
+      newPassword: 'temporary-password',
+      confirmPassword: 'temporary-password',
+    });
+    component.submit();
+    expect(component.error()).toBe('user_not_found');
+  });
+
+  it('falls back to a server error on unexpected failures', async () => {
+    const { component, service } = await createComponent(null);
+    service.changePassword.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Internal Server Error' })),
+    );
+    component.form.patchValue({
+      currentPassword: 'password',
+      newPassword: 'new-password',
+      confirmPassword: 'new-password',
+    });
+    component.submit();
+    expect(component.error()).toBe('server');
   });
 });
