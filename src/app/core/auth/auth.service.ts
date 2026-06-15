@@ -1,15 +1,22 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, finalize, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  finalize,
+  map,
+  Observable,
+  of,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 
 import { AuthResponse } from '../../models/auth-response.model';
 import { CurrentUser } from '../../models/current-user.model';
 import { JwtClaims } from '../../models/jwt-claims.model';
 import { isRoleType, RoleType } from '../../models/role-type.model';
 import { TenantService } from '../http/tenant.service';
-import { injectMockEnabled } from '../mocks/mock.config';
-import { AUTH_ENDPOINTS } from './auth.endpoints';
-import { mockLogin } from './mock/auth.mock';
+import { AUTH_API_REPOSITORY } from './repositories/auth-api.repository';
 import { decodeJwtPayload } from './utils/jwt.util';
 import { matchesAnyRole } from './utils/role-authorization.util';
 
@@ -18,9 +25,8 @@ const REMEMBERED_EMAIL_KEY = 'sapcyti.auth.rememberedEmail';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
-  private readonly http = inject(HttpClient);
+  private readonly authApi = inject(AUTH_API_REPOSITORY);
   private readonly tenantService = inject(TenantService);
-  private readonly useAuthMock = injectMockEnabled('auth');
 
   private accessToken: string | null = null;
   private tokenExpiresAt: number | null = null;
@@ -59,20 +65,7 @@ export class AuthStateService {
   }
 
   login(email: string, password: string, rememberMe = false): Observable<void> {
-    const login$ = this.useAuthMock
-      ? mockLogin(email, password)
-      : this.http.post<AuthResponse>(
-          AUTH_ENDPOINTS.login,
-          {
-            email,
-            password,
-            rememberMe,
-            deviceInfo: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
-          },
-          { withCredentials: true },
-        );
-
-    return login$.pipe(
+    return this.authApi.login(email, password, rememberMe).pipe(
       tap((response) => {
         this.applyAuthSuccess(email, response);
         this.updateRememberedSession(email, rememberMe);
@@ -83,24 +76,26 @@ export class AuthStateService {
 
   restoreRememberedSession(): Observable<void> {
     const rememberedEmail = this.getRememberedEmail();
-    if (this.useAuthMock || !this.shouldRestoreRememberedSession() || !rememberedEmail) {
+    if (
+      !this.authApi.supportsRememberedSessionRestore ||
+      !this.shouldRestoreRememberedSession() ||
+      !rememberedEmail
+    ) {
       return of(void 0);
     }
 
-    return this.http
-      .post<AuthResponse>(AUTH_ENDPOINTS.refresh, {}, { withCredentials: true })
-      .pipe(
-        tap((response) => this.applyAuthSuccess(rememberedEmail, response)),
-        map(() => void 0),
-        catchError(() => {
-          this.clearSessionState();
-          return of(void 0);
-        }),
-      );
+    return this.authApi.refresh().pipe(
+      tap((response) => this.applyAuthSuccess(rememberedEmail, response)),
+      map(() => void 0),
+      catchError(() => {
+        this.clearSessionState();
+        return of(void 0);
+      }),
+    );
   }
 
   silentRefresh(): Observable<void> {
-    if (this.useAuthMock) {
+    if (!this.authApi.supportsSilentRefresh) {
       return of(void 0);
     }
 
@@ -109,28 +104,15 @@ export class AuthStateService {
       return this.logout();
     }
 
-    return this.http
-      .post<AuthResponse>(AUTH_ENDPOINTS.refresh, {}, { withCredentials: true })
-      .pipe(
-        tap((response) => this.applyAuthSuccess(email, response)),
-        map(() => void 0),
-        catchError((error) =>
-          this.logout().pipe(switchMap(() => throwError(() => error))),
-        ),
-      );
+    return this.authApi.refresh().pipe(
+      tap((response) => this.applyAuthSuccess(email, response)),
+      map(() => void 0),
+      catchError((error) => this.logout().pipe(switchMap(() => throwError(() => error)))),
+    );
   }
 
   logout(): Observable<void> {
-    const logout$ = this.useAuthMock
-      ? of(void 0)
-      : this.http
-          .post<void>(AUTH_ENDPOINTS.logout, {}, { withCredentials: true })
-          .pipe(
-            map(() => void 0),
-            catchError(() => of(void 0)),
-          );
-
-    return logout$.pipe(finalize(() => this.clearSessionState()));
+    return this.authApi.logout().pipe(finalize(() => this.clearSessionState()));
   }
 
   private clearSessionState(): void {

@@ -22,6 +22,7 @@ import { httpErrorInterceptor } from './core/http/http-error.interceptor';
 import { jwtInterceptor } from './core/http/jwt.interceptor';
 import { tenantInterceptor } from './core/http/tenant.interceptor';
 import { provideAppMockConfig } from './core/mocks/mock.config';
+import { DATA_LAYER_PROVIDERS } from './core/api/data-layer.providers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -32,6 +33,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withInterceptors([jwtInterceptor, tenantInterceptor, httpErrorInterceptor])),
     provideAppMockConfig(environment.mocks),
+    ...DATA_LAYER_PROVIDERS,
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

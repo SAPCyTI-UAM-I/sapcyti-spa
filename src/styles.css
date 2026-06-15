@@ -330,6 +330,11 @@ body {
   flex-direction: column;
 }
 
+.shell-route-content {
+  width: 100%;
+  min-width: 0;
+}
+
 /* PrimeNG IconField / InputIcon — keeps icon color consistent with design tokens */
 .p-iconfield {
   display: flex;

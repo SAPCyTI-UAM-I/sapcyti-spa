@@ -39,7 +39,9 @@ describe('ResetPasswordComponent', () => {
       ],
     })
       .overrideComponent(ResetPasswordComponent, {
-        set: { providers: [{ provide: 'ActivatedRoute', useValue: makeActivatedRouteStub(token) }] },
+        set: {
+          providers: [{ provide: 'ActivatedRoute', useValue: makeActivatedRouteStub(token) }],
+        },
       })
       .compileComponents();
 

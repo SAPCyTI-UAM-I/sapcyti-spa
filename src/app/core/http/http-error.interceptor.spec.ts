@@ -89,8 +89,7 @@ describe('httpErrorInterceptor', () => {
 
     const retriedReq = httpMock.expectOne((candidate) => {
       return (
-        candidate.url === '/api/protected' &&
-        candidate.headers.get('x-sapcyti-auth-retry') === '1'
+        candidate.url === '/api/protected' && candidate.headers.get('x-sapcyti-auth-retry') === '1'
       );
     });
     retriedReq.flush({ ok: true });

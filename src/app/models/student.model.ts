@@ -1,31 +1,32 @@
-/**
- * Interfaz que representa los datos necesarios para registrar un nuevo estudiante.
- */
-export interface StudentRequest {
+export type ProgramType = 'MAESTRIA' | 'DOCTORADO';
+
+export interface RegisterStudentRequest {
+  enrollmentId: string;
+  email: string;
+  graduateProgramId: number;
   firstName: string;
   firstLastName: string;
-  secondLastName: string;
-  email: string;
+  secondLastName?: string;
   nationality: string;
   undergraduateDegree: string;
-  enrollmentId: string;
-  programType: 'MASTER' | 'DOCTORATE';
-  admissionDate: string; // Formato YYYY-MM-DD
+  programType: ProgramType;
+  admissionDate: string;
 }
 
-/**
- * Interfaz que representa la respuesta del servidor tras registrar un estudiante.
- */
-export interface StudentResponse {
+export interface StudentCatalogItem extends RegisterStudentRequest {
   id: number;
-  firstName: string;
-  firstLastName: string;
-  secondLastName: string;
-  email: string;
-  nationality: string;
-  undergraduateDegree: string;
-  enrollmentId: string;
-  programType: 'MASTER' | 'DOCTORATE';
-  admissionDate: string;
-  tempPassword?: string; // Contraseña autogenerada por el sistema, presente solo en la respuesta de creación
+  userId: number;
+  active: boolean;
+}
+
+export interface RegisterStudentResponse extends StudentCatalogItem {
+  generatedPassword: string;
+}
+
+export interface StudentCatalogQuery {
+  page: number;
+  size: number;
+  search?: string;
+  programType?: ProgramType;
+  active?: boolean;
 }

@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
 import { TenantService } from '../http/tenant.service';
+import { DATA_LAYER_PROVIDERS } from '../api/data-layer.providers';
 import { provideAppMockConfig } from '../mocks/mock.config';
 import { AuthStateService } from './auth.service';
 import {
@@ -20,7 +21,12 @@ describe('AuthStateService', () => {
 
   function setup(mocks: { auth?: boolean; passwordRecovery?: boolean } = { auth: false }): void {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideAppMockConfig(mocks)],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideAppMockConfig(mocks),
+        ...DATA_LAYER_PROVIDERS,
+      ],
     });
 
     service = TestBed.inject(AuthStateService);
@@ -236,7 +242,10 @@ describe('AuthStateService', () => {
 
     const refreshPromise = firstValueFrom(service.silentRefresh());
     const refreshReq = httpMock.expectOne(AUTH_TEST_ENDPOINTS.refresh);
-    refreshReq.flush({ message: 'Invalid refresh token' }, { status: 401, statusText: 'Unauthorized' });
+    refreshReq.flush(
+      { message: 'Invalid refresh token' },
+      { status: 401, statusText: 'Unauthorized' },
+    );
 
     const logoutReq = httpMock.expectOne(AUTH_TEST_ENDPOINTS.logout);
     expect(logoutReq.request.method).toBe('POST');

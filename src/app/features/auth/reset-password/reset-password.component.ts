@@ -91,13 +91,15 @@ export class ResetPasswordComponent implements OnInit {
   });
 
   /** Derives the exact field error (and remaining char count) from the value signal. */
-  readonly newPasswordError = computed((): { type: 'required' | 'minlength'; remaining: number } | null => {
-    if (!this.newPasswordShowError()) return null;
-    const value = this.formValue().newPassword ?? '';
-    if (value.length === 0) return { type: 'required', remaining: 8 };
-    if (value.length < 8) return { type: 'minlength', remaining: 8 - value.length };
-    return null;
-  });
+  readonly newPasswordError = computed(
+    (): { type: 'required' | 'minlength'; remaining: number } | null => {
+      if (!this.newPasswordShowError()) return null;
+      const value = this.formValue().newPassword ?? '';
+      if (value.length === 0) return { type: 'required', remaining: 8 };
+      if (value.length < 8) return { type: 'minlength', remaining: 8 - value.length };
+      return null;
+    },
+  );
 
   readonly confirmPasswordShowError = computed(() => {
     const hasAttempt = (this.formValue().confirmPassword?.length ?? 0) > 0 || this.submitted();

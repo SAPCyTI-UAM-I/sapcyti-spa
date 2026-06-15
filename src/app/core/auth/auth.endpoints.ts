@@ -1,12 +1,7 @@
-import { environment } from '../../../environments/environment';
+import { API_ENDPOINTS } from '../api/api-endpoints';
 
-export const AUTH_ENDPOINTS = {
-  login: `${environment.apiBaseUrl}/auth/login`,
-  refresh: `${environment.apiBaseUrl}/auth/refresh`,
-  logout: `${environment.apiBaseUrl}/auth/logout`,
-  forgotPassword: `${environment.apiBaseUrl}/auth/forgot-password`,
-  resetPassword: `${environment.apiBaseUrl}/auth/reset-password`,
-} as const;
+/** @deprecated Import `API_ENDPOINTS.auth` from `core/api/api-endpoints` instead. */
+export const AUTH_ENDPOINTS = API_ENDPOINTS.auth;
 
 const AUTH_SESSION_PATHS = ['/auth/login', '/auth/refresh', '/auth/logout'] as const;
 

@@ -1,258 +1,174 @@
-<p-toast></p-toast>
-
-<div class="flex flex-col gap-lg max-w-4xl mx-auto">
-  <!-- Card Header -->
-  <div class="flex flex-col gap-xs">
-    <h1 class="text-h2 text-primary font-h2 font-bold">
+<section class="gap-lg mx-auto flex max-w-4xl flex-col" data-testid="student-registration">
+  <header>
+    <h1 class="text-h2 text-primary font-bold">
       {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.TITLE' | translate }}
     </h1>
-    <p class="text-body-md text-text-secondary font-body-md">
-      {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.SUBTITLE' | translate }}
-    </p>
-  </div>
+    <p class="text-text-secondary">{{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.SUBTITLE' | translate }}</p>
+  </header>
 
-  <!-- Form Card -->
-  <div class="border-outline bg-surface-container-lowest rounded-xl border p-6 shadow-sm sm:p-[40px]">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-xl">
-      
-      <!-- Sección: Datos Personales -->
-      <div>
-        <h2 class="text-title-md text-primary font-title-md font-bold mb-md border-b pb-2 border-outline">
-          {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.PERSONAL_SECTION' | translate }}
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
-          <!-- Nombre -->
-          <div class="gap-xs flex flex-col">
-            <label class="text-label-md text-on-surface font-label-md" for="firstName">
-              {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.FIRST_NAME' | translate }} *
-            </label>
-            <input
-              pInputText
-              id="firstName"
-              formControlName="firstName"
-              class="w-full"
-              [placeholder]="'ACADEMIC_CATALOG.STUDENTS.CREATE.FIRST_NAME_PLACEHOLDER' | translate"
-              [class.p-invalid]="fieldInvalid('firstName')"
-            />
-            <app-field-error [control]="form.controls.firstName" [submitted]="submitted()" />
-          </div>
+  <ol class="gap-sm grid grid-cols-3">
+    @for (item of [1, 2, 3]; track item) {
+      <li
+        class="border-outline p-sm rounded-lg border text-center"
+        [class.bg-primary-container]="step() === item"
+        [class.text-primary]="step() === item"
+      >
+        {{ 'ACADEMIC_CATALOG.WIZARD.STEP_' + item | translate }}
+      </li>
+    }
+  </ol>
 
-          <!-- Apellido Paterno -->
-          <div class="gap-xs flex flex-col">
-            <label class="text-label-md text-on-surface font-label-md" for="firstLastName">
-              {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.FIRST_LAST_NAME' | translate }} *
-            </label>
-            <input
-              pInputText
-              id="firstLastName"
-              formControlName="firstLastName"
-              class="w-full"
-              [placeholder]="'ACADEMIC_CATALOG.STUDENTS.CREATE.FIRST_LAST_NAME_PLACEHOLDER' | translate"
-              [class.p-invalid]="fieldInvalid('firstLastName')"
-            />
-            <app-field-error [control]="form.controls.firstLastName" [submitted]="submitted()" />
-          </div>
+  @if (error()) {
+    <div class="bg-error-container border-error-border text-error p-md rounded-lg border">
+      {{ 'ACADEMIC_CATALOG.ERRORS.' + error() | translate }}
+    </div>
+  }
 
-          <!-- Apellido Materno -->
-          <div class="gap-xs flex flex-col">
-            <label class="text-label-md text-on-surface font-label-md" for="secondLastName">
-              {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.SECOND_LAST_NAME' | translate }} *
-            </label>
-            <input
-              pInputText
-              id="secondLastName"
-              formControlName="secondLastName"
-              class="w-full"
-              [placeholder]="'ACADEMIC_CATALOG.STUDENTS.CREATE.SECOND_LAST_NAME_PLACEHOLDER' | translate"
-              [class.p-invalid]="fieldInvalid('secondLastName')"
-            />
-            <app-field-error [control]="form.controls.secondLastName" [submitted]="submitted()" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-md mt-md">
-          <!-- Email -->
-          <div class="gap-xs flex flex-col">
-            <label class="text-label-md text-on-surface font-label-md" for="email">
-              {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.EMAIL' | translate }} *
-            </label>
-            <input
-              pInputText
-              id="email"
-              type="email"
-              formControlName="email"
-              class="w-full"
-              [placeholder]="'ACADEMIC_CATALOG.STUDENTS.CREATE.EMAIL_PLACEHOLDER' | translate"
-              [class.p-invalid]="fieldInvalid('email')"
-            />
-            <app-field-error [control]="form.controls.email" [submitted]="submitted()" />
-          </div>
-
-          <!-- Nacionalidad -->
-          <div class="gap-xs flex flex-col">
-            <label class="text-label-md text-on-surface font-label-md" for="nationality">
-              {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.NATIONALITY' | translate }} *
-            </label>
-            <p-select
-              id="nationality"
-              formControlName="nationality"
-              [options]="nationalities"
-              optionLabel="label"
-              optionValue="value"
-              [placeholder]="'ACADEMIC_CATALOG.STUDENTS.CREATE.NATIONALITY_PLACEHOLDER' | translate"
-              fluid
-              [class.p-invalid]="fieldInvalid('nationality')"
-            />
-            <app-field-error [control]="form.controls.nationality" [submitted]="submitted()" />
-          </div>
-        </div>
+  <form
+    class="border-outline bg-surface p-lg sm:p-xl gap-lg flex flex-col rounded-xl border"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+  >
+    @if (step() === 1) {
+      <h2 class="text-h3 font-bold">
+        {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.PERSONAL_SECTION' | translate }}
+      </h2>
+      <div class="gap-md grid md:grid-cols-2">
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.FIRST_NAME' | translate }} *</span>
+          <input pInputText formControlName="firstName" />
+          <app-field-error [control]="form.controls.firstName" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.FIRST_LAST_NAME' | translate }} *</span>
+          <input pInputText formControlName="firstLastName" />
+          <app-field-error [control]="form.controls.firstLastName" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.SECOND_LAST_NAME' | translate }}</span>
+          <input pInputText formControlName="secondLastName" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.EMAIL' | translate }} *</span>
+          <input pInputText type="email" formControlName="email" />
+          <app-field-error [control]="form.controls.email" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col md:col-span-2">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.NATIONALITY' | translate }} *</span>
+          <input pInputText formControlName="nationality" />
+          <app-field-error [control]="form.controls.nationality" [submitted]="submitted()" />
+        </label>
       </div>
-
-      <!-- Sección: Datos Académicos -->
-      <div>
-        <h2 class="text-title-md text-primary font-title-md font-bold mb-md border-b pb-2 border-outline">
-          {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.ACADEMIC_SECTION' | translate }}
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-          <!-- Matrícula -->
-          <div class="gap-xs flex flex-col">
-            <label class="text-label-md text-on-surface font-label-md" for="enrollmentId">
-              {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.ENROLLMENT_ID' | translate }} *
-            </label>
-            <input
-              pInputText
-              id="enrollmentId"
-              formControlName="enrollmentId"
-              class="w-full"
-              [placeholder]="'ACADEMIC_CATALOG.STUDENTS.CREATE.ENROLLMENT_ID_PLACEHOLDER' | translate"
-              [class.p-invalid]="fieldInvalid('enrollmentId')"
-            />
-            <app-field-error [control]="form.controls.enrollmentId" [submitted]="submitted()" />
-          </div>
-
-          <!-- Carrera de Licenciatura -->
-          <div class="gap-xs flex flex-col">
-            <label class="text-label-md text-on-surface font-label-md" for="undergraduateDegree">
-              {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.UNDERGRADUATE_DEGREE' | translate }} *
-            </label>
-            <input
-              pInputText
-              id="undergraduateDegree"
-              formControlName="undergraduateDegree"
-              class="w-full"
-              [placeholder]="'ACADEMIC_CATALOG.STUDENTS.CREATE.UNDERGRADUATE_DEGREE_PLACEHOLDER' | translate"
-              [class.p-invalid]="fieldInvalid('undergraduateDegree')"
-            />
-            <app-field-error [control]="form.controls.undergraduateDegree" [submitted]="submitted()" />
-          </div>
+    } @else if (step() === 2) {
+      <h2 class="text-h3 font-bold">
+        {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.ACADEMIC_SECTION' | translate }}
+      </h2>
+      <div class="gap-md grid md:grid-cols-2">
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.ENROLLMENT_ID' | translate }} *</span>
+          <input pInputText formControlName="enrollmentId" />
+          <app-field-error [control]="form.controls.enrollmentId" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.UNDERGRADUATE_DEGREE' | translate }} *</span>
+          <input pInputText formControlName="undergraduateDegree" />
+          <app-field-error
+            [control]="form.controls.undergraduateDegree"
+            [submitted]="submitted()"
+          />
+        </label>
+        <div class="gap-xs flex flex-col">
+          <label for="programType">
+            {{ 'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate }} *
+          </label>
+          <p-select
+            inputId="programType"
+            formControlName="programType"
+            [options]="programTypes"
+            optionValue="value"
+            fluid
+          >
+            <ng-template #selectedItem let-option>{{ option?.label | translate }}</ng-template>
+            <ng-template #item let-option>{{ option.label | translate }}</ng-template>
+          </p-select>
+          <app-field-error [control]="form.controls.programType" [submitted]="submitted()" />
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-md mt-md">
-          <!-- Tipo de programa -->
-          <div class="gap-xs flex flex-col">
-            <label class="text-label-md text-on-surface font-label-md" for="programType">
-              {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.PROGRAM_TYPE' | translate }} *
-            </label>
-            <p-select
-              id="programType"
-              formControlName="programType"
-              [options]="programTypes"
-              optionLabel="label"
-              optionValue="value"
-              [placeholder]="'ACADEMIC_CATALOG.STUDENTS.CREATE.PROGRAM_TYPE_PLACEHOLDER' | translate"
-              fluid
-              [class.p-invalid]="fieldInvalid('programType')"
-            />
-            <app-field-error [control]="form.controls.programType" [submitted]="submitted()" />
-          </div>
-
-          <!-- Fecha de ingreso -->
-          <div class="gap-xs flex flex-col">
-            <label class="text-label-md text-on-surface font-label-md" for="admissionDate">
-              {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.ADMISSION_DATE' | translate }} *
-            </label>
-            <p-datepicker
-              id="admissionDate"
-              formControlName="admissionDate"
-              dateFormat="yy-mm-dd"
-              [showIcon]="true"
-              [placeholder]="'ACADEMIC_CATALOG.STUDENTS.CREATE.ADMISSION_DATE_PLACEHOLDER' | translate"
-              fluid
-              [class.p-invalid]="fieldInvalid('admissionDate')"
-            />
-            <app-field-error [control]="form.controls.admissionDate" [submitted]="submitted()" />
-          </div>
-        </div>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.ADMISSION_DATE' | translate }} *</span>
+          <input pInputText type="date" formControlName="admissionDate" />
+          <app-field-error [control]="form.controls.admissionDate" [submitted]="submitted()" />
+        </label>
       </div>
+    } @else {
+      <h2 class="text-h3 font-bold">{{ 'ACADEMIC_CATALOG.WIZARD.CONFIRM_TITLE' | translate }}</h2>
+      <dl class="gap-md grid md:grid-cols-2">
+        <div>
+          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.COLUMNS.NAME' | translate }}</dt>
+          <dd>
+            {{ form.value.firstName }} {{ form.value.firstLastName }}
+            {{ form.value.secondLastName }}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}</dt>
+          <dd>{{ form.value.email }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.COLUMNS.ENROLLMENT' | translate }}
+          </dt>
+          <dd>{{ form.value.enrollmentId }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.COLUMNS.PROGRAM' | translate }}</dt>
+          <dd>{{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + form.value.programType | translate }}</dd>
+        </div>
+      </dl>
+    }
 
-      <!-- Botones de Acción -->
-      <div class="flex flex-col-reverse sm:flex-row justify-end gap-md pt-md border-t border-outline">
+    <footer class="border-outline pt-md gap-sm flex justify-between border-t">
+      <div class="gap-sm flex">
         <p-button
           type="button"
-          [label]="'COMMON.ACTIONS.CANCEL' | translate"
           severity="secondary"
           variant="outlined"
-          styleClass="w-full sm:w-[120px] !text-primary !border-outline-strong"
-          (onClick)="onCancel()"
+          [label]="'COMMON.ACTIONS.CANCEL' | translate"
+          (onClick)="cancel()"
         />
+        @if (step() > 1) {
+          <p-button
+            type="button"
+            severity="secondary"
+            variant="outlined"
+            [label]="'COMMON.ACTIONS.BACK' | translate"
+            (onClick)="previous()"
+          />
+        }
+      </div>
+      @if (step() < 3) {
+        <p-button
+          type="button"
+          data-testid="wizard-next"
+          [label]="'COMMON.ACTIONS.NEXT' | translate"
+          (onClick)="next()"
+        />
+      } @else {
         <p-button
           type="submit"
-          [label]="'COMMON.ACTIONS.SAVE' | translate"
-          icon="pi pi-check"
-          styleClass="w-full sm:w-[150px]"
+          data-testid="confirm-student"
+          [label]="'COMMON.ACTIONS.CONFIRM' | translate"
           [loading]="loading()"
           [disabled]="loading()"
         />
-      </div>
+      }
+    </footer>
+  </form>
+</section>
 
-    </form>
-  </div>
-</div>
-
-<!-- Modal: Contraseña temporal generada -->
-<p-dialog
-  [(visible)]="showPasswordDialog"
-  [modal]="true"
-  [closable]="false"
-  [style]="{ width: '450px' }"
-  header="{{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.SUCCESS_DIALOG.TITLE' | translate }}"
->
-  <div class="flex flex-col gap-md py-md">
-    <div class="flex items-center gap-sm text-success">
-      <i class="pi pi-check-circle text-[24px]"></i>
-      <span class="font-bold">
-        {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.SUCCESS_DIALOG.SUBTITLE' | translate }}
-      </span>
-    </div>
-    
-    <p class="text-body-md text-text-secondary">
-      {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.SUCCESS_DIALOG.MESSAGE' | translate }}
-    </p>
-
-    <!-- Caja de contraseña -->
-    <div class="bg-surface-subtle border-outline flex items-center justify-between p-md rounded-lg border">
-      <span class="text-h3 font-mono font-bold tracking-wider select-all">{{ generatedPassword() }}</span>
-      <p-button
-        icon="pi pi-copy"
-        severity="secondary"
-        variant="text"
-        [rounded]="true"
-        (onClick)="copyPasswordToClipboard()"
-        [pTooltip]="'ACADEMIC_CATALOG.STUDENTS.CREATE.SUCCESS_DIALOG.COPY_TOOLTIP' | translate"
-        tooltipPosition="left"
-      />
-    </div>
-
-    <div class="text-caption text-error font-semibold">
-      {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.SUCCESS_DIALOG.WARNING' | translate }}
-    </div>
-  </div>
-
-  <ng-template #footer>
-    <p-button
-      [label]="'ACADEMIC_CATALOG.STUDENTS.CREATE.SUCCESS_DIALOG.CLOSE' | translate"
-      (onClick)="closeSuccessDialog()"
-      styleClass="w-full sm:w-auto"
-    />
-  </ng-template>
-</p-dialog>
+<app-temporary-password-dialog
+  [visible]="showPasswordDialog()"
+  [password]="generatedPassword()"
+  [copied]="passwordCopied()"
+  (copiedChange)="passwordCopied.set($event)"
+  (closed)="closePasswordDialog()"
+/>

@@ -1,0 +1,140 @@
+<section class="gap-lg flex flex-col" data-testid="professor-catalog">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-h2 text-primary font-bold">
+        {{ 'ACADEMIC_CATALOG.PROFESSORS.LIST.TITLE' | translate }}
+      </h1>
+      <p class="text-text-secondary">
+        {{ 'ACADEMIC_CATALOG.PROFESSORS.LIST.SUBTITLE' | translate }}
+      </p>
+    </div>
+    <p-button
+      data-testid="create-professor"
+      icon="pi pi-plus"
+      [label]="'ACADEMIC_CATALOG.PROFESSORS.LIST.CREATE' | translate"
+      routerLink="/academic-catalog/professors/new"
+    />
+  </header>
+  <form
+    class="border-outline bg-surface p-md gap-md grid rounded-xl border md:grid-cols-[1fr_11rem_auto]"
+    [formGroup]="filters"
+    (ngSubmit)="applyFilters()"
+  >
+    <input
+      pInputText
+      formControlName="search"
+      [placeholder]="'ACADEMIC_CATALOG.PROFESSORS.LIST.SEARCH' | translate"
+    />
+    <p-select formControlName="active" [options]="statuses" optionValue="value" fluid>
+      <ng-template #selectedItem let-option>{{ option?.label | translate }}</ng-template>
+      <ng-template #item let-option>{{ option.label | translate }}</ng-template>
+    </p-select>
+    <div class="gap-sm flex">
+      <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />
+      <p-button
+        type="button"
+        icon="pi pi-filter-slash"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="clearFilters()"
+      />
+    </div>
+  </form>
+  <div class="border-outline bg-surface rounded-xl border">
+    @if (loading()) {
+      <div class="p-xl text-text-secondary text-center">
+        <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+      </div>
+    } @else if (loadError()) {
+      <div class="p-xl gap-md flex flex-col items-center">
+        <p class="text-error">{{ 'ACADEMIC_CATALOG.STATES.LOAD_ERROR' | translate }}</p>
+        <p-button [label]="'COMMON.ACTIONS.RETRY' | translate" (onClick)="load()" />
+      </div>
+    } @else if (professors().length === 0) {
+      <div class="p-xl text-text-secondary text-center">
+        {{ 'ACADEMIC_CATALOG.PROFESSORS.LIST.EMPTY' | translate }}
+      </div>
+    } @else {
+      <div class="md:overflow-x-auto">
+        <table class="block w-full border-collapse md:table md:min-w-[48rem]">
+          <thead class="bg-table-header hidden text-left md:table-header-group">
+            <tr>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.NAME' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.EMPLOYEE_NUMBER' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+            @for (professor of professors(); track professor.id) {
+              <tr
+                class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
+              >
+                <td class="md:p-md col-span-2 md:table-cell">
+                  <span class="text-h3 text-primary font-bold md:font-normal md:text-inherit">
+                    {{ professor.firstLastName }} {{ professor.secondLastName }}
+                    {{ professor.firstName }}
+                  </span>
+                </td>
+                <td class="text-text-secondary md:p-md col-span-2 break-all md:table-cell">
+                  {{ professor.email }}
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.EMPLOYEE_NUMBER' | translate }}
+                  </span>
+                  {{ professor.employeeNumber }}
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}
+                  </span>
+                  {{
+                    (professor.active
+                      ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
+                      : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
+                    ) | translate
+                  }}
+                </td>
+                <td class="md:p-md col-span-2 md:table-cell">
+                  <p-button
+                    icon="pi pi-key"
+                    severity="secondary"
+                    variant="outlined"
+                    [fluid]="true"
+                    [label]="'ACCOUNT.PASSWORD.ADMIN_ACTION' | translate"
+                    [routerLink]="['/account/users', professor.userId, 'password']"
+                    [queryParams]="{ returnUrl: '/academic-catalog/professors' }"
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+  <footer class="flex items-center justify-between">
+    <span class="text-text-secondary"
+      >{{ 'ACADEMIC_CATALOG.PAGINATION.TOTAL' | translate }}: {{ totalElements() }}</span
+    >
+    <div class="gap-sm flex items-center">
+      <p-button
+        icon="pi pi-chevron-left"
+        severity="secondary"
+        variant="outlined"
+        [disabled]="page() === 0"
+        (onClick)="previousPage()"
+      />
+      <span>{{ page() + 1 }}</span>
+      <p-button
+        icon="pi pi-chevron-right"
+        severity="secondary"
+        variant="outlined"
+        [disabled]="(page() + 1) * pageSize >= totalElements()"
+        (onClick)="nextPage()"
+      />
+    </div>
+  </footer>
+</section>

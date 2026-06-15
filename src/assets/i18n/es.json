@@ -16,7 +16,8 @@
       "ENROLLMENT": "Inscripción",
       "ENROLLMENT_PROCESS": "Proceso de inscripción",
       "ACADEMIC_MANAGEMENT": "Gestión académica",
-      "PRESENTATIONS": "Ponencias"
+      "PRESENTATIONS": "Ponencias",
+      "ACCOUNT": "Cuenta"
     },
     "MENU": {
       "HOME": "Inicio",
@@ -27,7 +28,8 @@
       "ENROLLMENT_STATUS": "Estados del proceso",
       "STUDENTS": "Alumnos",
       "PROFESSORS": "Profesores",
-      "PRESENTATIONS": "Ponencias"
+      "PRESENTATIONS": "Ponencias",
+      "CHANGE_PASSWORD": "Cambiar contraseña"
     }
   },
   "COMMON": {
@@ -50,7 +52,15 @@
       "CANCEL": "Cancelar",
       "DELETE": "Eliminar",
       "EDIT": "Editar",
-      "BACK": "Regresar"
+      "BACK": "Regresar",
+      "SEARCH": "Buscar",
+      "CLEAR": "Limpiar",
+      "RETRY": "Reintentar",
+      "NEXT": "Siguiente",
+      "CONFIRM": "Confirmar"
+    },
+    "STATES": {
+      "LOADING": "Cargando..."
     }
   },
   "DASHBOARD": {
@@ -154,47 +164,116 @@
   },
   "ACADEMIC_CATALOG": {
     "STUDENTS": {
-      "TITLE": "Alumnos",
+      "LIST": {
+        "TITLE": "Alumnos",
+        "SUBTITLE": "Consulte y administre los alumnos del posgrado.",
+        "CREATE": "Crear alumno",
+        "SEARCH": "Buscar por nombre, correo o matrícula",
+        "EMPTY": "No se encontraron alumnos."
+      },
       "CREATE": {
-        "TITLE": "Registrar Alumno",
-        "SUBTITLE": "Ingrese los datos personales y académicos del nuevo alumno. La contraseña se autogenerará de forma segura.",
-        "PERSONAL_SECTION": "Datos Personales",
-        "FIRST_NAME": "Nombre(s)",
-        "FIRST_NAME_PLACEHOLDER": "Ej. Juan",
-        "FIRST_LAST_NAME": "Apellido Paterno",
-        "FIRST_LAST_NAME_PLACEHOLDER": "Ej. Pérez",
-        "SECOND_LAST_NAME": "Apellido Materno",
-        "SECOND_LAST_NAME_PLACEHOLDER": "Ej. García",
-        "EMAIL": "Correo Electrónico",
-        "EMAIL_PLACEHOLDER": "alumno@correo.uam.mx",
-        "NATIONALITY": "Nacionalidad",
-        "NATIONALITY_PLACEHOLDER": "Seleccione nacionalidad",
-        "ACADEMIC_SECTION": "Programa Académico",
-        "ENROLLMENT_ID": "Matrícula",
-        "ENROLLMENT_ID_PLACEHOLDER": "Ej. 223300456",
-        "UNDERGRADUATE_DEGREE": "Carrera de Licenciatura",
-        "UNDERGRADUATE_DEGREE_PLACEHOLDER": "Ej. Licenciatura en Computación",
-        "PROGRAM_TYPE": "Tipo de Programa",
-        "PROGRAM_TYPE_PLACEHOLDER": "Seleccione el posgrado",
-        "ADMISSION_DATE": "Fecha de Ingreso",
-        "ADMISSION_DATE_PLACEHOLDER": "Seleccione la fecha de admisión",
-        "SUCCESS_DIALOG": {
-          "TITLE": "Registro Completado",
-          "SUBTITLE": "Alumno registrado con éxito",
-          "MESSAGE": "El alumno ha sido registrado en el sistema. A continuación se muestra su contraseña temporal autogenerada de acceso único. Cópiela antes de continuar.",
-          "COPY_TOOLTIP": "Copiar al portapapeles",
-          "WARNING": "IMPORTANTE: Por motivos de seguridad, esta contraseña no volverá a mostrarse en el sistema.",
-          "CLOSE": "Entendido y Cerrar"
-        }
+        "TITLE": "Registrar alumno",
+        "SUBTITLE": "Complete los datos y confirme el alta. La contraseña se generará automáticamente.",
+        "PERSONAL_SECTION": "Datos personales",
+        "ACADEMIC_SECTION": "Información académica"
       }
     },
     "PROFESSORS": {
-      "TITLE": "Profesores",
-      "MESSAGE": "Catálogo de profesores — próximamente"
+      "LIST": {
+        "TITLE": "Profesores",
+        "SUBTITLE": "Consulte y administre los profesores del posgrado.",
+        "CREATE": "Crear profesor",
+        "SEARCH": "Buscar por nombre, correo o número de empleado",
+        "EMPTY": "No se encontraron profesores."
+      },
+      "CREATE": {
+        "TITLE": "Registrar profesor",
+        "SUBTITLE": "Complete los datos institucionales y confirme el alta."
+      }
     },
-    "PLACEHOLDER": {
-      "TITLE": "Catálogo Académico",
-      "MESSAGE": "Catálogo académico — próximamente"
+    "FIELDS": {
+      "FIRST_NAME": "Nombre(s)",
+      "FIRST_LAST_NAME": "Apellido paterno",
+      "SECOND_LAST_NAME": "Apellido materno",
+      "EMAIL": "Correo electrónico",
+      "NATIONALITY": "Nacionalidad",
+      "ENROLLMENT_ID": "Matrícula",
+      "UNDERGRADUATE_DEGREE": "Carrera de licenciatura",
+      "PROGRAM_TYPE": "Tipo de programa",
+      "ADMISSION_DATE": "Fecha de ingreso",
+      "EMPLOYEE_NUMBER": "Número de empleado"
+    },
+    "COLUMNS": {
+      "NAME": "Nombre",
+      "EMAIL": "Correo",
+      "ENROLLMENT": "Matrícula",
+      "EMPLOYEE_NUMBER": "Número de empleado",
+      "PROGRAM": "Programa",
+      "ADMISSION": "Ingreso",
+      "STATUS": "Estado",
+      "ACTIONS": "Acciones"
+    },
+    "FILTERS": {
+      "ALL": "Todos",
+      "PROGRAM_TYPE": "Tipo de programa",
+      "STATUS": "Estado"
+    },
+    "PROGRAM_TYPES": {
+      "MAESTRIA": "Maestría",
+      "DOCTORADO": "Doctorado"
+    },
+    "STATUS": {
+      "ACTIVE": "Activo",
+      "INACTIVE": "Inactivo"
+    },
+    "STATES": {
+      "LOAD_ERROR": "No fue posible cargar el catálogo."
+    },
+    "PAGINATION": {
+      "TOTAL": "Total"
+    },
+    "WIZARD": {
+      "STEP_1": "Datos personales",
+      "STEP_2": "Información académica",
+      "STEP_3": "Confirmación",
+      "INSTITUTIONAL": "Datos institucionales",
+      "CONFIRM_TITLE": "Revise la información antes de confirmar"
+    },
+    "ERRORS": {
+      "duplicate_email": "El correo electrónico ya está registrado.",
+      "duplicate_enrollment": "La matrícula ya está registrada.",
+      "duplicate_employee": "El número de empleado ya está registrado.",
+      "reference_not_found": "No se encontró el programa académico solicitado.",
+      "server": "Ocurrió un error al guardar la información."
+    },
+    "TEMP_PASSWORD": {
+      "TITLE": "Registro completado",
+      "SUBTITLE": "La cuenta fue creada correctamente",
+      "MESSAGE": "Esta contraseña temporal se mostrará una sola vez. Cópiela antes de continuar.",
+      "COPY": "Copiar al portapapeles",
+      "COPIED": "Contraseña copiada.",
+      "WARNING": "Por seguridad, la contraseña no volverá a mostrarse.",
+      "CLOSE": "Entendido"
+    }
+  },
+  "ACCOUNT": {
+    "PASSWORD": {
+      "SELF_TITLE": "Cambiar mi contraseña",
+      "ADMIN_TITLE": "Cambiar contraseña de usuario",
+      "SELF_DESCRIPTION": "Ingrese su contraseña actual y defina una nueva.",
+      "ADMIN_DESCRIPTION": "Defina una nueva contraseña para el usuario seleccionado.",
+      "CURRENT": "Contraseña actual",
+      "NEW": "Nueva contraseña",
+      "CONFIRM": "Confirmar nueva contraseña",
+      "TARGET_USER": "Usuario objetivo",
+      "SUBMIT": "Cambiar contraseña",
+      "ADMIN_ACTION": "Cambiar contraseña",
+      "SUCCESS": "La contraseña fue actualizada.",
+      "ERRORS": {
+        "current_password": "La contraseña actual es incorrecta.",
+        "user_not_found": "No se encontró el usuario solicitado.",
+        "server": "No fue posible cambiar la contraseña."
+      }
     }
   },
   "PRESENTATIONS": {

@@ -39,6 +39,15 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'account',
+        loadChildren: () =>
+          import('./features/account/account.routes').then((m) => m.ACCOUNT_ROUTES),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.account,
+        },
+      },
+      {
         path: 'presentations',
         loadChildren: () =>
           import('./features/presentations/presentations.routes').then(

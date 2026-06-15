@@ -12,6 +12,8 @@ export const ROUTE_PERMISSIONS = {
   enrollmentTerms: ['COORDINATOR'],
   enrollmentStatus: ['COORDINATOR'],
   academicCatalog: ['COORDINATOR'],
+  account: ['SYSTEM_ADMIN', 'COORDINATOR', 'ASSISTANT', 'PROFESSOR', 'STUDENT', 'SPEAKER'],
+  passwordAdministration: ['COORDINATOR'],
   presentations: ['SYSTEM_ADMIN', 'COORDINATOR', 'SPEAKER'],
 } as const satisfies Record<string, readonly RoleType[]>;
 

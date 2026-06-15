@@ -16,7 +16,8 @@
       "ENROLLMENT": "Enrollment",
       "ENROLLMENT_PROCESS": "Enrollment process",
       "ACADEMIC_MANAGEMENT": "Academic management",
-      "PRESENTATIONS": "Presentations"
+      "PRESENTATIONS": "Presentations",
+      "ACCOUNT": "Account"
     },
     "MENU": {
       "HOME": "Home",
@@ -27,7 +28,8 @@
       "ENROLLMENT_STATUS": "Process status",
       "STUDENTS": "Students",
       "PROFESSORS": "Professors",
-      "PRESENTATIONS": "Presentations"
+      "PRESENTATIONS": "Presentations",
+      "CHANGE_PASSWORD": "Change password"
     }
   },
   "COMMON": {
@@ -50,7 +52,15 @@
       "CANCEL": "Cancel",
       "DELETE": "Delete",
       "EDIT": "Edit",
-      "BACK": "Go back"
+      "BACK": "Go back",
+      "SEARCH": "Search",
+      "CLEAR": "Clear",
+      "RETRY": "Retry",
+      "NEXT": "Next",
+      "CONFIRM": "Confirm"
+    },
+    "STATES": {
+      "LOADING": "Loading..."
     }
   },
   "DASHBOARD": {
@@ -154,16 +164,116 @@
   },
   "ACADEMIC_CATALOG": {
     "STUDENTS": {
-      "TITLE": "Students",
-      "MESSAGE": "Student catalog — coming soon"
+      "LIST": {
+        "TITLE": "Students",
+        "SUBTITLE": "Browse and manage graduate students.",
+        "CREATE": "Create student",
+        "SEARCH": "Search by name, email or enrollment ID",
+        "EMPTY": "No students were found."
+      },
+      "CREATE": {
+        "TITLE": "Register student",
+        "SUBTITLE": "Complete the information and confirm registration. A password will be generated automatically.",
+        "PERSONAL_SECTION": "Personal data",
+        "ACADEMIC_SECTION": "Academic information"
+      }
     },
     "PROFESSORS": {
-      "TITLE": "Professors",
-      "MESSAGE": "Professor catalog — coming soon"
+      "LIST": {
+        "TITLE": "Professors",
+        "SUBTITLE": "Browse and manage graduate professors.",
+        "CREATE": "Create professor",
+        "SEARCH": "Search by name, email or employee number",
+        "EMPTY": "No professors were found."
+      },
+      "CREATE": {
+        "TITLE": "Register professor",
+        "SUBTITLE": "Complete the institutional data and confirm registration."
+      }
     },
-    "PLACEHOLDER": {
-      "TITLE": "Academic Catalog",
-      "MESSAGE": "Academic catalog — coming soon"
+    "FIELDS": {
+      "FIRST_NAME": "First name",
+      "FIRST_LAST_NAME": "First last name",
+      "SECOND_LAST_NAME": "Second last name",
+      "EMAIL": "Email",
+      "NATIONALITY": "Nationality",
+      "ENROLLMENT_ID": "Enrollment ID",
+      "UNDERGRADUATE_DEGREE": "Undergraduate degree",
+      "PROGRAM_TYPE": "Program type",
+      "ADMISSION_DATE": "Admission date",
+      "EMPLOYEE_NUMBER": "Employee number"
+    },
+    "COLUMNS": {
+      "NAME": "Name",
+      "EMAIL": "Email",
+      "ENROLLMENT": "Enrollment ID",
+      "EMPLOYEE_NUMBER": "Employee number",
+      "PROGRAM": "Program",
+      "ADMISSION": "Admission",
+      "STATUS": "Status",
+      "ACTIONS": "Actions"
+    },
+    "FILTERS": {
+      "ALL": "All",
+      "PROGRAM_TYPE": "Program type",
+      "STATUS": "Status"
+    },
+    "PROGRAM_TYPES": {
+      "MAESTRIA": "Master's",
+      "DOCTORADO": "Doctorate"
+    },
+    "STATUS": {
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive"
+    },
+    "STATES": {
+      "LOAD_ERROR": "The catalog could not be loaded."
+    },
+    "PAGINATION": {
+      "TOTAL": "Total"
+    },
+    "WIZARD": {
+      "STEP_1": "Personal data",
+      "STEP_2": "Academic information",
+      "STEP_3": "Confirmation",
+      "INSTITUTIONAL": "Institutional data",
+      "CONFIRM_TITLE": "Review the information before confirming"
+    },
+    "ERRORS": {
+      "duplicate_email": "The email address is already registered.",
+      "duplicate_enrollment": "The enrollment ID is already registered.",
+      "duplicate_employee": "The employee number is already registered.",
+      "reference_not_found": "The requested graduate program was not found.",
+      "server": "An error occurred while saving the information."
+    },
+    "TEMP_PASSWORD": {
+      "TITLE": "Registration completed",
+      "SUBTITLE": "The account was created successfully",
+      "MESSAGE": "This temporary password is shown only once. Copy it before continuing.",
+      "COPY": "Copy to clipboard",
+      "COPIED": "Password copied.",
+      "WARNING": "For security, the password will not be shown again.",
+      "CLOSE": "Understood"
+    }
+  },
+  "ACCOUNT": {
+    "PASSWORD": {
+      "SELF_TITLE": "Change my password",
+      "ADMIN_TITLE": "Change user password",
+      "SELF_DESCRIPTION": "Enter your current password and choose a new one.",
+      "ADMIN_DESCRIPTION": "Choose a new password for the selected user.",
+      "CURRENT": "Current password",
+      "NEW": "New password",
+      "CONFIRM": "Confirm new password",
+      "TARGET_USER": "Target user",
+      "SUBMIT": "Change password",
+      "ADMIN_ACTION": "Change password",
+      "SUCCESS": "The password was updated.",
+      "ERRORS": {
+        "current_password": "The current password is incorrect.",
+        "user_not_found": "The requested user was not found.",
+        "server": "The password could not be changed."
+      }
     }
   },
   "PRESENTATIONS": {

@@ -6,7 +6,8 @@ export const environment = {
     auth: true,
     /** Use backend HU-02 by default; switch to true only for local mock demos. */
     passwordRecovery: false,
-    /** Use local mocks for student registration. */
-    studentRegistration: true,
+    students: true,
+    professors: true,
+    passwordChange: true,
   },
 };

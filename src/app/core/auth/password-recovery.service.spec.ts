@@ -1,18 +1,16 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
 import { PasswordRecoveryService } from './password-recovery.service';
-import {
-  AUTH_TEST_ENDPOINTS,
-  configureAuthHttpTesting,
-} from '../../testing/auth-test.util';
+import { AUTH_TEST_ENDPOINTS, configureAuthHttpTesting } from '../../testing/auth-test.util';
 
 describe('PasswordRecoveryService', () => {
   let service: PasswordRecoveryService;
   let httpMock: ReturnType<typeof configureAuthHttpTesting>['httpMock'];
 
-  function setup(mocks: { auth?: boolean; passwordRecovery?: boolean } = { passwordRecovery: false }): void {
+  function setup(
+    mocks: { auth?: boolean; passwordRecovery?: boolean } = { passwordRecovery: false },
+  ): void {
     ({ httpMock } = configureAuthHttpTesting(mocks));
     service = TestBed.inject(PasswordRecoveryService);
   }
