@@ -66,11 +66,18 @@ export const routes: Routes = [
             (m) => m.AccessDeniedComponent,
           ),
       },
+      {
+        path: 'not-found',
+        loadComponent: () =>
+          import('./shared/components/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
+      },
     ],
   },
   {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
-  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: 'not-found' },
 ];

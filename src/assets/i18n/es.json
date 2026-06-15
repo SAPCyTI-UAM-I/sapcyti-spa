@@ -199,6 +199,7 @@
       "ACCESS_DENIED": "Acceso denegado",
       "ACCESS_DENIED_MSG": "No tienes permisos para acceder a esta página.",
       "NOT_FOUND": "Página no encontrada",
+      "NOT_FOUND_MSG": "La página que buscas no existe o fue movida.",
       "SERVER_ERROR": "Error del servidor"
     },
     "STATES": {

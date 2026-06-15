@@ -22,7 +22,7 @@ export const ENROLLMENT_ROUTES: Routes = [
   {
     // Enrollment has no landing of its own — only its children are reachable.
     path: '',
-    redirectTo: '/dashboard',
+    redirectTo: '/not-found',
     pathMatch: 'full',
   },
   placeholderRoute(

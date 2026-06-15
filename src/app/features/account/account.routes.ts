@@ -5,6 +5,12 @@ import { ROUTE_PERMISSIONS } from '../../core/auth/rbac.policy';
 
 export const ACCOUNT_ROUTES: Routes = [
   {
+    // No account landing — only its children (password change) are reachable.
+    path: '',
+    redirectTo: '/not-found',
+    pathMatch: 'full',
+  },
+  {
     path: 'password',
     loadComponent: () =>
       import('./password-change/password-change.component').then((m) => m.PasswordChangeComponent),

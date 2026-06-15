@@ -7,8 +7,9 @@ const catalogData = { roles: ROUTE_PERMISSIONS.academicCatalog };
 
 export const ACADEMIC_CATALOG_ROUTES: Routes = [
   {
+    // Academic catalog has no landing of its own — only its children are reachable.
     path: '',
-    redirectTo: 'students',
+    redirectTo: '/not-found',
     pathMatch: 'full',
   },
   {
