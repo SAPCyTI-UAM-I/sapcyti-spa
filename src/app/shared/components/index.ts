@@ -6,5 +6,5 @@ export { FieldErrorComponent } from './field-error/field-error.component';
 export { LanguageSwitcherComponent } from './language-switcher/language-switcher.component';
 export { ShellSidebarLinkComponent } from './shell-sidebar-link/shell-sidebar-link.component';
 export { ShellSidebarNavComponent } from './shell-sidebar-nav/shell-sidebar-nav.component';
-export { StatCardComponent } from './stat-card/stat-card.component';
+export { StatCardComponent, type CardTone } from './stat-card/stat-card.component';
 export { TemporaryPasswordDialogComponent } from './temporary-password-dialog/temporary-password-dialog.component';

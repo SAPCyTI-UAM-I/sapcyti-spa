@@ -1,3 +1,6 @@
+import { CardTone } from '../../shared/components';
+import { RoleType } from '../../models';
+
 export interface DashboardCard {
   icon: string;
   value: string | number;
@@ -5,12 +8,16 @@ export interface DashboardCard {
   linkKey?: string;
   linkRoute?: string;
   badgeKey?: string;
-  iconBgClass: string;
-  iconColorClass: string;
-  valueColorClass: string;
-  linkColorClass: string;
-  badgeClass?: string;
+  tone: CardTone;
 }
+
+/**
+ * CardTone mapping (presentation lives in StatCardComponent TONE_CLASSES):
+ * - primary: bg-primary-container / text-primary / text-primary / text-primary hover:text-primary-hover
+ * - secondary: bg-secondary-container / text-secondary / text-on-surface / text-secondary hover:text-on-secondary-container (+ badge)
+ * - warning: bg-warning-container / text-warning / text-warning / text-warning hover:text-warning-strong
+ * - info: bg-info-container / text-info / text-info / text-info hover:text-info-strong
+ */
 
 const COORDINATOR_CARDS: DashboardCard[] = [
   {
@@ -19,10 +26,7 @@ const COORDINATOR_CARDS: DashboardCard[] = [
     labelKey: 'DASHBOARD.CARDS.STUDENTS_COUNT',
     linkKey: 'DASHBOARD.CARDS.STUDENTS_LINK',
     linkRoute: '/academic-catalog/students',
-    iconBgClass: 'bg-primary-container',
-    iconColorClass: 'text-primary',
-    valueColorClass: 'text-primary',
-    linkColorClass: 'text-primary hover:text-primary-hover',
+    tone: 'primary',
   },
   {
     icon: 'pi pi-user-plus',
@@ -31,11 +35,7 @@ const COORDINATOR_CARDS: DashboardCard[] = [
     badgeKey: 'DASHBOARD.CARDS.ACTIVE_TERM_BADGE',
     linkKey: 'DASHBOARD.CARDS.MANAGE_LINK',
     linkRoute: '/enrollment/terms',
-    iconBgClass: 'bg-secondary-container',
-    iconColorClass: 'text-secondary',
-    valueColorClass: 'text-on-surface',
-    linkColorClass: 'text-secondary hover:text-on-secondary-container',
-    badgeClass: 'bg-secondary-container text-on-secondary-container',
+    tone: 'secondary',
   },
   {
     icon: 'pi pi-clock',
@@ -43,10 +43,7 @@ const COORDINATOR_CARDS: DashboardCard[] = [
     labelKey: 'DASHBOARD.CARDS.PENDING_APPROVAL',
     linkKey: 'DASHBOARD.CARDS.PENDING_LINK',
     linkRoute: '/enrollment/advisor-approval',
-    iconBgClass: 'bg-warning-container',
-    iconColorClass: 'text-warning',
-    valueColorClass: 'text-warning',
-    linkColorClass: 'text-warning hover:text-warning-strong',
+    tone: 'warning',
   },
   {
     icon: 'pi pi-print',
@@ -54,10 +51,7 @@ const COORDINATOR_CARDS: DashboardCard[] = [
     labelKey: 'DASHBOARD.CARDS.FORMATS_READY',
     linkKey: 'DASHBOARD.CARDS.FORMATS_LINK',
     linkRoute: '/enrollment/form-pdf',
-    iconBgClass: 'bg-info-container',
-    iconColorClass: 'text-info',
-    valueColorClass: 'text-info',
-    linkColorClass: 'text-info hover:text-info-strong',
+    tone: 'info',
   },
 ];
 
@@ -68,10 +62,7 @@ const STUDENT_CARDS: DashboardCard[] = [
     labelKey: 'DASHBOARD.CARDS.MY_ENROLLMENT',
     linkKey: 'DASHBOARD.CARDS.MY_ENROLLMENT_LINK',
     linkRoute: '/enrollment',
-    iconBgClass: 'bg-primary-container',
-    iconColorClass: 'text-primary',
-    valueColorClass: 'text-primary',
-    linkColorClass: 'text-primary hover:text-primary-hover',
+    tone: 'primary',
   },
 ];
 
@@ -82,10 +73,7 @@ const PROFESSOR_CARDS: DashboardCard[] = [
     labelKey: 'DASHBOARD.CARDS.MY_ADVISEES',
     linkKey: 'DASHBOARD.CARDS.MY_ADVISEES_LINK',
     linkRoute: '/enrollment/advisor-approval',
-    iconBgClass: 'bg-primary-container',
-    iconColorClass: 'text-primary',
-    valueColorClass: 'text-primary',
-    linkColorClass: 'text-primary hover:text-primary-hover',
+    tone: 'primary',
   },
   {
     icon: 'pi pi-clock',
@@ -93,10 +81,7 @@ const PROFESSOR_CARDS: DashboardCard[] = [
     labelKey: 'DASHBOARD.CARDS.PENDING_REVIEWS',
     linkKey: 'DASHBOARD.CARDS.PENDING_REVIEWS_LINK',
     linkRoute: '/enrollment/advisor-approval',
-    iconBgClass: 'bg-warning-container',
-    iconColorClass: 'text-warning',
-    valueColorClass: 'text-warning',
-    linkColorClass: 'text-warning hover:text-warning-strong',
+    tone: 'warning',
   },
 ];
 
@@ -107,10 +92,7 @@ const ASSISTANT_CARDS: DashboardCard[] = [
     labelKey: 'DASHBOARD.CARDS.SUPPORT_FORMATS',
     linkKey: 'DASHBOARD.CARDS.SUPPORT_FORMATS_LINK',
     linkRoute: '/enrollment/form-pdf',
-    iconBgClass: 'bg-primary-container',
-    iconColorClass: 'text-primary',
-    valueColorClass: 'text-primary',
-    linkColorClass: 'text-primary hover:text-primary-hover',
+    tone: 'primary',
   },
 ];
 
@@ -121,14 +103,11 @@ const PRESENTATION_CARDS: DashboardCard[] = [
     labelKey: 'DASHBOARD.CARDS.PRESENTATIONS',
     linkKey: 'DASHBOARD.CARDS.PRESENTATIONS_LINK',
     linkRoute: '/presentations',
-    iconBgClass: 'bg-primary-container',
-    iconColorClass: 'text-primary',
-    valueColorClass: 'text-primary',
-    linkColorClass: 'text-primary hover:text-primary-hover',
+    tone: 'primary',
   },
 ];
 
-export const DASHBOARD_CARDS_BY_ROLE: Record<string, DashboardCard[]> = {
+export const DASHBOARD_CARDS_BY_ROLE: Record<RoleType, DashboardCard[]> = {
   COORDINATOR: COORDINATOR_CARDS,
   STUDENT: STUDENT_CARDS,
   PROFESSOR: PROFESSOR_CARDS,

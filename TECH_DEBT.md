@@ -2,28 +2,45 @@
 
 > Track known technical debt to manage it intentionally. Update this file when introducing or resolving tech debt.
 
-## Baseline (Fase 0 — 2026-06-15)
+## Baseline (post refactor mejoras-spa — 2026-06-15)
 
 | Check | Result |
 |-------|--------|
-| `pnpm run lint` | ✅ Green |
-| `pnpm test` | ✅ Green — 126 tests (33 files) |
-| `ng build` | ✅ Green (bundle budget warning: 538 kB > 500 kB) |
+| `pnpm run lint` | ✅ Green (ESLint + Prettier + i18n:check) |
+| `pnpm test` | ✅ Green — 141 tests (36 files) |
+| `ng build` | ✅ Green (bundle budget warning: ~546 kB > 500 kB) |
+
+## Refactor mejoras-spa (fases 0–7)
+
+| Fase | Tema | Estado |
+|------|------|--------|
+| 0 | Línea base lint/test/build | ✅ |
+| 1 | Repository pattern + `api-endpoints.ts` | ✅ |
+| 2 | Bases catálogo académico + mock stores separados | ✅ |
+| 3 | Formularios / `FieldErrorComponent` / cooldown | ✅ |
+| 4 | i18n paridad + `I18nKey` + script | ✅ |
+| 5 | Design system (Tailwind fuera de configs TS) | ✅ Resuelto 2026-06-15 (`mejoras2.md` Fase B) |
+| 6 | Barrels + ESLint anti feature→feature + `noUncheckedIndexedAccess` | ✅ |
+| 7 | Reporte specs duplicadas Docs/ | ✅ — [`phase7.md`](../Docs/implementation/phase7.md) + SPEC-016A/017A/018A ✅ Implemented |
 
 ## Refactor backlog (mejoras-spa.md)
 
-| ID | Description | Priority | Rationale | Impact | Target Phase |
-|----|-------------|----------|-----------|--------|--------------|
-| TD-001 | Duplicación casi total en `academic-catalog` (list, service, registration student/professor) | High | DRY violation; cambios deben hacerse dos veces | Bugs por divergencia; mantenimiento costoso | ~~Fase 2~~ ✅ Resuelto 2026-06-15 |
-| TD-002 | Patrón mock disperso (`if (useMock)` en cada servicio) | High | Dificulta alternar mock/API por feature | Cada nuevo endpoint repite el switch | ~~Fase 1~~ ✅ Resuelto 2026-06-15 |
-| TD-003 | `AcademicCatalogMockStore` mezcla students + professors (SRP) | Medium | Una clase, dos entidades | Mock store difícil de extender | ~~Fase 2~~ ✅ Resuelto 2026-06-15 |
-| TD-004 | Endpoints fragmentados sin barrels | Medium | URLs repartidas en `*.endpoints.ts` por feature | Riesgo de URLs inconsistentes | ~~Fase 1/6~~ ✅ URLs en `core/api/api-endpoints.ts`; barrels en `models/`, `shared/components/`, `core/auth/utils` |
-| TD-005 | Paginación/filtros reimplementados en cada list component | Medium | Lógica copiada; no usa `p-paginator` | UI inconsistente potencial | ~~Fase 2~~ ✅ Base `CatalogListBase`; `p-paginator` diferido |
-| TD-006 | Manejo de errores de validación inconsistente entre formularios | Medium | `FieldErrorComponent` no usado uniformemente | UX de errores variable | ~~Fase 3~~ ✅ Resuelto 2026-06-15 |
-| TD-007 | i18n frágil (sin tipado ni verificación de paridad es/en) | Medium | Labels hardcodeados en arrays TS | Claves huérfanas o faltantes | ~~Fase 4~~ ✅ Resuelto 2026-06-15 |
-| TD-008 | Presentación (Tailwind) en configs TS (`dashboard-home.config`) | Low | Datos mezclados con clases CSS | Config difícil de reutilizar | Fase 5 |
-| TD-009 | `login` con `setInterval` imperativo embebido en componente | Low | Lógica no testeable aisladamente | Cooldown difícil de reutilizar | ~~Fase 3~~ ✅ Resuelto 2026-06-15 |
-| TD-010 | Specs duplicadas SPEC-016A/017A/018A con contenido distinto (Docs/) | Medium | Dos archivos por spec, md5 distintos | Confusión sobre contrato canónico | Fase 7 (Docs) |
+| ID | Description | Priority | Rationale | Impact | Status |
+|----|-------------|----------|-----------|--------|--------|
+| TD-001 | Duplicación casi total en `academic-catalog` | High | DRY violation | Bugs por divergencia | ✅ Resuelto 2026-06-15 (Fase 2) |
+| TD-002 | Patrón mock disperso (`if (useMock)` en servicios) | High | Dificulta alternar mock/API | Switch repetido por endpoint | ✅ Resuelto 2026-06-15 (Fase 1) |
+| TD-003 | `AcademicCatalogMockStore` mezcla students + professors | Medium | SRP | Mock difícil de extender | ✅ Resuelto 2026-06-15 (Fase 2) |
+| TD-004 | Endpoints fragmentados sin barrels | Medium | URLs dispersas | URLs inconsistentes | ✅ Resuelto 2026-06-15 (Fases 1/6) |
+| TD-005 | Paginación/filtros reimplementados en cada list | Medium | Lógica copiada | UI inconsistente | ✅ Base `CatalogListBase` (Fase 2); `p-paginator` diferido |
+| TD-006 | Errores de validación inconsistentes | Medium | `FieldErrorComponent` no uniforme | UX variable | ✅ Resuelto 2026-06-15 (Fase 3) |
+| TD-007 | i18n frágil (sin tipado ni paridad es/en) | Medium | Labels hardcodeados | Claves huérfanas | ✅ Resuelto 2026-06-15 (Fase 4) |
+| TD-008 | Presentación (Tailwind) en configs TS (`dashboard-home.config`) | Low | Datos + clases CSS mezclados | Config poco reutilizable | ✅ Resuelto 2026-06-15 (Fase B `mejoras2.md`) — `tone` en `StatCardComponent` |
+| TD-009 | `login` con `setInterval` imperativo en componente | Low | Lógica no testeable | Cooldown no reutilizable | ✅ Resuelto 2026-06-15 (Fase 3) |
+| TD-010 | Specs duplicadas SPEC-016A/017A/018A (Docs/) | Medium | Dos archivos/spec, md5 distintos | Confusión de contrato | ✅ Resuelto 2026-06-15 — [D-018](../Docs/implementation/decisions/D-018-iteration4-spa-spec-canonical.md); duplicados retirados |
+
+### TD-010 — cerrado
+
+Canónicos: `SPEC-*A_spa-*` en [`SPEC_INDEX.md`](../Docs/sdd/SPEC_INDEX.md). Estado SPA: [`phase7.md`](../Docs/implementation/phase7.md) (HU-15 / HU-21 / HU-28). Decisión: [D-018](../Docs/implementation/decisions/D-018-iteration4-spa-spec-canonical.md).
 
 ## Priority Levels
 
