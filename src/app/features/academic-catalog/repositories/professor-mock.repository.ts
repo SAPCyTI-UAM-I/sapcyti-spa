@@ -8,12 +8,12 @@ import {
   RegisterProfessorRequest,
   RegisterProfessorResponse,
 } from '../../../models/professor.model';
-import { AcademicCatalogMockStore } from '../mocks/academic-catalog-mock.store';
+import { ProfessorMockStore } from '../mocks/professor-mock.store';
 import { ProfessorRepository } from './professor.repository';
 
 @Injectable()
 export class ProfessorMockRepository implements ProfessorRepository {
-  private readonly mockStore = inject(AcademicCatalogMockStore);
+  private readonly mockStore = inject(ProfessorMockStore);
 
   listProfessors(query: ProfessorCatalogQuery): Observable<PageResponse<ProfessorCatalogItem>> {
     return of(this.mockStore.listProfessors(query));

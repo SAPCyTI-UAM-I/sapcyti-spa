@@ -71,7 +71,7 @@
         <p class="text-error">{{ 'ACADEMIC_CATALOG.STATES.LOAD_ERROR' | translate }}</p>
         <p-button [label]="'COMMON.ACTIONS.RETRY' | translate" (onClick)="load()" />
       </div>
-    } @else if (students().length === 0) {
+    } @else if (items().length === 0) {
       <div class="p-xl text-text-secondary text-center">
         {{ 'ACADEMIC_CATALOG.STUDENTS.LIST.EMPTY' | translate }}
       </div>
@@ -90,7 +90,7 @@
             </tr>
           </thead>
           <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
-            @for (student of students(); track student.id) {
+            @for (student of items(); track student.id) {
               <tr
                 class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
               >

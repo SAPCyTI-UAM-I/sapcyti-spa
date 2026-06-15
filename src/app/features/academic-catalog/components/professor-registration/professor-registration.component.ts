@@ -1,19 +1,20 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
-import { finalize } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
-import { RegisterProfessorRequest } from '../../../../models/professor.model';
+import {
+  RegisterProfessorRequest,
+  RegisterProfessorResponse,
+} from '../../../../models/professor.model';
 import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error.component';
 import { TemporaryPasswordDialogComponent } from '../../../../shared/components/temporary-password-dialog/temporary-password-dialog.component';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { ProfessorService } from '../../services/professor.service';
-import { CatalogError, mapCatalogError } from '../../utils/catalog-error.util';
+import { CatalogRegistrationBase } from '../catalog-registration.base';
 
 @Component({
   selector: 'app-professor-registration',
@@ -29,20 +30,13 @@ import { CatalogError, mapCatalogError } from '../../utils/catalog-error.util';
   ],
   templateUrl: './professor-registration.component.html',
 })
-export class ProfessorRegistrationComponent {
+export class ProfessorRegistrationComponent extends CatalogRegistrationBase<RegisterProfessorResponse> {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly auth = inject(AuthStateService);
   private readonly service = inject(ProfessorService);
-  private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
 
-  readonly step = signal(1);
-  readonly submitted = signal(false);
-  readonly loading = signal(false);
-  readonly error = signal<CatalogError | null>(null);
-  readonly generatedPassword = signal('');
-  readonly showPasswordDialog = signal(false);
-  readonly passwordCopied = signal(false);
+  protected override readonly listRoute = '/academic-catalog/professors';
+  protected override readonly maxStep = 2;
 
   readonly form = this.fb.group({
     firstName: ['', [Validators.required, Validators.maxLength(100)]],
@@ -52,52 +46,21 @@ export class ProfessorRegistrationComponent {
     employeeNumber: ['', [Validators.required, Validators.maxLength(20)]],
   });
 
-  next(): void {
-    this.submitted.set(true);
-    if (this.form.invalid) return;
-    this.submitted.set(false);
-    this.step.set(2);
+  protected override validateStep(step: number): boolean {
+    return step === 1 ? this.form.valid : true;
   }
 
-  previous(): void {
-    this.submitted.set(false);
-    this.step.set(1);
+  protected override isFormValidForSubmit(): boolean {
+    return this.form.valid;
   }
 
-  submit(): void {
-    this.submitted.set(true);
-    this.error.set(null);
-    if (this.form.invalid) return;
+  protected override register(): Observable<RegisterProfessorResponse> {
     const value = this.form.getRawValue();
     const request: RegisterProfessorRequest = {
       ...value,
       secondLastName: value.secondLastName.trim() || undefined,
       graduateProgramId: this.auth.getCurrentUser()?.graduateProgramId ?? 1,
     };
-    this.loading.set(true);
-    this.service
-      .registerProfessor(request)
-      .pipe(
-        finalize(() => this.loading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => {
-          this.generatedPassword.set(response.generatedPassword);
-          this.showPasswordDialog.set(true);
-        },
-        error: (error) => this.error.set(mapCatalogError(error)),
-      });
-  }
-
-  cancel(): void {
-    void this.router.navigate(['/academic-catalog/professors']);
-  }
-
-  closePasswordDialog(): void {
-    this.showPasswordDialog.set(false);
-    this.generatedPassword.set('');
-    this.passwordCopied.set(false);
-    void this.router.navigate(['/academic-catalog/professors']);
+    return this.service.registerProfessor(request);
   }
 }

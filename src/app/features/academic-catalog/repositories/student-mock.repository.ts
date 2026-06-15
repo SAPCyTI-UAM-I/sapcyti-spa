@@ -8,12 +8,12 @@ import {
   StudentCatalogItem,
   StudentCatalogQuery,
 } from '../../../models/student.model';
-import { AcademicCatalogMockStore } from '../mocks/academic-catalog-mock.store';
+import { StudentMockStore } from '../mocks/student-mock.store';
 import { StudentRepository } from './student.repository';
 
 @Injectable()
 export class StudentMockRepository implements StudentRepository {
-  private readonly mockStore = inject(AcademicCatalogMockStore);
+  private readonly mockStore = inject(StudentMockStore);
 
   listStudents(query: StudentCatalogQuery): Observable<PageResponse<StudentCatalogItem>> {
     return of(this.mockStore.listStudents(query));
