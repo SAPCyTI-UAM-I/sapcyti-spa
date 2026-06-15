@@ -79,10 +79,10 @@
           [attr.aria-label]="'SHELL.TOPBAR.NOTIFICATIONS' | translate"
         />
 
-        <p-avatar
-          [label]="userInitials()"
-          shape="circle"
-          [attr.aria-label]="currentUser()?.email"
+        <app-user-menu
+          [initials]="userInitials()"
+          [email]="currentUser()?.email ?? null"
+          [items]="userMenuItems"
         />
       </div>
     </header>

@@ -54,7 +54,8 @@ test('registers a professor and returns to the catalog', async ({ page }) => {
 
 test('changes own password and clears the session', async ({ page }) => {
   await login(page, 'student@uam.mx');
-  await page.getByRole('link', { name: /cambiar contraseña|change password/i }).click();
+  await page.getByTestId('user-menu-trigger').click();
+  await page.getByRole('menuitem', { name: /cambiar contraseña|change password/i }).click();
   await expect(page).toHaveURL(/account\/password$/);
 
   const passwordPage = page.getByTestId('password-change');

@@ -8,3 +8,5 @@ export { ShellSidebarLinkComponent } from './shell-sidebar-link/shell-sidebar-li
 export { ShellSidebarNavComponent } from './shell-sidebar-nav/shell-sidebar-nav.component';
 export { StatCardComponent, type CardTone } from './stat-card/stat-card.component';
 export { TemporaryPasswordDialogComponent } from './temporary-password-dialog/temporary-password-dialog.component';
+export { UserMenuComponent } from './user-menu/user-menu.component';
+export { type UserMenuItem } from './user-menu/user-menu.model';

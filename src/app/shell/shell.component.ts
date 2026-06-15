@@ -2,17 +2,17 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
 
 import { AuthStateService } from '../core/auth/auth.service';
-import { LanguageSwitcherComponent } from '../shared/components';
+import { LanguageSwitcherComponent, UserMenuComponent } from '../shared/components';
 import { ShellMobileDrawerComponent } from './shell-mobile-drawer.component';
 import { ShellSidebarNavComponent } from '../shared/components';
 import { getShellNavigation } from './shell-menu.config';
+import { USER_MENU_ITEMS } from './user-menu.config';
 import { logoutAndNavigateToLogin } from '../core/auth/utils';
 
 @Component({
@@ -21,7 +21,6 @@ import { logoutAndNavigateToLogin } from '../core/auth/utils';
   imports: [
     RouterOutlet,
     TranslateModule,
-    Avatar,
     Button,
     IconField,
     InputIcon,
@@ -29,6 +28,7 @@ import { logoutAndNavigateToLogin } from '../core/auth/utils';
     LanguageSwitcherComponent,
     ShellMobileDrawerComponent,
     ShellSidebarNavComponent,
+    UserMenuComponent,
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.css',
@@ -41,6 +41,7 @@ export class ShellComponent {
   readonly currentUser = toSignal(this.auth.currentUser$, { initialValue: null });
   readonly mobileMenuOpen = signal(false);
   readonly searchQuery = signal('');
+  readonly userMenuItems = USER_MENU_ITEMS;
 
   readonly navigation = computed(() => {
     const user = this.currentUser();

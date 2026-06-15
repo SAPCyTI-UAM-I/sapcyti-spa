@@ -19,6 +19,7 @@ describe('ShellComponent', () => {
     const translateMock = {
       instant: vi.fn((key: string) => key),
       use: vi.fn(),
+      onLangChange: new BehaviorSubject(null),
     };
 
     TestBed.configureTestingModule({

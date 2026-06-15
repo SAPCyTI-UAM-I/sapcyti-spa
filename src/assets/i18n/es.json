@@ -329,7 +329,6 @@
     },
     "SECTIONS": {
       "ACADEMIC_MANAGEMENT": "Gestión académica",
-      "ACCOUNT": "Cuenta",
       "ENROLLMENT": "Inscripción",
       "ENROLLMENT_PROCESS": "Proceso de inscripción",
       "MAIN": "Principal",

@@ -16,13 +16,6 @@ const PRESENTATIONS_LINK = {
   icon: 'pi pi-microphone',
 } as const;
 
-const PASSWORD_LINK = {
-  id: 'password',
-  labelKey: 'SHELL.MENU.CHANGE_PASSWORD',
-  route: '/account/password',
-  icon: 'pi pi-key',
-} as const;
-
 const STUDENT_NAV: ShellNavigation = {
   home: HOME_LINK,
   sections: [
@@ -170,16 +163,5 @@ export function getShellNavigation(role: RoleType | null): ShellNavigation | nul
     return null;
   }
 
-  const navigation = NAV_BY_ROLE[menuRole];
-  return {
-    ...navigation,
-    sections: [
-      ...navigation.sections,
-      {
-        id: 'account',
-        labelKey: 'SHELL.SECTIONS.ACCOUNT',
-        items: [PASSWORD_LINK],
-      },
-    ],
-  };
+  return NAV_BY_ROLE[menuRole];
 }

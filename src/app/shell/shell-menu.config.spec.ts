@@ -20,4 +20,11 @@ describe('shell-menu.config', () => {
     const nav = getShellNavigation('PROFESSOR');
     expect(nav?.sections[0]?.items[0]?.route).toBe('/enrollment/advisor-approval');
   });
+
+  it('does not expose the change-password link in the sidebar navigation', () => {
+    const routes = getShellNavigation('COORDINATOR')?.sections.flatMap((section) =>
+      section.items.map((item) => item.route),
+    );
+    expect(routes).not.toContain('/account/password');
+  });
 });
