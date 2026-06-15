@@ -1,13 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
-import { PageResponse } from '../../../models/page-response.model';
+import { PageResponse } from '../../../models';
 import {
   ProfessorCatalogItem,
   ProfessorCatalogQuery,
   RegisterProfessorRequest,
   RegisterProfessorResponse,
-} from '../../../models/professor.model';
+} from '../../../models';
 import { ProfessorMockStore } from '../mocks/professor-mock.store';
 import { ProfessorRepository } from './professor.repository';
 

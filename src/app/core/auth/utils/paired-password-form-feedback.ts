@@ -26,11 +26,14 @@ export function createPairedPasswordFormFeedback(
   const formStatus = toSignal(form.statusChanges.pipe(startWith(form.status)), {
     initialValue: form.status,
   });
+  const confirmPasswordControl = form.controls['confirmPassword'];
+  if (!confirmPasswordControl) {
+    throw new Error('Paired password form requires confirmPassword control');
+  }
+
   const confirmPasswordStatus = toSignal(
-    form.controls['confirmPassword'].statusChanges.pipe(
-      startWith(form.controls['confirmPassword'].status),
-    ),
-    { initialValue: form.controls['confirmPassword'].status },
+    confirmPasswordControl.statusChanges.pipe(startWith(confirmPasswordControl.status)),
+    { initialValue: confirmPasswordControl.status },
   );
 
   const passwordsMismatch = computed(() => {
@@ -48,8 +51,7 @@ export function createPairedPasswordFormFeedback(
   });
 
   const confirmFieldInvalid = computed(
-    () =>
-      passwordsMismatch() || shouldShowFieldError(form.controls['confirmPassword'], submitted()),
+    () => passwordsMismatch() || shouldShowFieldError(confirmPasswordControl, submitted()),
   );
 
   return { passwordsMismatch, confirmFieldInvalid };

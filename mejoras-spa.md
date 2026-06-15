@@ -39,7 +39,7 @@ switch** sin tocar el contrato de `environment`.
 - [x] **Fase 3** — Formularios/validación unificados: `FieldErrorComponent` en todos; extraer wizard multistep y cooldown
 - [x] **Fase 4** — i18n robusto: tipado de claves + script de paridad es↔en + mover labels hardcodeados
 - [ ] **Fase 5** — Design system: sacar Tailwind de configs TS; reutilizar `stat-card`/tokens
-- [ ] **Fase 6** — Estructura/barrels + reglas ESLint anti-acoplamiento + strict TS
+- [x] **Fase 6** — Estructura/barrels + reglas ESLint anti-acoplamiento + strict TS
 - [ ] **Fase 7** — Consolidación de Docs (specs duplicadas) y poblar `TECH_DEBT.md`
 
 ---
@@ -236,8 +236,8 @@ Tareas:
     try/catch en auth; replica el criterio donde falte).
 
 DoD Fase 6:
-- [ ] Barrels sin ciclos; ESLint bloquea acoplamiento feature→feature
-- [ ] Sin `any`; build estricto verde
+- [x] Barrels sin ciclos; ESLint bloquea acoplamiento feature→feature
+- [x] Sin `any`; build estricto verde (`noUncheckedIndexedAccess` habilitado)
 
 ============================================================
 ## FASE 7 — Consolidación de documentación (Docs/)

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 
-import { AuthResponse } from '../../../models/auth-response.model';
+import { AuthResponse } from '../../../models';
 import { mockLogin } from '../mock/auth.mock';
 import { AuthApiRepository } from './auth-api.repository';
 

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 
-import { PageResponse } from '../../../models/page-response.model';
+import { PageResponse } from '../../../models';
 import {
   ProfessorCatalogItem,
   ProfessorCatalogQuery,
   RegisterProfessorRequest,
   RegisterProfessorResponse,
-} from '../../../models/professor.model';
+} from '../../../models';
 import {
   generatedPassword,
   mockConflict,

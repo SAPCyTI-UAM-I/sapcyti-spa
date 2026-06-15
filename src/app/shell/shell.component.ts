@@ -9,11 +9,11 @@ import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
 
 import { AuthStateService } from '../core/auth/auth.service';
-import { LanguageSwitcherComponent } from '../shared/components/language-switcher/language-switcher.component';
+import { LanguageSwitcherComponent } from '../shared/components';
 import { ShellMobileDrawerComponent } from './shell-mobile-drawer.component';
-import { ShellSidebarNavComponent } from '../shared/components/shell-sidebar-nav/shell-sidebar-nav.component';
+import { ShellSidebarNavComponent } from '../shared/components';
 import { getShellNavigation } from './shell-menu.config';
-import { logoutAndNavigateToLogin } from '../core/auth/utils/logout-navigation.util';
+import { logoutAndNavigateToLogin } from '../core/auth/utils';
 
 @Component({
   selector: 'app-shell',

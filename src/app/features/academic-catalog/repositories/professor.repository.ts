@@ -1,13 +1,13 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { PageResponse } from '../../../models/page-response.model';
+import { PageResponse } from '../../../models';
 import {
   ProfessorCatalogItem,
   ProfessorCatalogQuery,
   RegisterProfessorRequest,
   RegisterProfessorResponse,
-} from '../../../models/professor.model';
+} from '../../../models';
 
 export interface ProfessorRepository {
   listProfessors(query: ProfessorCatalogQuery): Observable<PageResponse<ProfessorCatalogItem>>;

@@ -6,8 +6,8 @@ import { Tooltip } from 'primeng/tooltip';
 
 import { injectMockEnabled } from '../../../core/mocks/mock.config';
 import { MOCK_VALID_RESET_TOKEN } from '../../../core/auth/mock/auth.mock';
-import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
-import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
+import { AuthFooterComponent } from '../../../shared/components';
+import { AuthPageLayoutComponent } from '../../../shared/components';
 
 @Component({
   selector: 'app-forgot-password-sent',

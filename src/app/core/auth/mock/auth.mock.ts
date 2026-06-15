@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 
-import { AuthResponse } from '../../../models/auth-response.model';
-import { RoleType } from '../../../models/role-type.model';
+import { AuthResponse } from '../../../models';
+import { RoleType } from '../../../models';
 
 export interface AuthMockUser {
   email: string;

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
-import { RoleType } from '../../../models/role-type.model';
+import { RoleType } from '../../../models';
 import { AuthStateService } from '../auth.service';
 import { hasAppProfile, matchesAnyRole } from '../utils/role-authorization.util';
 

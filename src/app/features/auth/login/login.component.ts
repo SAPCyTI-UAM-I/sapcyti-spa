@@ -13,13 +13,13 @@ import { finalize } from 'rxjs';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
 import { AUTH_MOCK_USERS } from '../../../core/auth/mock/auth.mock';
-import { createLoginCooldown } from '../../../core/auth/utils/login-cooldown';
-import { hasAppProfile } from '../../../core/auth/utils/role-authorization.util';
-import { sanitizeReturnUrl } from '../../../core/auth/utils/sanitize-return-url.util';
+import { createLoginCooldown, hasAppProfile, sanitizeReturnUrl } from '../../../core/auth/utils';
 import { injectMockEnabled } from '../../../core/mocks/mock.config';
-import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
-import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
-import { FieldErrorComponent } from '../../../shared/components/field-error/field-error.component';
+import {
+  AuthFooterComponent,
+  AuthPageLayoutComponent,
+  FieldErrorComponent,
+} from '../../../shared/components';
 import { isFieldInvalid } from '../../../shared/utils/field-error.util';
 
 @Component({

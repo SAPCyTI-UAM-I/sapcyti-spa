@@ -5,7 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideAppMockConfig } from '../../../core/mocks/mock.config';
 import { DATA_LAYER_PROVIDERS } from '../../../core/api/data-layer.providers';
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
-import { RegisterStudentRequest } from '../../../models/student.model';
+import { RegisterStudentRequest } from '../../../models';
 import { StudentService } from './student.service';
 
 const request: RegisterStudentRequest = {

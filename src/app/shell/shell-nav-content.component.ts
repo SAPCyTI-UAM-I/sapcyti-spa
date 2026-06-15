@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { TranslateModule } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 
-import { ShellSidebarLinkComponent } from '../shared/components/shell-sidebar-link/shell-sidebar-link.component';
+import { ShellSidebarLinkComponent } from '../shared/components';
 import { ShellNavigation } from './shell-menu.model';
 
 /**

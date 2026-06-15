@@ -16,15 +16,17 @@ import { Password } from 'primeng/password';
 import { finalize } from 'rxjs';
 
 import { PasswordRecoveryService } from '../../../core/auth/password-recovery.service';
-import { createPairedPasswordFormFeedback } from '../../../core/auth/utils/paired-password-form-feedback';
-import { passwordsMatchValidator } from '../../../core/auth/utils/passwords-match.validator';
 import {
+  createPairedPasswordFormFeedback,
   mapResetPasswordError,
+  passwordsMatchValidator,
   ResetErrorType,
-} from '../../../core/auth/utils/reset-password-error.util';
-import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
-import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
-import { FieldErrorComponent } from '../../../shared/components/field-error/field-error.component';
+} from '../../../core/auth/utils';
+import {
+  AuthFooterComponent,
+  AuthPageLayoutComponent,
+  FieldErrorComponent,
+} from '../../../shared/components';
 import { isFieldInvalid } from '../../../shared/utils/field-error.util';
 
 @Component({

@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { finalize, Observable } from 'rxjs';
 
-import { PageResponse } from '../../../models/page-response.model';
+import { PageResponse } from '../../../models';
 
 @Directive()
 export abstract class CatalogListBase<TItem> implements OnInit {

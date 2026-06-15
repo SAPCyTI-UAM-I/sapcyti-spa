@@ -1,4 +1,4 @@
-import { RoleType } from '../models/role-type.model';
+import { RoleType } from '../models';
 
 import { ShellMenuRole, ShellNavigation } from './shell-menu.model';
 

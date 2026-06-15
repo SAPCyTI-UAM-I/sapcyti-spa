@@ -11,10 +11,10 @@ import {
   throwError,
 } from 'rxjs';
 
-import { AuthResponse } from '../../models/auth-response.model';
-import { CurrentUser } from '../../models/current-user.model';
-import { JwtClaims } from '../../models/jwt-claims.model';
-import { isRoleType, RoleType } from '../../models/role-type.model';
+import { AuthResponse } from '../../models';
+import { CurrentUser } from '../../models';
+import { JwtClaims } from '../../models';
+import { isRoleType, RoleType } from '../../models';
 import { TenantService } from '../http/tenant.service';
 import { AUTH_API_REPOSITORY } from './repositories/auth-api.repository';
 import { decodeJwtPayload } from './utils/jwt.util';

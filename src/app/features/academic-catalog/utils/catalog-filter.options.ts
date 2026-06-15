@@ -1,5 +1,5 @@
 import type { I18nKey } from '../../../core/i18n/i18n-keys.generated';
-import { ProgramType } from '../../../models/student.model';
+import { ProgramType } from '../../../models';
 
 export interface CatalogSelectOption<T extends string = string> {
   readonly labelKey: I18nKey;

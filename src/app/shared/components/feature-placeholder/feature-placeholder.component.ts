@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Message } from 'primeng/message';
 
+import { readFeaturePlaceholderRouteData } from '../../utils/feature-placeholder-route.util';
+
 @Component({
   selector: 'app-feature-placeholder',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,7 +40,8 @@ import { Message } from 'primeng/message';
 })
 export class FeaturePlaceholderComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly routeData = readFeaturePlaceholderRouteData(this.route.snapshot.data);
 
-  readonly titleKey = this.route.snapshot.data['titleKey'] as string;
-  readonly messageKey = this.route.snapshot.data['messageKey'] as string;
+  readonly titleKey = this.routeData.titleKey;
+  readonly messageKey = this.routeData.messageKey;
 }

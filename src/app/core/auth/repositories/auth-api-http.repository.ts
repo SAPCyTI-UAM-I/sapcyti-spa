@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api/api-endpoints';
-import { AuthResponse } from '../../../models/auth-response.model';
+import { AuthResponse } from '../../../models';
 import { AuthApiRepository } from './auth-api.repository';
 
 @Injectable()

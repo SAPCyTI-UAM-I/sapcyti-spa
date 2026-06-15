@@ -1,15 +1,17 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { ProfessorMockStore } from '../../academic-catalog/mocks/professor-mock.store';
-import { StudentMockStore } from '../../academic-catalog/mocks/student-mock.store';
+import {
+  MOCK_PROFESSOR_USER_REGISTRY,
+  MOCK_STUDENT_USER_REGISTRY,
+} from '../../../core/mocks/mock-user-registry';
 import { mockChangePassword } from '../mocks/password-change.mock';
 import { ChangePasswordRequest, PasswordChangeRepository } from './password-change.repository';
 
 @Injectable()
 export class PasswordChangeMockRepository implements PasswordChangeRepository {
-  private readonly studentStore = inject(StudentMockStore);
-  private readonly professorStore = inject(ProfessorMockStore);
+  private readonly studentRegistry = inject(MOCK_STUDENT_USER_REGISTRY);
+  private readonly professorRegistry = inject(MOCK_PROFESSOR_USER_REGISTRY);
 
   changePassword(
     userId: number,
@@ -17,8 +19,8 @@ export class PasswordChangeMockRepository implements PasswordChangeRepository {
     selfChange: boolean,
   ): Observable<void> {
     return mockChangePassword(
-      this.studentStore,
-      this.professorStore,
+      this.studentRegistry,
+      this.professorRegistry,
       userId,
       request.currentPassword,
       selfChange,

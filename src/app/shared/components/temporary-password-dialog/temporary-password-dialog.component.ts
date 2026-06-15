@@ -4,6 +4,8 @@ import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { Tooltip } from 'primeng/tooltip';
 
+import { copyTextToClipboard } from '../../utils/clipboard.util';
+
 @Component({
   selector: 'app-temporary-password-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,9 +68,10 @@ export class TemporaryPasswordDialogComponent {
   readonly closed = output<void>();
 
   copyPassword(): void {
-    const value = this.password().trim();
-    if (!value) return;
-    void navigator.clipboard.writeText(value);
-    this.copiedChange.emit(true);
+    void copyTextToClipboard(this.password()).then((copied) => {
+      if (copied) {
+        this.copiedChange.emit(true);
+      }
+    });
   }
 }

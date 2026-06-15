@@ -1,4 +1,4 @@
-import { RoleType } from '../../models/role-type.model';
+import { RoleType } from '../../models';
 
 /**
  * Mirrors the effective backend RBAC today:

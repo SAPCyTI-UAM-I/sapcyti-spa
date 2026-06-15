@@ -6,12 +6,9 @@ import { InputText } from 'primeng/inputtext';
 import { Observable } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
-import {
-  RegisterProfessorRequest,
-  RegisterProfessorResponse,
-} from '../../../../models/professor.model';
-import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error.component';
-import { TemporaryPasswordDialogComponent } from '../../../../shared/components/temporary-password-dialog/temporary-password-dialog.component';
+import { RegisterProfessorRequest, RegisterProfessorResponse } from '../../../../models';
+import { FieldErrorComponent } from '../../../../shared/components';
+import { TemporaryPasswordDialogComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { ProfessorService } from '../../services/professor.service';
 import { CatalogRegistrationBase } from '../catalog-registration.base';

@@ -5,7 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideAppMockConfig } from '../../../core/mocks/mock.config';
 import { DATA_LAYER_PROVIDERS } from '../../../core/api/data-layer.providers';
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
-import { RegisterProfessorRequest } from '../../../models/professor.model';
+import { RegisterProfessorRequest } from '../../../models';
 import { ProfessorService } from './professor.service';
 
 describe('ProfessorService', () => {

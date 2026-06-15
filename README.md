@@ -88,6 +88,8 @@ pnpm run format
 
 El proyecto usa [ESLint](https://eslint.org/) con [`@angular-eslint`](https://github.com/angular-eslint/angular-eslint) para análisis estático de código TypeScript y plantillas HTML. La configuración se encuentra en `eslint.config.mjs`.
 
+Incluye la regla local **`sapcyti/no-cross-feature-imports`**, que impide que un feature importe código de otro feature (ver [`conventions.md`](conventions.md) sección 17). `pnpm run lint` también ejecuta Prettier e `i18n:check`.
+
 Para analizar el proyecto:
 
 ```bash
@@ -116,7 +118,7 @@ Ordenar JSON y regenerar tipos TypeScript (`I18nKey` en `src/app/core/i18n/i18n-
 pnpm run i18n:sync
 ```
 
-Script: `scripts/i18n-check.mjs` (flags `--sort`, `--types`). Convenciones detalladas en [`conventions.md`](conventions.md).
+Script: `scripts/i18n-check.mjs` (flags `--sort`, `--types`). Convenciones detalladas en [`conventions.md`](conventions.md) (sección 10 — i18n).
 
 ## Compilación (Build)
 

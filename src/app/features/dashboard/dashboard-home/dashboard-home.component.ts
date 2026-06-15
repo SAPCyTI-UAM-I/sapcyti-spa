@@ -5,7 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
 import { resolveShellMenuRole } from '../../../shell/shell-menu.config';
-import { StatCardComponent } from '../../../shared/components/stat-card/stat-card.component';
+import { StatCardComponent } from '../../../shared/components';
 import { DASHBOARD_CARDS_BY_ROLE } from '../dashboard-home.config';
 
 @Component({

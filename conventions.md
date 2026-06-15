@@ -37,10 +37,10 @@ src/app/
 
 ```
 features/*  →  core/*, shared/*, models/*
-features/*  ✗  features/*   (prohibido — pendiente ESLint en Fase 6 de mejoras-spa)
+features/*  ✗  features/*   (prohibido — regla ESLint sapcyti/no-cross-feature-imports)
 shell/*     →  core/*, shared/*, models/*
 shared/*    →  core/* (mínimo), models/* (evitar si posible)
-core/*      →  models/* únicamente entre capas de app
+core/*      →  models/*; excepción: `core/api/data-layer.providers.ts` registra repositorios de features
 ```
 
 ### Dónde poner código nuevo
@@ -55,6 +55,8 @@ core/*      →  models/* únicamente entre capas de app
 | Mock de API | `features/{feature}/mocks/` o `core/auth/mock/` |
 | Política de roles | `core/auth/rbac.policy.ts` |
 | Deuda técnica conocida | [`TECH_DEBT.md`](./TECH_DEBT.md) |
+
+> Barrels, ESLint anti feature→feature, TS estricto y guardas de APIs del navegador: **sección 17**.
 
 ---
 
@@ -256,25 +258,137 @@ shared/utils/field-error.util.ts
 
 ## 10. Internacionalización (i18n)
 
-- Librería: `@ngx-translate/core` + loader HTTP.
-- Archivos: `src/assets/i18n/es.json`, `en.json`.
-- Idioma por defecto: `es`.
-- En templates: `{{ 'CLAVE.SUBCLAVE' | translate }}` o `translate` pipe en atributos PrimeNG.
-- **Prohibido** texto visible hardcodeado en `.ts` / `.html` (excepto datos de usuario/API).
-- Labels de selects/catálogos: claves i18n en `catalog-filter.options.ts` (`labelKey: I18nKey`), no strings sueltos.
-- **Paridad es↔en:** `pnpm run i18n:check` (también en `pnpm run lint`). Falla si `es.json` y `en.json` no tienen el mismo conjunto de claves.
-- **Sincronizar JSON + tipos:** `pnpm run i18n:sync` ordena ambos JSON y regenera `src/app/core/i18n/i18n-keys.generated.ts` (`I18nKey`, `I18N_KEYS`). Commitear el archivo generado.
-- Script: `scripts/i18n-check.mjs` (`--sort`, `--types`).
+### Stack y archivos
 
-Estructura de claves habitual:
+| Recurso | Ubicación |
+|---------|-----------|
+| Traducciones | `src/assets/i18n/es.json`, `en.json` |
+| Tipo de claves | `src/app/core/i18n/i18n-keys.generated.ts` (`I18nKey`, `I18N_KEYS`) |
+| Script de paridad | `scripts/i18n-check.mjs` |
+| Opciones de selects compartidas | `features/academic-catalog/utils/catalog-filter.options.ts` |
+
+- Librería: `@ngx-translate/core` + loader HTTP.
+- Idioma por defecto: `es`.
+- **Prohibido** texto visible hardcodeado en `.ts` / `.html` (excepto datos de usuario/API y códigos de idioma `ES`/`EN` en el selector de idioma).
+
+### Convención de nombres de claves
+
+- Formato: `DOMINIO.SECCION.SUBSECCION` en **MAYÚSCULAS** con puntos (sin espacios).
+- Agrupar por feature o área transversal; reutilizar prefijos existentes antes de inventar uno nuevo.
+- Los valores en JSON son **solo cadenas finales** (hojas del árbol). No anidar texto traducible dentro de otra clave.
+
+Estructura habitual:
 
 ```
 COMMON.{ACTIONS,STATES,VALIDATION,ERRORS}
 AUTH.{LOGIN,FORGOT_PASSWORD,RESET_PASSWORD}.*
-ACADEMIC_CATALOG.{STUDENTS,PROFESSORS,FILTERS,ERRORS}.*
+ACADEMIC_CATALOG.{STUDENTS,PROFESSORS,FILTERS,ERRORS,FIELDS,COLUMNS}.*
 ACCOUNT.PASSWORD.*
-SHELL.MENU.*
+SHELL.{MENU,SECTIONS}.*
+DASHBOARD.CARDS.*
 ```
+
+**Buenas prácticas de diseño de claves**
+
+| Hacer | Evitar |
+|-------|--------|
+| Claves estables orientadas al significado (`COMMON.ACTIONS.SAVE`) | Claves acopladas al layout (`BUTTON_TOP_RIGHT`) |
+| Reutilizar `COMMON.*` para acciones/estados genéricos | Duplicar "Guardar", "Cancelar", etc. por feature |
+| Misma clave en `es.json` y `en.json` con el mismo path | Traducir solo un idioma y dejar el otro pendiente |
+| Errores de negocio bajo `{FEATURE}.ERRORS.{codigo}` | Mensajes de error literales en servicios o componentes |
+
+### Flujo al añadir o cambiar traducciones
+
+1. Añade la clave en **`es.json` y `en.json`** con el mismo path y estructura anidada.
+2. Ejecuta **`pnpm run i18n:sync`** (ordena JSON + regenera `i18n-keys.generated.ts`).
+3. Usa la clave en template o tipa con `I18nKey` en TypeScript.
+4. Verifica con **`pnpm run lint`** (incluye `i18n:check`) o, solo paridad, **`pnpm run i18n:check`**.
+
+Comandos:
+
+```bash
+pnpm run i18n:check   # falla si es.json y en.json no tienen el mismo conjunto de claves
+pnpm run i18n:sync    # --sort + --types: normaliza JSON y regenera tipos
+```
+
+**Importante:** commitear `i18n-keys.generated.ts` junto con los JSON. No editar el archivo generado a mano.
+
+### Uso en plantillas HTML
+
+Preferir el pipe `translate` en el template (no construir strings en el componente):
+
+```html
+<h1>{{ 'ACADEMIC_CATALOG.STUDENTS.LIST.TITLE' | translate }}</h1>
+
+<p-button [label]="'COMMON.ACTIONS.SAVE' | translate" />
+
+<input [placeholder]="'ACADEMIC_CATALOG.STUDENTS.LIST.SEARCH' | translate" />
+```
+
+Para mensajes con parámetros, usar el objeto del segundo argumento del pipe según la API de `@ngx-translate`.
+
+### Uso en TypeScript
+
+**Opciones de select / catálogo:** almacenar `labelKey: I18nKey`, no el texto traducido. El template resuelve con `| translate`.
+
+```typescript
+import type { I18nKey } from '../../../core/i18n/i18n-keys.generated';
+
+export interface CatalogSelectOption<T extends string = string> {
+  readonly labelKey: I18nKey;
+  readonly value: T;
+}
+
+export const CATALOG_STATUS_FILTER_OPTIONS: CatalogSelectOption[] = [
+  { labelKey: 'ACADEMIC_CATALOG.FILTERS.ALL', value: '' },
+  { labelKey: 'ACADEMIC_CATALOG.STATUS.ACTIVE', value: 'true' },
+];
+```
+
+**PrimeNG `p-select`:** no usar `optionLabel` con texto fijo; plantillas `#item` / `#selectedItem`:
+
+```html
+<p-select [options]="statuses" optionValue="value">
+  <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
+  <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
+</p-select>
+```
+
+**Configuración estática (menú, dashboard):** propiedad `labelKey` con literal de clave; el componente hijo aplica `translate` (p. ej. `StatCardComponent`, `ShellSidebarLinkComponent`).
+
+**Traducción en runtime (excepcional):** solo cuando la API de un tercero exige `string` ya resuelto (p. ej. menú PrimeNG que no acepta plantilla). Usar `TranslateService.instant('CLAVE')` en el componente, no concatenar textos.
+
+```typescript
+// shell.component.ts — caso justificado
+label: this.translate.instant(link.labelKey) as string,
+```
+
+### Errores y validación
+
+- Mensajes de campo: claves bajo `COMMON.VALIDATION.*` o del feature; mostrar con `FieldErrorComponent`.
+- Errores de API/negocio: mapear códigos a claves i18n (`ACADEMIC_CATALOG.ERRORS.duplicate_email`), no devolver texto del mock al usuario sin traducir.
+- Errores genéricos de servidor: `COMMON.ERRORS.SERVER_ERROR`.
+
+### Verificación automática
+
+- `i18n:check` está integrado en **`pnpm run lint`**; el CI/local debe fallar ante desbalance es↔en.
+- El script lista claves **solo en es** o **solo en en** para corregir rápido.
+- Tras renombrar o borrar claves, ejecutar `i18n:sync` y corregir referencias que TypeScript marque al cambiar `I18nKey`.
+
+### Qué no hacer
+
+| Anti-patrón | Alternativa |
+|-------------|-------------|
+| `label: 'Activo'` en arrays TS | `labelKey: 'ACADEMIC_CATALOG.STATUS.ACTIVE'` |
+| Clave solo en un JSON | Añadir en ambos y correr `i18n:sync` |
+| Editar `i18n-keys.generated.ts` manualmente | Regenerar con `pnpm run i18n:sync` |
+| Texto visible en `.ts` para UI | Clave i18n + pipe o `instant()` puntual |
+| Inventar claves sin comprobar paridad | `pnpm run i18n:check` antes del commit |
+
+### Excepciones aceptadas
+
+- Códigos de idioma **`ES` / `EN`** en `language-switcher` (no son copy de producto).
+- Datos dinámicos de API (nombres de usuario, títulos de programa, etc.).
 
 ---
 
@@ -412,7 +526,6 @@ pnpm run e2e
 **Pendiente documentado:**
 
 - Fase 5: sacar Tailwind de configs TS.
-- Fase 6: barrels `index.ts`, ESLint anti feature→feature.
 - Fase 7: consolidar specs duplicadas en Docs.
 
 ---
@@ -424,7 +537,10 @@ pnpm run e2e
 - [ ] ¿Repository + mock si hay datos remotos?
 - [ ] ¿Flag en `environment.mocks` si aplica?
 - [ ] ¿`FieldErrorComponent` en formularios?
-- [ ] ¿Claves i18n en es **y** en?
+- [ ] ¿Claves i18n en es **y** en? ¿Ejecutado `pnpm run i18n:sync` si hubo cambios en JSON?
+- [ ] ¿Imports vía barrels (`models`, `shared/components`, `core/auth/utils`) cuando aplique?
+- [ ] ¿Sin imports feature→feature? (si mock compartido → token en `core/mocks/`)
+- [ ] ¿Guardas en `localStorage` / `clipboard` / `route.snapshot.data` si se tocan?
 - [ ] ¿`OnPush` + signals + `takeUntilDestroyed`?
 - [ ] ¿Roles en `rbac.policy.ts` y ruta?
 - [ ] ¿`data-testid` en flujos e2e críticos?
@@ -436,18 +552,25 @@ pnpm run e2e
 
 ```
 core/api/api-endpoints.ts              # URLs API
-core/api/data-layer.providers.ts       # Registro de repositorios
+core/api/data-layer.providers.ts       # Registro de repositorios + tokens mock compartidos
 core/mocks/mock.config.ts              # Sistema de flags mock
+core/mocks/mock-user-registry.ts       # Tokens MockUserRegistry (evita feature→feature)
 core/mocks/provide-mock-or-http.ts     # Factory Repository
+eslint-rules/no-cross-feature-imports.mjs
 core/auth/rbac.policy.ts               # Permisos por ruta
+core/auth/utils/index.ts               # Barrel utilidades auth
 core/auth/auth.service.ts              # Sesión JWT
 core/http/utils/parse-api-error.util.ts
 core/theme/design-tokens.ts            # Paleta
 src/styles.css                         # Tokens Tailwind @theme
+models/index.ts                        # Barrel tipos de dominio
 src/assets/i18n/{es,en}.json           # Traducciones
 core/i18n/i18n-keys.generated.ts       # Tipo I18nKey (pnpm run i18n:sync)
 scripts/i18n-check.mjs                 # Paridad es↔en; --sort --types
+shared/components/index.ts             # Barrel componentes UI
 shared/utils/field-error.util.ts       # Validación de campos
+shared/utils/clipboard.util.ts         # Copia segura al portapapeles
+shared/utils/feature-placeholder-route.util.ts
 shared/components/field-error/         # UI de errores
 features/academic-catalog/components/catalog-list.base.ts
 features/academic-catalog/components/catalog-registration.base.ts
@@ -458,4 +581,131 @@ testing/auth-test.util.ts              # Setup tests HTTP auth
 
 ---
 
-*Última actualización: refleja el estado post-Fases 0–4 del refactor `mejoras-spa.md` (junio 2026).*
+## 17. Estructura, barrels y prevención de acoplamiento
+
+### Límite arquitectónico
+
+```
+features/*  →  core/*, shared/*, models/*
+features/*  ✗  features/*   (enforced por ESLint)
+shell/*     →  core/*, shared/*, models/*
+core/*      →  models/*; excepción: data-layer.providers.ts registra repos de features
+```
+
+Un feature **no conoce** la implementación interna de otro. Si dos features necesitan el mismo dato en mocks, el contrato vive en `core/` y la implementación se registra en DI — no con imports cruzados.
+
+### Barrels (`index.ts`)
+
+Puntos de entrada para reducir ruido de imports **sin crear ciclos**:
+
+| Barrel | Exporta | Ejemplo de import |
+|--------|---------|-------------------|
+| `models/index.ts` | Tipos e interfaces de dominio | `import { RoleType, PageResponse } from '../../../models'` |
+| `shared/components/index.ts` | Componentes standalone | `import { FieldErrorComponent, StatCardComponent } from '../../../shared/components'` |
+| `core/auth/utils/index.ts` | Utilidades de auth | `import { createLoginCooldown, sanitizeReturnUrl } from '../../../core/auth/utils'` |
+
+**Cuándo usar**
+
+- Varios símbolos del mismo área en un archivo.
+- Tipos de dominio compartidos entre features vía `models/`.
+- Componentes shared reutilizados en formularios, shell o dashboard.
+
+**Cuándo NO barrelizar**
+
+| Evitar | Motivo |
+|--------|--------|
+| `features/{x}/index.ts` que reexporta todo el feature | Acoplamiento y ciclos de dependencia |
+| Barrels de repositorios o servicios de feature | La DI ya centraliza en `data-layer.providers.ts` |
+| Reexportar specs o mocks en barrels públicos | Ruido y riesgo de importar test code en prod |
+
+Al añadir un export nuevo al barrel, **no** hace falta script: solo exportar el símbolo en el `index.ts` correspondiente.
+
+### ESLint — `sapcyti/no-cross-feature-imports`
+
+- **Archivo:** `eslint-rules/no-cross-feature-imports.mjs`
+- **Config:** `eslint.config.mjs` — activa solo en `src/app/features/**/*.ts`
+- **Comportamiento:** resuelve imports relativos y bloquea si el path destino cae en otro feature (p. ej. `account` importando `academic-catalog/mocks/...`).
+
+**Permitido**
+
+- Imports dentro del mismo feature (`../services/student.service`)
+- Imports a `core/`, `shared/`, `models/`, `shell/`
+- `core/api/data-layer.providers.ts` importando repositorios de features (composición en raíz)
+
+**Bloqueado**
+
+```typescript
+// ❌ En features/account/...
+import { StudentMockStore } from '../../academic-catalog/mocks/student-mock.store';
+```
+
+**Alternativa correcta — token en core**
+
+```typescript
+// core/mocks/mock-user-registry.ts
+export interface MockUserRegistry { hasUser(userId: number): boolean; }
+export const MOCK_STUDENT_USER_REGISTRY = new InjectionToken<MockUserRegistry>(...);
+
+// core/api/data-layer.providers.ts
+{ provide: MOCK_STUDENT_USER_REGISTRY, useExisting: StudentMockStore },
+
+// features/account/repositories/password-change-mock.repository.ts
+private readonly studentRegistry = inject(MOCK_STUDENT_USER_REGISTRY);
+```
+
+Verificación: `pnpm run lint` o `ng lint` (falla en CI si hay cruce).
+
+### TypeScript estricto
+
+| Flag | Ubicación | Efecto |
+|------|-----------|--------|
+| `strict: true` | `tsconfig.json` | Null checks, strict templates, etc. |
+| `noUncheckedIndexedAccess: true` | `tsconfig.json` | `arr[i]` y `obj[key]` son `T \| undefined` |
+
+**Patrones recomendados**
+
+```typescript
+// Acceso por índice — validar antes de usar
+const payload = parts[1];
+if (!payload) throw new Error('Invalid JWT format');
+
+// Form controls por nombre — guarda explícita
+const control = form.controls['confirmPassword'];
+if (!control) throw new Error('confirmPassword control is required');
+```
+
+**Prohibido:** `any` salvo casos excepcionales documentados (hoy el repo no usa `any` en código de producción).
+
+### APIs del navegador
+
+Entornos restringidos (privacidad, SSR, iframes) pueden bloquear storage o clipboard. **Nunca** asumir que existen.
+
+| API | Utilidad / referencia | Patrón |
+|-----|----------------------|--------|
+| `localStorage` | `auth.service.ts`, `language-switcher`, `request-language.util.ts` | `try/catch`; persistencia best-effort |
+| `navigator.clipboard` | `shared/utils/clipboard.util.ts` | Comprobar `navigator.clipboard?.writeText`; devolver `boolean` |
+| `route.snapshot.data` | `shared/utils/feature-placeholder-route.util.ts` | Validar `typeof === 'string'`; fallback con claves `I18nKey` |
+
+```typescript
+// Copiar al portapapeles — usar util, no navigator directo en componentes
+import { copyTextToClipboard } from '../../utils/clipboard.util';
+
+void copyTextToClipboard(text).then((copied) => {
+  if (copied) this.copiedChange.emit(true);
+});
+```
+
+### Qué no hacer
+
+| Anti-patrón | Alternativa |
+|-------------|-------------|
+| Importar mock/store de otro feature | Token en `core/mocks/` + registro en `data-layer.providers.ts` |
+| `import { X } from '../../../models/student.model'` | `import { X } from '../../../models'` |
+| `localStorage.getItem` sin `try/catch` | Envolver o reutilizar patrón de `auth.service.ts` |
+| `navigator.clipboard.writeText` directo en componente | `copyTextToClipboard()` |
+| `route.snapshot.data['key'] as string` sin validar | `readFeaturePlaceholderRouteData()` o guarda equivalente |
+| Desactivar la regla ESLint para “un import rápido” | Refactorizar el contrato a `core/` |
+
+---
+
+*Última actualización: refleja el estado post-Fases 0–6 del refactor `mejoras-spa.md` (junio 2026).*

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { PageResponse } from '../../../models/page-response.model';
+import { PageResponse } from '../../../models';
 
 export function page<T>(content: T[], pageIndex: number, size: number): PageResponse<T> {
   const start = pageIndex * size;

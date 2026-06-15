@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { AuthResponse } from '../../../models/auth-response.model';
+import { AuthResponse } from '../../../models';
 
 export interface AuthApiRepository {
   readonly supportsRememberedSessionRestore: boolean;

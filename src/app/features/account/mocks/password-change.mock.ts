@@ -1,12 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 
-import { ProfessorMockStore } from '../../academic-catalog/mocks/professor-mock.store';
-import { StudentMockStore } from '../../academic-catalog/mocks/student-mock.store';
+import { MockUserRegistry } from '../../../core/mocks/mock-user-registry';
 
 export function mockChangePassword(
-  studentStore: StudentMockStore,
-  professorStore: ProfessorMockStore,
+  studentRegistry: MockUserRegistry,
+  professorRegistry: MockUserRegistry,
   userId: number,
   currentPassword: string | undefined,
   selfChange: boolean,
@@ -20,7 +19,7 @@ export function mockChangePassword(
         }),
     );
   }
-  if (!selfChange && !studentStore.hasUser(userId) && !professorStore.hasUser(userId)) {
+  if (!selfChange && !studentRegistry.hasUser(userId) && !professorRegistry.hasUser(userId)) {
     return throwError(
       () => new HttpErrorResponse({ status: 404, error: { error: 'USER_NOT_FOUND' } }),
     );

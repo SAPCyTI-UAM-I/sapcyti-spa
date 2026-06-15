@@ -2,8 +2,8 @@ import { Routes } from '@angular/router';
 
 import { authGuard } from '../../core/auth/guards/auth.guard';
 import { ROUTE_PERMISSIONS } from '../../core/auth/rbac.policy';
-import { RoleType } from '../../models/role-type.model';
-import { FeaturePlaceholderComponent } from '../../shared/components/feature-placeholder/feature-placeholder.component';
+import { RoleType } from '../../models';
+import { FeaturePlaceholderComponent } from '../../shared/components';
 
 const placeholderRoute = (
   path: string,

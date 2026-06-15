@@ -7,8 +7,8 @@ import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { Observable } from 'rxjs';
 
-import { PageResponse } from '../../../../models/page-response.model';
-import { StudentCatalogItem } from '../../../../models/student.model';
+import { PageResponse } from '../../../../models';
+import { StudentCatalogItem } from '../../../../models';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
 import {

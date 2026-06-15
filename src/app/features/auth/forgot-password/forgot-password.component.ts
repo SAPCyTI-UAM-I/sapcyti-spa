@@ -8,11 +8,11 @@ import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
-import { resolveForgotPasswordOutcome } from '../../../core/auth/utils/forgot-password-outcome.util';
+import { resolveForgotPasswordOutcome } from '../../../core/auth/utils';
 import { PasswordRecoveryService } from '../../../core/auth/password-recovery.service';
-import { AuthFooterComponent } from '../../../shared/components/auth-footer/auth-footer.component';
-import { AuthPageLayoutComponent } from '../../../shared/components/auth-page-layout/auth-page-layout.component';
-import { FieldErrorComponent } from '../../../shared/components/field-error/field-error.component';
+import { AuthFooterComponent } from '../../../shared/components';
+import { AuthPageLayoutComponent } from '../../../shared/components';
+import { FieldErrorComponent } from '../../../shared/components';
 import { isFieldInvalid } from '../../../shared/utils/field-error.util';
 
 @Component({

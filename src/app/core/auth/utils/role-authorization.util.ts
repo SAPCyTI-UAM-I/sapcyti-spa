@@ -1,4 +1,4 @@
-import { RoleType } from '../../../models/role-type.model';
+import { RoleType } from '../../../models';
 
 export function hasAppProfile(role: RoleType): boolean {
   return Boolean(role);

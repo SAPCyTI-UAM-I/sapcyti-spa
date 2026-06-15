@@ -16,10 +16,10 @@ import { Password } from 'primeng/password';
 import { finalize } from 'rxjs';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
-import { createSubmittedPasswordsMismatch } from '../../../core/auth/utils/paired-password-form-feedback';
-import { passwordsMatchValidator } from '../../../core/auth/utils/passwords-match.validator';
+import { createSubmittedPasswordsMismatch } from '../../../core/auth/utils';
+import { passwordsMatchValidator } from '../../../core/auth/utils';
 import { getApiErrorCode, getHttpStatus } from '../../../core/http/utils/parse-api-error.util';
-import { FieldErrorComponent } from '../../../shared/components/field-error/field-error.component';
+import { FieldErrorComponent } from '../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../shared/layout/routed-page-host';
 import { isFieldInvalid } from '../../../shared/utils/field-error.util';
 import { PasswordChangeService } from '../services/password-change.service';

@@ -1,13 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { PageResponse } from '../../../models/page-response.model';
+import { PageResponse } from '../../../models';
 import {
   RegisterStudentRequest,
   RegisterStudentResponse,
   StudentCatalogItem,
   StudentCatalogQuery,
-} from '../../../models/student.model';
+} from '../../../models';
 import { STUDENT_REPOSITORY } from '../repositories/student.repository';
 
 @Injectable({ providedIn: 'root' })

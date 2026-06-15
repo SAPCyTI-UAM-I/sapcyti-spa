@@ -3,13 +3,13 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
-import { PageResponse } from '../../../models/page-response.model';
+import { PageResponse } from '../../../models';
 import {
   ProfessorCatalogItem,
   ProfessorCatalogQuery,
   RegisterProfessorRequest,
   RegisterProfessorResponse,
-} from '../../../models/professor.model';
+} from '../../../models';
 import { ProfessorRepository } from './professor.repository';
 
 @Injectable()

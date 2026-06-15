@@ -7,9 +7,9 @@ import { Select } from 'primeng/select';
 import { Observable } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
-import { RegisterStudentRequest, RegisterStudentResponse } from '../../../../models/student.model';
-import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error.component';
-import { TemporaryPasswordDialogComponent } from '../../../../shared/components/temporary-password-dialog/temporary-password-dialog.component';
+import { RegisterStudentRequest, RegisterStudentResponse } from '../../../../models';
+import { FieldErrorComponent } from '../../../../shared/components';
+import { TemporaryPasswordDialogComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
 import { CATALOG_PROGRAM_TYPE_OPTIONS } from '../../utils/catalog-filter.options';
