@@ -18,19 +18,7 @@ const PRESENTATIONS_LINK = {
 
 const STUDENT_NAV: ShellNavigation = {
   home: HOME_LINK,
-  sections: [
-    {
-      id: 'student-main',
-      items: [
-        {
-          id: 'enrollment',
-          labelKey: 'SHELL.MENU.ENROLLMENT',
-          route: '/enrollment',
-          icon: 'pi pi-user-plus',
-        },
-      ],
-    },
-  ],
+  sections: [],
 };
 
 const PROFESSOR_NAV: ShellNavigation = {

@@ -30,13 +30,7 @@
           (onClick)="mobileMenuOpen.set(true)"
           [attr.aria-label]="'SHELL.TOPBAR.MENU' | translate"
         />
-        <div
-          class="text-label-md text-text-secondary font-label-md gap-xs hidden items-center sm:flex"
-        >
-          <i class="pi pi-home text-primary text-[20px]" aria-hidden="true"></i>
-          <i class="pi pi-chevron-right text-[16px]" aria-hidden="true"></i>
-          <span class="text-primary font-bold">{{ 'SHELL.MENU.HOME' | translate }}</span>
-        </div>
+        <app-breadcrumb class="hidden min-w-0 sm:flex" [items]="breadcrumbs()" />
       </div>
 
       <div class="mx-lg hidden w-[min(28rem,34vw)] md:block">

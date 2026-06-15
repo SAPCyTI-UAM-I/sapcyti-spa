@@ -1,0 +1,31 @@
+<nav
+  class="text-label-md text-text-secondary font-label-md gap-xs flex min-w-0 items-center"
+  [attr.aria-label]="'SHELL.MENU.HOME' | translate"
+>
+  <a
+    routerLink="/dashboard"
+    class="hover:text-primary flex shrink-0 items-center"
+    [attr.aria-label]="'SHELL.MENU.HOME' | translate"
+  >
+    <i class="pi pi-home text-primary text-[20px]" aria-hidden="true"></i>
+  </a>
+
+  @if (collapsed()) {
+    <i class="pi pi-chevron-right shrink-0 text-[16px]" aria-hidden="true"></i>
+    <span class="px-xs shrink-0" [title]="hiddenLabels()">…</span>
+  }
+
+  @for (crumb of visible(); track crumb.labelKey; let last = $last) {
+    <i class="pi pi-chevron-right shrink-0 text-[16px]" aria-hidden="true"></i>
+
+    @if (last) {
+      <span class="text-primary truncate font-bold" aria-current="page">
+        {{ crumb.labelKey | translate }}
+      </span>
+    } @else {
+      <a [routerLink]="crumb.url" class="hover:text-primary truncate">
+        {{ crumb.labelKey | translate }}
+      </a>
+    }
+  }
+</nav>

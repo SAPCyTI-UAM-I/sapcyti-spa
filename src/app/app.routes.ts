@@ -56,6 +56,7 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: {
           roles: ROUTE_PERMISSIONS.presentations,
+          breadcrumb: 'SHELL.MENU.PRESENTATIONS',
         },
       },
       {

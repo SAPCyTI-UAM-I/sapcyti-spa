@@ -1,5 +1,6 @@
 export { AccessDeniedComponent } from './access-denied/access-denied.component';
 export { AuthFooterComponent } from './auth-footer/auth-footer.component';
+export { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 export { AuthPageLayoutComponent } from './auth-page-layout/auth-page-layout.component';
 export { FeaturePlaceholderComponent } from './feature-placeholder/feature-placeholder.component';
 export { FieldErrorComponent } from './field-error/field-error.component';

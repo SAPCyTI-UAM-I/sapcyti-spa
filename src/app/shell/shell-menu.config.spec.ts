@@ -11,9 +11,10 @@ describe('shell-menu.config', () => {
     expect(getShellNavigation('SPEAKER')?.sections[0]?.items[0]?.route).toBe('/presentations');
   });
 
-  it('returns student menu with enrollment link', () => {
+  it('does not expose the removed enrollment landing in the student menu', () => {
     const nav = getShellNavigation('STUDENT');
-    expect(nav?.sections[0]?.items[0]?.route).toBe('/enrollment');
+    const routes = nav?.sections.flatMap((section) => section.items.map((item) => item.route));
+    expect(routes ?? []).not.toContain('/enrollment');
   });
 
   it('returns professor advisor approval route', () => {

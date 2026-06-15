@@ -1,17 +1,23 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
+import { filter } from 'rxjs';
 
 import { AuthStateService } from '../core/auth/auth.service';
-import { LanguageSwitcherComponent, UserMenuComponent } from '../shared/components';
+import {
+  BreadcrumbComponent,
+  LanguageSwitcherComponent,
+  UserMenuComponent,
+} from '../shared/components';
 import { ShellMobileDrawerComponent } from './shell-mobile-drawer.component';
 import { ShellSidebarNavComponent } from '../shared/components';
+import { buildBreadcrumbTrail } from './breadcrumb';
 import { getShellNavigation } from './shell-menu.config';
 import { USER_MENU_ITEMS } from './user-menu.config';
 import { logoutAndNavigateToLogin } from '../core/auth/utils';
@@ -30,6 +36,7 @@ const SIDEBAR_COLLAPSED_KEY = 'sapcyti.shell.sidebarCollapsed';
     IconField,
     InputIcon,
     InputText,
+    BreadcrumbComponent,
     LanguageSwitcherComponent,
     ShellMobileDrawerComponent,
     ShellSidebarNavComponent,
@@ -48,6 +55,16 @@ export class ShellComponent {
   readonly searchQuery = signal('');
   readonly userMenuItems = USER_MENU_ITEMS;
   readonly sidebarCollapsed = signal(readStoredBoolean(SIDEBAR_COLLAPSED_KEY));
+
+  private readonly navigationEnd = toSignal(
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)),
+    { initialValue: null },
+  );
+
+  readonly breadcrumbs = computed(() => {
+    this.navigationEnd();
+    return buildBreadcrumbTrail(this.router.routerState.snapshot.root);
+  });
 
   readonly navigation = computed(() => {
     const user = this.currentUser();
