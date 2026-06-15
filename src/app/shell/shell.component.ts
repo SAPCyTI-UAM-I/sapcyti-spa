@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
@@ -14,11 +15,15 @@ import { ShellSidebarNavComponent } from '../shared/components';
 import { getShellNavigation } from './shell-menu.config';
 import { USER_MENU_ITEMS } from './user-menu.config';
 import { logoutAndNavigateToLogin } from '../core/auth/utils';
+import { readStoredBoolean, writeStoredBoolean } from '../shared/utils/local-storage.util';
+
+const SIDEBAR_COLLAPSED_KEY = 'sapcyti.shell.sidebarCollapsed';
 
 @Component({
   selector: 'app-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    NgClass,
     RouterOutlet,
     TranslateModule,
     Button,
@@ -42,6 +47,7 @@ export class ShellComponent {
   readonly mobileMenuOpen = signal(false);
   readonly searchQuery = signal('');
   readonly userMenuItems = USER_MENU_ITEMS;
+  readonly sidebarCollapsed = signal(readStoredBoolean(SIDEBAR_COLLAPSED_KEY));
 
   readonly navigation = computed(() => {
     const user = this.currentUser();
@@ -101,6 +107,12 @@ export class ShellComponent {
 
   onLogout(): void {
     logoutAndNavigateToLogin(this.auth, this.router);
+  }
+
+  toggleSidebar(): void {
+    const collapsed = !this.sidebarCollapsed();
+    this.sidebarCollapsed.set(collapsed);
+    writeStoredBoolean(SIDEBAR_COLLAPSED_KEY, collapsed);
   }
 
   private normalizeSearch(value: string): string {

@@ -334,6 +334,10 @@
       "MAIN": "Principal",
       "PRESENTATIONS": "Ponencias"
     },
+    "SIDEBAR": {
+      "COLLAPSE": "Contraer menú",
+      "EXPAND": "Expandir menú"
+    },
     "TOPBAR": {
       "LOGOUT": "Cerrar sesión",
       "MENU": "Menú",

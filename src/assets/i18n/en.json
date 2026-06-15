@@ -334,6 +334,10 @@
       "MAIN": "Main",
       "PRESENTATIONS": "Presentations"
     },
+    "SIDEBAR": {
+      "COLLAPSE": "Collapse menu",
+      "EXPAND": "Expand menu"
+    },
     "TOPBAR": {
       "LOGOUT": "Sign out",
       "MENU": "Menu",

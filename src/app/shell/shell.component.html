@@ -1,5 +1,10 @@
 <div class="bg-surface-muted text-on-surface font-body-md flex min-h-screen">
-  <app-shell-sidebar-nav [navigation]="navigation()" (logout)="onLogout()" />
+  <app-shell-sidebar-nav
+    [navigation]="navigation()"
+    [collapsed]="sidebarCollapsed()"
+    (toggleCollapse)="toggleSidebar()"
+    (logout)="onLogout()"
+  />
 
   <app-shell-mobile-drawer
     [visible]="mobileMenuOpen()"
@@ -8,7 +13,10 @@
     (logout)="onLogout()"
   />
 
-  <div class="flex min-h-screen min-w-0 flex-1 flex-col md:ml-[280px]">
+  <div
+    class="flex min-h-screen min-w-0 flex-1 flex-col transition-[margin] duration-200"
+    [ngClass]="sidebarCollapsed() ? 'md:ml-[76px]' : 'md:ml-[280px]'"
+  >
     <header
       class="border-outline bg-surface px-gutter sm:px-lg sticky top-0 z-40 flex h-16 min-w-0 items-center justify-between border-b"
     >
