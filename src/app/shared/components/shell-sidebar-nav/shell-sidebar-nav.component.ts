@@ -14,7 +14,7 @@ import { ShellNavContentComponent } from '../../../shell/shell-nav-content.compo
   template: `
     @if (navigation(); as nav) {
       <aside
-        class="border-sidebar-border bg-sidebar py-lg fixed top-0 left-0 z-50 hidden h-screen flex-col border-r transition-[width] duration-200 md:flex"
+        class="border-sidebar-border bg-sidebar py-lg fixed top-0 left-0 z-50 hidden h-screen flex-col border-r transition-[width] duration-300 ease-in-out md:flex"
         [ngClass]="collapsed() ? 'w-[76px]' : 'w-[280px]'"
         aria-label="Main navigation"
       >

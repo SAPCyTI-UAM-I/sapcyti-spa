@@ -31,14 +31,19 @@ import { ShellNavigation } from './shell-menu.model';
       />
 
       @for (section of navigation().sections; track section.id) {
-        @if (section.labelKey && !collapsed()) {
-          <div class="mt-md mb-xs px-md py-sm">
-            <span
-              class="text-caption text-text-tertiary font-caption font-bold tracking-wider uppercase"
-            >
-              {{ section.labelKey | translate }}
-            </span>
-          </div>
+        @if (section.labelKey) {
+          @if (!collapsed()) {
+            <div class="mt-sm px-md">
+              <span
+                class="text-caption text-text-tertiary font-caption font-bold tracking-wider uppercase"
+              >
+                {{ section.labelKey | translate }}
+              </span>
+            </div>
+          } @else {
+            <!-- Collapsed: keep the visual grouping with a short divider instead of the header. -->
+            <div class="border-sidebar-border my-sm mx-auto w-8 border-t" aria-hidden="true"></div>
+          }
         }
 
         @for (item of section.items; track item.id) {
