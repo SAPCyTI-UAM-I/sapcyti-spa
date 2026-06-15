@@ -8,9 +8,12 @@
 |-------|--------|
 | `pnpm run lint` | ✅ Green (ESLint + Prettier + i18n:check) |
 | `pnpm test` | ✅ Green — 141 tests (36 files) |
-| `ng build` | ✅ Green (bundle budget warning: ~546 kB > 500 kB) |
+| `ng build` | ✅ Green — initial ~546 kB (budget warning 600 kB desde Fase C `mejoras2.md`) |
 
-## Refactor mejoras-spa (fases 0–7)
+### Bundle budget (initial)
+
+Baseline post-refactor: **~546 kB** raw initial chunk (Angular 21 + PrimeNG 21 + Tailwind `@theme` + i18n). El umbral anterior de **500 kB** era heredado de plantilla Angular por defecto y generaba warning sin bloquear build. **`angular.json`**: `maximumWarning` subido a **600 kB** (margen ~10 % sobre baseline medido); `maximumError` permanece en **1 MB**. Lazy loading de features ya activo; reducción adicional requiere split PrimeNG por ruta (no trivial).
+
 
 | Fase | Tema | Estado |
 |------|------|--------|
@@ -31,7 +34,7 @@
 | TD-002 | Patrón mock disperso (`if (useMock)` en servicios) | High | Dificulta alternar mock/API | Switch repetido por endpoint | ✅ Resuelto 2026-06-15 (Fase 1) |
 | TD-003 | `AcademicCatalogMockStore` mezcla students + professors | Medium | SRP | Mock difícil de extender | ✅ Resuelto 2026-06-15 (Fase 2) |
 | TD-004 | Endpoints fragmentados sin barrels | Medium | URLs dispersas | URLs inconsistentes | ✅ Resuelto 2026-06-15 (Fases 1/6) |
-| TD-005 | Paginación/filtros reimplementados en cada list | Medium | Lógica copiada | UI inconsistente | ✅ Base `CatalogListBase` (Fase 2); `p-paginator` diferido |
+| TD-005 | Paginación/filtros reimplementados en cada list | Medium | Lógica copiada | UI inconsistente | ✅ Resuelto 2026-06-15 — `CatalogListBase` + `p-paginator` (Fase C `mejoras2.md`) |
 | TD-006 | Errores de validación inconsistentes | Medium | `FieldErrorComponent` no uniforme | UX variable | ✅ Resuelto 2026-06-15 (Fase 3) |
 | TD-007 | i18n frágil (sin tipado ni paridad es/en) | Medium | Labels hardcodeados | Claves huérfanas | ✅ Resuelto 2026-06-15 (Fase 4) |
 | TD-008 | Presentación (Tailwind) en configs TS (`dashboard-home.config`) | Low | Datos + clases CSS mezclados | Config poco reutilizable | ✅ Resuelto 2026-06-15 (Fase B `mejoras2.md`) — `tone` en `StatCardComponent` |

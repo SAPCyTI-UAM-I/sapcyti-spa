@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
+import { Paginator } from 'primeng/paginator';
 import { Select } from 'primeng/select';
 import { Observable } from 'rxjs';
 
@@ -23,7 +24,7 @@ import { CatalogListBase } from '../catalog-list.base';
   selector: 'app-student-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [ReactiveFormsModule, RouterLink, TranslatePipe, Button, InputText, Select],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe, Button, InputText, Select, Paginator],
   templateUrl: './student-list.component.html',
 })
 export class StudentListComponent extends CatalogListBase<StudentCatalogItem> {

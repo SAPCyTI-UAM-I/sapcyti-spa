@@ -1,6 +1,7 @@
-import { DestroyRef, Directive, inject, OnInit, signal } from '@angular/core';
+import { computed, DestroyRef, Directive, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
+import { PaginatorState } from 'primeng/paginator';
 import { finalize, Observable } from 'rxjs';
 
 import { PageResponse } from '../../../models';
@@ -15,6 +16,7 @@ export abstract class CatalogListBase<TItem> implements OnInit {
   readonly page = signal(0);
   readonly pageSize = 10;
   readonly totalElements = signal(0);
+  readonly first = computed(() => this.page() * this.pageSize);
 
   protected abstract readonly filters: FormGroup;
   protected abstract fetchItems(): Observable<PageResponse<TItem>>;
@@ -33,19 +35,16 @@ export abstract class CatalogListBase<TItem> implements OnInit {
     this.applyFilters();
   }
 
-  previousPage(): void {
-    if (this.page() === 0) {
-      return;
-    }
-    this.page.update((value) => value - 1);
-    this.load();
-  }
+  onPageChange(event: PaginatorState): void {
+    const rows = event.rows ?? this.pageSize;
+    const first = event.first ?? 0;
+    const nextPage = rows > 0 ? first / rows : 0;
 
-  nextPage(): void {
-    if ((this.page() + 1) * this.pageSize >= this.totalElements()) {
+    if (nextPage === this.page()) {
       return;
     }
-    this.page.update((value) => value + 1);
+
+    this.page.set(nextPage);
     this.load();
   }
 

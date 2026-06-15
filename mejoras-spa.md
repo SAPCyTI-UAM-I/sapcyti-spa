@@ -22,7 +22,7 @@ Hallazgos verificados leyendo el código (no suposiciones):
 | 7  | **i18n frágil** | 346 líneas es/en sin tipado ni verificación de paridad; labels de selects hardcodeados como strings en arrays TS. | 🟠 Media |
 | 8  | **Presentación filtrada en config TS** | `dashboard-home.config.ts` mete clases Tailwind (`iconBgClass`…) en datos; `Record<string,...>` en vez de `RoleType`. | 🟡 Baja |
 | 9  | **`TECH_DEBT.md` vacío**; login `setInterval` imperativo embebido en componente. | tabla con `—`. | 🟡 Baja |
-| 10 | **Discrepancia documental**: SPEC-016A/017A/018A tienen **dos archivos cada uno** con contenido distinto (md5 distintos). | `Docs/sdd/specs/iteration-4/`. | 🟠 Media (reportar, no resolver en SPA) |
+| 10 | **Discrepancia documental** SPEC-016A/017A/018A (resuelta) | Canónicos en `SPEC_INDEX` + [`phase7.md`](../Docs/implementation/phase7.md) | ✅ D-018; SPA HU-15/21/28 implementadas |
 
 **Conclusión:** el backend está desconectado y se opera 100% con mocks vía `environment.mocks` +
 `provideAppMockConfig` + `injectMockEnabled`. La infraestructura para alternar mock/API existe pero
@@ -40,7 +40,7 @@ switch** sin tocar el contrato de `environment`.
 - [x] **Fase 4** — i18n robusto: tipado de claves + script de paridad es↔en + mover labels hardcodeados
 - [ ] **Fase 5** — Design system: sacar Tailwind de configs TS; reutilizar `stat-card`/tokens
 - [x] **Fase 6** — Estructura/barrels + reglas ESLint anti-acoplamiento + strict TS
-- [ ] **Fase 7** — Consolidación de Docs (specs duplicadas) y poblar `TECH_DEBT.md`
+- [x] **Fase 7** — Consolidación de Docs (specs duplicadas) y poblar `TECH_DEBT.md`
 
 ---
 
@@ -251,8 +251,8 @@ Tareas:
 7.2 Cierra TECH_DEBT.md marcando resueltos los IDs abordados y dejando los pendientes.
 
 DoD Fase 7:
-- [ ] Discrepancias de specs reportadas con recomendación
-- [ ] TECH_DEBT.md actualizado
+- [x] Discrepancias de specs reportadas con recomendación
+- [x] TECH_DEBT.md actualizado
 
 ## Si te bloqueas
 - Primero relee el código actual y los specs de iteration-4; no asumas comportamiento.

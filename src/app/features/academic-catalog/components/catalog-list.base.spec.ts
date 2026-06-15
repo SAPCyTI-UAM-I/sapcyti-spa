@@ -117,49 +117,48 @@ describe('CatalogListBase', () => {
     expect(component.fetchItemsSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('nextPage() does not advance when (page+1)*pageSize >= totalElements', () => {
+  it('first is derived from page and pageSize', () => {
     const component = setup();
-    component.fetchItemsSpy.mockReturnValue(of(buildPageResponse([{ id: 1 }], 10)));
+    component.page.set(2);
+
+    expect(component.first()).toBe(20);
+  });
+
+  it('onPageChange() ignores events that keep the same page', () => {
+    const component = setup();
+    component.fetchItemsSpy.mockReturnValue(of(buildPageResponse([])));
     component.load();
     component.fetchItemsSpy.mockClear();
 
-    component.nextPage();
+    component.onPageChange({ first: 0, rows: 10, page: 0, pageCount: 1 });
 
     expect(component.page()).toBe(0);
     expect(component.fetchItemsSpy).not.toHaveBeenCalled();
   });
 
-  it('nextPage() advances page and reloads when more items exist', () => {
+  it('onPageChange() advances page from first/rows and reloads', () => {
     const component = setup();
     component.fetchItemsSpy.mockReturnValue(of(buildPageResponse([{ id: 1 }], 11)));
     component.load();
     component.fetchItemsSpy.mockClear();
 
-    component.nextPage();
+    component.onPageChange({ first: 10, rows: 10, page: 1, pageCount: 2 });
 
     expect(component.page()).toBe(1);
+    expect(component.first()).toBe(10);
     expect(component.fetchItemsSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('previousPage() does not go below page 0', () => {
-    const component = setup();
-    component.fetchItemsSpy.mockReturnValue(of(buildPageResponse([])));
-
-    component.previousPage();
-
-    expect(component.page()).toBe(0);
-    expect(component.fetchItemsSpy).not.toHaveBeenCalled();
-  });
-
-  it('previousPage() decrements page and reloads when page > 0', () => {
+  it('onPageChange() decrements page from first/rows and reloads', () => {
     const component = setup();
     component.fetchItemsSpy.mockReturnValue(of(buildPageResponse([])));
     component.page.set(2);
     component.fetchItemsSpy.mockClear();
 
-    component.previousPage();
+    component.onPageChange({ first: 10, rows: 10, page: 1, pageCount: 3 });
 
     expect(component.page()).toBe(1);
+    expect(component.first()).toBe(10);
     expect(component.fetchItemsSpy).toHaveBeenCalledTimes(1);
   });
 });

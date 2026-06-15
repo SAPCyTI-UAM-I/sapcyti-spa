@@ -1,7 +1,7 @@
 # SAPCyTI SPA — Convenciones y guía de implementación
 
 > Documento vivo para desarrolladores y agentes. Resume **cómo está construido el código hoy** y **dónde buscar** antes de duplicar lógica.
-> Complementa las specs en `Docs/sdd/specs/` y el backlog de refactor en [`mejoras-spa.md`](./mejoras-spa.md).
+> Complementa las specs en `Docs/sdd/specs/`, el refactor [`mejoras-spa.md`](./mejoras-spa.md) y el cierre de gaps [`mejoras2.md`](./mejoras2.md).
 
 ---
 
@@ -233,7 +233,7 @@ shared/utils/field-error.util.ts
 
 | Base | Archivo | Qué centraliza |
 |------|---------|----------------|
-| Listado paginado | `components/catalog-list.base.ts` | `items`, `loading`, `page`, filtros, `load()` |
+| Listado paginado | `components/catalog-list.base.ts` | `items`, `loading`, `page`, `first`, `onPageChange`, filtros, `load()` — UI: `p-paginator` en `*-list.component.html` |
 | Registro wizard | `components/catalog-registration.base.ts` | `step`, submit, diálogo password, navegación |
 | Opciones de filtro | `utils/catalog-filter.options.ts` | `programTypes`, `statuses`, `parseActiveFilter()` |
 
@@ -423,6 +423,7 @@ src/styles.css                 ← @theme Tailwind (sincronizado manualmente con
 | Campos texto | `pInputText` directive en `<input>` |
 | Contraseña | `p-password` (`[toggleMask]`, `[feedback]="false"`, `fluid`) |
 | Select / filtros | `p-select` con templates `#item` / `#selectedItem` + pipe `translate` |
+| Paginación de listas | `p-paginator` — `[first]`, `[rows]`, `[totalRecords]`, `(onPageChange)` vía `CatalogListBase` |
 | Mensajes | `p-message` (`severity`: error, warn, success) |
 | Checkbox | `p-checkbox` `[binary]="true"` |
 | Iconos | `primeicons` (`pi pi-*`) |
@@ -436,7 +437,7 @@ src/styles.css                 ← @theme Tailwind (sincronizado manualmente con
 | `AuthPageLayoutComponent` | Pantallas `/auth/*` (centrado, max-width 420px) |
 | `AuthFooterComponent` | Pie de páginas de auth |
 | `TemporaryPasswordDialogComponent` | Password temporal tras alta de usuario |
-| `StatCardComponent` | Tarjetas de dashboard |
+| `StatCardComponent` | Tarjetas de dashboard — input `tone: CardTone` (`primary` \| `secondary` \| `warning` \| `info`); clases en `TONE_CLASSES` del componente, no en configs |
 | `AccessDeniedComponent` | Ruta `/access-denied` |
 | `FeaturePlaceholderComponent` | Features aún no implementados |
 
@@ -448,7 +449,7 @@ src/styles.css                 ← @theme Tailwind (sincronizado manualmente con
 - Shell: drawer móvil (`shell-mobile-drawer.component.ts`) + sidebar desktop.
 - Auth: `min-h-dvh`, padding `px-margin`, card `max-w-[420px]`.
 
-**No** poner clases Tailwind en archivos de datos/config TS (pendiente limpiar en `dashboard-home.config.ts` — Fase 5).
+**No** poner clases Tailwind en archivos de datos/config TS — usar tokens semánticos (`CardTone` en `StatCardComponent`; datos en `dashboard-home.config.ts` solo con `tone`).
 
 ---
 
@@ -501,6 +502,30 @@ ng build           # build de producción
 
 **Utilidades con spec propio:** preferir tests directos en `*.util.spec.ts` (ej. `login-cooldown.spec.ts`, `field-error.util.spec.ts`).
 
+### Probar bases abstractas (`@Directive()`)
+
+Las clases base con `inject()` (p. ej. `CatalogListBase`, `CatalogRegistrationBase`) **no se instancian** en el spec. Patrón canónico:
+
+1. Declarar en el mismo `*.spec.ts` un **componente host concreto** que extienda la base (`@Component({ template: '' })`).
+2. Delegar el método abstracto a un **spy** (`vi.fn()` → `of(PageResponse)` o `throwError`).
+3. Exponer helpers **públicos en el host** solo si hace falta tocar miembros `protected` (p. ej. `patchSearch()` / `getSearchFilter()` para el `FormGroup` de filtros).
+4. Configurar el mock **antes** de `fixture.detectChanges()` cuando el test verifica `ngOnInit`.
+
+Referencia: `features/academic-catalog/components/catalog-list.base.spec.ts` (`TestListComponent` + `buildPageResponse()`).
+
+**Qué cubrir en `CatalogListBase`:** `load()` éxito/error, `applyFilters` / `clearFilters`, guardas de `nextPage` / `previousPage` y conteo de llamadas al fetch.
+
+### Listados de catálogo en component specs
+
+Para `StudentListComponent` / `ProfessorListComponent`:
+
+- Mockear la fachada (`StudentService` / `ProfessorService`) con `{ listStudents: vi.fn(() => of(page)) }` — **no** `provideAppMockConfig` ni HTTP.
+- `TestBed`: `provideRouter([])`, `TranslateModule.forRoot()`, `NoopAnimationsModule` si hay PrimeNG animado.
+- Parchear filtros vía `FormGroupDirective` del `<form>` del template (evita acceder a `protected filters` desde el spec).
+- Verificar el **contrato de query** enviado al servicio: `page`, `size`, `search` con `.trim()` y `'' → undefined`, filtros vía `parseProgramTypeFilter` / `parseActiveFilter` (alumno); profesor sin `programType`.
+- Patrón de setup: `professor-registration.component.spec.ts`.
+- Referencias: `student-list.component.spec.ts`, `professor-list.component.spec.ts`.
+
 ### E2E (Playwright)
 
 ```bash
@@ -521,12 +546,12 @@ pnpm run e2e
 |---------|-----------|
 | [`TECH_DEBT.md`](./TECH_DEBT.md) | IDs trazables (TD-001…), baseline lint/test/build |
 | [`mejoras-spa.md`](./mejoras-spa.md) | Plan de refactor por fases (0–7) |
+| [`mejoras2.md`](./mejoras2.md) | Ronda 2: tests de catálogo, dashboard Fase 5, optimización |
 | `Docs/sdd/specs/` | Contrato funcional por SPEC (fuente para implementar) |
 
 **Pendiente documentado:**
 
-- Fase 5: sacar Tailwind de configs TS.
-- Fase 7: consolidar specs duplicadas en Docs.
+- Ninguno crítico en design system (Fase 5 cerrada en `mejoras2.md` Fase B).
 
 ---
 
@@ -573,6 +598,7 @@ shared/utils/clipboard.util.ts         # Copia segura al portapapeles
 shared/utils/feature-placeholder-route.util.ts
 shared/components/field-error/         # UI de errores
 features/academic-catalog/components/catalog-list.base.ts
+features/academic-catalog/components/catalog-list.base.spec.ts   # host TestListComponent — patrón base @Directive
 features/academic-catalog/components/catalog-registration.base.ts
 features/academic-catalog/utils/catalog-filter.options.ts
 features/academic-catalog/mocks/catalog-mock.util.ts
@@ -708,4 +734,4 @@ void copyTextToClipboard(text).then((copied) => {
 
 ---
 
-*Última actualización: refleja el estado post-Fases 0–6 del refactor `mejoras-spa.md` (junio 2026).*
+*Última actualización: junio 2026 — `mejoras2.md` completo (Fases A–C: tests catálogo, dashboard `tone`, budget 600 kB, `p-paginator`).*

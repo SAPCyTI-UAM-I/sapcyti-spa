@@ -115,26 +115,15 @@
       </div>
     }
   </div>
-  <footer class="flex items-center justify-between">
+  <footer class="gap-sm flex flex-col sm:flex-row sm:items-center sm:justify-between">
     <span class="text-text-secondary"
       >{{ 'ACADEMIC_CATALOG.PAGINATION.TOTAL' | translate }}: {{ totalElements() }}</span
     >
-    <div class="gap-sm flex items-center">
-      <p-button
-        icon="pi pi-chevron-left"
-        severity="secondary"
-        variant="outlined"
-        [disabled]="page() === 0"
-        (onClick)="previousPage()"
-      />
-      <span>{{ page() + 1 }}</span>
-      <p-button
-        icon="pi pi-chevron-right"
-        severity="secondary"
-        variant="outlined"
-        [disabled]="(page() + 1) * pageSize >= totalElements()"
-        (onClick)="nextPage()"
-      />
-    </div>
+    <p-paginator
+      [first]="first()"
+      [rows]="pageSize"
+      [totalRecords]="totalElements()"
+      (onPageChange)="onPageChange($event)"
+    />
   </footer>
 </section>
