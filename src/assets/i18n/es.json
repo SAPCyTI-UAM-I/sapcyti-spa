@@ -93,6 +93,102 @@
       "STEP_3": "Confirmación"
     }
   },
+  "ACADEMIC_OFFERING": {
+    "ENROLLMENT_START": {
+      "ACCEPT": "Aceptar",
+      "CHOOSE": "Elegir archivo",
+      "CSV_HINT": "Solo archivos .csv con horarios y fechas de sorteo.",
+      "CSV_TITLE": "Iniciar la lectura del CSV",
+      "ERRORS": {
+        "INVALID_FORMAT": "Formato de archivo no válido."
+      },
+      "NO_FILE": "Ningún archivo seleccionado",
+      "PROCESS_HINT": "Al iniciar el proceso los alumnos verán las materias del trimestre seleccionado.",
+      "PROCESS_TITLE": "Iniciar el proceso de inscripción",
+      "SUBTITLE": "Selecciona el trimestre para iniciar la inscripción; la carga del CSV es opcional.",
+      "SUCCESS": "Proceso de inscripción iniciado. Los alumnos ya pueden ver las materias del trimestre.",
+      "TERM_LABEL": "Trimestre",
+      "TERM_PLACEHOLDER": "Selecciona un trimestre (ej. 16I)",
+      "TITLE": "Iniciar proceso de inscripción",
+      "UPLOAD": "Cargar"
+    },
+    "PLAN_ANNUAL": {
+      "ALREADY_EDITED": "Los planes trimestrales de este año ya fueron editados previamente.",
+      "COLUMNS": {
+        "ACTIONS": "Acciones",
+        "STATUS": "Estado",
+        "TERM": "Trimestre"
+      },
+      "EDIT_DIALOG": {
+        "CAPACITY": "Cupo por grupo",
+        "ENABLE": "Habilitar",
+        "GROUPS": "Número de grupos",
+        "KEY": "Clave",
+        "SELECT_UEAS": "Seleccione las UEA planeadas para el trimestre {{code}}",
+        "SELECTED_SUBJECTS": "Materias seleccionadas",
+        "SUBJECT": "Materia",
+        "TITLE": "Editar plan trimestral preliminar"
+      },
+      "LIST_EMPTY": "No hay planes anuales registrados.",
+      "SUBTITLE": "Consulta y edita los planes anuales del posgrado.",
+      "TITLE": "Planeación anual",
+      "VIEW": {
+        "CAPACITY": "Cupo",
+        "GROUPS": "Nº de grupos",
+        "TITLE": "Materias activadas"
+      }
+    },
+    "PLAN_QUARTERLY": {
+      "CHANGE_TERM": "Cambiar trimestre",
+      "COLUMNS": {
+        "ACTIONS": "Acciones",
+        "CAPACITY": "Cupo",
+        "EMPLOYEE_NUMBER": "Número de empleado",
+        "GROUP": "Grupo",
+        "KEY": "Clave",
+        "PROFESSOR": "Profesor",
+        "SUBJECT": "Materia"
+      },
+      "CONTINUE": "Continuar",
+      "CURRENT_TERM": "Trimestre actual es",
+      "EDIT_DIALOG": {
+        "CAPACITY": "Cupo",
+        "DAYS": "Días",
+        "END_TIME": "Hora de fin",
+        "GROUP": "Grupo",
+        "GROUP_PLACEHOLDER": "Escribe el grupo (ej. CO33)",
+        "PROFESSOR_PLACEHOLDER": "Selecciona profesor(es)",
+        "PROFESSORS": "Profesor(es)",
+        "RESELECT_NOTE": "Si vas a cambiar los profesores, selecciona de nuevo todos los que imparten la clase.",
+        "SINGLE_STUDENT": "¿Es para un solo alumno?",
+        "START_TIME": "Hora de inicio",
+        "STUDENT": "Alumno",
+        "STUDENT_PLACEHOLDER": "Selecciona un alumno",
+        "TITLE": "Editar materia"
+      },
+      "EMPTY": "No hay materias para el trimestre seleccionado.",
+      "MODIFY_SUBJECTS": "Modificar materias del plan",
+      "SEARCH_PROFESSOR": "Buscar por profesor, clave o materia",
+      "SUBTITLE": "Define horarios, profesores, grupos y cupos del trimestre.",
+      "TERM_HEADER": "Trimestre",
+      "TERM_LABEL": "Trimestre",
+      "TERM_PLACEHOLDER": "Selecciona un trimestre",
+      "TITLE": "Editar plan trimestral",
+      "VIEW_FULL_PLAN": "Ver plan completo"
+    },
+    "TERM_STATUS": {
+      "EDITED": "Editado",
+      "IN_ENROLLMENT": "En inscripción",
+      "PRELIMINARY": "Preliminar"
+    },
+    "WEEKDAYS": {
+      "FRI": "Viernes",
+      "MON": "Lunes",
+      "THU": "Jueves",
+      "TUE": "Martes",
+      "WED": "Miércoles"
+    }
+  },
   "ACCOUNT": {
     "PASSWORD": {
       "ADMIN_ACTION": "Cambiar contraseña",
@@ -194,7 +290,8 @@
       "NEXT": "Siguiente",
       "RETRY": "Reintentar",
       "SAVE": "Guardar",
-      "SEARCH": "Buscar"
+      "SEARCH": "Buscar",
+      "VIEW": "Ver"
     },
     "ERRORS": {
       "ACCESS_DENIED": "Acceso denegado",
@@ -325,8 +422,11 @@
       "ADVISOR_APPROVAL": "Aprobar elección de UEAs",
       "CHANGE_PASSWORD": "Cambiar contraseña",
       "ENROLLMENT_FORM_PDF": "Formato de inscripción (PDF)",
+      "ENROLLMENT_START": "Iniciar inscripción",
       "ENROLLMENT_STATUS": "Estados del proceso",
       "HOME": "Inicio",
+      "PLAN_ANNUAL": "Planeación anual",
+      "PLAN_QUARTERLY": "Editar plan trimestral",
       "PRESENTATIONS": "Ponencias",
       "PROFESSORS": "Profesores",
       "STUDENTS": "Alumnos",
@@ -337,6 +437,7 @@
       "ENROLLMENT": "Inscripción",
       "ENROLLMENT_PROCESS": "Proceso de inscripción",
       "MAIN": "Principal",
+      "PLANNING": "Planeación y oferta",
       "PRESENTATIONS": "Ponencias"
     },
     "SIDEBAR": {

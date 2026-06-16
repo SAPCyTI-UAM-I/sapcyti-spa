@@ -90,6 +90,30 @@ const COORDINATOR_NAV: ShellNavigation = {
       ],
     },
     {
+      id: 'coordinator-offering',
+      labelKey: 'SHELL.SECTIONS.PLANNING',
+      items: [
+        {
+          id: 'plan-annual',
+          labelKey: 'SHELL.MENU.PLAN_ANNUAL',
+          route: '/academic-offering/plan-annual',
+          icon: 'pi pi-calendar-plus',
+        },
+        {
+          id: 'plan-quarterly',
+          labelKey: 'SHELL.MENU.PLAN_QUARTERLY',
+          route: '/academic-offering/plan-quarterly',
+          icon: 'pi pi-table',
+        },
+        {
+          id: 'enrollment-start',
+          labelKey: 'SHELL.MENU.ENROLLMENT_START',
+          route: '/academic-offering/enrollment-start',
+          icon: 'pi pi-upload',
+        },
+      ],
+    },
+    {
       id: 'coordinator-enrollment',
       labelKey: 'SHELL.SECTIONS.ENROLLMENT_PROCESS',
       items: [

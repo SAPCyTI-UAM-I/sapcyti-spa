@@ -1,0 +1,226 @@
+<section class="gap-lg flex flex-col" data-testid="plan-annual">
+  <header>
+    <h1 class="text-h2 text-primary font-bold">
+      {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.TITLE' | translate }}
+    </h1>
+    <p class="text-text-secondary">
+      {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.SUBTITLE' | translate }}
+    </p>
+  </header>
+
+  @if (plans().length === 0) {
+    <div class="border-outline bg-surface p-xl text-text-secondary rounded-xl border text-center">
+      {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.LIST_EMPTY' | translate }}
+    </div>
+  } @else {
+    <div class="gap-md flex flex-col">
+      @for (plan of plans(); track plan.id) {
+        <div class="border-outline bg-surface overflow-hidden rounded-xl border">
+          <!-- Year header: click to expand the trimesters. -->
+          <button
+            type="button"
+            class="hover:bg-table-row-hover p-md flex w-full items-center justify-between text-left"
+            [attr.aria-expanded]="expandedYear() === plan.year"
+            (click)="toggle(plan.year)"
+          >
+            <span class="gap-sm flex items-center">
+              <i
+                class="pi text-text-secondary"
+                [class.pi-chevron-right]="expandedYear() !== plan.year"
+                [class.pi-chevron-down]="expandedYear() === plan.year"
+                aria-hidden="true"
+              ></i>
+              <span class="text-h3 font-bold">{{ plan.year }}</span>
+            </span>
+            <span
+              class="text-caption rounded-full px-3 py-1 font-semibold"
+              [class.bg-warning-container]="isYearEditable(plan)"
+              [class.text-warning-strong]="isYearEditable(plan)"
+              [class.bg-success-container]="!isYearEditable(plan)"
+              [class.text-success-strong]="!isYearEditable(plan)"
+            >
+              {{ 'ACADEMIC_OFFERING.TERM_STATUS.' + plan.status | translate }}
+            </span>
+          </button>
+
+          @if (expandedYear() === plan.year) {
+            <div class="border-outline gap-md p-md flex flex-col border-t">
+              @if (allTermsEdited(plan)) {
+                <p-message
+                  severity="info"
+                  [text]="'ACADEMIC_OFFERING.PLAN_ANNUAL.ALREADY_EDITED' | translate"
+                />
+              }
+
+              <table class="block w-full border-collapse md:table">
+                <thead class="bg-table-header hidden text-left md:table-header-group">
+                  <tr>
+                    <th class="p-md">
+                      {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.COLUMNS.TERM' | translate }}
+                    </th>
+                    <th class="p-md">
+                      {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.COLUMNS.STATUS' | translate }}
+                    </th>
+                    <th class="p-md">
+                      {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.COLUMNS.ACTIONS' | translate }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+                  @for (term of plan.terms; track term.id) {
+                    <tr
+                      class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 items-center md:table-row md:border-t"
+                    >
+                      <td class="md:p-md md:table-cell">{{ term.code }}</td>
+                      <td class="md:p-md md:table-cell">
+                        {{ 'ACADEMIC_OFFERING.TERM_STATUS.' + term.status | translate }}
+                      </td>
+                      <td class="md:p-md col-span-2 md:table-cell">
+                        <div class="gap-sm flex flex-wrap">
+                          @if (canView(term)) {
+                            <p-button
+                              icon="pi pi-eye"
+                              severity="secondary"
+                              variant="outlined"
+                              [label]="'COMMON.ACTIONS.VIEW' | translate"
+                              (onClick)="viewTerm(term)"
+                            />
+                          }
+                          @if (isYearEditable(plan)) {
+                            <p-button
+                              icon="pi pi-pencil"
+                              [label]="'COMMON.ACTIONS.EDIT' | translate"
+                              (onClick)="editTerm(term)"
+                            />
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- "Ver": read-only UEAs activated for the trimester. -->
+  <p-dialog
+    [visible]="viewDialogVisible()"
+    [modal]="true"
+    [closable]="false"
+    [style]="{ width: 'min(40rem, calc(100vw - 2rem))' }"
+    [header]="
+      ('ACADEMIC_OFFERING.PLAN_ANNUAL.VIEW.TITLE' | translate) +
+      (termUnderView() ? ' — ' + termUnderView()!.code : '')
+    "
+  >
+    <div class="py-md">
+      <table class="block w-full border-collapse md:table">
+        <thead class="bg-table-header hidden text-left md:table-header-group">
+          <tr>
+            <th class="p-md">
+              {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.EDIT_DIALOG.SUBJECT' | translate }}
+            </th>
+            <th class="p-md">{{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.EDIT_DIALOG.KEY' | translate }}</th>
+            <th class="p-md">{{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.VIEW.GROUPS' | translate }}</th>
+            <th class="p-md">{{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.VIEW.CAPACITY' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+          @for (subject of termUnderView()?.enabledSubjects ?? []; track subject.key) {
+            <tr class="p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t">
+              <td class="md:p-md col-span-2 md:table-cell">{{ subject.name }}</td>
+              <td class="md:p-md md:table-cell">{{ subject.key }}</td>
+              <td class="md:p-md md:table-cell">{{ subject.groups }}</td>
+              <td class="md:p-md md:table-cell">{{ subject.capacity }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <ng-template #footer>
+      <p-button [label]="'COMMON.ACTIONS.BACK' | translate" (onClick)="closeViewDialog()" />
+    </ng-template>
+  </p-dialog>
+
+  <!-- "Editar": Activar UEA's for the trimester. -->
+  <p-dialog
+    [visible]="editDialogVisible()"
+    [modal]="true"
+    [closable]="false"
+    [style]="{ width: 'min(46rem, calc(100vw - 2rem))' }"
+    [header]="
+      ('ACADEMIC_OFFERING.PLAN_ANNUAL.EDIT_DIALOG.TITLE' | translate) +
+      (termUnderEdit() ? ' — ' + termUnderEdit()!.code : '')
+    "
+  >
+    <form class="py-md" [formGroup]="editForm">
+      <p class="text-text-secondary">
+        {{
+          'ACADEMIC_OFFERING.PLAN_ANNUAL.EDIT_DIALOG.SELECT_UEAS'
+            | translate: { code: termUnderEdit()?.code ?? '' }
+        }}
+      </p>
+      <h3 class="text-h3 text-primary mb-md mt-sm font-bold">
+        {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.EDIT_DIALOG.SELECTED_SUBJECTS' | translate }}
+      </h3>
+      <table class="block w-full border-collapse md:table">
+        <thead class="bg-table-header hidden text-left md:table-header-group">
+          <tr>
+            <th class="p-md">
+              {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.EDIT_DIALOG.SUBJECT' | translate }}
+            </th>
+            <th class="p-md">{{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.EDIT_DIALOG.KEY' | translate }}</th>
+            <th class="p-md">
+              {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.EDIT_DIALOG.ENABLE' | translate }}
+            </th>
+            <th class="p-md">
+              {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.EDIT_DIALOG.GROUPS' | translate }}
+            </th>
+            <th class="p-md">
+              {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.EDIT_DIALOG.CAPACITY' | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+          @for (subject of dialogSubjects(); track subject.id; let i = $index) {
+            @if (subjectRows[i]; as row) {
+              <tr
+                class="p-md gap-sm md:border-outline grid grid-cols-2 items-center md:table-row md:border-t"
+                [formGroup]="row"
+              >
+                <td class="md:p-md col-span-2 md:table-cell">{{ subject.name }}</td>
+                <td class="md:p-md md:table-cell">{{ subject.key }}</td>
+                <td class="md:p-md md:table-cell">
+                  <p-checkbox formControlName="enabled" [binary]="true" />
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <input pInputText type="number" min="1" formControlName="groups" />
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <input pInputText type="number" min="1" formControlName="capacity" />
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </form>
+    <ng-template #footer>
+      <p-button
+        severity="secondary"
+        variant="outlined"
+        [label]="'COMMON.ACTIONS.CANCEL' | translate"
+        (onClick)="closeEditDialog()"
+      />
+      <p-button
+        [label]="'COMMON.ACTIONS.SAVE' | translate"
+        [disabled]="editForm.invalid"
+        (onClick)="saveTerm()"
+      />
+    </ng-template>
+  </p-dialog>
+</section>

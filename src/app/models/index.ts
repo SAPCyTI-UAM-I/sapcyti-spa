@@ -1,3 +1,4 @@
+export * from './academic-offering.model';
 export * from './api-error.model';
 export * from './auth-response.model';
 export * from './current-user.model';

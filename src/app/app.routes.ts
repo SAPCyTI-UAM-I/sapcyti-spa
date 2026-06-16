@@ -39,6 +39,17 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'academic-offering',
+        loadChildren: () =>
+          import('./features/academic-offering/academic-offering.routes').then(
+            (m) => m.ACADEMIC_OFFERING_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.academicOffering,
+        },
+      },
+      {
         path: 'account',
         loadChildren: () =>
           import('./features/account/account.routes').then((m) => m.ACCOUNT_ROUTES),

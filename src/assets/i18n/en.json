@@ -93,6 +93,102 @@
       "STEP_3": "Confirmation"
     }
   },
+  "ACADEMIC_OFFERING": {
+    "ENROLLMENT_START": {
+      "ACCEPT": "Accept",
+      "CHOOSE": "Choose file",
+      "CSV_HINT": "Only .csv files with schedules and draw dates.",
+      "CSV_TITLE": "Read the CSV",
+      "ERRORS": {
+        "INVALID_FORMAT": "Invalid file format."
+      },
+      "NO_FILE": "No file selected",
+      "PROCESS_HINT": "Once started, students will see the selected term's subjects.",
+      "PROCESS_TITLE": "Start the enrollment process",
+      "SUBTITLE": "Select the term to start enrollment; uploading the CSV is optional.",
+      "SUCCESS": "Enrollment process started. Students can now see the term's subjects.",
+      "TERM_LABEL": "Term",
+      "TERM_PLACEHOLDER": "Select a term (e.g. 16I)",
+      "TITLE": "Start enrollment process",
+      "UPLOAD": "Upload"
+    },
+    "PLAN_ANNUAL": {
+      "ALREADY_EDITED": "The quarterly plans for this year were already edited.",
+      "COLUMNS": {
+        "ACTIONS": "Actions",
+        "STATUS": "Status",
+        "TERM": "Term"
+      },
+      "EDIT_DIALOG": {
+        "CAPACITY": "Capacity per group",
+        "ENABLE": "Enable",
+        "GROUPS": "Number of groups",
+        "KEY": "Key",
+        "SELECT_UEAS": "Select the UEAs planned for term {{code}}",
+        "SELECTED_SUBJECTS": "Selected subjects",
+        "SUBJECT": "Subject",
+        "TITLE": "Edit preliminary quarterly plan"
+      },
+      "LIST_EMPTY": "There are no registered annual plans.",
+      "SUBTITLE": "Consult and edit the graduate annual plans.",
+      "TITLE": "Annual planning",
+      "VIEW": {
+        "CAPACITY": "Capacity",
+        "GROUPS": "No. of groups",
+        "TITLE": "Activated subjects"
+      }
+    },
+    "PLAN_QUARTERLY": {
+      "CHANGE_TERM": "Change term",
+      "COLUMNS": {
+        "ACTIONS": "Actions",
+        "CAPACITY": "Capacity",
+        "EMPLOYEE_NUMBER": "Employee number",
+        "GROUP": "Group",
+        "KEY": "Key",
+        "PROFESSOR": "Professor",
+        "SUBJECT": "Subject"
+      },
+      "CONTINUE": "Continue",
+      "CURRENT_TERM": "Current term is",
+      "EDIT_DIALOG": {
+        "CAPACITY": "Capacity",
+        "DAYS": "Days",
+        "END_TIME": "End time",
+        "GROUP": "Group",
+        "GROUP_PLACEHOLDER": "Type the group (e.g. CO33)",
+        "PROFESSOR_PLACEHOLDER": "Select professor(s)",
+        "PROFESSORS": "Professor(s)",
+        "RESELECT_NOTE": "If you change professors, re-select all who teach the class.",
+        "SINGLE_STUDENT": "Is it for a single student?",
+        "START_TIME": "Start time",
+        "STUDENT": "Student",
+        "STUDENT_PLACEHOLDER": "Select a student",
+        "TITLE": "Edit subject"
+      },
+      "EMPTY": "There are no subjects for the selected term.",
+      "MODIFY_SUBJECTS": "Modify plan subjects",
+      "SEARCH_PROFESSOR": "Search by professor, key or subject",
+      "SUBTITLE": "Define schedules, professors, groups and capacities for the term.",
+      "TERM_HEADER": "Term",
+      "TERM_LABEL": "Term",
+      "TERM_PLACEHOLDER": "Select a term",
+      "TITLE": "Edit quarterly plan",
+      "VIEW_FULL_PLAN": "View full plan"
+    },
+    "TERM_STATUS": {
+      "EDITED": "Edited",
+      "IN_ENROLLMENT": "In enrollment",
+      "PRELIMINARY": "Preliminary"
+    },
+    "WEEKDAYS": {
+      "FRI": "Friday",
+      "MON": "Monday",
+      "THU": "Thursday",
+      "TUE": "Tuesday",
+      "WED": "Wednesday"
+    }
+  },
   "ACCOUNT": {
     "PASSWORD": {
       "ADMIN_ACTION": "Change password",
@@ -194,7 +290,8 @@
       "NEXT": "Next",
       "RETRY": "Retry",
       "SAVE": "Save",
-      "SEARCH": "Search"
+      "SEARCH": "Search",
+      "VIEW": "View"
     },
     "ERRORS": {
       "ACCESS_DENIED": "Access denied",
@@ -325,8 +422,11 @@
       "ADVISOR_APPROVAL": "Approve course selection",
       "CHANGE_PASSWORD": "Change password",
       "ENROLLMENT_FORM_PDF": "Enrollment form (PDF)",
+      "ENROLLMENT_START": "Start enrollment",
       "ENROLLMENT_STATUS": "Process status",
       "HOME": "Home",
+      "PLAN_ANNUAL": "Annual planning",
+      "PLAN_QUARTERLY": "Edit quarterly plan",
       "PRESENTATIONS": "Presentations",
       "PROFESSORS": "Professors",
       "STUDENTS": "Students",
@@ -337,6 +437,7 @@
       "ENROLLMENT": "Enrollment",
       "ENROLLMENT_PROCESS": "Enrollment process",
       "MAIN": "Main",
+      "PLANNING": "Planning & offer",
       "PRESENTATIONS": "Presentations"
     },
     "SIDEBAR": {
