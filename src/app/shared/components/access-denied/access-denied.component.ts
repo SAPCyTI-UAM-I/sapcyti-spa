@@ -5,7 +5,7 @@ import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
-import { logoutAndNavigateToLogin } from '../../../core/auth/utils/logout-navigation.util';
+import { logoutAndNavigateToLogin } from '../../../core/auth/utils';
 
 @Component({
   selector: 'app-access-denied',

@@ -1,0 +1,214 @@
+<section class="gap-lg mx-auto flex max-w-4xl flex-col" data-testid="student-registration">
+  <header>
+    <h1 class="text-h2 text-primary font-bold">
+      {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.TITLE' | translate }}
+    </h1>
+    <p class="text-text-secondary">{{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.SUBTITLE' | translate }}</p>
+  </header>
+
+  <ol class="gap-sm grid grid-cols-3">
+    @for (item of [1, 2, 3]; track item) {
+      <li
+        class="border-outline p-sm rounded-lg border text-center"
+        [class.bg-primary-container]="step() === item"
+        [class.text-primary]="step() === item"
+      >
+        {{ 'ACADEMIC_CATALOG.WIZARD.STEP_' + item | translate }}
+      </li>
+    }
+  </ol>
+
+  @if (error()) {
+    <div class="bg-error-container border-error-border text-error p-md rounded-lg border">
+      {{ 'ACADEMIC_CATALOG.ERRORS.' + error() | translate }}
+    </div>
+  }
+
+  <form
+    class="border-outline bg-surface p-lg sm:p-xl gap-lg flex flex-col rounded-xl border"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+  >
+    @if (step() === 1) {
+      <h2 class="text-h3 font-bold">
+        {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.PERSONAL_SECTION' | translate }}
+      </h2>
+      <div class="gap-md grid md:grid-cols-2">
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.FIRST_NAME' | translate }} *</span>
+          <input pInputText formControlName="firstName" />
+          <app-field-error [control]="form.controls.firstName" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.FIRST_LAST_NAME' | translate }} *</span>
+          <input pInputText formControlName="firstLastName" />
+          <app-field-error [control]="form.controls.firstLastName" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.SECOND_LAST_NAME' | translate }}</span>
+          <input pInputText formControlName="secondLastName" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.EMAIL' | translate }} *</span>
+          <input pInputText type="email" formControlName="email" />
+          <app-field-error [control]="form.controls.email" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col md:col-span-2">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.NATIONALITY' | translate }} *</span>
+          <input pInputText formControlName="nationality" />
+          <app-field-error [control]="form.controls.nationality" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.BIRTH_DATE' | translate }} *</span>
+          <input pInputText type="date" formControlName="birthDate" />
+          <app-field-error [control]="form.controls.birthDate" [submitted]="submitted()" />
+        </label>
+        <div class="gap-md grid grid-cols-[1fr_8rem]">
+          <label class="gap-xs flex flex-col">
+            <span>{{ 'ACADEMIC_CATALOG.FIELDS.PHONE' | translate }} *</span>
+            <input pInputText type="tel" formControlName="phone" />
+            <app-field-error [control]="form.controls.phone" [submitted]="submitted()" />
+          </label>
+          <label class="gap-xs flex flex-col">
+            <span>{{ 'ACADEMIC_CATALOG.FIELDS.PHONE_EXTENSION' | translate }}</span>
+            <input pInputText formControlName="phoneExtension" />
+          </label>
+        </div>
+      </div>
+    } @else if (step() === 2) {
+      <h2 class="text-h3 font-bold">
+        {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.ACADEMIC_SECTION' | translate }}
+      </h2>
+      <div class="gap-md grid md:grid-cols-2">
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.ENROLLMENT_ID' | translate }} *</span>
+          <input pInputText formControlName="enrollmentId" />
+          <app-field-error [control]="form.controls.enrollmentId" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.UNDERGRADUATE_DEGREE' | translate }} *</span>
+          <input pInputText formControlName="undergraduateDegree" />
+          <app-field-error
+            [control]="form.controls.undergraduateDegree"
+            [submitted]="submitted()"
+          />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }} *</span>
+          <input pInputText formControlName="lastDegreeObtained" />
+          <app-field-error [control]="form.controls.lastDegreeObtained" [submitted]="submitted()" />
+        </label>
+        <div class="gap-xs flex flex-col">
+          <label for="programType">
+            {{ 'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate }} *
+          </label>
+          <p-select
+            inputId="programType"
+            formControlName="programType"
+            [options]="programTypes"
+            optionValue="value"
+            fluid
+          >
+            <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
+            <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
+          </p-select>
+          <app-field-error [control]="form.controls.programType" [submitted]="submitted()" />
+        </div>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.ADMISSION_DATE' | translate }} *</span>
+          <input pInputText type="date" formControlName="admissionDate" />
+          <app-field-error [control]="form.controls.admissionDate" [submitted]="submitted()" />
+        </label>
+      </div>
+    } @else {
+      <h2 class="text-h3 font-bold">{{ 'ACADEMIC_CATALOG.WIZARD.CONFIRM_TITLE' | translate }}</h2>
+      <dl class="gap-md grid md:grid-cols-2">
+        <div>
+          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.COLUMNS.NAME' | translate }}</dt>
+          <dd>
+            {{ form.value.firstName }} {{ form.value.firstLastName }}
+            {{ form.value.secondLastName }}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}</dt>
+          <dd>{{ form.value.email }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.COLUMNS.ENROLLMENT' | translate }}
+          </dt>
+          <dd>{{ form.value.enrollmentId }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.COLUMNS.PROGRAM' | translate }}</dt>
+          <dd>{{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + form.value.programType | translate }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.FIELDS.BIRTH_DATE' | translate }}
+          </dt>
+          <dd>{{ form.value.birthDate }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.FIELDS.PHONE' | translate }}</dt>
+          <dd>
+            {{ form.value.phone
+            }}{{ form.value.phoneExtension ? ' ext. ' + form.value.phoneExtension : '' }}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }}
+          </dt>
+          <dd>{{ form.value.lastDegreeObtained }}</dd>
+        </div>
+      </dl>
+    }
+
+    <footer class="border-outline pt-md gap-sm flex justify-between border-t">
+      <div class="gap-sm flex">
+        <p-button
+          type="button"
+          severity="secondary"
+          variant="outlined"
+          [label]="'COMMON.ACTIONS.CANCEL' | translate"
+          (onClick)="cancel()"
+        />
+        @if (step() > 1) {
+          <p-button
+            type="button"
+            severity="secondary"
+            variant="outlined"
+            [label]="'COMMON.ACTIONS.BACK' | translate"
+            (onClick)="previous()"
+          />
+        }
+      </div>
+      @if (step() < 3) {
+        <p-button
+          type="button"
+          data-testid="wizard-next"
+          [label]="'COMMON.ACTIONS.NEXT' | translate"
+          (onClick)="next()"
+        />
+      } @else {
+        <p-button
+          type="submit"
+          data-testid="confirm-student"
+          [label]="'COMMON.ACTIONS.CONFIRM' | translate"
+          [loading]="loading()"
+          [disabled]="loading()"
+        />
+      }
+    </footer>
+  </form>
+</section>
+
+<app-temporary-password-dialog
+  [visible]="showPasswordDialog()"
+  [password]="generatedPassword()"
+  [copied]="passwordCopied()"
+  (copiedChange)="passwordCopied.set($event)"
+  (closed)="closePasswordDialog()"
+/>

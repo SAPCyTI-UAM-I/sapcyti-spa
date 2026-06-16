@@ -1,4 +1,4 @@
-import { RoleType } from '../models/role-type.model';
+import { RoleType } from '../models';
 
 import { ShellMenuRole, ShellNavigation } from './shell-menu.model';
 
@@ -18,19 +18,7 @@ const PRESENTATIONS_LINK = {
 
 const STUDENT_NAV: ShellNavigation = {
   home: HOME_LINK,
-  sections: [
-    {
-      id: 'student-main',
-      items: [
-        {
-          id: 'enrollment',
-          labelKey: 'SHELL.MENU.ENROLLMENT',
-          route: '/enrollment',
-          icon: 'pi pi-user-plus',
-        },
-      ],
-    },
-  ],
+  sections: [],
 };
 
 const PROFESSOR_NAV: ShellNavigation = {
@@ -98,6 +86,30 @@ const COORDINATOR_NAV: ShellNavigation = {
           labelKey: 'SHELL.MENU.PROFESSORS',
           route: '/academic-catalog/professors',
           icon: 'pi pi-user-edit',
+        },
+      ],
+    },
+    {
+      id: 'coordinator-offering',
+      labelKey: 'SHELL.SECTIONS.PLANNING',
+      items: [
+        {
+          id: 'plan-annual',
+          labelKey: 'SHELL.MENU.PLAN_ANNUAL',
+          route: '/academic-offering/plan-annual',
+          icon: 'pi pi-calendar-plus',
+        },
+        {
+          id: 'plan-quarterly',
+          labelKey: 'SHELL.MENU.PLAN_QUARTERLY',
+          route: '/academic-offering/plan-quarterly',
+          icon: 'pi pi-table',
+        },
+        {
+          id: 'enrollment-start',
+          labelKey: 'SHELL.MENU.ENROLLMENT_START',
+          route: '/academic-offering/enrollment-start',
+          icon: 'pi pi-upload',
         },
       ],
     },

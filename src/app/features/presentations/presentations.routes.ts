@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 import { authGuard } from '../../core/auth/guards/auth.guard';
 import { ROUTE_PERMISSIONS } from '../../core/auth/rbac.policy';
-import { FeaturePlaceholderComponent } from '../../shared/components/feature-placeholder/feature-placeholder.component';
+import { FeaturePlaceholderComponent } from '../../shared/components';
 
 export const PRESENTATIONS_ROUTES: Routes = [
   {

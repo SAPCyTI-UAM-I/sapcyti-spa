@@ -1,0 +1,20 @@
+<button
+  type="button"
+  class="ring-primary/40 focus-visible:ring-primary ring-offset-surface flex shrink-0 cursor-pointer items-center rounded-full transition hover:ring-2 hover:ring-offset-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+  data-testid="user-menu-trigger"
+  aria-haspopup="menu"
+  [attr.aria-expanded]="menuOpen()"
+  [attr.aria-label]="email()"
+  (click)="menu.toggle($event)"
+>
+  <p-avatar [label]="initials()" shape="circle" styleClass="cursor-pointer" />
+</button>
+
+<p-menu
+  #menu
+  [model]="model()"
+  [popup]="true"
+  appendTo="body"
+  (onShow)="menuOpen.set(true)"
+  (onHide)="menuOpen.set(false)"
+/>

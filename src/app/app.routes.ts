@@ -39,6 +39,26 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'academic-offering',
+        loadChildren: () =>
+          import('./features/academic-offering/academic-offering.routes').then(
+            (m) => m.ACADEMIC_OFFERING_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.academicOffering,
+        },
+      },
+      {
+        path: 'account',
+        loadChildren: () =>
+          import('./features/account/account.routes').then((m) => m.ACCOUNT_ROUTES),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.account,
+        },
+      },
+      {
         path: 'presentations',
         loadChildren: () =>
           import('./features/presentations/presentations.routes').then(
@@ -47,6 +67,7 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: {
           roles: ROUTE_PERMISSIONS.presentations,
+          breadcrumb: 'SHELL.MENU.PRESENTATIONS',
         },
       },
       {
@@ -56,11 +77,18 @@ export const routes: Routes = [
             (m) => m.AccessDeniedComponent,
           ),
       },
+      {
+        path: 'not-found',
+        loadComponent: () =>
+          import('./shared/components/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
+      },
     ],
   },
   {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
-  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: 'not-found' },
 ];

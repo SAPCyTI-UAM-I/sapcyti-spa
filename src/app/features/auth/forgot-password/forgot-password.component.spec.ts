@@ -20,7 +20,10 @@ describe('ForgotPasswordComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [ForgotPasswordComponent, TranslateModule.forRoot()],
-      providers: [provideRouter([]), { provide: PasswordRecoveryService, useValue: passwordRecovery }],
+      providers: [
+        provideRouter([]),
+        { provide: PasswordRecoveryService, useValue: passwordRecovery },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ForgotPasswordComponent);

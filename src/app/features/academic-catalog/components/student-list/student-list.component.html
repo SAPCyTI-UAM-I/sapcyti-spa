@@ -1,0 +1,164 @@
+<section class="gap-lg flex flex-col" data-testid="student-catalog">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-h2 text-primary font-bold">
+        {{ 'ACADEMIC_CATALOG.STUDENTS.LIST.TITLE' | translate }}
+      </h1>
+      <p class="text-text-secondary">{{ 'ACADEMIC_CATALOG.STUDENTS.LIST.SUBTITLE' | translate }}</p>
+    </div>
+    <p-button
+      data-testid="create-student"
+      icon="pi pi-plus"
+      [label]="'ACADEMIC_CATALOG.STUDENTS.LIST.CREATE' | translate"
+      routerLink="/academic-catalog/students/new"
+    />
+  </header>
+
+  <form
+    class="border-outline bg-surface p-md gap-md grid rounded-xl border md:grid-cols-[1fr_13rem_11rem_auto]"
+    [formGroup]="filters"
+    (ngSubmit)="applyFilters()"
+  >
+    <input
+      pInputText
+      formControlName="search"
+      [placeholder]="'ACADEMIC_CATALOG.STUDENTS.LIST.SEARCH' | translate"
+    />
+    <p-select
+      formControlName="programType"
+      [options]="programTypes"
+      optionValue="value"
+      [placeholder]="'ACADEMIC_CATALOG.FILTERS.PROGRAM_TYPE' | translate"
+      fluid
+    >
+      <ng-template #selectedItem let-option>
+        {{ option?.labelKey | translate }}
+      </ng-template>
+      <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
+    </p-select>
+    <p-select
+      formControlName="active"
+      [options]="statuses"
+      optionValue="value"
+      [placeholder]="'ACADEMIC_CATALOG.FILTERS.STATUS' | translate"
+      fluid
+    >
+      <ng-template #selectedItem let-option>
+        {{ option?.labelKey | translate }}
+      </ng-template>
+      <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
+    </p-select>
+    <div class="gap-sm flex">
+      <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />
+      <p-button
+        type="button"
+        icon="pi pi-filter-slash"
+        severity="secondary"
+        variant="outlined"
+        [attr.aria-label]="'COMMON.ACTIONS.CLEAR' | translate"
+        (onClick)="clearFilters()"
+      />
+    </div>
+  </form>
+
+  <div class="border-outline bg-surface rounded-xl border">
+    @if (loading()) {
+      <div class="p-xl text-text-secondary text-center">
+        <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+      </div>
+    } @else if (loadError()) {
+      <div class="p-xl gap-md flex flex-col items-center text-center">
+        <p class="text-error">{{ 'ACADEMIC_CATALOG.STATES.LOAD_ERROR' | translate }}</p>
+        <p-button [label]="'COMMON.ACTIONS.RETRY' | translate" (onClick)="load()" />
+      </div>
+    } @else if (items().length === 0) {
+      <div class="p-xl text-text-secondary text-center">
+        {{ 'ACADEMIC_CATALOG.STUDENTS.LIST.EMPTY' | translate }}
+      </div>
+    } @else {
+      <div class="md:overflow-x-auto">
+        <table class="block w-full border-collapse md:table md:min-w-[58rem]">
+          <thead class="bg-table-header hidden text-left md:table-header-group">
+            <tr>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.NAME' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ENROLLMENT' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.PROGRAM' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ADMISSION' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+            @for (student of items(); track student.id) {
+              <tr
+                class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
+              >
+                <td class="md:p-md col-span-2 md:table-cell">
+                  <span class="text-h3 text-primary font-bold md:font-normal md:text-inherit">
+                    {{ student.firstLastName }} {{ student.secondLastName }} {{ student.firstName }}
+                  </span>
+                </td>
+                <td class="text-text-secondary md:p-md col-span-2 break-all md:table-cell">
+                  {{ student.email }}
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.ENROLLMENT' | translate }}
+                  </span>
+                  {{ student.enrollmentId }}
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.PROGRAM' | translate }}
+                  </span>
+                  {{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + student.programType | translate }}
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.ADMISSION' | translate }}
+                  </span>
+                  {{ student.admissionDate }}
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}
+                  </span>
+                  {{
+                    (student.active
+                      ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
+                      : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
+                    ) | translate
+                  }}
+                </td>
+                <td class="md:p-md col-span-2 md:table-cell">
+                  <p-button
+                    icon="pi pi-key"
+                    severity="secondary"
+                    variant="outlined"
+                    [fluid]="true"
+                    [label]="'ACCOUNT.PASSWORD.ADMIN_ACTION' | translate"
+                    [routerLink]="['/account/users', student.userId, 'password']"
+                    [queryParams]="{ returnUrl: '/academic-catalog/students' }"
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <footer class="gap-sm flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <span class="text-text-secondary">
+      {{ 'ACADEMIC_CATALOG.PAGINATION.TOTAL' | translate }}: {{ totalElements() }}
+    </span>
+    <p-paginator
+      [first]="first()"
+      [rows]="pageSize"
+      [totalRecords]="totalElements()"
+      (onPageChange)="onPageChange($event)"
+    />
+  </footer>
+</section>

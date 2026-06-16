@@ -1,4 +1,4 @@
-import { RoleType } from '../../models/role-type.model';
+import { RoleType } from '../../models';
 
 /**
  * Mirrors the effective backend RBAC today:
@@ -12,6 +12,9 @@ export const ROUTE_PERMISSIONS = {
   enrollmentTerms: ['COORDINATOR'],
   enrollmentStatus: ['COORDINATOR'],
   academicCatalog: ['COORDINATOR'],
+  academicOffering: ['COORDINATOR'],
+  account: ['SYSTEM_ADMIN', 'COORDINATOR', 'ASSISTANT', 'PROFESSOR', 'STUDENT', 'SPEAKER'],
+  passwordAdministration: ['COORDINATOR'],
   presentations: ['SYSTEM_ADMIN', 'COORDINATOR', 'SPEAKER'],
 } as const satisfies Record<string, readonly RoleType[]>;
 

@@ -1,4 +1,4 @@
-import { RoleType } from '../../../models/role-type.model';
+import { RoleType } from '../../../models';
 import { hasAppProfile, matchesAnyRole } from './role-authorization.util';
 
 describe('role-authorization.util', () => {

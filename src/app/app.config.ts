@@ -9,6 +9,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import { firstValueFrom } from 'rxjs';
 
@@ -22,6 +23,7 @@ import { httpErrorInterceptor } from './core/http/http-error.interceptor';
 import { jwtInterceptor } from './core/http/jwt.interceptor';
 import { tenantInterceptor } from './core/http/tenant.interceptor';
 import { provideAppMockConfig } from './core/mocks/mock.config';
+import { DATA_LAYER_PROVIDERS } from './core/api/data-layer.providers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -31,7 +33,9 @@ export const appConfig: ApplicationConfig = {
       firstValueFrom(inject(AuthStateService).restoreRememberedSession()),
     ),
     provideHttpClient(withInterceptors([jwtInterceptor, tenantInterceptor, httpErrorInterceptor])),
+    MessageService,
     provideAppMockConfig(environment.mocks),
+    ...DATA_LAYER_PROVIDERS,
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

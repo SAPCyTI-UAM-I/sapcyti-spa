@@ -4,5 +4,8 @@ export const environment = {
   mocks: {
     auth: false,
     passwordRecovery: false,
+    students: false,
+    professors: false,
+    passwordChange: false,
   },
 };

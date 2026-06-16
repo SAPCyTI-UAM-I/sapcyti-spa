@@ -1,34 +1,46 @@
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
+import { filter } from 'rxjs';
 
 import { AuthStateService } from '../core/auth/auth.service';
-import { LanguageSwitcherComponent } from '../shared/components/language-switcher/language-switcher.component';
+import {
+  BreadcrumbComponent,
+  LanguageSwitcherComponent,
+  UserMenuComponent,
+} from '../shared/components';
 import { ShellMobileDrawerComponent } from './shell-mobile-drawer.component';
-import { ShellSidebarNavComponent } from '../shared/components/shell-sidebar-nav/shell-sidebar-nav.component';
+import { ShellSidebarNavComponent } from '../shared/components';
+import { buildBreadcrumbTrail } from './breadcrumb';
 import { getShellNavigation } from './shell-menu.config';
-import { logoutAndNavigateToLogin } from '../core/auth/utils/logout-navigation.util';
+import { USER_MENU_ITEMS } from './user-menu.config';
+import { logoutAndNavigateToLogin } from '../core/auth/utils';
+import { readStoredBoolean, writeStoredBoolean } from '../shared/utils/local-storage.util';
+
+const SIDEBAR_COLLAPSED_KEY = 'sapcyti.shell.sidebarCollapsed';
 
 @Component({
   selector: 'app-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    NgClass,
     RouterOutlet,
     TranslateModule,
-    Avatar,
     Button,
     IconField,
     InputIcon,
     InputText,
+    BreadcrumbComponent,
     LanguageSwitcherComponent,
     ShellMobileDrawerComponent,
     ShellSidebarNavComponent,
+    UserMenuComponent,
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.css',
@@ -41,6 +53,18 @@ export class ShellComponent {
   readonly currentUser = toSignal(this.auth.currentUser$, { initialValue: null });
   readonly mobileMenuOpen = signal(false);
   readonly searchQuery = signal('');
+  readonly userMenuItems = USER_MENU_ITEMS;
+  readonly sidebarCollapsed = signal(readStoredBoolean(SIDEBAR_COLLAPSED_KEY));
+
+  private readonly navigationEnd = toSignal(
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)),
+    { initialValue: null },
+  );
+
+  readonly breadcrumbs = computed(() => {
+    this.navigationEnd();
+    return buildBreadcrumbTrail(this.router.routerState.snapshot.root);
+  });
 
   readonly navigation = computed(() => {
     const user = this.currentUser();
@@ -100,6 +124,12 @@ export class ShellComponent {
 
   onLogout(): void {
     logoutAndNavigateToLogin(this.auth, this.router);
+  }
+
+  toggleSidebar(): void {
+    const collapsed = !this.sidebarCollapsed();
+    this.sidebarCollapsed.set(collapsed);
+    writeStoredBoolean(SIDEBAR_COLLAPSED_KEY, collapsed);
   }
 
   private normalizeSearch(value: string): string {

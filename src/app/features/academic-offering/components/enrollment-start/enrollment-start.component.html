@@ -1,0 +1,81 @@
+<section class="gap-lg flex flex-col" data-testid="enrollment-start">
+  <header>
+    <h1 class="text-h2 text-primary font-bold">
+      {{ 'ACADEMIC_OFFERING.ENROLLMENT_START.TITLE' | translate }}
+    </h1>
+    <p class="text-text-secondary">
+      {{ 'ACADEMIC_OFFERING.ENROLLMENT_START.SUBTITLE' | translate }}
+    </p>
+  </header>
+
+  <!-- Acción 1: iniciar el proceso de inscripción (Aceptar). El CSV es opcional. -->
+  <div class="border-outline bg-surface p-md gap-md flex flex-col rounded-xl border">
+    <h2 class="text-h3 text-primary font-bold">
+      {{ 'ACADEMIC_OFFERING.ENROLLMENT_START.PROCESS_TITLE' | translate }}
+    </h2>
+    <div class="w-80 max-w-full">
+      <label for="enrollment-term" class="text-label-md text-text-secondary mb-1 block">
+        {{ 'ACADEMIC_OFFERING.ENROLLMENT_START.TERM_LABEL' | translate }}
+      </label>
+      <p-select
+        inputId="enrollment-term"
+        [options]="terms()"
+        optionValue="value"
+        optionLabel="label"
+        [placeholder]="'ACADEMIC_OFFERING.ENROLLMENT_START.TERM_PLACEHOLDER' | translate"
+        (onChange)="onTermChange($event.value)"
+        fluid
+      />
+    </div>
+    <p class="text-caption text-text-tertiary">
+      {{ 'ACADEMIC_OFFERING.ENROLLMENT_START.PROCESS_HINT' | translate }}
+    </p>
+
+    @if (started()) {
+      <p-message
+        severity="success"
+        [text]="'ACADEMIC_OFFERING.ENROLLMENT_START.SUCCESS' | translate"
+      />
+    }
+
+    <div>
+      <p-button
+        icon="pi pi-check"
+        [disabled]="selectedTerm() === null"
+        [label]="'ACADEMIC_OFFERING.ENROLLMENT_START.ACCEPT' | translate"
+        (onClick)="start()"
+      />
+    </div>
+  </div>
+
+  <!-- Acción 2: iniciar la lectura del CSV (Cargar). Independiente del Aceptar. -->
+  <div class="border-outline bg-surface p-md gap-md flex flex-col rounded-xl border">
+    <h2 class="text-h3 text-primary font-bold">
+      {{ 'ACADEMIC_OFFERING.ENROLLMENT_START.CSV_TITLE' | translate }}
+    </h2>
+    <span class="text-caption text-text-tertiary">
+      {{ 'ACADEMIC_OFFERING.ENROLLMENT_START.CSV_HINT' | translate }}
+    </span>
+    <div class="gap-md flex flex-wrap items-center">
+      <p-fileupload
+        mode="basic"
+        accept=".csv"
+        [auto]="false"
+        [chooseLabel]="'ACADEMIC_OFFERING.ENROLLMENT_START.CHOOSE' | translate"
+        (onSelect)="onFileSelect($event)"
+      />
+      <p-button
+        icon="pi pi-upload"
+        [label]="'ACADEMIC_OFFERING.ENROLLMENT_START.UPLOAD' | translate"
+        (onClick)="uploadCsv()"
+      />
+      <span class="text-text-secondary">
+        {{ loadedFileName() ?? ('ACADEMIC_OFFERING.ENROLLMENT_START.NO_FILE' | translate) }}
+      </span>
+    </div>
+
+    @if (csvErrorKey(); as key) {
+      <p-message severity="error" [text]="key | translate" />
+    }
+  </div>
+</section>
