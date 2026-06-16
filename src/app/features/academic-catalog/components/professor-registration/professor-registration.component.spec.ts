@@ -38,6 +38,11 @@ describe('ProfessorRegistrationComponent', () => {
       secondLastName: '',
       email: 'laura.new@uam.mx',
       employeeNumber: '40002',
+      phone: '5544455566',
+      phoneExtension: '',
+      commissionMember: false,
+      nextSabbaticalStart: '',
+      nextSabbaticalEnd: '',
     });
     component.next();
     component.submit();

@@ -8,7 +8,12 @@ export interface RegisterStudentRequest {
   firstLastName: string;
   secondLastName?: string;
   nationality: string;
+  /** ISO date (YYYY-MM-DD). */
+  birthDate: string;
+  phone: string;
+  phoneExtension?: string;
   undergraduateDegree: string;
+  lastDegreeObtained: string;
   programType: ProgramType;
   admissionDate: string;
 }

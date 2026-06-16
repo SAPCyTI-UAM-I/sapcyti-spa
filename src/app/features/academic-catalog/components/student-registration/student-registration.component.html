@@ -58,6 +58,22 @@
           <input pInputText formControlName="nationality" />
           <app-field-error [control]="form.controls.nationality" [submitted]="submitted()" />
         </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.BIRTH_DATE' | translate }} *</span>
+          <input pInputText type="date" formControlName="birthDate" />
+          <app-field-error [control]="form.controls.birthDate" [submitted]="submitted()" />
+        </label>
+        <div class="gap-md grid grid-cols-[1fr_8rem]">
+          <label class="gap-xs flex flex-col">
+            <span>{{ 'ACADEMIC_CATALOG.FIELDS.PHONE' | translate }} *</span>
+            <input pInputText type="tel" formControlName="phone" />
+            <app-field-error [control]="form.controls.phone" [submitted]="submitted()" />
+          </label>
+          <label class="gap-xs flex flex-col">
+            <span>{{ 'ACADEMIC_CATALOG.FIELDS.PHONE_EXTENSION' | translate }}</span>
+            <input pInputText formControlName="phoneExtension" />
+          </label>
+        </div>
       </div>
     } @else if (step() === 2) {
       <h2 class="text-h3 font-bold">
@@ -76,6 +92,11 @@
             [control]="form.controls.undergraduateDegree"
             [submitted]="submitted()"
           />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }} *</span>
+          <input pInputText formControlName="lastDegreeObtained" />
+          <app-field-error [control]="form.controls.lastDegreeObtained" [submitted]="submitted()" />
         </label>
         <div class="gap-xs flex flex-col">
           <label for="programType">
@@ -122,6 +143,25 @@
         <div>
           <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.COLUMNS.PROGRAM' | translate }}</dt>
           <dd>{{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + form.value.programType | translate }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.FIELDS.BIRTH_DATE' | translate }}
+          </dt>
+          <dd>{{ form.value.birthDate }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.FIELDS.PHONE' | translate }}</dt>
+          <dd>
+            {{ form.value.phone
+            }}{{ form.value.phoneExtension ? ' ext. ' + form.value.phoneExtension : '' }}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }}
+          </dt>
+          <dd>{{ form.value.lastDegreeObtained }}</dd>
         </div>
       </dl>
     }

@@ -15,7 +15,10 @@ const request: RegisterStudentRequest = {
   firstName: 'Nueva',
   firstLastName: 'Alumna',
   nationality: 'Mexicana',
+  birthDate: '1999-01-15',
+  phone: '5510002000',
   undergraduateDegree: 'Computación',
+  lastDegreeObtained: 'Licenciatura en Computación',
   programType: 'MAESTRIA',
   admissionDate: '2026-09-01',
 };

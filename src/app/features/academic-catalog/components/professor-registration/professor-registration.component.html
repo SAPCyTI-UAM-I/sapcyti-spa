@@ -61,6 +61,35 @@
             [control]="form.controls.employeeNumber"
             [submitted]="submitted()"
         /></label>
+        <div class="gap-md grid grid-cols-[1fr_8rem]">
+          <label class="gap-xs flex flex-col">
+            <span>{{ 'ACADEMIC_CATALOG.FIELDS.PHONE' | translate }} *</span>
+            <input pInputText type="tel" formControlName="phone" />
+            <app-field-error [control]="form.controls.phone" [submitted]="submitted()" />
+          </label>
+          <label class="gap-xs flex flex-col">
+            <span>{{ 'ACADEMIC_CATALOG.FIELDS.PHONE_EXTENSION' | translate }}</span>
+            <input pInputText formControlName="phoneExtension" />
+          </label>
+        </div>
+        <div class="gap-sm flex items-center md:col-span-2">
+          <p-checkbox
+            inputId="commissionMember"
+            formControlName="commissionMember"
+            [binary]="true"
+          />
+          <label for="commissionMember">
+            {{ 'ACADEMIC_CATALOG.FIELDS.COMMISSION_MEMBER' | translate }}
+          </label>
+        </div>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.NEXT_SABBATICAL_START' | translate }}</span>
+          <input pInputText type="date" formControlName="nextSabbaticalStart" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.NEXT_SABBATICAL_END' | translate }}</span>
+          <input pInputText type="date" formControlName="nextSabbaticalEnd" />
+        </label>
       </div>
     } @else {
       <h2 class="text-h3 font-bold">{{ 'ACADEMIC_CATALOG.WIZARD.CONFIRM_TITLE' | translate }}</h2>
@@ -81,6 +110,23 @@
             {{ 'ACADEMIC_CATALOG.COLUMNS.EMPLOYEE_NUMBER' | translate }}
           </dt>
           <dd>{{ form.value.employeeNumber }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.FIELDS.PHONE' | translate }}</dt>
+          <dd>
+            {{ form.value.phone
+            }}{{ form.value.phoneExtension ? ' ext. ' + form.value.phoneExtension : '' }}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.FIELDS.COMMISSION_MEMBER' | translate }}
+          </dt>
+          <dd>
+            {{
+              (form.value.commissionMember ? 'COMMON.STATES.YES' : 'COMMON.STATES.NO') | translate
+            }}
+          </dd>
         </div>
       </dl>
     }

@@ -20,7 +20,10 @@ const sampleStudent: StudentCatalogItem = {
   firstName: 'Ana',
   firstLastName: 'García',
   nationality: 'Mexicana',
+  birthDate: '1998-04-12',
+  phone: '5512345678',
   undergraduateDegree: 'Computación',
+  lastDegreeObtained: 'Licenciatura en Computación',
   programType: 'MAESTRIA',
   admissionDate: '2025-09-01',
 };

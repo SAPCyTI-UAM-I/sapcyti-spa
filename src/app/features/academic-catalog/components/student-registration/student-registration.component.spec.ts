@@ -48,12 +48,15 @@ describe('StudentRegistrationComponent', () => {
       firstLastName: 'García',
       email: 'ana.new@uam.mx',
       nationality: 'Mexicana',
+      birthDate: '1998-04-12',
+      phone: '5512345678',
     });
     component.next();
     expect(component.step()).toBe(2);
     component.form.patchValue({
       enrollmentId: '223300999',
       undergraduateDegree: 'Computación',
+      lastDegreeObtained: 'Licenciatura en Computación',
       programType: 'MAESTRIA',
       admissionDate: '2026-09-01',
     });
@@ -81,8 +84,12 @@ describe('StudentRegistrationComponent', () => {
       secondLastName: '',
       email: 'ana.new@uam.mx',
       nationality: 'Mexicana',
+      birthDate: '1998-04-12',
+      phone: '5512345678',
+      phoneExtension: '',
       enrollmentId: '223300999',
       undergraduateDegree: 'Computación',
+      lastDegreeObtained: 'Licenciatura en Computación',
       programType: 'MAESTRIA',
       admissionDate: '2026-09-01',
     });

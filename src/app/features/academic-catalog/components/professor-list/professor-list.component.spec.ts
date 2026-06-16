@@ -19,6 +19,8 @@ const sampleProfessor: ProfessorCatalogItem = {
   graduateProgramId: 1,
   firstName: 'Laura',
   firstLastName: 'Martínez',
+  phone: '5544455566',
+  commissionMember: false,
 };
 
 function buildProfessorPage(

@@ -46,8 +46,12 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
     secondLastName: ['', Validators.maxLength(100)],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
     nationality: ['', [Validators.required, Validators.maxLength(100)]],
+    birthDate: ['', Validators.required],
+    phone: ['', [Validators.required, Validators.maxLength(20)]],
+    phoneExtension: ['', Validators.maxLength(10)],
     enrollmentId: ['', [Validators.required, Validators.maxLength(20)]],
     undergraduateDegree: ['', [Validators.required, Validators.maxLength(200)]],
+    lastDegreeObtained: ['', [Validators.required, Validators.maxLength(200)]],
     programType: ['', Validators.required],
     admissionDate: ['', Validators.required],
   });
@@ -55,8 +59,23 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
   protected override validateStep(step: number): boolean {
     const controls =
       step === 1
-        ? ['firstName', 'firstLastName', 'secondLastName', 'email', 'nationality']
-        : ['enrollmentId', 'undergraduateDegree', 'programType', 'admissionDate'];
+        ? [
+            'firstName',
+            'firstLastName',
+            'secondLastName',
+            'email',
+            'nationality',
+            'birthDate',
+            'phone',
+            'phoneExtension',
+          ]
+        : [
+            'enrollmentId',
+            'undergraduateDegree',
+            'lastDegreeObtained',
+            'programType',
+            'admissionDate',
+          ];
     return controls.every((name) => this.form.get(name)?.valid);
   }
 
@@ -69,6 +88,7 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
     const request: RegisterStudentRequest = {
       ...value,
       secondLastName: value.secondLastName.trim() || undefined,
+      phoneExtension: value.phoneExtension.trim() || undefined,
       programType: value.programType as RegisterStudentRequest['programType'],
       graduateProgramId: this.auth.getCurrentUser()?.graduateProgramId ?? 1,
     };

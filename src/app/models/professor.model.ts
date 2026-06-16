@@ -5,6 +5,12 @@ export interface RegisterProfessorRequest {
   firstName: string;
   firstLastName: string;
   secondLastName?: string;
+  phone: string;
+  phoneExtension?: string;
+  commissionMember: boolean;
+  /** ISO date (YYYY-MM-DD), optional. */
+  nextSabbaticalStart?: string;
+  nextSabbaticalEnd?: string;
 }
 
 export interface ProfessorCatalogItem extends RegisterProfessorRequest {

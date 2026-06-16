@@ -15,6 +15,8 @@ describe('ProfessorService', () => {
     graduateProgramId: 1,
     firstName: 'Nueva',
     firstLastName: 'Profesora',
+    phone: '5510002000',
+    commissionMember: false,
   };
 
   it('uses session mock and keeps generatedPassword creation-only', () => {

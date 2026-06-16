@@ -19,12 +19,19 @@
     },
     "FIELDS": {
       "ADMISSION_DATE": "Fecha de ingreso",
+      "BIRTH_DATE": "Fecha de nacimiento",
+      "COMMISSION_MEMBER": "Miembro de comisión",
       "EMAIL": "Correo electrónico",
       "EMPLOYEE_NUMBER": "Número de empleado",
       "ENROLLMENT_ID": "Matrícula",
       "FIRST_LAST_NAME": "Apellido paterno",
       "FIRST_NAME": "Nombre(s)",
+      "LAST_DEGREE_OBTAINED": "Último grado obtenido",
       "NATIONALITY": "Nacionalidad",
+      "NEXT_SABBATICAL_END": "Fin del próximo sabático",
+      "NEXT_SABBATICAL_START": "Inicio del próximo sabático",
+      "PHONE": "Teléfono",
+      "PHONE_EXTENSION": "Extensión",
       "PROGRAM_TYPE": "Tipo de programa",
       "SECOND_LAST_NAME": "Apellido materno",
       "UNDERGRADUATE_DEGREE": "Carrera de licenciatura"
@@ -301,7 +308,9 @@
       "SERVER_ERROR": "Error del servidor"
     },
     "STATES": {
-      "LOADING": "Cargando..."
+      "LOADING": "Cargando...",
+      "NO": "No",
+      "YES": "Sí"
     },
     "VALIDATION": {
       "EMAIL": "Ingrese una dirección de correo válida.",

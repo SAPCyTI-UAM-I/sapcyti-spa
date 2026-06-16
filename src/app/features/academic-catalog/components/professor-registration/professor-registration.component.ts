@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
+import { Checkbox } from 'primeng/checkbox';
 import { InputText } from 'primeng/inputtext';
 import { Observable } from 'rxjs';
 
@@ -21,6 +22,7 @@ import { CatalogRegistrationBase } from '../catalog-registration.base';
     ReactiveFormsModule,
     TranslatePipe,
     Button,
+    Checkbox,
     InputText,
     FieldErrorComponent,
     TemporaryPasswordDialogComponent,
@@ -41,6 +43,11 @@ export class ProfessorRegistrationComponent extends CatalogRegistrationBase<Regi
     secondLastName: ['', Validators.maxLength(100)],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
     employeeNumber: ['', [Validators.required, Validators.maxLength(20)]],
+    phone: ['', [Validators.required, Validators.maxLength(20)]],
+    phoneExtension: ['', Validators.maxLength(10)],
+    commissionMember: [false],
+    nextSabbaticalStart: [''],
+    nextSabbaticalEnd: [''],
   });
 
   protected override validateStep(step: number): boolean {
@@ -56,6 +63,9 @@ export class ProfessorRegistrationComponent extends CatalogRegistrationBase<Regi
     const request: RegisterProfessorRequest = {
       ...value,
       secondLastName: value.secondLastName.trim() || undefined,
+      phoneExtension: value.phoneExtension.trim() || undefined,
+      nextSabbaticalStart: value.nextSabbaticalStart || undefined,
+      nextSabbaticalEnd: value.nextSabbaticalEnd || undefined,
       graduateProgramId: this.auth.getCurrentUser()?.graduateProgramId ?? 1,
     };
     return this.service.registerProfessor(request);

@@ -28,6 +28,9 @@ export class ProfessorMockStore {
       firstName: 'Humberto Gustavo',
       firstLastName: 'Cervantes',
       secondLastName: 'Maceda',
+      phone: '5511122233',
+      phoneExtension: '204',
+      commissionMember: true,
       active: true,
     },
     {
@@ -38,6 +41,8 @@ export class ProfessorMockStore {
       graduateProgramId: 1,
       firstName: 'Laura',
       firstLastName: 'Martínez',
+      phone: '5544455566',
+      commissionMember: false,
       active: true,
     },
   ];

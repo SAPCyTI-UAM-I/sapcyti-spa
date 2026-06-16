@@ -19,12 +19,19 @@
     },
     "FIELDS": {
       "ADMISSION_DATE": "Admission date",
+      "BIRTH_DATE": "Birth date",
+      "COMMISSION_MEMBER": "Commission member",
       "EMAIL": "Email",
       "EMPLOYEE_NUMBER": "Employee number",
       "ENROLLMENT_ID": "Enrollment ID",
       "FIRST_LAST_NAME": "First last name",
       "FIRST_NAME": "First name",
+      "LAST_DEGREE_OBTAINED": "Last degree obtained",
       "NATIONALITY": "Nationality",
+      "NEXT_SABBATICAL_END": "Next sabbatical end",
+      "NEXT_SABBATICAL_START": "Next sabbatical start",
+      "PHONE": "Phone",
+      "PHONE_EXTENSION": "Extension",
       "PROGRAM_TYPE": "Program type",
       "SECOND_LAST_NAME": "Second last name",
       "UNDERGRADUATE_DEGREE": "Undergraduate degree"
@@ -301,7 +308,9 @@
       "SERVER_ERROR": "Server error"
     },
     "STATES": {
-      "LOADING": "Loading..."
+      "LOADING": "Loading...",
+      "NO": "No",
+      "YES": "Yes"
     },
     "VALIDATION": {
       "EMAIL": "Enter a valid email address.",
