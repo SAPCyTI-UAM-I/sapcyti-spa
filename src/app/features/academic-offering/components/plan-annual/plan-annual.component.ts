@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
+import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
 import { Button } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
+import { Tag } from 'primeng/tag';
 
 import { AnnualPlanDetail, AnnualPlanTerm, AvailableAnnualSubject } from '../../../../models';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
@@ -14,30 +16,43 @@ import {
   SAMPLE_ANNUAL_PLANS,
   SAMPLE_AVAILABLE_SUBJECTS,
 } from '../../mocks/academic-offering.sample-data';
+import { termStatusSeverity } from '../../utils/term-status.util';
 
 /**
  * HU-04 — Planeación anual (cascarón), módulo único en formato acordeón.
  *
- * A list of annual plans by year; clicking a year expands its trimesters inline,
- * each with "Ver" (read-only UEAs) and, when the plan is still PRELIMINARY,
- * "Editar" ("Activar UEA's"). No top-level view/edit modes and no extra
- * navigation — actions live on the trimester rows. No data layer yet (TODO).
+ * A `p-accordion` of annual plans by year; expanding a year reveals its
+ * trimesters, each with "Ver" (read-only UEAs) and, when the plan is still
+ * PRELIMINARY, "Editar" ("Activar UEA's"). No data layer yet (TODO).
  */
 @Component({
   selector: 'app-plan-annual',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [ReactiveFormsModule, TranslatePipe, Button, Checkbox, Dialog, InputText, Message],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    Accordion,
+    AccordionContent,
+    AccordionHeader,
+    AccordionPanel,
+    Button,
+    Checkbox,
+    Dialog,
+    InputText,
+    Message,
+    Tag,
+  ],
   templateUrl: './plan-annual.component.html',
 })
 export class PlanAnnualComponent {
   private readonly fb = inject(NonNullableFormBuilder);
 
+  /** Status → PrimeNG tag severity (template helper). */
+  readonly statusSeverity = termStatusSeverity;
+
   // TODO(HU-04): load the annual plans from the academic-offering service.
   readonly plans = signal<AnnualPlanDetail[]>(SAMPLE_ANNUAL_PLANS);
-
-  /** Year currently expanded in the accordion (null = all collapsed). */
-  readonly expandedYear = signal<string | null>(null);
 
   // Edit dialog ("Activar UEA's").
   readonly editDialogVisible = signal(false);
@@ -55,10 +70,6 @@ export class PlanAnnualComponent {
 
   get subjectRows(): FormGroup[] {
     return this.editForm.controls.subjects.controls as FormGroup[];
-  }
-
-  toggle(year: string): void {
-    this.expandedYear.update((current) => (current === year ? null : year));
   }
 
   isYearEditable(plan: AnnualPlanDetail): boolean {

@@ -13,38 +13,21 @@
       {{ 'ACADEMIC_OFFERING.PLAN_ANNUAL.LIST_EMPTY' | translate }}
     </div>
   } @else {
-    <div class="gap-md flex flex-col">
+    <p-accordion>
       @for (plan of plans(); track plan.id) {
-        <div class="border-outline bg-surface overflow-hidden rounded-xl border">
-          <!-- Year header: click to expand the trimesters. -->
-          <button
-            type="button"
-            class="hover:bg-table-row-hover p-md flex w-full items-center justify-between text-left"
-            [attr.aria-expanded]="expandedYear() === plan.year"
-            (click)="toggle(plan.year)"
-          >
-            <span class="gap-sm flex items-center">
-              <i
-                class="pi text-text-secondary"
-                [class.pi-chevron-right]="expandedYear() !== plan.year"
-                [class.pi-chevron-down]="expandedYear() === plan.year"
-                aria-hidden="true"
-              ></i>
+        <p-accordion-panel [value]="plan.year">
+          <p-accordion-header>
+            <span class="gap-md pr-md flex w-full items-center justify-between">
               <span class="text-h3 font-bold">{{ plan.year }}</span>
+              <p-tag
+                [value]="'ACADEMIC_OFFERING.TERM_STATUS.' + plan.status | translate"
+                [severity]="statusSeverity(plan.status)"
+                [rounded]="true"
+              />
             </span>
-            <span
-              class="text-caption rounded-full px-3 py-1 font-semibold"
-              [class.bg-warning-container]="isYearEditable(plan)"
-              [class.text-warning-strong]="isYearEditable(plan)"
-              [class.bg-success-container]="!isYearEditable(plan)"
-              [class.text-success-strong]="!isYearEditable(plan)"
-            >
-              {{ 'ACADEMIC_OFFERING.TERM_STATUS.' + plan.status | translate }}
-            </span>
-          </button>
-
-          @if (expandedYear() === plan.year) {
-            <div class="border-outline gap-md p-md flex flex-col border-t">
+          </p-accordion-header>
+          <p-accordion-content>
+            <div class="gap-md flex flex-col">
               @if (allTermsEdited(plan)) {
                 <p-message
                   severity="info"
@@ -73,7 +56,11 @@
                     >
                       <td class="md:p-md md:table-cell">{{ term.code }}</td>
                       <td class="md:p-md md:table-cell">
-                        {{ 'ACADEMIC_OFFERING.TERM_STATUS.' + term.status | translate }}
+                        <p-tag
+                          [value]="'ACADEMIC_OFFERING.TERM_STATUS.' + term.status | translate"
+                          [severity]="statusSeverity(term.status)"
+                          [rounded]="true"
+                        />
                       </td>
                       <td class="md:p-md col-span-2 md:table-cell">
                         <div class="gap-sm flex flex-wrap">
@@ -100,10 +87,10 @@
                 </tbody>
               </table>
             </div>
-          }
-        </div>
+          </p-accordion-content>
+        </p-accordion-panel>
       }
-    </div>
+    </p-accordion>
   }
 
   <!-- "Ver": read-only UEAs activated for the trimester. -->

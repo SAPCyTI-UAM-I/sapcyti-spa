@@ -5,6 +5,41 @@
 
 ---
 
+## 0. Guía rápida (TL;DR para agentes)
+
+**Reglas de oro**
+
+- **PrimeNG primero.** Antes de construir UI a mano, busca el componente en PrimeNG (`p-table`, `p-accordion`, `p-tag`, `p-dialog`, `p-select`, `p-message`, `p-paginator`, `p-button`…). Crea algo propio **solo** si no hay equivalente, y colócalo en `shared/components/`.
+- **Sin texto visible hardcodeado.** Todo por i18n; agrega la clave en `es.json` **y** `en.json` y corre `pnpm run i18n:sync`.
+- **Standalone + `OnPush` + signals.** Estado con `signal`/`computed`; sin `any`; suscripciones con `takeUntilDestroyed`.
+- **Sin imports feature→feature** (regla ESLint `sapcyti/no-cross-feature-imports`). Solo `core/`, `shared/`, `models/`.
+- **Sin `if (useMock)`.** La capa de datos elige mock/HTTP por DI; el componente no lo sabe.
+- **Formularios reactivos** (`NonNullableFormBuilder`); errores de campo con `app-field-error`. Un `<form>` con botón `type="submit"` **debe** tener `[formGroup]`; si no, el submit nativo recarga la página (te saca de la SPA).
+- **Datos demo aislados y borrables**: un solo módulo en `features/{f}/mocks/` con cabecera de "borrar para quitar todo".
+
+**Dónde vive cada cosa**
+
+| Necesito… | Va en… |
+|-----------|--------|
+| Pantalla de un feature | `features/{f}/components/` |
+| Tipo de dominio compartido | `models/` (+ barrel `models/index.ts`) |
+| Componente UI reutilizable | `shared/components/` |
+| Util de dominio/presentación | `features/{f}/utils/` o `shared/utils/` (con `*.spec.ts`) |
+| Endpoint HTTP | `core/api/api-endpoints.ts` (canónico) |
+| Datos demo / mock | `features/{f}/mocks/` |
+| Color / token de diseño | `core/theme/design-tokens.ts` + bloque `@theme` en `src/styles.css` |
+| Permiso por ruta | `core/auth/rbac.policy.ts` |
+
+**Sistema de diseño** — usa tokens semánticos, nunca colores crudos:
+
+- Tipografía: `text-h1/h2/h3`, `text-body-md`, `text-caption`. Color: `text-primary`, `text-error`, `bg-surface`, `bg-surface-subtle`, `border-outline`. Espaciado/radio: `gap-md`, `p-lg`, `px-margin`, `rounded-xl` (escala `xs→xxl`).
+- **Prohibido** `#fff`, `bg-blue-500`, estilos inline de color. Al cambiar un color: edita `design-tokens.ts` **y** el `@theme` de `styles.css`.
+- PrimeNG se tematiza con el preset `SapcytiPreset`; no sobrescribas colores de PrimeNG con CSS ad hoc.
+
+**Antes de terminar**: `pnpm run lint && pnpm test && pnpm run build` en verde (lint incluye Prettier + paridad i18n).
+
+---
+
 ## 1. Principios generales
 
 | Principio | Aplicación en este repo |
@@ -417,16 +452,29 @@ src/styles.css                 ← @theme Tailwind (sincronizado manualmente con
 
 ### PrimeNG — componentes preferidos
 
+> **Regla:** antes de maquetar UI a mano, usa el componente PrimeNG. No reimplementes acordeones, badges, tablas, diálogos, multiselects, etc.
+
 | Uso | Componente PrimeNG |
 |-----|-------------------|
 | Botones | `p-button` (`severity`, `variant="outlined"`, `fluid` en móvil) |
 | Campos texto | `pInputText` directive en `<input>` |
 | Contraseña | `p-password` (`[toggleMask]`, `[feedback]="false"`, `fluid`) |
 | Select / filtros | `p-select` con templates `#item` / `#selectedItem` + pipe `translate` |
+| Multi-selección | `p-multiselect` (mismos templates + `translate`) |
+| Fecha / hora | `p-datepicker` (`[timeOnly]` para horas) |
+| Carga de archivos | `p-fileupload` (`mode="basic"`, `accept`, `(onSelect)`) |
+| Estados / badges | `p-tag` (`severity`, `[rounded]`) — no spans con clases de color ad hoc |
+| Secciones colapsables | `p-accordion` + `p-accordion-panel` / `-header` / `-content` |
+| Diálogos / modales | `p-dialog` (`[visible]`, `[modal]`, slot `#footer`) |
+| Notificaciones globales | `MessageService` + `<p-toast>` (ya provisto en la raíz) |
 | Paginación de listas | `p-paginator` — `[first]`, `[rows]`, `[totalRecords]`, `(onPageChange)` vía `CatalogListBase` |
-| Mensajes | `p-message` (`severity`: error, warn, success) |
+| Mensajes embebidos | `p-message` (`severity`: error, warn, success) |
 | Checkbox | `p-checkbox` `[binary]="true"` |
 | Iconos | `primeicons` (`pi pi-*`) |
+
+**Tablas:** patrón establecido = `<table>` responsivo (`block` en móvil → `md:table`, labels con `md:hidden`), no `p-table`, para conservar el layout móvil del catálogo. Mantén ese patrón salvo que se acuerde migrar a `p-table`.
+
+**Labels + control PrimeNG:** el lint exige asociarlos. Usa `<label for="x">` + `<p-select inputId="x">` (un `<label>` que envuelve un componente PrimeNG no lo detecta).
 
 **Theming:** `providePrimeNG({ theme: { preset: SapcytiPreset } })` en `app.config.ts`. No sobrescribir colores PrimeNG con CSS ad hoc salvo casos puntuales.
 
