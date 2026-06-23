@@ -28,6 +28,11 @@ export function getApiErrorCode(error: unknown): string | undefined {
   return body?.code ?? body?.error;
 }
 
+export function getApiErrorMessage(error: unknown): string | undefined {
+  const body = parseApiError(error);
+  return body?.message;
+}
+
 export function getHttpStatus(error: unknown): number | undefined {
   if (error instanceof HttpErrorResponse) {
     return error.status;

@@ -68,6 +68,50 @@
       "ACTIVE": "Active",
       "INACTIVE": "Inactive"
     },
+    "STUDENT_PROGRAM": {
+      "BREADCRUMB": {
+        "EDIT": "Edit program",
+        "VIEW": "Academic program"
+      },
+      "CHOOSER": {
+        "SUBTITLE": "Select the program you want to view.",
+        "TITLE": "Choose program"
+      },
+      "EDIT": {
+        "TITLE": "Edit academic program"
+      },
+      "ERRORS": {
+        "date_order": "Graduation date must be on or after the admission date.",
+        "no_program": "This student has no registered academic program.",
+        "professor_not_found": "The selected professor was not found.",
+        "program_not_found": "The academic program was not found.",
+        "server": "An error occurred while saving the program.",
+        "validation": "Please review the form data."
+      },
+      "FIELDS": {
+        "ADVISORS": "Advisors",
+        "GRADUATION_DATE": "Graduation date",
+        "RESEARCH_AREA": "Research area",
+        "TUTOR": "Tutor",
+        "WITHDRAWAL_REASON": "Withdrawal reason"
+      },
+      "STATUS": {
+        "ACTIVO": "Active",
+        "BAJA": "Withdrawn",
+        "EGRESADO": "Graduated"
+      },
+      "TOAST": {
+        "SAVED": "Program updated successfully."
+      },
+      "VIEW": {
+        "EDIT_ACTION": "Edit program",
+        "IDENTIFICATION": "Identification",
+        "METADATA": "Program information",
+        "NO_ADVISORS": "No advisors assigned",
+        "NO_TUTOR": "No tutor assigned",
+        "TITLE": "Academic program"
+      }
+    },
     "STUDENTS": {
       "CREATE": {
         "ACADEMIC_SECTION": "Academic information",
@@ -80,7 +124,8 @@
         "EMPTY": "No students were found.",
         "SEARCH": "Search by name, email or enrollment ID",
         "SUBTITLE": "Browse and manage graduate students.",
-        "TITLE": "Students"
+        "TITLE": "Students",
+        "VIEW_PROGRAM": "View program"
       }
     },
     "TEMP_PASSWORD": {

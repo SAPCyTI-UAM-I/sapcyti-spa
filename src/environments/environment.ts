@@ -8,6 +8,7 @@ export const environment = {
     passwordRecovery: false,
     students: true,
     professors: true,
+    studentPrograms: true,
     passwordChange: true,
   },
 };

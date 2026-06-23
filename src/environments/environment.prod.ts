@@ -6,6 +6,7 @@ export const environment = {
     passwordRecovery: false,
     students: false,
     professors: false,
+    studentPrograms: false,
     passwordChange: false,
   },
 };

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { PageResponse } from '../../../models';
 import {
@@ -15,9 +15,12 @@ import {
   normalizeSearch,
   page,
 } from './catalog-mock.util';
+import { StudentProgramMockStore } from './student-program-mock.store';
 
 @Injectable({ providedIn: 'root' })
 export class StudentMockStore {
+  private readonly programMockStore = inject(StudentProgramMockStore);
+
   private students: StudentCatalogItem[] = [
     {
       id: 1,
@@ -54,6 +57,24 @@ export class StudentMockStore {
       programType: 'DOCTORADO',
       admissionDate: '2024-09-01',
       active: false,
+    },
+    {
+      id: 3,
+      userId: 103,
+      enrollmentId: '223300458',
+      email: 'maria.lopez@uam.mx',
+      graduateProgramId: 1,
+      firstName: 'María',
+      firstLastName: 'López',
+      secondLastName: 'Hernández',
+      nationality: 'Mexicana',
+      birthDate: '1997-03-08',
+      phone: '5599887766',
+      undergraduateDegree: 'Computación',
+      lastDegreeObtained: 'Maestría en Computación',
+      programType: 'MAESTRIA',
+      admissionDate: '2023-09-01',
+      active: true,
     },
   ];
 
@@ -94,6 +115,7 @@ export class StudentMockStore {
       active: true,
     };
     this.students = [student, ...this.students];
+    this.programMockStore.createProgramForStudent(student);
     return { ...student, generatedPassword: generatedPassword(student.userId) };
   }
 

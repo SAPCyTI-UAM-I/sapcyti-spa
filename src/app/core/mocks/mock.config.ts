@@ -5,6 +5,7 @@ export interface AppMockConfig {
   readonly passwordRecovery: boolean;
   readonly students: boolean;
   readonly professors: boolean;
+  readonly studentPrograms: boolean;
   readonly passwordChange: boolean;
 }
 
@@ -15,6 +16,7 @@ export const DEFAULT_APP_MOCK_CONFIG: AppMockConfig = {
   passwordRecovery: false,
   students: false,
   professors: false,
+  studentPrograms: false,
   passwordChange: false,
 };
 

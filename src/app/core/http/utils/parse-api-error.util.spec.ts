@@ -1,6 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { getApiErrorCode, getHttpStatus, parseApiError } from './parse-api-error.util';
+import {
+  getApiErrorCode,
+  getApiErrorMessage,
+  getHttpStatus,
+  parseApiError,
+} from './parse-api-error.util';
 
 describe('parseApiError', () => {
   it('extracts body from HttpErrorResponse', () => {
@@ -14,6 +19,7 @@ describe('parseApiError', () => {
       message: 'Token is invalid',
     });
     expect(getApiErrorCode(error)).toBe('INVALID_TOKEN');
+    expect(getApiErrorMessage(error)).toBe('Token is invalid');
     expect(getHttpStatus(error)).toBe(400);
   });
 
@@ -30,6 +36,7 @@ describe('parseApiError', () => {
     const error = { status: 404, error: { code: 'NOT_FOUND' } };
 
     expect(parseApiError(error)).toEqual({ code: 'NOT_FOUND' });
+    expect(getApiErrorMessage(error)).toBeUndefined();
     expect(getHttpStatus(error)).toBe(404);
   });
 

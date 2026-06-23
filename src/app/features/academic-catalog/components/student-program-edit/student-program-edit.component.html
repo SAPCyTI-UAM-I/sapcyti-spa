@@ -1,0 +1,172 @@
+<section class="gap-lg mx-auto flex w-full max-w-4xl flex-col" data-testid="student-program-edit">
+  <header>
+    <h1 class="text-h2 text-primary font-bold">
+      {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.EDIT.TITLE' | translate }}
+    </h1>
+    @if (program(); as current) {
+      <p class="text-text-secondary">
+        {{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + current.programType | translate }}
+      </p>
+    }
+  </header>
+
+  @if (loading()) {
+    <div class="p-xl text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else if (error() && !program()) {
+    <p-message
+      severity="error"
+      [text]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.' + error() | translate"
+    />
+  } @else if (program(); as current) {
+    @if (error()) {
+      <p-message
+        severity="error"
+        [text]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.' + error() | translate"
+      />
+    }
+
+    <form
+      class="border-outline bg-surface p-lg sm:p-xl gap-lg flex flex-col rounded-xl border"
+      [formGroup]="form"
+      (ngSubmit)="$event.preventDefault(); submit()"
+    >
+      <div class="gap-md grid md:grid-cols-2">
+        <div class="gap-xs flex flex-col">
+          <span class="text-caption text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.FIELDS.ENROLLMENT_ID' | translate }}
+          </span>
+          <span>{{ current.enrollmentId }}</span>
+        </div>
+        <div class="gap-xs flex flex-col">
+          <span class="text-caption text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate }}
+          </span>
+          <span>{{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + current.programType | translate }}</span>
+        </div>
+      </div>
+
+      <div class="gap-md grid md:grid-cols-2">
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.ADMISSION_DATE' | translate }} *</span>
+          <input
+            pInputText
+            type="date"
+            formControlName="admissionDate"
+            [class.p-invalid]="isFieldInvalid(form.controls.admissionDate, submitted())"
+          />
+          <app-field-error [control]="form.controls.admissionDate" [submitted]="submitted()" />
+        </label>
+
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.GRADUATION_DATE' | translate }}</span>
+          <input
+            pInputText
+            type="date"
+            formControlName="graduationDate"
+            [class.p-invalid]="isFieldInvalid(form.controls.graduationDate, submitted())"
+          />
+          @if (form.hasError('GRADUATION_BEFORE_ADMISSION') && submitted()) {
+            <span class="text-error text-caption">
+              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.date_order' | translate }}
+            </span>
+          }
+        </label>
+
+        <label class="gap-xs flex flex-col md:col-span-2">
+          <span>{{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.RESEARCH_AREA' | translate }}</span>
+          <input pInputText formControlName="researchArea" />
+          <app-field-error [control]="form.controls.researchArea" [submitted]="submitted()" />
+        </label>
+
+        <div class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }} *</span>
+          <p-select
+            inputId="program-status"
+            formControlName="status"
+            [options]="statusOptions"
+            optionValue="value"
+            fluid
+          >
+            <ng-template #selectedItem let-option>
+              {{ option?.labelKey | translate }}
+            </ng-template>
+            <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
+          </p-select>
+          <app-field-error [control]="form.controls.status" [submitted]="submitted()" />
+        </div>
+
+        @if (form.controls.status.value === 'BAJA') {
+          <label class="gap-xs flex flex-col" for="withdrawal-reason">
+            <span
+              >{{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.WITHDRAWAL_REASON' | translate }} *</span
+            >
+            <input
+              id="withdrawal-reason"
+              pInputText
+              formControlName="withdrawalReason"
+              [class.p-invalid]="isFieldInvalid(form.controls.withdrawalReason, submitted())"
+            />
+            <app-field-error [control]="form.controls.withdrawalReason" [submitted]="submitted()" />
+          </label>
+        }
+
+        <div class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.TUTOR' | translate }}</span>
+          <p-select
+            inputId="program-tutor"
+            formControlName="tutorId"
+            [options]="professorOptions()"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="true"
+            fluid
+          />
+        </div>
+
+        <div class="gap-xs flex flex-col md:col-span-2">
+          <span>{{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.ADVISORS' | translate }}</span>
+          <p-multiselect
+            inputId="program-advisors"
+            formControlName="advisorIds"
+            [options]="professorOptions()"
+            optionLabel="label"
+            optionValue="value"
+            fluid
+          />
+        </div>
+      </div>
+
+      @if (form.hasError('WITHDRAWAL_REASON_REQUIRED') && submitted()) {
+        <p-message
+          severity="error"
+          [text]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.validation' | translate"
+        />
+      }
+      @if (form.hasError('GRADUATION_BEFORE_ADMISSION') && submitted()) {
+        <p-message
+          severity="error"
+          [text]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.date_order' | translate"
+        />
+      }
+
+      <footer class="border-outline pt-md gap-sm flex justify-end border-t">
+        <p-button
+          type="button"
+          severity="secondary"
+          variant="outlined"
+          [label]="'COMMON.ACTIONS.CANCEL' | translate"
+          (onClick)="cancel()"
+        />
+        <p-button
+          type="submit"
+          data-testid="save-program"
+          [label]="'COMMON.ACTIONS.SAVE' | translate"
+          [loading]="submitting()"
+          [disabled]="submitting()"
+        />
+      </footer>
+    </form>
+  }
+</section>
