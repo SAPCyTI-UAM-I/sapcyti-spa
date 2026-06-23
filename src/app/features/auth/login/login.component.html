@@ -1,0 +1,147 @@
+<app-auth-page-layout>
+  <div
+    class="auth-card border-outline bg-surface-container-lowest w-full rounded-xl border p-6 shadow-sm sm:p-[40px]"
+  >
+    <header class="mb-lg">
+      <div class="mb-xs gap-xs flex items-center">
+        <span class="text-headline-md text-primary font-headline-md font-bold tracking-tight">
+          {{ 'AUTH.LOGIN.BRAND' | translate }}
+        </span>
+      </div>
+      <p class="text-caption text-text-secondary font-caption mb-md">
+        {{ 'AUTH.LOGIN.SUBTITLE' | translate }}
+      </p>
+      <h1 class="text-h2 text-primary font-h2">
+        {{ 'AUTH.LOGIN.TITLE' | translate }}
+      </h1>
+    </header>
+
+    @if (authMockEnabled) {
+      <div
+        class="border-outline bg-surface-subtle text-text-secondary mb-md p-md text-caption font-caption rounded-lg border"
+      >
+        <p class="text-on-surface mb-sm font-medium">
+          {{ 'AUTH.LOGIN.MOCK_HINT.TITLE' | translate }}
+        </p>
+        <ul class="space-y-1.5">
+          @for (user of mockUsers; track user.email) {
+            <li class="leading-relaxed break-all">
+              <span class="text-on-surface font-medium">{{ user.role }}:</span>
+              {{ user.email }} / {{ user.password }}
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (cooldown.remainingSeconds() > 0) {
+      <p-message
+        severity="warn"
+        icon="pi pi-lock"
+        [text]="
+          ('AUTH.LOGIN.ERROR_COOLDOWN' | translate).replace(
+            '{seconds}',
+            '' + cooldown.remainingSeconds()
+          )
+        "
+        styleClass="mb-4 w-full"
+      />
+    }
+
+    @if (credentialError() && cooldown.remainingSeconds() === 0) {
+      <p-message
+        severity="error"
+        icon="pi pi-times-circle"
+        [text]="'AUTH.LOGIN.ERROR_INVALID_CREDENTIALS' | translate"
+        styleClass="mb-4 w-full"
+      />
+    }
+
+    @if (serverError()) {
+      <p-message
+        severity="error"
+        icon="pi pi-times-circle"
+        [text]="'COMMON.ERRORS.SERVER_ERROR' | translate"
+        styleClass="mb-4 w-full"
+      />
+    }
+
+    <form class="gap-md flex flex-col" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="gap-xs flex flex-col">
+        <label class="text-label-md text-on-surface font-label-md" for="email">
+          {{ 'AUTH.LOGIN.EMAIL' | translate }}
+        </label>
+        <input
+          pInputText
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="username"
+          class="w-full"
+          [placeholder]="'AUTH.LOGIN.EMAIL_PLACEHOLDER' | translate"
+          [class.p-invalid]="isFieldInvalid(form.controls.email, submitted(), credentialError())"
+        />
+        <app-field-error [control]="form.controls.email" [submitted]="submitted()" />
+      </div>
+
+      <div class="gap-xs flex flex-col">
+        <label class="text-label-md text-on-surface font-label-md" for="password">
+          {{ 'AUTH.LOGIN.PASSWORD' | translate }}
+        </label>
+        <p-password
+          inputId="password"
+          formControlName="password"
+          autocomplete="current-password"
+          [feedback]="false"
+          [toggleMask]="true"
+          fluid
+          [inputStyleClass]="
+            isFieldInvalid(form.controls.password, submitted(), credentialError())
+              ? 'p-invalid w-full'
+              : 'w-full'
+          "
+        />
+        <app-field-error [control]="form.controls.password" [submitted]="submitted()" />
+      </div>
+
+      <div class="gap-sm pt-xs flex items-center">
+        <p-checkbox inputId="rememberMe" formControlName="rememberMe" [binary]="true" />
+        <label
+          class="text-body-md text-on-surface-variant font-body-md cursor-pointer"
+          for="rememberMe"
+        >
+          {{ 'AUTH.LOGIN.REMEMBER_ME' | translate }}
+        </label>
+      </div>
+
+      <div class="gap-md pt-sm flex flex-col-reverse sm:min-h-10 sm:flex-row">
+        <p-button
+          type="button"
+          [label]="'AUTH.LOGIN.CLEAR' | translate"
+          severity="secondary"
+          variant="outlined"
+          styleClass="w-full sm:w-[90px] sm:shrink-0 !text-primary !border-outline-strong"
+          (onClick)="onClear()"
+        />
+        <p-button
+          type="submit"
+          [label]="'AUTH.LOGIN.SUBMIT' | translate"
+          styleClass="w-full sm:flex-1"
+          [loading]="submitting()"
+          [disabled]="submitting() || cooldown.isActive()"
+        />
+      </div>
+    </form>
+
+    <div class="mt-xl text-center">
+      <a
+        class="text-label-md text-primary hover:text-primary-hover font-label-md inline-block hover:underline"
+        routerLink="/auth/forgot-password"
+      >
+        {{ 'AUTH.LOGIN.FORGOT_PASSWORD' | translate }}
+      </a>
+    </div>
+  </div>
+
+  <app-auth-footer />
+</app-auth-page-layout>
