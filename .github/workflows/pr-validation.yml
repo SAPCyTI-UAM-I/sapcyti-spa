@@ -44,9 +44,13 @@ jobs:
 
       - name: Run ESLint
         run: pnpm run lint
+        run: pnpm run lint
 
       - name: Validate commit messages
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
+        run: >
+          pnpm exec commitlint
+          --from ${{ github.event.pull_request.base.sha }}
+          --to ${{ github.event.pull_request.head.sha }}
 
   test:
     name: Unit Tests (Vitest)
@@ -158,4 +162,5 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build production bundle
+        run: pnpm run build --configuration production
         run: pnpm run build --configuration production

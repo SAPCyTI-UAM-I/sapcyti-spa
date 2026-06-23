@@ -1,0 +1,98 @@
+<div class="bg-surface-muted text-on-surface font-body-md flex min-h-screen">
+  <app-shell-sidebar-nav
+    [navigation]="navigation()"
+    [collapsed]="sidebarCollapsed()"
+    (toggleCollapse)="toggleSidebar()"
+    (logout)="onLogout()"
+  />
+
+  <app-shell-mobile-drawer
+    [visible]="mobileMenuOpen()"
+    (visibleChange)="mobileMenuOpen.set($event)"
+    [navigation]="navigation()"
+    (logout)="onLogout()"
+  />
+
+  <div
+    class="flex min-h-screen min-w-0 flex-1 flex-col transition-[margin] duration-300 ease-in-out"
+    [ngClass]="sidebarCollapsed() ? 'md:ml-[76px]' : 'md:ml-[280px]'"
+  >
+    <header
+      class="border-outline bg-surface px-gutter sm:px-lg sticky top-0 z-40 flex h-16 min-w-0 items-center justify-between border-b"
+    >
+      <div class="gap-md flex min-w-0 items-center">
+        <p-button
+          class="md:hidden"
+          icon="pi pi-bars"
+          severity="secondary"
+          variant="text"
+          [rounded]="true"
+          (onClick)="mobileMenuOpen.set(true)"
+          [attr.aria-label]="'SHELL.TOPBAR.MENU' | translate"
+        />
+        <app-breadcrumb class="hidden min-w-0 sm:flex" [items]="breadcrumbs()" />
+      </div>
+
+      <div class="mx-lg hidden w-[min(28rem,34vw)] md:block">
+        <div class="relative w-full">
+          <p-iconfield class="w-full">
+            <p-inputicon class="pi pi-search" />
+            <input
+              pInputText
+              type="text"
+              class="bg-surface-muted w-full"
+              [value]="searchQuery()"
+              (input)="onSearchInput($event)"
+              (keydown.enter)="onSearchSubmit()"
+              [placeholder]="'SHELL.TOPBAR.SEARCH_PLACEHOLDER' | translate"
+            />
+          </p-iconfield>
+          @if (searchResults().length > 0) {
+            <div
+              class="border-outline bg-surface absolute top-[calc(100%+8px)] left-0 z-50 w-full overflow-hidden rounded-lg border shadow-lg"
+            >
+              @for (result of searchResults(); track result.route) {
+                <button
+                  type="button"
+                  class="hover:bg-surface-subtle gap-sm px-md py-sm flex w-full items-center text-left transition-colors"
+                  (click)="navigateToSearchResult(result.route)"
+                >
+                  <i [class]="result.icon + ' text-primary text-[16px]'" aria-hidden="true"></i>
+                  <span class="text-label-md text-on-surface font-label-md">
+                    {{ result.label }}
+                  </span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="gap-sm sm:gap-lg flex shrink-0 items-center">
+        <app-language-switcher />
+
+        <p-button
+          icon="pi pi-bell"
+          severity="secondary"
+          variant="text"
+          [rounded]="true"
+          [badge]="'2'"
+          badgeSeverity="warn"
+          [attr.aria-label]="'SHELL.TOPBAR.NOTIFICATIONS' | translate"
+        />
+
+        <app-user-menu
+          [initials]="userInitials()"
+          [email]="currentUser()?.email ?? null"
+          [items]="userMenuItems"
+        />
+      </div>
+    </header>
+
+    <main class="p-gutter md:p-xl min-w-0 flex-1 overflow-x-hidden">
+      <div class="shell-route-content">
+        <router-outlet />
+      </div>
+    </main>
+  </div>
+</div>
