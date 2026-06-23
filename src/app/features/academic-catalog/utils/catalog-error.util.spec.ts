@@ -1,69 +1,82 @@
-import { HttpErrorResponse } from '@angular/common/http';
-
 import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
+import {
+  mockApiError,
+  mockSpringBootNotFound,
+} from '../../../core/errors/testing/mock-api-error.util';
 import { mapCatalogError } from './catalog-error.util';
 
 describe('mapCatalogError', () => {
   it('maps legacy mock conflict codes', () => {
-    const error = new HttpErrorResponse({
-      status: 409,
-      error: { error: 'EMAIL_ALREADY_EXISTS' },
-    });
-
-    expect(mapCatalogError(error)).toBe('duplicate_email');
+    expect(mapCatalogError(mockApiError({ status: 409, code: 'EMAIL_ALREADY_EXISTS' }))).toBe(
+      'duplicate_email',
+    );
   });
 
   it('maps production CONFLICT responses by message', () => {
-    const error = new HttpErrorResponse({
-      status: 409,
-      error: {
-        error: 'CONFLICT',
-        message: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_STUDENT_EMAIL,
-      },
-    });
-
-    expect(mapCatalogError(error)).toBe('duplicate_email');
+    expect(
+      mapCatalogError(
+        mockApiError({
+          status: 409,
+          error: 'CONFLICT',
+          message: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_STUDENT_EMAIL,
+        }),
+      ),
+    ).toBe('duplicate_email');
   });
 
   it('maps duplicate enrollment conflicts', () => {
-    const error = new HttpErrorResponse({
-      status: 409,
-      error: {
-        error: 'CONFLICT',
-        message: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ENROLLMENT,
-      },
-    });
+    expect(
+      mapCatalogError(
+        mockApiError({
+          status: 409,
+          error: 'CONFLICT',
+          message: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ENROLLMENT,
+        }),
+      ),
+    ).toBe('duplicate_enrollment');
+  });
 
-    expect(mapCatalogError(error)).toBe('duplicate_enrollment');
+  it('maps duplicate employee conflicts', () => {
+    expect(
+      mapCatalogError(
+        mockApiError({
+          status: 409,
+          error: 'CONFLICT',
+          message: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_EMPLOYEE,
+        }),
+      ),
+    ).toBe('duplicate_employee');
   });
 
   it('maps graduate program not found by message', () => {
-    const error = new HttpErrorResponse({
-      status: 404,
-      error: {
-        error: 'NOT_FOUND',
-        message: BACKEND_MESSAGES.ACADEMIC.GRADUATE_PROGRAM_NOT_FOUND,
-      },
-    });
-
-    expect(mapCatalogError(error)).toBe('graduate_program_not_found');
+    expect(
+      mapCatalogError(
+        mockApiError({
+          status: 404,
+          error: 'NOT_FOUND',
+          message: BACKEND_MESSAGES.ACADEMIC.GRADUATE_PROGRAM_NOT_FOUND,
+        }),
+      ),
+    ).toBe('graduate_program_not_found');
   });
 
   it('maps sabbatical validation errors', () => {
-    const error = new HttpErrorResponse({
-      status: 400,
-      error: {
-        error: 'VALIDATION_ERROR',
-        message: BACKEND_MESSAGES.ACADEMIC.SABBATICAL_DATE_ORDER,
-      },
-    });
+    expect(
+      mapCatalogError(
+        mockApiError({
+          status: 400,
+          error: 'VALIDATION_ERROR',
+          message: BACKEND_MESSAGES.ACADEMIC.SABBATICAL_DATE_ORDER,
+        }),
+      ),
+    ).toBe('sabbatical_date_order');
+  });
 
-    expect(mapCatalogError(error)).toBe('sabbatical_date_order');
+  it('maps Spring Boot 404 without message', () => {
+    expect(mapCatalogError(mockSpringBootNotFound())).toBe('reference_not_found');
   });
 
   it('falls back to server for unknown failures', () => {
-    const error = new HttpErrorResponse({ status: 500 });
-
-    expect(mapCatalogError(error)).toBe('server');
+    expect(mapCatalogError(mockApiError({ status: 500 }))).toBe('server');
   });
 });

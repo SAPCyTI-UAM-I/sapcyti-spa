@@ -4,6 +4,7 @@ import {
   matchCode,
   matchConflict,
   matchNotFound,
+  matchSpringBootNotFound,
   matchStatus,
   matchValidation,
 } from '../../../core/errors/utils/create-domain-error-mapper.util';
@@ -44,7 +45,9 @@ export const mapCatalogError = createDomainErrorMapper<CatalogError>({
       match: matchValidation(BACKEND_MESSAGES.ACADEMIC.SABBATICAL_DATE_ORDER),
       key: 'sabbatical_date_order',
     },
+    { match: matchSpringBootNotFound, key: 'reference_not_found' },
     { match: matchStatus(404), key: 'reference_not_found' },
   ],
   fallback: 'server',
+  securityFallback: 'server',
 });

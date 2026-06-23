@@ -63,7 +63,7 @@
           />
           @if (form.hasError('GRADUATION_BEFORE_ADMISSION') && submitted()) {
             <span class="text-error text-caption">
-              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.date_order' | translate }}
+              {{ 'date_order' | domainError: studentProgramErrorScope }}
             </span>
           } @else {
             <app-field-error [control]="form.controls.graduationDate" [submitted]="submitted()" />
@@ -147,7 +147,7 @@
           />
           @if (form.controls.advisorIds.hasError('DUPLICATE_ADVISOR_IDS') && submitted()) {
             <span class="text-error text-caption">
-              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.duplicate_advisor_ids' | translate }}
+              {{ 'duplicate_advisor_ids' | domainError: studentProgramErrorScope }}
             </span>
           }
         </div>

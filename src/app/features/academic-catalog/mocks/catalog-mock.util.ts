@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
+import { mockApiError } from '../../../core/errors/testing/mock-api-error.util';
 import { PageResponse } from '../../../models';
 
 export function page<T>(content: T[], pageIndex: number, size: number): PageResponse<T> {
@@ -37,18 +38,16 @@ const LEGACY_CONFLICT_MESSAGES: Record<string, string> = {
 };
 
 export function mockBadRequest(message: string): HttpErrorResponse {
-  return new HttpErrorResponse({
-    status: 400,
-    error: { error: 'VALIDATION_ERROR', message },
-  });
+  return mockApiError({ status: 400, error: 'VALIDATION_ERROR', message });
 }
 
 export function mockConflict(code: string): HttpErrorResponse {
   const message = LEGACY_CONFLICT_MESSAGES[code];
 
-  return new HttpErrorResponse({
+  return mockApiError({
     status: 409,
-    error: message ? { error: 'CONFLICT', message } : { error: code },
+    error: message ? 'CONFLICT' : code,
+    message,
   });
 }
 
@@ -60,14 +59,8 @@ export function mockNotFound(codeOrMessage: string): HttpErrorResponse {
 
   const message = knownMessages[codeOrMessage];
   if (message) {
-    return new HttpErrorResponse({
-      status: 404,
-      error: { error: 'NOT_FOUND', message },
-    });
+    return mockApiError({ status: 404, error: 'NOT_FOUND', message });
   }
 
-  return new HttpErrorResponse({
-    status: 404,
-    error: { error: codeOrMessage },
-  });
+  return mockApiError({ status: 404, error: codeOrMessage });
 }

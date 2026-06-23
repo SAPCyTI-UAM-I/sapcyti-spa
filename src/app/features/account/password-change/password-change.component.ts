@@ -18,17 +18,30 @@ import { finalize } from 'rxjs';
 import { AuthStateService } from '../../../core/auth/auth.service';
 import { createPairedPasswordFormFeedback } from '../../../core/auth/utils';
 import { passwordsMatchValidator } from '../../../core/auth/utils';
+import { DomainErrorMessagePipe } from '../../../core/errors/pipes/domain-error-message.pipe';
 import { FieldErrorComponent } from '../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../shared/layout/routed-page-host';
 import { isFieldInvalid } from '../../../shared/utils/field-error.util';
 import { PasswordChangeService } from '../services/password-change.service';
-import { mapPasswordChangeError, PasswordChangeError } from '../utils/password-change-error.util';
+import {
+  mapPasswordChangeError,
+  PASSWORD_CHANGE_ERROR_I18N_SCOPE,
+  PasswordChangeError,
+} from '../utils/password-change-error.util';
 
 @Component({
   selector: 'app-password-change',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [ReactiveFormsModule, TranslatePipe, Button, Message, Password, FieldErrorComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    Button,
+    Message,
+    Password,
+    FieldErrorComponent,
+    DomainErrorMessagePipe,
+  ],
   templateUrl: './password-change.component.html',
 })
 export class PasswordChangeComponent {
@@ -59,6 +72,7 @@ export class PasswordChangeComponent {
     this.administrative ? 'ACCOUNT.PASSWORD.ADMIN_TITLE' : 'ACCOUNT.PASSWORD.SELF_TITLE',
   );
   readonly isFieldInvalid = isFieldInvalid;
+  readonly passwordChangeErrorScope = PASSWORD_CHANGE_ERROR_I18N_SCOPE;
 
   private readonly passwordFeedback = createPairedPasswordFormFeedback(this.form, this.submitted);
   readonly passwordsMismatch = this.passwordFeedback.passwordsMismatch;

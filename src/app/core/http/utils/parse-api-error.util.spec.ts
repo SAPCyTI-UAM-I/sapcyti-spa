@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
+import { mockSpringBootNotFound } from '../../../core/errors/testing/mock-api-error.util';
 import {
   getApiErrorCode,
   getApiErrorMessage,
@@ -45,5 +46,19 @@ describe('parseApiError', () => {
 
     expect(parseApiError(error)).toBeNull();
     expect(getApiErrorCode(error)).toBeUndefined();
+  });
+
+  it('parses Spring Boot default 404 without message', () => {
+    const error = mockSpringBootNotFound('/api/students/1/programs');
+
+    expect(parseApiError(error)).toEqual({
+      error: 'Not Found',
+      status: 404,
+      timestamp: '2026-01-01T00:00:00.000+00:00',
+      path: '/api/students/1/programs',
+    });
+    expect(getApiErrorCode(error)).toBe('Not Found');
+    expect(getApiErrorMessage(error)).toBeUndefined();
+    expect(getHttpStatus(error)).toBe(404);
   });
 });

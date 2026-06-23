@@ -67,3 +67,16 @@ export const matchValidation =
   (api: ParsedApiError): boolean =>
     api.message === message &&
     (api.code === 'VALIDATION_ERROR' || api.status === 400 || api.code === undefined);
+
+/** Matches domain NOT_FOUND or exact message regardless of status quirks. */
+export const matchNotFoundOrMessage =
+  (message: string) =>
+  (api: ParsedApiError): boolean =>
+    matchNotFound(message)(api) || matchMessage(message)(api);
+
+/**
+ * Spring Boot default error page: { status: 404, error: "Not Found" } without `message`.
+ * Common when a REST route is not registered yet.
+ */
+export const matchSpringBootNotFound = (api: ParsedApiError): boolean =>
+  api.status === 404 && !api.message && api.code === 'Not Found';

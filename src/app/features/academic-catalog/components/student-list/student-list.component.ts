@@ -13,12 +13,12 @@ import { finalize, Observable } from 'rxjs';
 
 import { PageResponse, StudentCatalogItem, StudentProgramSummary } from '../../../../models';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
+import { domainErrorI18nKey } from '../../../../core/errors/utils/domain-error-i18n.util';
 import { StudentProgramService } from '../../services/student-program.service';
 import { StudentService } from '../../services/student.service';
 import {
-  mapStudentProgramError,
+  mapStudentProgramListError,
   STUDENT_PROGRAM_ERROR_I18N_SCOPE,
-  StudentProgramError,
 } from '../../utils/student-program-error.util';
 import {
   CATALOG_PROGRAM_TYPE_FILTER_OPTIONS,
@@ -120,16 +120,15 @@ export class StudentListComponent extends CatalogListBase<StudentCatalogItem> {
   }
 
   private showProgramErrorToast(error: unknown): void {
-    const mapped = mapStudentProgramError(error);
-    const toastKey: StudentProgramError =
-      mapped === 'program_not_found' ? 'no_program' : 'load_failed';
-    this.showProgramToast(toastKey);
+    this.showProgramToast(mapStudentProgramListError(error));
   }
 
-  private showProgramToast(errorKey: StudentProgramError): void {
+  private showProgramToast(errorKey: ReturnType<typeof mapStudentProgramListError>): void {
     this.messages.add({
       severity: 'error',
-      summary: this.translate.instant(`${STUDENT_PROGRAM_ERROR_I18N_SCOPE}.${errorKey}`),
+      summary: this.translate.instant(
+        domainErrorI18nKey(STUDENT_PROGRAM_ERROR_I18N_SCOPE, errorKey),
+      ),
       life: 4000,
     });
   }

@@ -3,8 +3,8 @@ import { FormGroup } from '@angular/forms';
 import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
 import {
   createDomainErrorMapper,
-  matchMessage,
-  matchNotFound,
+  matchNotFoundOrMessage,
+  matchSpringBootNotFound,
   matchStatus,
   matchValidation,
 } from '../../../core/errors/utils/create-domain-error-mapper.util';
@@ -23,38 +23,20 @@ export type StudentProgramError =
   | 'no_program'
   | 'server';
 
-const VALIDATION_MESSAGE_MAP: Record<string, StudentProgramError> = {
-  [BACKEND_MESSAGES.ACADEMIC.GRADUATION_DATE_ORDER]: 'date_order',
-  [BACKEND_MESSAGES.ACADEMIC.WITHDRAWAL_REASON_REQUIRED]: 'withdrawal_reason_required',
-  [BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ADVISOR_IDS]: 'duplicate_advisor_ids',
-};
-
-export function mapStudentProgramValidationMessage(
-  message: string | undefined,
-): StudentProgramError | null {
-  if (!message) {
-    return null;
-  }
-
-  return VALIDATION_MESSAGE_MAP[message] ?? null;
-}
-
 export const mapStudentProgramError = createDomainErrorMapper<StudentProgramError>({
   rules: [
     {
-      match: matchNotFound(BACKEND_MESSAGES.ACADEMIC.STUDENT_PROGRAM_NOT_FOUND),
+      match: matchNotFoundOrMessage(BACKEND_MESSAGES.ACADEMIC.STUDENT_PROGRAM_NOT_FOUND),
       key: 'program_not_found',
     },
     {
-      match: matchMessage(BACKEND_MESSAGES.ACADEMIC.STUDENT_PROGRAM_NOT_FOUND),
-      key: 'program_not_found',
-    },
-    {
-      match: matchMessage(BACKEND_MESSAGES.ACADEMIC.PROFESSOR_NOT_FOUND),
+      match: matchNotFoundOrMessage(BACKEND_MESSAGES.ACADEMIC.PROFESSOR_NOT_FOUND),
       key: 'professor_not_found',
     },
-    { match: matchNotFound(BACKEND_MESSAGES.ACADEMIC.STUDENT_NOT_FOUND), key: 'student_not_found' },
-    { match: matchMessage(BACKEND_MESSAGES.ACADEMIC.STUDENT_NOT_FOUND), key: 'student_not_found' },
+    {
+      match: matchNotFoundOrMessage(BACKEND_MESSAGES.ACADEMIC.STUDENT_NOT_FOUND),
+      key: 'student_not_found',
+    },
     { match: matchValidation(BACKEND_MESSAGES.ACADEMIC.GRADUATION_DATE_ORDER), key: 'date_order' },
     {
       match: matchValidation(BACKEND_MESSAGES.ACADEMIC.WITHDRAWAL_REASON_REQUIRED),
@@ -64,9 +46,12 @@ export const mapStudentProgramError = createDomainErrorMapper<StudentProgramErro
       match: matchValidation(BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ADVISOR_IDS),
       key: 'duplicate_advisor_ids',
     },
+    { match: matchSpringBootNotFound, key: 'load_failed' },
     { match: matchStatus(400), key: 'validation' },
+    { match: matchStatus(404), key: 'load_failed' },
   ],
   fallback: 'server',
+  securityFallback: 'server',
 });
 
 export function mapStudentProgramFormError(form: FormGroup): StudentProgramError | null {
@@ -83,4 +68,10 @@ export function mapStudentProgramFormError(form: FormGroup): StudentProgramError
   }
 
   return 'validation';
+}
+
+/** Toast copy when opening programs from the student list. */
+export function mapStudentProgramListError(error: unknown): StudentProgramError {
+  const mapped = mapStudentProgramError(error);
+  return mapped === 'program_not_found' ? 'no_program' : 'load_failed';
 }
