@@ -18,7 +18,10 @@ FROM nginx:1.27-alpine AS runtime
 RUN apk add --no-cache curl
 
 COPY --from=build /app/dist/sapcyti-spa/browser /usr/share/nginx/html
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx/default.conf.template /etc/nginx/templates/default.conf.template
+
+ENV API_URL=http://api:8080
+ENV NGINX_ENVSUBST_FILTER=API_URL
 
 EXPOSE 80
 
