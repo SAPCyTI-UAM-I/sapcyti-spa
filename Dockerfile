@@ -21,8 +21,10 @@ ENV PORT=80
 ENV API_UPSTREAM=http://api:8080
 
 COPY --from=build /app/dist/sapcyti-spa/browser /usr/share/nginx/html
-COPY nginx/default.conf.template /etc/nginx/templates-spa/default.conf.template
-COPY --chmod=755 nginx/render-default-conf.sh /docker-entrypoint.d/10-render-spa-nginx.sh
+COPY docker/nginx/default.conf.template /etc/nginx/templates/default.conf.template
+
+ENV API_URL=http://api:8080
+ENV NGINX_ENVSUBST_FILTER=API_URL
 
 EXPOSE 80
 

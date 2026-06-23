@@ -2,75 +2,109 @@ name: Merge & Deploy — SPA
 
 on:
   push:
-    branches: [develop, main, 'release/*']
+    branches:
+      - develop
+      - main
+      - 'release/*'
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  build-and-test:
-    name: Build, Test & Package
+  ci-build:
+    name: Build, Lint & Package
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    outputs:
+      env_name: ${{ steps.determine-env.outputs.env_name }}
+      image_tag: ${{ steps.determine-env.outputs.image_tag }}
+      image_owner: ${{ steps.determine-env.outputs.image_owner }}
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.33.2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.0
 
       - name: Set up Node.js 22
-        uses: actions/setup-node@v4
-        with:
+        uses: actions/setup-node@v6
+        with: 
           node-version: 22
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install dependencies
+      - name: Enable and setup PNPM with Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.33.2 --activate
+
+      - name: Get PNPM Cache Directory Path
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup PNPM Dependency Cache
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Dependencies (Frozen Lockfile)
         run: pnpm install --frozen-lockfile
-
-      - name: Run ESLint
+      
+      - name: Run ESLint Static Analysis
         run: pnpm run lint
+      
+      - name: Determine Target Environment & Image Tag
+        id: determine-env
+        run: |
+          ENV_NAME=""
+          IMAGE_TAG=""
+          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            ENV_NAME="dev"
+            IMAGE_TAG="dev"
+          elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
+            ENV_NAME="qa"
+            IMAGE_TAG="qa"
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            ENV_NAME="prod"
+            IMAGE_TAG="prod"
+          fi
 
-      - name: Run tests
-        run: pnpm run test
+          if [ -z "$ENV_NAME" ]; then
+            echo "❌ Error: Could not determine target environment for ref ${{ github.ref }}"
+            exit 1
+          fi
 
-      - name: Build production bundle
-        run: pnpm run build --configuration production
+          IMAGE_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
 
-  docker-build:
-    name: Build & Push Docker Image
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/')
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
+          echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image_owner=$IMAGE_OWNER" >> $GITHUB_OUTPUT
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4.2.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN}}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+      - name: Build and Push SPA Docker Image
+        uses: docker/build-push-action@v7.2.0
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
-            ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ steps.determine-env.outputs.image_owner }}/sapcyti-spa:${{ steps.determine-env.outputs.image_tag }}
 
-  # deploy:
-  #   name: Deploy to Server
-  #   runs-on: ubuntu-latest
-  #   needs: docker-build
-  #   if: github.ref == 'refs/heads/main'
-  #   steps:
-  #     - name: Deploy via SSH
-  #       run: echo "TODO — Deploy to on-premise server (Iteration 2)"
+  cd-build:
+    name: Invoke CD Engine
+    needs: ci-build
+
+    uses: SAPCyTI-UAM-I/sapcyti-infra/.github/workflows/cd-deploy.yml@main
+    with:
+      environment: ${{ needs.ci-build.outputs.env_name }}
+      api_image: ghcr.io/${{ needs.ci-build.outputs.image_owner }}/sapcyti-api:${{ needs.ci-build.outputs.image_tag }}
+      spa_image: ghcr.io/${{ needs.ci-build.outputs.image_owner }}/sapcyti-spa:${{ needs.ci-build.outputs.image_tag }}
+    secrets:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
