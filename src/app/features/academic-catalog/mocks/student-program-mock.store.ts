@@ -8,15 +8,9 @@ import {
   StudentProgramSummary,
   UpdateStudentProgramRequest,
 } from '../../../models';
-import { nextId } from './catalog-mock.util';
+import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
+import { mockBadRequest, nextId } from './catalog-mock.util';
 import { ProfessorMockStore } from './professor-mock.store';
-
-function mockBadRequest(message: string): HttpErrorResponse {
-  return new HttpErrorResponse({
-    status: 400,
-    error: { error: 'VALIDATION_ERROR', message },
-  });
-}
 
 @Injectable({ providedIn: 'root' })
 export class StudentProgramMockStore {
@@ -198,7 +192,7 @@ export class StudentProgramMockStore {
       throw mockBadRequest('Graduation date must be on or after admission date');
     }
     if (new Set(body.advisorIds).size !== body.advisorIds.length) {
-      throw mockBadRequest('Advisor ids must be unique');
+      throw mockBadRequest(BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ADVISOR_IDS);
     }
   }
 

@@ -1,6 +1,7 @@
 import { FormControl, FormGroup } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 
+import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
 import {
   mapStudentProgramError,
   mapStudentProgramFormError,
@@ -13,14 +14,26 @@ describe('student-program-error util', () => {
       status: 400,
       error: {
         error: 'VALIDATION_ERROR',
-        message: 'Graduation date must be on or after admission date',
+        message: BACKEND_MESSAGES.ACADEMIC.GRADUATION_DATE_ORDER,
       },
     });
 
     expect(
-      mapStudentProgramValidationMessage('Graduation date must be on or after admission date'),
+      mapStudentProgramValidationMessage(BACKEND_MESSAGES.ACADEMIC.GRADUATION_DATE_ORDER),
     ).toBe('date_order');
     expect(mapStudentProgramError(error)).toBe('date_order');
+  });
+
+  it('maps duplicate advisor ids from the API message', () => {
+    const error = new HttpErrorResponse({
+      status: 400,
+      error: {
+        error: 'VALIDATION_ERROR',
+        message: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ADVISOR_IDS,
+      },
+    });
+
+    expect(mapStudentProgramError(error)).toBe('duplicate_advisor_ids');
   });
 
   it('maps withdrawal reason validation from the API', () => {
@@ -28,7 +41,7 @@ describe('student-program-error util', () => {
       status: 400,
       error: {
         error: 'VALIDATION_ERROR',
-        message: 'Withdrawal reason is required when status is BAJA',
+        message: BACKEND_MESSAGES.ACADEMIC.WITHDRAWAL_REASON_REQUIRED,
       },
     });
 

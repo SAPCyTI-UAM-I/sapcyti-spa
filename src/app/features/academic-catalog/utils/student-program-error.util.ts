@@ -1,20 +1,32 @@
 import { FormGroup } from '@angular/forms';
 
-import { getApiErrorMessage, getHttpStatus } from '../../../core/http/utils/parse-api-error.util';
+import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
+import {
+  createDomainErrorMapper,
+  matchMessage,
+  matchNotFound,
+  matchStatus,
+  matchValidation,
+} from '../../../core/errors/utils/create-domain-error-mapper.util';
+
+export const STUDENT_PROGRAM_ERROR_I18N_SCOPE = 'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS' as const;
 
 export type StudentProgramError =
   | 'program_not_found'
   | 'professor_not_found'
+  | 'student_not_found'
   | 'date_order'
   | 'withdrawal_reason_required'
   | 'duplicate_advisor_ids'
   | 'validation'
+  | 'load_failed'
+  | 'no_program'
   | 'server';
 
 const VALIDATION_MESSAGE_MAP: Record<string, StudentProgramError> = {
-  'Graduation date must be on or after admission date': 'date_order',
-  'Withdrawal reason is required when status is BAJA': 'withdrawal_reason_required',
-  'Advisor ids must be unique': 'duplicate_advisor_ids',
+  [BACKEND_MESSAGES.ACADEMIC.GRADUATION_DATE_ORDER]: 'date_order',
+  [BACKEND_MESSAGES.ACADEMIC.WITHDRAWAL_REASON_REQUIRED]: 'withdrawal_reason_required',
+  [BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ADVISOR_IDS]: 'duplicate_advisor_ids',
 };
 
 export function mapStudentProgramValidationMessage(
@@ -27,28 +39,35 @@ export function mapStudentProgramValidationMessage(
   return VALIDATION_MESSAGE_MAP[message] ?? null;
 }
 
-export function mapStudentProgramError(error: unknown): StudentProgramError {
-  const message = getApiErrorMessage(error);
-
-  if (message === 'Student program not found') {
-    return 'program_not_found';
-  }
-
-  if (message === 'Professor not found') {
-    return 'professor_not_found';
-  }
-
-  const validationError = mapStudentProgramValidationMessage(message);
-  if (validationError) {
-    return validationError;
-  }
-
-  if (getHttpStatus(error) === 400) {
-    return 'validation';
-  }
-
-  return 'server';
-}
+export const mapStudentProgramError = createDomainErrorMapper<StudentProgramError>({
+  rules: [
+    {
+      match: matchNotFound(BACKEND_MESSAGES.ACADEMIC.STUDENT_PROGRAM_NOT_FOUND),
+      key: 'program_not_found',
+    },
+    {
+      match: matchMessage(BACKEND_MESSAGES.ACADEMIC.STUDENT_PROGRAM_NOT_FOUND),
+      key: 'program_not_found',
+    },
+    {
+      match: matchMessage(BACKEND_MESSAGES.ACADEMIC.PROFESSOR_NOT_FOUND),
+      key: 'professor_not_found',
+    },
+    { match: matchNotFound(BACKEND_MESSAGES.ACADEMIC.STUDENT_NOT_FOUND), key: 'student_not_found' },
+    { match: matchMessage(BACKEND_MESSAGES.ACADEMIC.STUDENT_NOT_FOUND), key: 'student_not_found' },
+    { match: matchValidation(BACKEND_MESSAGES.ACADEMIC.GRADUATION_DATE_ORDER), key: 'date_order' },
+    {
+      match: matchValidation(BACKEND_MESSAGES.ACADEMIC.WITHDRAWAL_REASON_REQUIRED),
+      key: 'withdrawal_reason_required',
+    },
+    {
+      match: matchValidation(BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ADVISOR_IDS),
+      key: 'duplicate_advisor_ids',
+    },
+    { match: matchStatus(400), key: 'validation' },
+  ],
+  fallback: 'server',
+});
 
 export function mapStudentProgramFormError(form: FormGroup): StudentProgramError | null {
   if (form.hasError('GRADUATION_BEFORE_ADMISSION')) {

@@ -16,6 +16,11 @@ import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentProgramService } from '../../services/student-program.service';
 import { StudentService } from '../../services/student.service';
 import {
+  mapStudentProgramError,
+  STUDENT_PROGRAM_ERROR_I18N_SCOPE,
+  StudentProgramError,
+} from '../../utils/student-program-error.util';
+import {
   CATALOG_PROGRAM_TYPE_FILTER_OPTIONS,
   CATALOG_STATUS_FILTER_OPTIONS,
   parseActiveFilter,
@@ -82,7 +87,7 @@ export class StudentListComponent extends CatalogListBase<StudentCatalogItem> {
       )
       .subscribe({
         next: (programs) => this.handleProgramsLoaded(student.id, programs),
-        error: () => this.showNoProgramToast(),
+        error: (err) => this.showProgramErrorToast(err),
       });
   }
 
@@ -111,9 +116,20 @@ export class StudentListComponent extends CatalogListBase<StudentCatalogItem> {
   }
 
   private showNoProgramToast(): void {
+    this.showProgramToast('no_program');
+  }
+
+  private showProgramErrorToast(error: unknown): void {
+    const mapped = mapStudentProgramError(error);
+    const toastKey: StudentProgramError =
+      mapped === 'program_not_found' ? 'no_program' : 'load_failed';
+    this.showProgramToast(toastKey);
+  }
+
+  private showProgramToast(errorKey: StudentProgramError): void {
     this.messages.add({
       severity: 'error',
-      summary: this.translate.instant('ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.no_program'),
+      summary: this.translate.instant(`${STUDENT_PROGRAM_ERROR_I18N_SCOPE}.${errorKey}`),
       life: 4000,
     });
   }

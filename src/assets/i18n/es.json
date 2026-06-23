@@ -14,7 +14,9 @@
       "duplicate_email": "El correo electrónico ya está registrado.",
       "duplicate_employee": "El número de empleado ya está registrado.",
       "duplicate_enrollment": "La matrícula ya está registrada.",
+      "graduate_program_not_found": "No se encontró el programa de posgrado solicitado.",
       "reference_not_found": "No se encontró el programa académico solicitado.",
+      "sabbatical_date_order": "La fecha final del sabático debe ser posterior o igual a la inicial.",
       "server": "Ocurrió un error al guardar la información."
     },
     "FIELDS": {
@@ -83,10 +85,12 @@
       "ERRORS": {
         "date_order": "La fecha de egreso debe ser posterior o igual a la de ingreso.",
         "duplicate_advisor_ids": "No puede repetir el mismo asesor más de una vez.",
+        "load_failed": "No se pudo cargar la información del programa académico.",
         "no_program": "Este alumno no tiene un programa académico registrado.",
         "professor_not_found": "No se encontró el profesor seleccionado.",
         "program_not_found": "No se encontró el programa académico.",
         "server": "Ocurrió un error al guardar el programa.",
+        "student_not_found": "No se encontró el alumno solicitado.",
         "validation": "Revise los datos del formulario.",
         "withdrawal_reason_required": "Indique el motivo de baja cuando el estado es Baja."
       },

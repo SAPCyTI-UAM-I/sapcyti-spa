@@ -15,16 +15,10 @@
       <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
     </div>
   } @else if (error() && !program()) {
-    <p-message
-      severity="error"
-      [text]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.' + error() | translate"
-    />
+    <p-message severity="error" [text]="error() | domainError: studentProgramErrorScope" />
   } @else if (program(); as current) {
     @if (displayError(); as errorKey) {
-      <p-message
-        severity="error"
-        [text]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.' + errorKey | translate"
-      />
+      <p-message severity="error" [text]="errorKey | domainError: studentProgramErrorScope" />
     }
 
     <form

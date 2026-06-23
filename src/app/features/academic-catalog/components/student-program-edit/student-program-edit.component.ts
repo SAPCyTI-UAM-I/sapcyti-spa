@@ -17,6 +17,7 @@ import {
   StudentProgramResponse,
   UpdateStudentProgramRequest,
 } from '../../../../models';
+import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { FieldErrorComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { isFieldInvalid } from '../../../../shared/utils/field-error.util';
@@ -28,6 +29,7 @@ import {
   StudentProgramError,
   mapStudentProgramError,
   mapStudentProgramFormError,
+  STUDENT_PROGRAM_ERROR_I18N_SCOPE,
 } from '../../utils/student-program-error.util';
 import {
   uniqueAdvisorIdsValidator,
@@ -53,6 +55,7 @@ interface ProfessorOption {
     MultiSelect,
     Select,
     FieldErrorComponent,
+    DomainErrorMessagePipe,
   ],
   templateUrl: './student-program-edit.component.html',
 })
@@ -79,6 +82,7 @@ export class StudentProgramEditComponent {
 
   readonly statusOptions = STUDENT_PROGRAM_STATUS_OPTIONS;
   readonly isFieldInvalid = isFieldInvalid;
+  readonly studentProgramErrorScope = STUDENT_PROGRAM_ERROR_I18N_SCOPE;
 
   private readonly assignedProfessorOptions = signal<ProfessorOption[]>([]);
   private professorSearchTimeout: ReturnType<typeof setTimeout> | undefined;

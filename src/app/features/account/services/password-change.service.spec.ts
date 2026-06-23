@@ -55,7 +55,8 @@ describe('PasswordChangeService', () => {
       .subscribe({
         error: (error) => {
           expect(error.status).toBe(400);
-          expect(error.error.error).toBe('CURRENT_PASSWORD_INCORRECT');
+          expect(error.error.error).toBe('VALIDATION_ERROR');
+          expect(error.error.message).toBe('Current password is incorrect');
         },
       });
   });

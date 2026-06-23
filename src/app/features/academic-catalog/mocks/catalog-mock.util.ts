@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
+import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
 import { PageResponse } from '../../../models';
 
 export function page<T>(content: T[], pageIndex: number, size: number): PageResponse<T> {
@@ -29,10 +30,44 @@ export function generatedPassword(seed: number): string {
   return `Tmp${seed}#Sap26`;
 }
 
-export function mockConflict(code: string): HttpErrorResponse {
-  return new HttpErrorResponse({ status: 409, error: { error: code } });
+const LEGACY_CONFLICT_MESSAGES: Record<string, string> = {
+  EMAIL_ALREADY_EXISTS: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_STUDENT_EMAIL,
+  ENROLLMENT_ALREADY_EXISTS: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ENROLLMENT,
+  EMPLOYEE_NUMBER_ALREADY_EXISTS: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_EMPLOYEE,
+};
+
+export function mockBadRequest(message: string): HttpErrorResponse {
+  return new HttpErrorResponse({
+    status: 400,
+    error: { error: 'VALIDATION_ERROR', message },
+  });
 }
 
-export function mockNotFound(code: string): HttpErrorResponse {
-  return new HttpErrorResponse({ status: 404, error: { error: code } });
+export function mockConflict(code: string): HttpErrorResponse {
+  const message = LEGACY_CONFLICT_MESSAGES[code];
+
+  return new HttpErrorResponse({
+    status: 409,
+    error: message ? { error: 'CONFLICT', message } : { error: code },
+  });
+}
+
+export function mockNotFound(codeOrMessage: string): HttpErrorResponse {
+  const knownMessages: Record<string, string> = {
+    GRADUATE_PROGRAM_NOT_FOUND: BACKEND_MESSAGES.ACADEMIC.GRADUATE_PROGRAM_NOT_FOUND,
+    USER_NOT_FOUND: BACKEND_MESSAGES.IDENTITY.USER_NOT_FOUND,
+  };
+
+  const message = knownMessages[codeOrMessage];
+  if (message) {
+    return new HttpErrorResponse({
+      status: 404,
+      error: { error: 'NOT_FOUND', message },
+    });
+  }
+
+  return new HttpErrorResponse({
+    status: 404,
+    error: { error: codeOrMessage },
+  });
 }

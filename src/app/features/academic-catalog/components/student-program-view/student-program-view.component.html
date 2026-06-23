@@ -33,10 +33,7 @@
       <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
     </div>
   } @else if (error()) {
-    <p-message
-      severity="error"
-      [text]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.' + error() | translate"
-    />
+    <p-message severity="error" [text]="error() | domainError: studentProgramErrorScope" />
   } @else if (program(); as current) {
     <div class="gap-lg grid lg:grid-cols-2">
       <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">

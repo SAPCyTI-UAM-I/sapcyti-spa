@@ -7,6 +7,7 @@ import { InputText } from 'primeng/inputtext';
 import { Observable } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
+import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { RegisterProfessorRequest, RegisterProfessorResponse } from '../../../../models';
 import { FieldErrorComponent } from '../../../../shared/components';
 import { TemporaryPasswordDialogComponent } from '../../../../shared/components';
@@ -26,6 +27,7 @@ import { CatalogRegistrationBase } from '../catalog-registration.base';
     InputText,
     FieldErrorComponent,
     TemporaryPasswordDialogComponent,
+    DomainErrorMessagePipe,
   ],
   templateUrl: './professor-registration.component.html',
 })

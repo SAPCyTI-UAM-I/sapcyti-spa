@@ -8,6 +8,7 @@ import { Tag } from 'primeng/tag';
 import { finalize } from 'rxjs';
 
 import { StudentProgramResponse } from '../../../../models';
+import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentProgramService } from '../../services/student-program.service';
 import { formatProfessorName } from '../../utils/professor-display.util';
@@ -15,13 +16,14 @@ import { programStatusSeverity } from '../../utils/program-status.util';
 import {
   StudentProgramError,
   mapStudentProgramError,
+  STUDENT_PROGRAM_ERROR_I18N_SCOPE,
 } from '../../utils/student-program-error.util';
 
 @Component({
   selector: 'app-student-program-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [RouterLink, TranslatePipe, Button, Message, Tag],
+  imports: [RouterLink, TranslatePipe, Button, Message, Tag, DomainErrorMessagePipe],
   templateUrl: './student-program-view.component.html',
 })
 export class StudentProgramViewComponent {
@@ -39,6 +41,7 @@ export class StudentProgramViewComponent {
 
   readonly formatProfessorName = formatProfessorName;
   readonly programStatusSeverity = programStatusSeverity;
+  readonly studentProgramErrorScope = STUDENT_PROGRAM_ERROR_I18N_SCOPE;
 
   constructor() {
     this.load();
