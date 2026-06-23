@@ -12,6 +12,7 @@ import { Select } from 'primeng/select';
 import { forkJoin, finalize } from 'rxjs';
 
 import {
+  ProfessorCatalogItem,
   ProgramStatus,
   StudentProgramResponse,
   UpdateStudentProgramRequest,
@@ -21,17 +22,23 @@ import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { isFieldInvalid } from '../../../../shared/utils/field-error.util';
 import { ProfessorService } from '../../services/professor.service';
 import { StudentProgramService } from '../../services/student-program.service';
-import { professorToOption } from '../../utils/professor-display.util';
+import { professorReferenceToOption, professorToOption } from '../../utils/professor-display.util';
 import { STUDENT_PROGRAM_STATUS_OPTIONS } from '../../utils/student-program-filter.options';
 import {
   StudentProgramError,
   mapStudentProgramError,
+  mapStudentProgramFormError,
 } from '../../utils/student-program-error.util';
 import {
   uniqueAdvisorIdsValidator,
   graduationDateAfterAdmissionValidator,
   withdrawalReasonWhenBajaValidator,
 } from '../../utils/student-program-form.util';
+
+interface ProfessorOption {
+  label: string;
+  value: number;
+}
 
 @Component({
   selector: 'app-student-program-edit',
@@ -67,10 +74,14 @@ export class StudentProgramEditComponent {
   readonly submitted = signal(false);
   readonly error = signal<StudentProgramError | null>(null);
   readonly program = signal<StudentProgramResponse | null>(null);
-  readonly professorOptions = signal<{ label: string; value: number }[]>([]);
+  readonly professorOptions = signal<ProfessorOption[]>([]);
+  readonly professorsLoading = signal(false);
 
   readonly statusOptions = STUDENT_PROGRAM_STATUS_OPTIONS;
   readonly isFieldInvalid = isFieldInvalid;
+
+  private readonly assignedProfessorOptions = signal<ProfessorOption[]>([]);
+  private professorSearchTimeout: ReturnType<typeof setTimeout> | undefined;
 
   readonly form = this.fb.group(
     {
@@ -94,7 +105,26 @@ export class StudentProgramEditComponent {
     this.form.controls.admissionDate.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.form.updateValueAndValidity({ emitEvent: false }));
+    this.form.controls.graduationDate.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.form.updateValueAndValidity({ emitEvent: false }));
     this.load();
+  }
+
+  displayError(): StudentProgramError | null {
+    return (
+      this.error() ??
+      (this.submitted() && this.form.invalid ? mapStudentProgramFormError(this.form) : null)
+    );
+  }
+
+  onProfessorFilter(event: { filter?: string | null }): void {
+    clearTimeout(this.professorSearchTimeout);
+    const term = event.filter ?? '';
+
+    this.professorSearchTimeout = setTimeout(() => {
+      this.loadProfessors(term);
+    }, 300);
   }
 
   cancel(): void {
@@ -161,7 +191,7 @@ export class StudentProgramEditComponent {
     this.error.set(null);
     forkJoin({
       program: this.programService.getProgram(this.studentId, this.programId),
-      professors: this.professorService.listProfessors({ page: 0, size: 100, active: true }),
+      professors: this.professorService.listProfessors({ page: 0, size: 30, active: true }),
     })
       .pipe(
         finalize(() => this.loading.set(false)),
@@ -170,7 +200,8 @@ export class StudentProgramEditComponent {
       .subscribe({
         next: ({ program, professors }) => {
           this.program.set(program);
-          this.professorOptions.set(professors.content.map(professorToOption));
+          this.assignedProfessorOptions.set(this.collectAssignedProfessorOptions(program));
+          this.mergeProfessorOptions(professors.content);
           this.form.patchValue({
             admissionDate: program.admissionDate,
             graduationDate: program.graduationDate ?? '',
@@ -183,5 +214,56 @@ export class StudentProgramEditComponent {
         },
         error: (err) => this.error.set(mapStudentProgramError(err)),
       });
+  }
+
+  private collectAssignedProfessorOptions(program: StudentProgramResponse): ProfessorOption[] {
+    const options = new Map<number, ProfessorOption>();
+
+    if (program.tutor) {
+      const option = professorReferenceToOption(program.tutor);
+      options.set(option.value, option);
+    }
+
+    for (const advisor of program.advisors) {
+      const option = professorReferenceToOption(advisor);
+      options.set(option.value, option);
+    }
+
+    return [...options.values()];
+  }
+
+  private loadProfessors(search = ''): void {
+    this.professorsLoading.set(true);
+    this.professorService
+      .listProfessors({
+        page: 0,
+        size: 30,
+        active: true,
+        search: search.trim() || undefined,
+      })
+      .pipe(
+        finalize(() => this.professorsLoading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (page) => this.mergeProfessorOptions(page.content),
+      });
+  }
+
+  private mergeProfessorOptions(professors: ProfessorCatalogItem[]): void {
+    const options = new Map<number, ProfessorOption>();
+
+    for (const option of this.assignedProfessorOptions()) {
+      options.set(option.value, option);
+    }
+
+    for (const professor of professors) {
+      const option = professorToOption(professor);
+      options.set(option.value, option);
+    }
+
+    this.professorOptions.set(
+      [...options.values()].sort((left, right) => left.label.localeCompare(right.label, 'es')),
+    );
   }
 }

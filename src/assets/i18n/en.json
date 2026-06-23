@@ -82,15 +82,18 @@
       },
       "ERRORS": {
         "date_order": "Graduation date must be on or after the admission date.",
+        "duplicate_advisor_ids": "The same advisor cannot be selected more than once.",
         "no_program": "This student has no registered academic program.",
         "professor_not_found": "The selected professor was not found.",
         "program_not_found": "The academic program was not found.",
         "server": "An error occurred while saving the program.",
-        "validation": "Please review the form data."
+        "validation": "Please review the form data.",
+        "withdrawal_reason_required": "Enter a withdrawal reason when the status is Withdrawn."
       },
       "FIELDS": {
         "ADVISORS": "Advisors",
         "GRADUATION_DATE": "Graduation date",
+        "PROFESSOR_SEARCH": "Search by name",
         "RESEARCH_AREA": "Research area",
         "TUTOR": "Tutor",
         "WITHDRAWAL_REASON": "Withdrawal reason"

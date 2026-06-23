@@ -70,7 +70,7 @@ describe('StudentProgramEditComponent', () => {
     fixture.detectChanges();
 
     expect(getProgram).toHaveBeenCalled();
-    expect(listProfessors).toHaveBeenCalledWith({ page: 0, size: 100, active: true });
+    expect(listProfessors).toHaveBeenCalledWith({ page: 0, size: 30, active: true });
     expect(fixture.componentInstance.program()?.id).toBe(100);
   });
 
@@ -82,6 +82,21 @@ describe('StudentProgramEditComponent', () => {
     fixture.componentInstance.submit();
 
     expect(fixture.componentInstance.form.invalid).toBe(true);
+    expect(fixture.componentInstance.displayError()).toBe('withdrawal_reason_required');
+  });
+
+  it('shows a descriptive error when graduation date is before admission date', async () => {
+    const { fixture } = await setup();
+    fixture.detectChanges();
+
+    fixture.componentInstance.form.patchValue({
+      admissionDate: '2025-09-01',
+      graduationDate: '2025-01-01',
+    });
+    fixture.componentInstance.submit();
+
+    expect(fixture.componentInstance.form.invalid).toBe(true);
+    expect(fixture.componentInstance.displayError()).toBe('date_order');
   });
 
   it('submits update and navigates to view', async () => {

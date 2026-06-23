@@ -82,15 +82,18 @@
       },
       "ERRORS": {
         "date_order": "La fecha de egreso debe ser posterior o igual a la de ingreso.",
+        "duplicate_advisor_ids": "No puede repetir el mismo asesor más de una vez.",
         "no_program": "Este alumno no tiene un programa académico registrado.",
         "professor_not_found": "No se encontró el profesor seleccionado.",
         "program_not_found": "No se encontró el programa académico.",
         "server": "Ocurrió un error al guardar el programa.",
-        "validation": "Revise los datos del formulario."
+        "validation": "Revise los datos del formulario.",
+        "withdrawal_reason_required": "Indique el motivo de baja cuando el estado es Baja."
       },
       "FIELDS": {
         "ADVISORS": "Asesores",
         "GRADUATION_DATE": "Fecha de egreso",
+        "PROFESSOR_SEARCH": "Buscar por nombre",
         "RESEARCH_AREA": "Área de investigación",
         "TUTOR": "Tutor",
         "WITHDRAWAL_REASON": "Motivo de baja"

@@ -16,3 +16,10 @@ export function professorToOption(professor: ProfessorCatalogItem): {
 } {
   return { label: formatProfessorName(professor), value: professor.id };
 }
+
+export function professorReferenceToOption(professor: ProfessorReference): {
+  label: string;
+  value: number;
+} {
+  return { label: formatProfessorName(professor), value: professor.id };
+}
