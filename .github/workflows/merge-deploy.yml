@@ -2,78 +2,94 @@ name: Merge & Deploy — SPA
 
 on:
   push:
-    branches: [develop, main, 'release/*']
+    branches:
+      - develop
+      - main
+      - 'release/*'
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  build-and-test:
-    name: Build, Test & Package
+  ci-build:
+    name: Build, Lint & Package
     runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.determine-env.outputs.env_name }}
+      image_tag: ${{ steps.determine-env.outputs.image_tag }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v6
+        with: 
+          node-version: 22
+
+      - name: Enable and setup PNPM with Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.33.2 --activate
+
+      - name: Get PNPM Cache Directory Path
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup PNPM Dependency Cache
+        uses: actions/cache@v5
         with:
-          node-version: 20
-          cache: npm
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run ESLint
-        run: npx ng lint
-
-      - name: Run tests with coverage
-        run: npx ng test --watch=false --code-coverage --browsers=ChromeHeadless
-
-      - name: Build production bundle
-        run: npx ng build --configuration production
-
-  docker-build:
-    name: Build & Push Docker Image
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/')
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build production bundle
-        run: npx ng build --configuration production
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
+      - name: Install Dependencies (Frozen Lockfile)
+        run: pnpm install --frozen-lockfile
+      
+      - name: Run ESLint Static Analysis
+        run: pnpm run lint
+      
+      - name: Determine Target Environment & Image Tag
+        id: determine-env
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "env_name=dev" >> $GITHUB_OUTPUT
+            echo "image_tag=dev" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/release/*" ]]; then
+            echo "env_name=qa" >> $GITHUB_OUTPUT
+            echo "image_tag=qa" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "env_name=prod" >> $GITHUB_OUTPUT
+            echo "image_tag=prod" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN}}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+      - name: Build and Push SPA Docker Image
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
-            ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/sapcyti-spa:${{ steps.determine-env.outputs.image_tag }}
 
-  # deploy:
-  #   name: Deploy to Server
-  #   runs-on: ubuntu-latest
-  #   needs: docker-build
-  #   if: github.ref == 'refs/heads/main'
-  #   steps:
-  #     - name: Deploy via SSH
-  #       run: echo "TODO — Deploy to on-premise server (Iteration 2)"
+  cd-build:
+    name: Invoke CD Engine
+    needs: ci-build
+
+    uses: SAPCyTI-UAM-I/sapcyti-infra/.github/workflows/cd-deploy.yml@main
+    with:
+      environment: ${{ needs.ci-build.outputs.env_name }}
+      api_image: ghcr.io/${{ github.repository_owner }}/sapcyti-api:${{ needs.ci-build.outputs.image_tag }}
+      spa_image: ghcr.io/${{ github.repository_owner }}/sapcyti-spa:${{ needs.ci-build.outputs.image_tag }}
+    secrets:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
