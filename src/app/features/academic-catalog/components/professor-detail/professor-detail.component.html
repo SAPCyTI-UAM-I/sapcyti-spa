@@ -1,0 +1,179 @@
+<section class="gap-lg flex flex-col" data-testid="professor-detail">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-h2 text-primary font-bold">
+        {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.TITLE' | translate }}
+      </h1>
+    </div>
+    <div class="gap-sm flex flex-wrap">
+      @if (professor()) {
+        <p-button
+          data-testid="edit-professor"
+          icon="pi pi-pencil"
+          [label]="'ACADEMIC_CATALOG.PROFESSORS.DETAIL.EDIT_ACTION' | translate"
+          [routerLink]="editRoute()"
+        />
+      }
+      <p-button
+        severity="secondary"
+        variant="outlined"
+        icon="pi pi-arrow-left"
+        [label]="'COMMON.ACTIONS.BACK' | translate"
+        (onClick)="backToCatalog()"
+      />
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="p-xl text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else if (error()) {
+    <p-message severity="error" [text]="error() | domainError: catalogErrorScope" />
+  } @else if (professor(); as current) {
+    <div
+      class="border-outline bg-surface p-lg gap-lg flex min-w-0 flex-col rounded-xl border sm:flex-row sm:items-center"
+    >
+      <div
+        class="bg-primary-container text-primary text-h1 flex h-20 w-20 shrink-0 items-center justify-center rounded-full font-bold"
+        aria-hidden="true"
+      >
+        {{ initials() }}
+      </div>
+      <div class="gap-xs flex min-w-0 flex-1 flex-col">
+        <h2 class="text-h2 text-on-surface font-bold break-words" data-testid="professor-name">
+          {{ current.firstName }} {{ current.firstLastName }} {{ current.secondLastName || '' }}
+        </h2>
+        <div class="gap-sm flex flex-wrap items-center">
+          <app-catalog-tag
+            [value]="professorTypeLabelKey(current) | translate"
+            severity="secondary"
+          />
+          <app-catalog-tag
+            [value]="
+              (current.active
+                ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
+                : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
+              ) | translate
+            "
+            [severity]="activeTagSeverity(current.active)"
+          />
+        </div>
+      </div>
+      <div
+        class="text-text-secondary gap-xs border-outline pt-md sm:pl-lg flex min-w-0 flex-col flex-wrap border-t sm:items-end sm:border-t-0 sm:border-l sm:pt-0 sm:text-right"
+      >
+        <span class="gap-xs flex min-w-0 flex-wrap items-center">
+          <i class="pi pi-envelope" aria-hidden="true"></i>
+          <app-copyable-text [value]="current.email">
+            <span class="break-all">{{ current.email }}</span>
+          </app-copyable-text>
+        </span>
+        <span class="gap-xs flex min-w-0 flex-wrap items-center">
+          <i class="pi pi-phone" aria-hidden="true"></i>
+          <app-copyable-text [value]="current.phone">
+            {{ current.phone }}
+          </app-copyable-text>
+          @if (current.phoneExtension) {
+            <span>ext. {{ current.phoneExtension }}</span>
+          }
+        </span>
+      </div>
+    </div>
+
+    <article class="border-outline bg-surface p-lg gap-xs flex min-w-0 flex-col rounded-xl border">
+      <h3 class="text-h3 text-primary gap-sm flex items-center font-bold">
+        <i class="pi pi-user" aria-hidden="true"></i>
+        {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.PERSONAL_SECTION' | translate }}
+      </h3>
+      <dl class="flex min-w-0 flex-col">
+        @if (current.professorType === 'INTERNO' && current.employeeNumber) {
+          <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.EMPLOYEE_NUMBER' | translate">
+            <app-copyable-text [value]="current.employeeNumber">
+              {{ current.employeeNumber }}
+            </app-copyable-text>
+          </app-profile-field>
+        }
+        <app-profile-field
+          [label]="'ACADEMIC_CATALOG.PROFESSORS.FIELDS.PROFESSOR_TYPE' | translate"
+        >
+          {{ professorTypeLabelKey(current) | translate }}
+        </app-profile-field>
+        <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.COMMISSION_MEMBER' | translate">
+          {{ (current.commissionMember ? 'COMMON.STATES.YES' : 'COMMON.STATES.NO') | translate }}
+        </app-profile-field>
+        <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.NEXT_SABBATICAL_START' | translate">
+          @if (current.nextSabbaticalStart) {
+            {{ current.nextSabbaticalStart }}
+          } @else {
+            <span class="text-text-tertiary font-normal italic">
+              {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.NO_SABBATICAL' | translate }}
+            </span>
+          }
+        </app-profile-field>
+        <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.NEXT_SABBATICAL_END' | translate">
+          @if (current.nextSabbaticalEnd) {
+            {{ current.nextSabbaticalEnd }}
+          } @else {
+            <span class="text-text-tertiary font-normal italic">
+              {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.NO_SABBATICAL' | translate }}
+            </span>
+          }
+        </app-profile-field>
+      </dl>
+    </article>
+
+    @if (current.active) {
+      <footer class="gap-sm flex flex-wrap justify-end">
+        <p-button
+          data-testid="deactivate-professor"
+          severity="danger"
+          variant="outlined"
+          icon="pi pi-user-minus"
+          [label]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.ACTION' | translate"
+          (onClick)="openDeactivateDialog()"
+        />
+      </footer>
+    }
+  }
+</section>
+
+<p-dialog
+  [header]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.CONFIRM_TITLE' | translate"
+  [modal]="true"
+  [visible]="showDeactivateDialog()"
+  [closable]="!deactivating()"
+  [style]="{ width: 'min(100%, 32rem)' }"
+  (visibleChange)="showDeactivateDialog.set($event)"
+  (onHide)="closeDeactivateDialog()"
+>
+  <p class="text-body-md text-text-secondary">
+    {{ 'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.CONFIRM_MESSAGE' | translate }}
+  </p>
+  @if (deactivateError()) {
+    <p-message
+      class="mt-md block"
+      severity="error"
+      [text]="deactivateError() | domainError: catalogErrorScope"
+    />
+  }
+  <ng-template #footer>
+    <div class="gap-sm flex justify-end">
+      <p-button
+        severity="secondary"
+        variant="outlined"
+        [label]="'COMMON.ACTIONS.CANCEL' | translate"
+        [disabled]="deactivating()"
+        (onClick)="closeDeactivateDialog()"
+      />
+      <p-button
+        data-testid="confirm-deactivate-professor"
+        severity="danger"
+        [label]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.ACTION' | translate"
+        [loading]="deactivating()"
+        [disabled]="deactivating()"
+        (onClick)="confirmDeactivate()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

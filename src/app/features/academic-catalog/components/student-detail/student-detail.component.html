@@ -42,10 +42,7 @@
         {{ initials() }}
       </div>
       <div class="gap-xs flex min-w-0 flex-1 flex-col">
-        <h2
-          class="text-h2 text-on-surface break-words font-bold"
-          data-testid="student-name"
-        >
+        <h2 class="text-h2 text-on-surface font-bold break-words" data-testid="student-name">
           {{ current.firstName }} {{ current.firstLastName }} {{ current.secondLastName || '' }}
         </h2>
         <div class="text-text-secondary gap-xs flex items-center">
@@ -196,7 +193,9 @@
                 @if (prog.advisors.length > 0) {
                   <ul class="gap-xs flex flex-wrap">
                     @for (advisor of prog.advisors; track advisor.id) {
-                      <li class="bg-surface-muted text-body-md px-sm py-xs rounded-full font-medium">
+                      <li
+                        class="bg-surface-muted text-body-md px-sm py-xs rounded-full font-medium"
+                      >
                         {{ formatProfessorName(advisor) }}
                       </li>
                     }

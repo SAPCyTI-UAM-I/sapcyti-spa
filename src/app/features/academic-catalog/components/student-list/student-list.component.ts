@@ -13,10 +13,7 @@ import { PageResponse, StudentCatalogItem } from '../../../../models';
 import { CopyableTextComponent, CatalogTagComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
-import {
-  activeTagSeverity,
-  programTypeTagSeverity,
-} from '../../utils/catalog-tag.util';
+import { activeTagSeverity, programTypeTagSeverity } from '../../utils/catalog-tag.util';
 import {
   CATALOG_PROGRAM_TYPE_FILTER_OPTIONS,
   CATALOG_STATUS_FILTER_OPTIONS,

@@ -15,6 +15,9 @@ export const BACKEND_MESSAGES = {
     WITHDRAWAL_REASON_REQUIRED: 'Withdrawal reason is required when status is BAJA',
     DUPLICATE_ADVISOR_IDS: 'Duplicate advisor IDs are not allowed',
     SABBATICAL_DATE_ORDER: 'Sabbatical end date must be on or after start date',
+    PROFESSOR_ALREADY_INACTIVE: 'Professor is already inactive',
+    PROFESSOR_HAS_ACTIVE_ASSIGNMENTS: 'Professor is tutor or advisor of an active student program',
+    EMPLOYEE_REQUIRED_FOR_INTERNO: 'Employee number is required for internal professors',
   },
   IDENTITY: {
     CURRENT_PASSWORD_INCORRECT: 'Current password is incorrect',

@@ -15,8 +15,12 @@
       "duplicate_email": "El correo electrónico ya está registrado.",
       "duplicate_employee": "El número de empleado ya está registrado.",
       "duplicate_enrollment": "La matrícula ya está registrada.",
+      "employee_required_for_interno": "El número de empleado es obligatorio para profesores internos.",
       "file_format_invalid": "Formato de archivo inválido, utilice la plantilla proporcionada.",
       "graduate_program_not_found": "No se encontró el programa de posgrado solicitado.",
+      "professor_already_inactive": "El profesor ya está inactivo.",
+      "professor_has_active_assignments": "Debe reasignar tutor o asesores antes de dar de baja al profesor.",
+      "professor_not_found": "No se encontró el profesor solicitado.",
       "reference_not_found": "No se encontró el programa académico solicitado.",
       "sabbatical_date_order": "La fecha final del sabático debe ser posterior o igual a la inicial.",
       "server": "Ocurrió un error al guardar la información.",
@@ -51,9 +55,35 @@
       "TOTAL": "Total"
     },
     "PROFESSORS": {
+      "BREADCRUMB": {
+        "DETAIL": "Detalle del profesor",
+        "EDIT": "Editar profesor"
+      },
       "CREATE": {
         "SUBTITLE": "Complete los datos institucionales y confirme el alta.",
         "TITLE": "Registrar profesor"
+      },
+      "DEACTIVATE": {
+        "ACTION": "Dar de baja",
+        "CONFIRM_MESSAGE": "El profesor dejará de estar disponible para nuevas asignaciones y no podrá iniciar sesión. Esta acción conserva su historial académico.",
+        "CONFIRM_TITLE": "Confirmar baja del profesor",
+        "SUCCESS": "Profesor dado de baja correctamente."
+      },
+      "DETAIL": {
+        "CHANGE_PASSWORD": "Cambiar contraseña",
+        "EDIT_ACTION": "Editar",
+        "NO_EMPLOYEE_NUMBER": "No aplica",
+        "NO_SABBATICAL": "Sin fecha registrada",
+        "PERSONAL_SECTION": "Información del profesor",
+        "TITLE": "Detalle del profesor"
+      },
+      "EDIT": {
+        "SAVED": "Profesor actualizado correctamente.",
+        "SUBTITLE": "Actualice los datos del profesor y guarde los cambios.",
+        "TITLE": "Editar profesor"
+      },
+      "FIELDS": {
+        "PROFESSOR_TYPE": "Tipo de profesor"
       },
       "LIST": {
         "CREATE": "Crear profesor",
@@ -61,6 +91,10 @@
         "SEARCH": "Buscar por nombre, correo o número de empleado",
         "SUBTITLE": "Consulte y administre los profesores del posgrado.",
         "TITLE": "Profesores"
+      },
+      "TYPES": {
+        "EXTERNO": "Externo",
+        "INTERNO": "Interno"
       }
     },
     "PROGRAM_TYPES": {

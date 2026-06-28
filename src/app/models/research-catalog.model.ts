@@ -43,8 +43,7 @@ const LINE_OF_KNOWLEDGE_LABEL_KEYS: Readonly<Record<string, I18nKey>> = {
 const RESEARCH_AREA_LABEL_KEYS: Readonly<Record<string, I18nKey>> = {
   'Supercómputo (cómputo de alto rendimiento)':
     'ACADEMIC_CATALOG.STUDENT_PROGRAM.CATALOG.AREAS.HIGH_PERFORMANCE_COMPUTING',
-  'Manejo de datos masivos (Big data)':
-    'ACADEMIC_CATALOG.STUDENT_PROGRAM.CATALOG.AREAS.BIG_DATA',
+  'Manejo de datos masivos (Big data)': 'ACADEMIC_CATALOG.STUDENT_PROGRAM.CATALOG.AREAS.BIG_DATA',
   'Web semántica': 'ACADEMIC_CATALOG.STUDENT_PROGRAM.CATALOG.AREAS.SEMANTIC_WEB',
   'Internet de las cosas': 'ACADEMIC_CATALOG.STUDENT_PROGRAM.CATALOG.AREAS.IOT',
   'Inteligencia artificial': 'ACADEMIC_CATALOG.STUDENT_PROGRAM.CATALOG.AREAS.AI',

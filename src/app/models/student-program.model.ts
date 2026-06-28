@@ -7,6 +7,7 @@ export interface ProfessorReference {
   firstName: string;
   firstLastName: string;
   secondLastName?: string;
+  active?: boolean;
 }
 
 export interface StudentProgramSummary {

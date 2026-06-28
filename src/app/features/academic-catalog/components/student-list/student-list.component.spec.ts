@@ -46,7 +46,11 @@ describe('StudentListComponent', () => {
     const listStudents = vi.fn(() => of(buildStudentPage()));
     await TestBed.configureTestingModule({
       imports: [StudentListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
-      providers: [provideRouter([]), { provide: StudentService, useValue: { listStudents } }, MessageService],
+      providers: [
+        provideRouter([]),
+        { provide: StudentService, useValue: { listStudents } },
+        MessageService,
+      ],
     }).compileComponents();
     const fixture = TestBed.createComponent(StudentListComponent);
     return { fixture, listStudents };
@@ -56,7 +60,9 @@ describe('StudentListComponent', () => {
     fixture: ReturnType<typeof TestBed.createComponent<StudentListComponent>>,
     values: { search?: string; programType?: string; active?: string },
   ): void {
-    const form = fixture.debugElement.query(By.directive(FormGroupDirective)).injector.get(FormGroupDirective);
+    const form = fixture.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective);
     form.form.patchValue(values);
   }
 

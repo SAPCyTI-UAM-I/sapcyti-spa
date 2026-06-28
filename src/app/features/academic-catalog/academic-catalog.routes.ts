@@ -100,6 +100,24 @@ export const ACADEMIC_CATALOG_ROUTES: Routes = [
         canActivate: [authGuard],
         data: { ...catalogData, breadcrumb: 'BREADCRUMB.NEW' },
       },
+      {
+        path: ':professorId',
+        loadComponent: () =>
+          import('./components/professor-detail/professor-detail.component').then(
+            (m) => m.ProfessorDetailComponent,
+          ),
+        canActivate: [authGuard],
+        data: { ...catalogData, breadcrumb: 'ACADEMIC_CATALOG.PROFESSORS.BREADCRUMB.DETAIL' },
+      },
+      {
+        path: ':professorId/edit',
+        loadComponent: () =>
+          import('./components/professor-edit/professor-edit.component').then(
+            (m) => m.ProfessorEditComponent,
+          ),
+        canActivate: [authGuard],
+        data: { ...catalogData, breadcrumb: 'ACADEMIC_CATALOG.PROFESSORS.BREADCRUMB.EDIT' },
+      },
     ],
   },
 ];

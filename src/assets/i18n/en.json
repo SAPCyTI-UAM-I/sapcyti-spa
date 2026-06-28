@@ -15,8 +15,12 @@
       "duplicate_email": "The email address is already registered.",
       "duplicate_employee": "The employee number is already registered.",
       "duplicate_enrollment": "The enrollment ID is already registered.",
+      "employee_required_for_interno": "Employee number is required for internal professors.",
       "file_format_invalid": "Invalid file format, please use the provided template.",
       "graduate_program_not_found": "The requested graduate program was not found.",
+      "professor_already_inactive": "The professor is already inactive.",
+      "professor_has_active_assignments": "Reassign tutor or advisors before deactivating this professor.",
+      "professor_not_found": "The requested professor was not found.",
       "reference_not_found": "The requested graduate program was not found.",
       "sabbatical_date_order": "The sabbatical end date must be on or after the start date.",
       "server": "An error occurred while saving the information.",
@@ -51,9 +55,35 @@
       "TOTAL": "Total"
     },
     "PROFESSORS": {
+      "BREADCRUMB": {
+        "DETAIL": "Professor detail",
+        "EDIT": "Edit professor"
+      },
       "CREATE": {
         "SUBTITLE": "Complete the institutional data and confirm registration.",
         "TITLE": "Register professor"
+      },
+      "DEACTIVATE": {
+        "ACTION": "Deactivate",
+        "CONFIRM_MESSAGE": "The professor will no longer be available for new assignments and will not be able to sign in. Their academic history will be preserved.",
+        "CONFIRM_TITLE": "Confirm professor deactivation",
+        "SUCCESS": "Professor deactivated successfully."
+      },
+      "DETAIL": {
+        "CHANGE_PASSWORD": "Change password",
+        "EDIT_ACTION": "Edit",
+        "NO_EMPLOYEE_NUMBER": "Not applicable",
+        "NO_SABBATICAL": "No date recorded",
+        "PERSONAL_SECTION": "Professor information",
+        "TITLE": "Professor detail"
+      },
+      "EDIT": {
+        "SAVED": "Professor updated successfully.",
+        "SUBTITLE": "Update the professor data and save your changes.",
+        "TITLE": "Edit professor"
+      },
+      "FIELDS": {
+        "PROFESSOR_TYPE": "Professor type"
       },
       "LIST": {
         "CREATE": "Create professor",
@@ -61,6 +91,10 @@
         "SEARCH": "Search by name, email or employee number",
         "SUBTITLE": "Browse and manage graduate professors.",
         "TITLE": "Professors"
+      },
+      "TYPES": {
+        "EXTERNO": "External",
+        "INTERNO": "Internal"
       }
     },
     "PROGRAM_TYPES": {

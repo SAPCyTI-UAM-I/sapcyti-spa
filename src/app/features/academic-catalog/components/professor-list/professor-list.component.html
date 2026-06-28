@@ -15,31 +15,36 @@
       routerLink="/academic-catalog/professors/new"
     />
   </header>
-  <form
+  <div
     class="border-outline bg-surface p-md gap-md grid rounded-xl border md:grid-cols-[1fr_11rem_auto]"
     [formGroup]="filters"
-    (ngSubmit)="applyFilters()"
   >
     <input
       pInputText
       formControlName="search"
       [placeholder]="'ACADEMIC_CATALOG.PROFESSORS.LIST.SEARCH' | translate"
     />
-    <p-select formControlName="active" [options]="statuses" optionValue="value" fluid>
+    <p-select
+      formControlName="active"
+      [options]="statuses"
+      optionValue="value"
+      [placeholder]="'ACADEMIC_CATALOG.FILTERS.STATUS' | translate"
+      fluid
+    >
       <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
       <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
     </p-select>
     <div class="gap-sm flex">
-      <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />
       <p-button
         type="button"
         icon="pi pi-filter-slash"
         severity="secondary"
         variant="outlined"
+        [attr.aria-label]="'COMMON.ACTIONS.CLEAR' | translate"
         (onClick)="clearFilters()"
       />
     </div>
-  </form>
+  </div>
   <div class="border-outline bg-surface rounded-xl border">
     @if (loading()) {
       <div class="p-xl text-text-secondary text-center">
@@ -63,7 +68,6 @@
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}</th>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.EMPLOYEE_NUMBER' | translate }}</th>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}</th>
-              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
@@ -72,43 +76,48 @@
                 class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
               >
                 <td class="md:p-md col-span-2 md:table-cell">
-                  <span class="text-h3 text-primary font-bold md:font-normal md:text-inherit">
+                  <a
+                    [routerLink]="['/academic-catalog/professors', professor.id]"
+                    class="text-primary hover:text-primary-hover active:text-primary-hover text-h3 md:text-body-md -mx-xs px-xs py-xs max-md:-mx-sm max-md:px-sm max-md:py-sm hover:bg-primary-container active:bg-primary-container focus-visible:ring-primary inline-block w-fit cursor-pointer rounded-sm font-bold underline underline-offset-2 transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:underline max-md:block max-md:w-full md:font-medium md:no-underline"
+                  >
                     {{ professor.firstLastName }} {{ professor.secondLastName }}
                     {{ professor.firstName }}
-                  </span>
+                  </a>
                 </td>
                 <td class="text-text-secondary md:p-md col-span-2 break-all md:table-cell">
-                  {{ professor.email }}
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}
+                  </span>
+                  <app-copyable-text [value]="professor.email">
+                    {{ professor.email }}
+                  </app-copyable-text>
                 </td>
                 <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.EMPLOYEE_NUMBER' | translate }}
                   </span>
-                  {{ professor.employeeNumber }}
+                  @if (professor.employeeNumber) {
+                    <app-copyable-text [value]="professor.employeeNumber">
+                      {{ professor.employeeNumber }}
+                    </app-copyable-text>
+                  } @else {
+                    <span class="text-text-tertiary italic">
+                      {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.NO_EMPLOYEE_NUMBER' | translate }}
+                    </span>
+                  }
                 </td>
                 <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}
                   </span>
-                  {{
-                    (professor.active
-                      ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
-                      : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
-                    ) | translate
-                  }}
-                </td>
-                <td class="md:p-md col-span-2 md:table-cell">
-                  <p-button
-                    icon="pi pi-key"
-                    severity="secondary"
-                    variant="outlined"
-                    [fluid]="true"
-                    [label]="'ACCOUNT.PASSWORD.ADMIN_ACTION' | translate"
-                    [routerLink]="['/account/users', professor.userId, 'password']"
-                    [queryParams]="{
-                      returnUrl: '/academic-catalog/professors',
-                      targetName: formatProfessorName(professor),
-                    }"
+                  <app-catalog-tag
+                    [value]="
+                      (professor.active
+                        ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
+                        : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
+                      ) | translate
+                    "
+                    [severity]="activeTagSeverity(professor.active)"
                   />
                 </td>
               </tr>

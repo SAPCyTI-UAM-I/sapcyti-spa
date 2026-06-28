@@ -12,14 +12,15 @@ import {
   StudentDetailResponse,
 } from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { CatalogTagComponent, CopyableTextComponent, ProfileFieldComponent } from '../../../../shared/components';
+import {
+  CatalogTagComponent,
+  CopyableTextComponent,
+  ProfileFieldComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
 import { formatProfessorName } from '../../utils/professor-display.util';
-import {
-  programStatusSeverity,
-  programTypeTagSeverity,
-} from '../../utils/catalog-tag.util';
+import { programStatusSeverity, programTypeTagSeverity } from '../../utils/catalog-tag.util';
 import {
   CATALOG_ERROR_I18N_SCOPE,
   mapCatalogError,

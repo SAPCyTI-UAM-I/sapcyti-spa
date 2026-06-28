@@ -7,8 +7,10 @@ import { PageResponse } from '../../../models';
 import {
   ProfessorCatalogItem,
   ProfessorCatalogQuery,
+  ProfessorDetailResponse,
   RegisterProfessorRequest,
   RegisterProfessorResponse,
+  UpdateProfessorRequest,
 } from '../../../models';
 import { ProfessorRepository } from './professor.repository';
 
@@ -30,5 +32,28 @@ export class ProfessorHttpRepository implements ProfessorRepository {
     return this.http.post<RegisterProfessorResponse>(API_ENDPOINTS.professors, request, {
       withCredentials: true,
     });
+  }
+
+  getProfessor(professorId: number): Observable<ProfessorDetailResponse> {
+    return this.http.get<ProfessorDetailResponse>(API_ENDPOINTS.professor(professorId), {
+      withCredentials: true,
+    });
+  }
+
+  updateProfessor(
+    professorId: number,
+    request: UpdateProfessorRequest,
+  ): Observable<ProfessorDetailResponse> {
+    return this.http.put<ProfessorDetailResponse>(API_ENDPOINTS.professor(professorId), request, {
+      withCredentials: true,
+    });
+  }
+
+  deactivateProfessor(professorId: number): Observable<ProfessorDetailResponse> {
+    return this.http.put<ProfessorDetailResponse>(
+      API_ENDPOINTS.professorDeactivate(professorId),
+      null,
+      { withCredentials: true },
+    );
   }
 }

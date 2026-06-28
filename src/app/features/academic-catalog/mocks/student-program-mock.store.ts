@@ -26,6 +26,7 @@ export class StudentProgramMockStore {
       programType: 'MAESTRIA',
       admissionDate: '2025-09-01',
       status: 'ACTIVO',
+      tutorId: 10,
       advisorIds: [],
       advisors: [],
     },
@@ -133,6 +134,14 @@ export class StudentProgramMockStore {
     this.programs = [...this.programs, program];
   }
 
+  hasActiveAssignment(professorId: number): boolean {
+    return this.programs.some(
+      (program) =>
+        program.status === 'ACTIVO' &&
+        (program.tutorId === professorId || program.advisorIds.includes(professorId)),
+    );
+  }
+
   private findProgram(studentId: number, programId: number): StudentProgramResponse | undefined {
     return this.programs.find(
       (program) => program.studentId === studentId && program.id === programId,
@@ -171,6 +180,7 @@ export class StudentProgramMockStore {
       firstName: professor.firstName,
       firstLastName: professor.firstLastName,
       secondLastName: professor.secondLastName,
+      active: professor.active,
     };
   }
 
