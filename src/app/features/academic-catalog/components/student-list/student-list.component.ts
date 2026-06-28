@@ -14,8 +14,8 @@ import { CopyableTextComponent, CatalogTagComponent } from '../../../../shared/c
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
 import {
+  activeTagSeverity,
   programTypeTagSeverity,
-  studentActiveTagSeverity,
 } from '../../utils/catalog-tag.util';
 import {
   CATALOG_PROGRAM_TYPE_FILTER_OPTIONS,
@@ -55,7 +55,7 @@ export class StudentListComponent extends CatalogListBase<StudentCatalogItem> im
   readonly programTypes = CATALOG_PROGRAM_TYPE_FILTER_OPTIONS;
   readonly statuses = CATALOG_STATUS_FILTER_OPTIONS;
   readonly programTypeTagSeverity = programTypeTagSeverity;
-  readonly studentActiveTagSeverity = studentActiveTagSeverity;
+  readonly activeTagSeverity = activeTagSeverity;
 
   override ngOnInit(): void {
     super.ngOnInit();

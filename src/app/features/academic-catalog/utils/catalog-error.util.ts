@@ -18,9 +18,6 @@ export type CatalogError =
   | 'graduate_program_not_found'
   | 'reference_not_found'
   | 'sabbatical_date_order'
-  | 'uea_already_exists'
-  | 'file_format_invalid'
-  | 'clave_invalid_format'
   | 'server';
 
 export const mapCatalogError = createDomainErrorMapper<CatalogError>({
@@ -50,9 +47,6 @@ export const mapCatalogError = createDomainErrorMapper<CatalogError>({
     },
     { match: matchSpringBootNotFound, key: 'reference_not_found' },
     { match: matchStatus(404), key: 'reference_not_found' },
-    { match: matchCode('UEA_ALREADY_EXISTS'), key: 'uea_already_exists' },
-    { match: matchCode('FILE_FORMAT_INVALID'), key: 'file_format_invalid' },
-    { match: matchCode('CLAVE_INVALID_FORMAT'), key: 'clave_invalid_format' },
   ],
   fallback: 'server',
   securityFallback: 'server',

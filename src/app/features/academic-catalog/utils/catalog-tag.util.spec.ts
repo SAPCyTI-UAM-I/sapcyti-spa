@@ -1,7 +1,7 @@
 import {
   programStatusSeverity,
   programTypeTagSeverity,
-  studentActiveTagSeverity,
+  activeTagSeverity,
 } from './catalog-tag.util';
 
 describe('catalog-tag.util', () => {
@@ -10,9 +10,9 @@ describe('catalog-tag.util', () => {
     expect(programTypeTagSeverity('DOCTORADO')).toBe('doctorado');
   });
 
-  it('maps student account active flag to catalog tag severities', () => {
-    expect(studentActiveTagSeverity(true)).toBe('success');
-    expect(studentActiveTagSeverity(false)).toBe('secondary');
+  it('maps active flag to catalog tag severities', () => {
+    expect(activeTagSeverity(true)).toBe('success');
+    expect(activeTagSeverity(false)).toBe('secondary');
   });
 
   it('maps program status to catalog tag severities', () => {

@@ -7,7 +7,7 @@ export function programTypeTagSeverity(programType: ProgramType): CatalogTagSeve
   return CATALOG_TAG_SEVERITY.programType[programType];
 }
 
-export function studentActiveTagSeverity(active: boolean): CatalogTagSeverity {
+export function activeTagSeverity(active: boolean): CatalogTagSeverity {
   return active
     ? CATALOG_TAG_SEVERITY.studentAccountStatus.active
     : CATALOG_TAG_SEVERITY.studentAccountStatus.inactive;

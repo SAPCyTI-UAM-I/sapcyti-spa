@@ -146,7 +146,7 @@
                         : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
                       ) | translate
                     "
-                    [severity]="ueaActiveTagSeverity(uea.active)"
+                    [severity]="activeTagSeverity(uea.active)"
                   />
                 </td>
               </tr>
@@ -170,117 +170,4 @@
   </footer>
 </section>
 
-<!-- Bulk upload dialog -->
-<p-dialog
-  [header]="'ACADEMIC_CATALOG.UEAS.BULK.TITLE' | translate"
-  [visible]="showBulkDialog()"
-  [modal]="true"
-  [style]="{ width: '32rem' }"
-  (onHide)="showBulkDialog.set(false)"
->
-  <div class="gap-md flex flex-col">
-    <div class="gap-xs flex flex-col">
-      <span class="text-body-sm text-text-secondary">
-        {{ 'ACADEMIC_CATALOG.UEAS.BULK.TEMPLATE_LABEL' | translate }}
-      </span>
-      <div class="gap-sm flex flex-wrap">
-        <a
-          href="assets/uea-template.xlsx"
-          download="uea-template.xlsx"
-          class="text-primary text-sm hover:underline"
-        >
-          <i class="pi pi-file-excel mr-xs"></i>Excel (.xlsx)
-        </a>
-        <a
-          href="assets/uea-template.csv"
-          download="uea-template.csv"
-          class="text-primary text-sm hover:underline"
-        >
-          <i class="pi pi-file mr-xs"></i>CSV (.csv)
-        </a>
-      </div>
-    </div>
-
-    <div class="gap-xs flex flex-col">
-      <span class="text-body-md">{{ 'ACADEMIC_CATALOG.UEAS.BULK.FILE_LABEL' | translate }}</span>
-      <div class="gap-sm flex items-center">
-        <label
-          for="bulk-file-input"
-          class="bg-primary hover:bg-primary-hover text-on-primary cursor-pointer rounded-lg px-4 py-2 text-sm font-medium transition-colors"
-        >
-          <i class="pi pi-folder-open mr-xs"></i>
-          {{ 'ACADEMIC_CATALOG.UEAS.BULK.BROWSE' | translate }}
-        </label>
-        <span class="text-text-secondary truncate text-sm">
-          {{
-            selectedFile()
-              ? selectedFile()!.name
-              : ('ACADEMIC_CATALOG.UEAS.BULK.NO_FILE' | translate)
-          }}
-        </span>
-      </div>
-      <input
-        id="bulk-file-input"
-        data-testid="bulk-file-input"
-        type="file"
-        accept=".xlsx,.csv"
-        class="sr-only"
-        (change)="onFileChange($event)"
-      />
-    </div>
-
-    @if (bulkError()) {
-      <p-message severity="error" [text]="bulkError() | domainError: catalogErrorScope" />
-    }
-
-    @if (bulkResult()) {
-      <div
-        data-testid="bulk-result"
-        class="border-outline rounded-lg border p-3"
-        [class.border-success]="bulkResult()!.errors.length === 0"
-        [class.border-error]="bulkResult()!.errors.length > 0"
-      >
-        @if (bulkResult()!.errors.length === 0) {
-          <p class="text-success font-medium">
-            {{
-              'ACADEMIC_CATALOG.UEAS.BULK.SUMMARY_SUCCESS'
-                | translate: { count: bulkResult()!.created }
-            }}
-          </p>
-        } @else {
-          <p class="text-error font-medium">
-            {{
-              'ACADEMIC_CATALOG.UEAS.BULK.SUMMARY_ERRORS'
-                | translate: { count: bulkResult()!.errors.length }
-            }}
-          </p>
-          <ul class="text-body-md mt-2 list-inside list-disc">
-            @for (err of bulkResult()!.errors; track err.row) {
-              <li>
-                {{ 'ACADEMIC_CATALOG.UEAS.BULK.ROW_LABEL' | translate }} {{ err.row }}:
-                {{ bulkErrorLabel(err.code) | translate }}
-              </li>
-            }
-          </ul>
-        }
-      </div>
-    }
-  </div>
-
-  <ng-template #footer>
-    <p-button
-      severity="secondary"
-      variant="outlined"
-      [label]="'COMMON.ACTIONS.CLOSE' | translate"
-      (onClick)="showBulkDialog.set(false)"
-    />
-    <p-button
-      data-testid="bulk-upload-submit"
-      icon="pi pi-upload"
-      [label]="'ACADEMIC_CATALOG.UEAS.BULK.UPLOAD' | translate"
-      [loading]="bulkLoading()"
-      [disabled]="!selectedFile() || bulkLoading()"
-      (onClick)="uploadBulk()"
-    />
-  </ng-template>
-</p-dialog>
+<app-uea-bulk-upload-dialog (uploaded)="load()" />

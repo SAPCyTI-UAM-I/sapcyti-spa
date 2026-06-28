@@ -22,15 +22,14 @@ import { FieldErrorComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { UeaService } from '../../services/uea.service';
-import {
-  CatalogError,
-  CATALOG_ERROR_I18N_SCOPE,
-  mapCatalogError,
-} from '../../utils/catalog-error.util';
+import { CATALOG_ERROR_I18N_SCOPE } from '../../utils/catalog-error.util';
+import { UeaError, mapUeaError } from '../../utils/uea-error.util';
 import type { I18nKey } from '../../../../core/i18n/i18n-keys.generated';
 
 function onlyDigits(control: AbstractControl): ValidationErrors | null {
-  return /^\d+$/.test(String(control.value)) ? null : { onlyDigits: true };
+  const v = control.value;
+  if (v == null || v === '') return null; // defer to Validators.required
+  return /^\d+$/.test(String(v)) ? null : { onlyDigits: true };
 }
 
 function integerValidator(control: AbstractControl): ValidationErrors | null {
@@ -85,7 +84,7 @@ export class UeaRegistrationComponent {
 
   readonly submitted = signal(false);
   readonly loading = signal(false);
-  readonly error = signal<CatalogError | null>(null);
+  readonly error = signal<UeaError | null>(null);
   readonly catalogErrorScope = CATALOG_ERROR_I18N_SCOPE;
 
   readonly tipoOptions = UEA_TIPO_OPTIONS;
@@ -136,7 +135,7 @@ export class UeaRegistrationComponent {
           });
           void this.router.navigate(['/academic-catalog/ueas']);
         },
-        error: (err) => this.error.set(mapCatalogError(err)),
+        error: (err) => this.error.set(mapUeaError(err)),
       });
   }
 

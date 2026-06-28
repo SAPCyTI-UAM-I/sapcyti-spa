@@ -54,20 +54,24 @@ export function parseUeaCsv(text: string): UeaBulkRawRow[] | null {
   const expected = UEA_BULK_REQUIRED_HEADERS as readonly string[];
   if (!expected.every((h, i) => headers[i] === h)) return null;
 
+  // Index map derived from the validated header row — column positions stay
+  // in sync with UEA_BULK_REQUIRED_HEADERS without needing manual numbering.
+  const col = Object.fromEntries(expected.map((h, i) => [h, i]));
+
   return lines
     .slice(1)
     .filter((l) => l.trim())
     .map((line) => {
       const cols = parseCsvLine(line);
       return {
-        clave: cols[0] ?? '',
-        nombre: cols[1] ?? '',
-        tipo: cols[2] ?? '',
-        modalidad: cols[3] ?? '',
-        horasTeoria: cols[4] ?? '',
-        horasPractica: cols[5] ?? '',
-        tipoFormacion: cols[6] ?? '',
-        creditos: cols[7] ?? '',
+        clave: cols[col['Clave']!] ?? '',
+        nombre: cols[col['NOMBRE UEA']!] ?? '',
+        tipo: cols[col['TIPO']!] ?? '',
+        modalidad: cols[col['MODALIDAD']!] ?? '',
+        horasTeoria: cols[col['H. TEOR.']!] ?? '',
+        horasPractica: cols[col['H. PRAC.']!] ?? '',
+        tipoFormacion: cols[col['Tipo formacion']!] ?? '',
+        creditos: cols[col['Creditos']!] ?? '',
       };
     });
 }

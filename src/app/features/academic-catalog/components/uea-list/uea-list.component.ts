@@ -1,18 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
-import { Message } from 'primeng/message';
 import { Paginator } from 'primeng/paginator';
 import { Select } from 'primeng/select';
-import { finalize, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
-import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { PageResponse, UeaBulkUploadResult, UeaCatalogItem } from '../../../../models';
+import { PageResponse, UeaCatalogItem } from '../../../../models';
 import { CatalogTagComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { UeaService } from '../../services/uea.service';
@@ -20,14 +16,9 @@ import {
   CATALOG_STATUS_FILTER_OPTIONS,
   parseActiveFilter,
 } from '../../utils/catalog-filter.options';
-import {
-  CatalogError,
-  CATALOG_ERROR_I18N_SCOPE,
-  mapCatalogError,
-} from '../../utils/catalog-error.util';
+import { activeTagSeverity } from '../../utils/catalog-tag.util';
 import { CatalogListBase } from '../catalog-list.base';
-import type { I18nKey } from '../../../../core/i18n/i18n-keys.generated';
-import { BulkErrorCode } from '../../../../models';
+import { UeaBulkUploadDialogComponent } from '../uea-bulk-upload-dialog/uea-bulk-upload-dialog.component';
 
 @Component({
   selector: 'app-uea-list',
@@ -38,13 +29,11 @@ import { BulkErrorCode } from '../../../../models';
     RouterLink,
     TranslatePipe,
     Button,
-    Dialog,
     InputText,
-    Message,
     Paginator,
     Select,
     CatalogTagComponent,
-    DomainErrorMessagePipe,
+    UeaBulkUploadDialogComponent,
   ],
   templateUrl: './uea-list.component.html',
 })
@@ -58,14 +47,9 @@ export class UeaListComponent extends CatalogListBase<UeaCatalogItem> {
   });
 
   readonly statuses = CATALOG_STATUS_FILTER_OPTIONS;
-  readonly catalogErrorScope = CATALOG_ERROR_I18N_SCOPE;
+  readonly activeTagSeverity = activeTagSeverity;
 
-  // Bulk upload dialog state
-  readonly showBulkDialog = signal(false);
-  readonly bulkLoading = signal(false);
-  readonly bulkResult = signal<UeaBulkUploadResult | null>(null);
-  readonly bulkError = signal<CatalogError | null>(null);
-  readonly selectedFile = signal<File | null>(null);
+  private readonly bulkDialog = viewChild.required(UeaBulkUploadDialogComponent);
 
   protected override fetchItems(): Observable<PageResponse<UeaCatalogItem>> {
     const filters = this.filters.getRawValue();
@@ -77,50 +61,7 @@ export class UeaListComponent extends CatalogListBase<UeaCatalogItem> {
     });
   }
 
-  ueaActiveTagSeverity(active: boolean): 'success' | 'secondary' {
-    return active ? 'success' : 'secondary';
-  }
-
-  bulkErrorLabel(code: BulkErrorCode): I18nKey {
-    return `ACADEMIC_CATALOG.UEAS.BULK.ERRORS.${code}` as I18nKey;
-  }
-
   openBulkDialog(): void {
-    this.bulkResult.set(null);
-    this.bulkError.set(null);
-    this.selectedFile.set(null);
-    this.showBulkDialog.set(true);
-  }
-
-  onFileChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.selectedFile.set(input.files?.[0] ?? null);
-    this.bulkResult.set(null);
-    this.bulkError.set(null);
-  }
-
-  uploadBulk(): void {
-    const file = this.selectedFile();
-    if (!file) return;
-
-    this.bulkLoading.set(true);
-    this.bulkError.set(null);
-    this.bulkResult.set(null);
-
-    this.service
-      .bulkUploadUeas(file)
-      .pipe(
-        finalize(() => this.bulkLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (result) => {
-          this.bulkResult.set(result);
-          if (result.created > 0) {
-            this.load();
-          }
-        },
-        error: (error) => this.bulkError.set(mapCatalogError(error)),
-      });
+    this.bulkDialog().open();
   }
 }
