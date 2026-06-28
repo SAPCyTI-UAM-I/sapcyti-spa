@@ -122,7 +122,7 @@ Response — `PageResponse<UeaCatalogItem>`:
   "content": [ /* UeaCatalogItem[] */ ],
   "totalElements": 38,
   "totalPages": 4,
-  "page": 0,
+  "number": 0,
   "size": 10
 }
 ```
@@ -271,3 +271,4 @@ Row-level codes (inside `UeaBulkUploadResult.errors[].code`) shown per row in th
 3. Bulk insert must be wrapped in a single transaction — rollback everything on any row error.
 4. The `row` number in errors is **1-indexed relative to data rows** (header is row 0; first data row = 1), matching what the SPA displays.
 5. `X-Graduate-Id` scopes all queries — never leak UEAs across tenants.
+6. Paged list responses use Spring shape: `content`, `totalElements`, `totalPages`, `number`, `size` (not `page`).

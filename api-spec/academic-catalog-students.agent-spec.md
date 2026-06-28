@@ -300,7 +300,7 @@ Expected errors:
 - `409` duplicate enrollment
 - `404` graduate program not found
 - `404` professor not found
-- `400` validation (HU-44 cascade, duplicate advisors)
+- `400` validation (HU-44 cascade, duplicate advisors, line required for area, area mismatch)
 
 Example request:
 
@@ -408,7 +408,7 @@ Request:
 Expected errors:
 - `404` student program not found
 - `404` professor not found
-- `400` validation
+- `400` validation (HU-44 cascade, duplicate advisors, line required for area, area mismatch)
 
 Example request:
 
@@ -495,6 +495,8 @@ Example response:
 - `Graduation date must be on or after admission date`
 - `Withdrawal reason is required when status is BAJA`
 - `Duplicate advisor IDs are not allowed`
+- `Research area does not belong to the selected line of knowledge`
+- `Line of knowledge is required when research area is selected`
 
 ## Backend Notes
 

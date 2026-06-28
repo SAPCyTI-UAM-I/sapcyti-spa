@@ -153,7 +153,7 @@ Expected errors:
 - `409` duplicate email
 - `409` duplicate employee number (internos)
 - `404` graduate program not found
-- `400` validation (missing NEMP for interno, NEMP sent for externo, sabbatical order)
+- `400` validation (missing NEMP for interno, NEMP provided for externo, sabbatical order)
 
 ### 3. Get professor detail
 
@@ -189,7 +189,7 @@ Expected errors:
 - `404` professor not found
 - `409` duplicate email
 - `409` duplicate employee number
-- `400` validation
+- `400` validation (missing NEMP for interno, NEMP provided for externo, sabbatical order)
 
 Example — change Interno to Externo:
 
@@ -242,6 +242,7 @@ Expected errors:
 - `Professor is already inactive`
 - `Professor is tutor or advisor of an active student program`
 - `Employee number is required for internal professors`
+- `Employee number must not be provided for external professors`
 - `Sabbatical end date must be on or after start date`
 
 ## Backend Notes
