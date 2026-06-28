@@ -132,12 +132,13 @@ Esto compilará el proyecto y almacenará los artefactos generados en el directo
 
 ## Docker / full stack (SPEC-010)
 
-The production image is built from this repo and orchestrated by **`sapcyti-api/docker-compose.yml`** (service `edge`). Clone layout:
+The production image is built from this repo and orchestrated by **`sapcyti-infra/local-dev/docker-compose.stack.yml`** (service `edge`). Clone layout:
 
 ```text
-SAP/
-├── sapcyti-api/    ← docker compose -f docker-compose.yml up --build
-└── sapcyti-spa/    ← build context ../sapcyti-spa
+SAPCyTI/
+├── sapcyti-infra/  ← docker compose -f local-dev/docker-compose.stack.yml up --build
+├── sapcyti-api/    ← build context ../../sapcyti-api
+└── sapcyti-spa/    ← build context ../../sapcyti-spa
 ```
 
 ### Build edge image only
@@ -146,15 +147,15 @@ SAP/
 docker build -t sapcyti-spa:local .
 ```
 
-Artifacts: `dist/sapcyti-spa/browser` copied into Nginx; [`docker/nginx/default.conf`](docker/nginx/default.conf) proxies `/api/` → `api:8080`.
+Artifacts: `dist/sapcyti-spa/browser` copied into Nginx; [`docker/nginx/default.conf.template`](docker/nginx/default.conf.template) is rendered at startup via `API_URL` (default `http://api:8080`) and proxies `/api/` to the backend.
 
 ### Run with the full stack
 
-From `sapcyti-api/`:
+From `sapcyti-infra/`:
 
 ```bash
-cp .env.docker.example .env   # or Copy-Item on Windows
-docker compose -f docker-compose.yml up --build
+cp local-dev/.env.example local-dev/.env   # or Copy-Item on Windows
+docker compose -f local-dev/docker-compose.stack.yml up --build
 ```
 
 Open [http://localhost](http://localhost). Production build uses `apiBaseUrl: '/api'` in [`src/environments/environment.prod.ts`](src/environments/environment.prod.ts) (same-origin via Nginx).
