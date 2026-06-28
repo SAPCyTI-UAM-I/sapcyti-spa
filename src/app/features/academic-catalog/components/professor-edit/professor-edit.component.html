@@ -113,7 +113,10 @@
     </form>
 
     @if (professor(); as current) {
-      <div class="border-outline pt-lg gap-sm flex flex-wrap" data-testid="professor-edit-actions">
+      <div
+        class="border-outline pt-lg gap-sm flex flex-wrap justify-between"
+        data-testid="professor-edit-actions"
+      >
         <p-button
           data-testid="change-professor-password"
           icon="pi pi-key"
@@ -126,7 +129,57 @@
             targetName: formatPersonName(current),
           }"
         />
+        @if (current.active) {
+          <p-button
+            data-testid="deactivate-professor"
+            severity="danger"
+            variant="outlined"
+            icon="pi pi-user-minus"
+            [label]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.ACTION' | translate"
+            (onClick)="openDeactivateDialog()"
+          />
+        }
       </div>
     }
   }
 </section>
+
+<p-dialog
+  [header]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.CONFIRM_TITLE' | translate"
+  [modal]="true"
+  [visible]="showDeactivateDialog()"
+  [closable]="!deactivating()"
+  [style]="{ width: 'min(100%, 32rem)' }"
+  (visibleChange)="showDeactivateDialog.set($event)"
+  (onHide)="closeDeactivateDialog()"
+>
+  <p class="text-body-md text-text-secondary">
+    {{ 'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.CONFIRM_MESSAGE' | translate }}
+  </p>
+  @if (deactivateError()) {
+    <p-message
+      class="mt-md block"
+      severity="error"
+      [text]="deactivateError() | domainError: catalogErrorScope"
+    />
+  }
+  <ng-template #footer>
+    <div class="gap-sm flex justify-end">
+      <p-button
+        severity="secondary"
+        variant="outlined"
+        [label]="'COMMON.ACTIONS.CANCEL' | translate"
+        [disabled]="deactivating()"
+        (onClick)="closeDeactivateDialog()"
+      />
+      <p-button
+        data-testid="confirm-deactivate-professor"
+        severity="danger"
+        [label]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.ACTION' | translate"
+        [loading]="deactivating()"
+        [disabled]="deactivating()"
+        (onClick)="confirmDeactivate()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

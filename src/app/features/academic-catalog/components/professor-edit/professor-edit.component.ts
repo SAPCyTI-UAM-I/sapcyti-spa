@@ -13,6 +13,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
+import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
@@ -47,6 +48,7 @@ import {
     TranslatePipe,
     Button,
     Checkbox,
+    Dialog,
     InputText,
     Message,
     Select,
@@ -68,9 +70,12 @@ export class ProfessorEditComponent implements OnInit {
 
   readonly loading = signal(true);
   readonly submitting = signal(false);
+  readonly deactivating = signal(false);
   readonly submitted = signal(false);
   readonly error = signal<CatalogError | null>(null);
+  readonly deactivateError = signal<CatalogError | null>(null);
   readonly professor = signal<ProfessorDetailResponse | null>(null);
+  readonly showDeactivateDialog = signal(false);
 
   readonly isFieldInvalid = isFieldInvalid;
   readonly formatPersonName = formatPersonName;
@@ -132,6 +137,42 @@ export class ProfessorEditComponent implements OnInit {
           void this.router.navigate(['/academic-catalog/professors', this.professorId]);
         },
         error: (err) => this.error.set(mapProfessorError(err)),
+      });
+  }
+
+  openDeactivateDialog(): void {
+    this.deactivateError.set(null);
+    this.showDeactivateDialog.set(true);
+  }
+
+  closeDeactivateDialog(): void {
+    if (this.deactivating()) {
+      return;
+    }
+    this.showDeactivateDialog.set(false);
+    this.deactivateError.set(null);
+  }
+
+  confirmDeactivate(): void {
+    this.deactivating.set(true);
+    this.deactivateError.set(null);
+    this.service
+      .deactivateProfessor(this.professorId)
+      .pipe(
+        finalize(() => this.deactivating.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (professor) => {
+          this.professor.set(professor);
+          this.showDeactivateDialog.set(false);
+          this.messages.add({
+            severity: 'success',
+            summary: this.translate.instant('ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.SUCCESS'),
+            life: TOAST_LIFE.DEFAULT,
+          });
+        },
+        error: (err) => this.deactivateError.set(mapProfessorError(err)),
       });
   }
 

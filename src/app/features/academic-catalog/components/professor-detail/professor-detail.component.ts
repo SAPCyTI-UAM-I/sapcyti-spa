@@ -1,22 +1,15 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
 import { Message } from 'primeng/message';
-import { MessageService } from 'primeng/api';
 import { finalize } from 'rxjs';
 
 import { ProfessorDetailResponse } from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import {
-  CatalogTagComponent,
-  CopyableTextComponent,
-  ProfileFieldComponent,
-} from '../../../../shared/components';
+import { CatalogTagComponent, CopyableTextComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
-import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { ProfessorService } from '../../services/professor.service';
 import { activeTagSeverity } from '../../utils/catalog-tag.util';
 import {
@@ -33,10 +26,8 @@ import {
     RouterLink,
     TranslatePipe,
     Button,
-    Dialog,
     Message,
     DomainErrorMessagePipe,
-    ProfileFieldComponent,
     CopyableTextComponent,
     CatalogTagComponent,
   ],
@@ -46,18 +37,13 @@ export class ProfessorDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly service = inject(ProfessorService);
-  private readonly messages = inject(MessageService);
-  private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly professorId = Number(this.route.snapshot.paramMap.get('professorId'));
 
   readonly loading = signal(true);
-  readonly deactivating = signal(false);
   readonly error = signal<CatalogError | null>(null);
-  readonly deactivateError = signal<CatalogError | null>(null);
   readonly professor = signal<ProfessorDetailResponse | null>(null);
-  readonly showDeactivateDialog = signal(false);
 
   readonly activeTagSeverity = activeTagSeverity;
   readonly catalogErrorScope = CATALOG_ERROR_I18N_SCOPE;
@@ -88,42 +74,6 @@ export class ProfessorDetailComponent {
     const first = current.firstName?.trim().charAt(0) ?? '';
     const last = current.firstLastName?.trim().charAt(0) ?? '';
     return `${first}${last}`.toUpperCase();
-  }
-
-  openDeactivateDialog(): void {
-    this.deactivateError.set(null);
-    this.showDeactivateDialog.set(true);
-  }
-
-  closeDeactivateDialog(): void {
-    if (this.deactivating()) {
-      return;
-    }
-    this.showDeactivateDialog.set(false);
-    this.deactivateError.set(null);
-  }
-
-  confirmDeactivate(): void {
-    this.deactivating.set(true);
-    this.deactivateError.set(null);
-    this.service
-      .deactivateProfessor(this.professorId)
-      .pipe(
-        finalize(() => this.deactivating.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (professor) => {
-          this.professor.set(professor);
-          this.showDeactivateDialog.set(false);
-          this.messages.add({
-            severity: 'success',
-            summary: this.translate.instant('ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.SUCCESS'),
-            life: TOAST_LIFE.DEFAULT,
-          });
-        },
-        error: (err) => this.deactivateError.set(mapProfessorError(err)),
-      });
   }
 
   private load(): void {
