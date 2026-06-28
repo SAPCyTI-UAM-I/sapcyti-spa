@@ -20,6 +20,8 @@ This file is optimized for backend implementation by an AI agent: short, explici
 6. `researchArea` must belong to the selected `lineOfKnowledge`.
 7. `advisorIds` must not contain duplicates.
 8. Backend returns canonical catalog values as strings. The SPA handles translation.
+9. On registration, `tutorId` and `advisorIds` are optional.
+10. If provided on registration, tutor/advisor professor IDs must exist.
 
 ## Auth / Headers
 
@@ -52,6 +54,10 @@ Required:
 Optional:
 - `secondLastName`
 - `phoneExtension`
+- `lineOfKnowledge`
+- `researchArea`
+- `tutorId` (`null` allowed)
+- `advisorIds`
 
 ```ts
 {
@@ -69,6 +75,10 @@ Optional:
   lastDegreeObtained: string;
   programType: 'MAESTRIA' | 'DOCTORADO';
   admissionDate: string;    // YYYY-MM-DD
+  lineOfKnowledge?: string;
+  researchArea?: string;
+  tutorId?: number | null;
+  advisorIds?: number[];
 }
 ```
 
@@ -251,7 +261,8 @@ Expected errors:
 - `409` duplicate email
 - `409` duplicate enrollment
 - `404` graduate program not found
-- `400` validation
+- `404` professor not found
+- `400` validation (HU-44 cascade, duplicate advisors)
 
 Example request:
 
@@ -268,7 +279,11 @@ Example request:
   "undergraduateDegree": "Computación",
   "lastDegreeObtained": "Licenciatura en Computación",
   "programType": "MAESTRIA",
-  "admissionDate": "2026-09-01"
+  "admissionDate": "2026-09-01",
+  "lineOfKnowledge": "Ciencias e Ingeniería de la Computación",
+  "researchArea": "Inteligencia artificial",
+  "tutorId": 10,
+  "advisorIds": [11]
 }
 ```
 
