@@ -3,12 +3,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { finalize, Observable } from 'rxjs';
 
-import { CatalogError, mapCatalogError } from '../utils/catalog-error.util';
+import {
+  CatalogError,
+  CATALOG_ERROR_I18N_SCOPE,
+  mapCatalogError,
+} from '../utils/catalog-error.util';
 
 @Directive()
 export abstract class CatalogRegistrationBase<TResponse extends { generatedPassword: string }> {
   protected readonly router = inject(Router);
   protected readonly destroyRef = inject(DestroyRef);
+
+  readonly catalogErrorScope = CATALOG_ERROR_I18N_SCOPE;
 
   readonly step = signal(1);
   readonly submitted = signal(false);

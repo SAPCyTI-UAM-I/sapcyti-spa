@@ -36,6 +36,30 @@ export const ACADEMIC_CATALOG_ROUTES: Routes = [
         canActivate: [authGuard],
         data: { ...catalogData, breadcrumb: 'BREADCRUMB.NEW' },
       },
+      {
+        path: ':studentId/programs/:programId',
+        loadComponent: () =>
+          import('./components/student-program-view/student-program-view.component').then(
+            (m) => m.StudentProgramViewComponent,
+          ),
+        canActivate: [authGuard],
+        data: {
+          ...catalogData,
+          breadcrumb: 'ACADEMIC_CATALOG.STUDENT_PROGRAM.BREADCRUMB.VIEW',
+        },
+      },
+      {
+        path: ':studentId/programs/:programId/edit',
+        loadComponent: () =>
+          import('./components/student-program-edit/student-program-edit.component').then(
+            (m) => m.StudentProgramEditComponent,
+          ),
+        canActivate: [authGuard],
+        data: {
+          ...catalogData,
+          breadcrumb: 'ACADEMIC_CATALOG.STUDENT_PROGRAM.BREADCRUMB.EDIT',
+        },
+      },
     ],
   },
   {

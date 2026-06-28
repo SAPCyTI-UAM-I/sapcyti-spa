@@ -1,0 +1,140 @@
+<section class="gap-lg flex flex-col" data-testid="student-program-view">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-h2 text-primary font-bold">
+        {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.VIEW.TITLE' | translate }}
+      </h1>
+      @if (program(); as current) {
+        <p class="text-text-secondary">
+          {{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + current.programType | translate }}
+        </p>
+      }
+    </div>
+    <div class="gap-sm flex flex-wrap">
+      @if (program()) {
+        <p-button
+          icon="pi pi-pencil"
+          [label]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.VIEW.EDIT_ACTION' | translate"
+          [routerLink]="editRoute()"
+        />
+      }
+      <p-button
+        severity="secondary"
+        variant="outlined"
+        icon="pi pi-arrow-left"
+        [label]="'COMMON.ACTIONS.BACK' | translate"
+        (onClick)="backToCatalog()"
+      />
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="p-xl text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else if (error()) {
+    <p-message severity="error" [text]="error() | domainError: studentProgramErrorScope" />
+  } @else if (program(); as current) {
+    <div class="gap-lg grid lg:grid-cols-2">
+      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+        <h2 class="text-h3 font-bold">
+          {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.VIEW.IDENTIFICATION' | translate }}
+        </h2>
+        <dl class="gap-sm grid">
+          <div class="gap-xs flex flex-col">
+            <dt class="text-caption text-text-secondary">
+              {{ 'ACADEMIC_CATALOG.FIELDS.ENROLLMENT_ID' | translate }}
+            </dt>
+            <dd>{{ current.enrollmentId }}</dd>
+          </div>
+          <div class="gap-xs flex flex-col">
+            <dt class="text-caption text-text-secondary">
+              {{ 'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate }}
+            </dt>
+            <dd>{{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + current.programType | translate }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+        <h2 class="text-h3 font-bold">
+          {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.VIEW.METADATA' | translate }}
+        </h2>
+        <dl class="gap-sm grid">
+          <div class="gap-xs flex flex-col">
+            <dt class="text-caption text-text-secondary">
+              {{ 'ACADEMIC_CATALOG.FIELDS.ADMISSION_DATE' | translate }}
+            </dt>
+            <dd>{{ current.admissionDate }}</dd>
+          </div>
+          @if (current.graduationDate) {
+            <div class="gap-xs flex flex-col">
+              <dt class="text-caption text-text-secondary">
+                {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.GRADUATION_DATE' | translate }}
+              </dt>
+              <dd>{{ current.graduationDate }}</dd>
+            </div>
+          }
+          @if (current.researchArea) {
+            <div class="gap-xs flex flex-col">
+              <dt class="text-caption text-text-secondary">
+                {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.RESEARCH_AREA' | translate }}
+              </dt>
+              <dd>{{ current.researchArea }}</dd>
+            </div>
+          }
+          <div class="gap-xs flex flex-col">
+            <dt class="text-caption text-text-secondary">
+              {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}
+            </dt>
+            <dd>
+              <p-tag
+                [value]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.STATUS.' + current.status | translate"
+                [severity]="programStatusSeverity(current.status)"
+                [rounded]="true"
+              />
+            </dd>
+          </div>
+          @if (current.status === 'BAJA' && current.withdrawalReason) {
+            <div class="gap-xs flex flex-col">
+              <dt class="text-caption text-text-secondary">
+                {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.WITHDRAWAL_REASON' | translate }}
+              </dt>
+              <dd>{{ current.withdrawalReason }}</dd>
+            </div>
+          }
+        </dl>
+      </article>
+
+      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+        <h2 class="text-h3 font-bold">
+          {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.TUTOR' | translate }}
+        </h2>
+        @if (current.tutor) {
+          <p>{{ formatProfessorName(current.tutor) }}</p>
+        } @else {
+          <p class="text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.VIEW.NO_TUTOR' | translate }}
+          </p>
+        }
+      </article>
+
+      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+        <h2 class="text-h3 font-bold">
+          {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.ADVISORS' | translate }}
+        </h2>
+        @if (current.advisors.length > 0) {
+          <ul class="gap-sm flex flex-col">
+            @for (advisor of current.advisors; track advisor.id) {
+              <li>{{ formatProfessorName(advisor) }}</li>
+            }
+          </ul>
+        } @else {
+          <p class="text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.VIEW.NO_ADVISORS' | translate }}
+          </p>
+        }
+      </article>
+    </div>
+  }
+</section>

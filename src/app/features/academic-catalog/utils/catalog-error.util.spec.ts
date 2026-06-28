@@ -1,0 +1,82 @@
+import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
+import {
+  mockApiError,
+  mockSpringBootNotFound,
+} from '../../../core/errors/testing/mock-api-error.util';
+import { mapCatalogError } from './catalog-error.util';
+
+describe('mapCatalogError', () => {
+  it('maps legacy mock conflict codes', () => {
+    expect(mapCatalogError(mockApiError({ status: 409, code: 'EMAIL_ALREADY_EXISTS' }))).toBe(
+      'duplicate_email',
+    );
+  });
+
+  it('maps production CONFLICT responses by message', () => {
+    expect(
+      mapCatalogError(
+        mockApiError({
+          status: 409,
+          error: 'CONFLICT',
+          message: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_STUDENT_EMAIL,
+        }),
+      ),
+    ).toBe('duplicate_email');
+  });
+
+  it('maps duplicate enrollment conflicts', () => {
+    expect(
+      mapCatalogError(
+        mockApiError({
+          status: 409,
+          error: 'CONFLICT',
+          message: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ENROLLMENT,
+        }),
+      ),
+    ).toBe('duplicate_enrollment');
+  });
+
+  it('maps duplicate employee conflicts', () => {
+    expect(
+      mapCatalogError(
+        mockApiError({
+          status: 409,
+          error: 'CONFLICT',
+          message: BACKEND_MESSAGES.ACADEMIC.DUPLICATE_EMPLOYEE,
+        }),
+      ),
+    ).toBe('duplicate_employee');
+  });
+
+  it('maps graduate program not found by message', () => {
+    expect(
+      mapCatalogError(
+        mockApiError({
+          status: 404,
+          error: 'NOT_FOUND',
+          message: BACKEND_MESSAGES.ACADEMIC.GRADUATE_PROGRAM_NOT_FOUND,
+        }),
+      ),
+    ).toBe('graduate_program_not_found');
+  });
+
+  it('maps sabbatical validation errors', () => {
+    expect(
+      mapCatalogError(
+        mockApiError({
+          status: 400,
+          error: 'VALIDATION_ERROR',
+          message: BACKEND_MESSAGES.ACADEMIC.SABBATICAL_DATE_ORDER,
+        }),
+      ),
+    ).toBe('sabbatical_date_order');
+  });
+
+  it('maps Spring Boot 404 without message', () => {
+    expect(mapCatalogError(mockSpringBootNotFound())).toBe('reference_not_found');
+  });
+
+  it('falls back to server for unknown failures', () => {
+    expect(mapCatalogError(mockApiError({ status: 500 }))).toBe('server');
+  });
+});

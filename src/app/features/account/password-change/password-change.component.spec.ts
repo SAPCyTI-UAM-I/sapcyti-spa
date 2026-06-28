@@ -138,6 +138,29 @@ describe('PasswordChangeComponent', () => {
     expect(component.error()).toBe('current_password');
   });
 
+  it('maps production validation message for wrong current password', async () => {
+    const { component, service } = await createComponent(null);
+    service.changePassword.mockReturnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 400,
+            error: {
+              error: 'VALIDATION_ERROR',
+              message: 'Current password is incorrect',
+            },
+          }),
+      ),
+    );
+    component.form.patchValue({
+      currentPassword: 'wrong-password',
+      newPassword: 'new-password',
+      confirmPassword: 'new-password',
+    });
+    component.submit();
+    expect(component.error()).toBe('current_password');
+  });
+
   it('maps a 404 response to the user_not_found error', async () => {
     const { component, service } = await createComponent('201');
     service.changePassword.mockReturnValue(

@@ -14,7 +14,9 @@
       "duplicate_email": "El correo electrónico ya está registrado.",
       "duplicate_employee": "El número de empleado ya está registrado.",
       "duplicate_enrollment": "La matrícula ya está registrada.",
+      "graduate_program_not_found": "No se encontró el programa de posgrado solicitado.",
       "reference_not_found": "No se encontró el programa académico solicitado.",
+      "sabbatical_date_order": "La fecha final del sabático debe ser posterior o igual a la inicial.",
       "server": "Ocurrió un error al guardar la información."
     },
     "FIELDS": {
@@ -68,6 +70,55 @@
       "ACTIVE": "Activo",
       "INACTIVE": "Inactivo"
     },
+    "STUDENT_PROGRAM": {
+      "BREADCRUMB": {
+        "EDIT": "Editar programa",
+        "VIEW": "Programa académico"
+      },
+      "CHOOSER": {
+        "SUBTITLE": "Seleccione el programa que desea consultar.",
+        "TITLE": "Elegir programa"
+      },
+      "EDIT": {
+        "TITLE": "Editar programa académico"
+      },
+      "ERRORS": {
+        "date_order": "La fecha de egreso debe ser posterior o igual a la de ingreso.",
+        "duplicate_advisor_ids": "No puede repetir el mismo asesor más de una vez.",
+        "load_failed": "No se pudo cargar la información del programa académico.",
+        "no_program": "Este alumno no tiene un programa académico registrado.",
+        "professor_not_found": "No se encontró el profesor seleccionado.",
+        "program_not_found": "No se encontró el programa académico.",
+        "server": "Ocurrió un error al guardar el programa.",
+        "student_not_found": "No se encontró el alumno solicitado.",
+        "validation": "Revise los datos del formulario.",
+        "withdrawal_reason_required": "Indique el motivo de baja cuando el estado es Baja."
+      },
+      "FIELDS": {
+        "ADVISORS": "Asesores",
+        "GRADUATION_DATE": "Fecha de egreso",
+        "PROFESSOR_SEARCH": "Buscar por nombre",
+        "RESEARCH_AREA": "Área de investigación",
+        "TUTOR": "Tutor",
+        "WITHDRAWAL_REASON": "Motivo de baja"
+      },
+      "STATUS": {
+        "ACTIVO": "Activo",
+        "BAJA": "Baja",
+        "EGRESADO": "Egresado"
+      },
+      "TOAST": {
+        "SAVED": "Programa actualizado correctamente."
+      },
+      "VIEW": {
+        "EDIT_ACTION": "Editar programa",
+        "IDENTIFICATION": "Identificación",
+        "METADATA": "Información del programa",
+        "NO_ADVISORS": "Sin asesores asignados",
+        "NO_TUTOR": "Sin tutor asignado",
+        "TITLE": "Programa académico"
+      }
+    },
     "STUDENTS": {
       "CREATE": {
         "ACADEMIC_SECTION": "Información académica",
@@ -80,7 +131,8 @@
         "EMPTY": "No se encontraron alumnos.",
         "SEARCH": "Buscar por nombre, correo o matrícula",
         "SUBTITLE": "Consulte y administre los alumnos del posgrado.",
-        "TITLE": "Alumnos"
+        "TITLE": "Alumnos",
+        "VIEW_PROGRAM": "Ver programa"
       }
     },
     "TEMP_PASSWORD": {

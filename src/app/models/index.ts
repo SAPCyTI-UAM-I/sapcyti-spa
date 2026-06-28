@@ -7,3 +7,5 @@ export * from './page-response.model';
 export * from './professor.model';
 export * from './role-type.model';
 export * from './student.model';
+export * from './student-program.model';
+export * from './student-program.model';

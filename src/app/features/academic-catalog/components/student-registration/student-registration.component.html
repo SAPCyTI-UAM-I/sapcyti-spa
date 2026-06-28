@@ -20,7 +20,7 @@
 
   @if (error()) {
     <div class="bg-error-container border-error-border text-error p-md rounded-lg border">
-      {{ 'ACADEMIC_CATALOG.ERRORS.' + error() | translate }}
+      {{ error() | domainError: catalogErrorScope }}
     </div>
   }
 

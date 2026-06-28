@@ -1,18 +1,18 @@
-import { getApiErrorCode, getHttpStatus } from '../../http/utils/parse-api-error.util';
+import {
+  createDomainErrorMapper,
+  matchCode,
+} from '../../../core/errors/utils/create-domain-error-mapper.util';
+
+export const RESET_PASSWORD_ERROR_I18N_SCOPE = 'AUTH.RESET_PASSWORD' as const;
 
 export type ResetErrorType = 'server' | 'invalid_token' | 'expired_token';
 
-export function mapResetPasswordError(error: unknown): ResetErrorType {
-  const code = getApiErrorCode(error);
-  const status = getHttpStatus(error);
-
-  if (code === 'EXPIRED_TOKEN') {
-    return 'expired_token';
-  }
-
-  if (status === 400 && (code === 'INVALID_TOKEN' || code === 'TOKEN_USED')) {
-    return 'invalid_token';
-  }
-
-  return 'server';
-}
+export const mapResetPasswordError = createDomainErrorMapper<ResetErrorType>({
+  rules: [
+    { match: matchCode('EXPIRED_TOKEN'), key: 'expired_token' },
+    { match: matchCode('INVALID_TOKEN'), key: 'invalid_token' },
+    { match: matchCode('TOKEN_USED'), key: 'invalid_token' },
+  ],
+  fallback: 'server',
+  securityFallback: 'server',
+});

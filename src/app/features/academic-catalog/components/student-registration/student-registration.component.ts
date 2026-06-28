@@ -7,6 +7,7 @@ import { Select } from 'primeng/select';
 import { Observable } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
+import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { RegisterStudentRequest, RegisterStudentResponse } from '../../../../models';
 import { FieldErrorComponent } from '../../../../shared/components';
 import { TemporaryPasswordDialogComponent } from '../../../../shared/components';
@@ -27,6 +28,7 @@ import { CatalogRegistrationBase } from '../catalog-registration.base';
     Select,
     FieldErrorComponent,
     TemporaryPasswordDialogComponent,
+    DomainErrorMessagePipe,
   ],
   templateUrl: './student-registration.component.html',
 })

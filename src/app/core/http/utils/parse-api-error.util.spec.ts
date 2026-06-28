@@ -1,6 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { getApiErrorCode, getHttpStatus, parseApiError } from './parse-api-error.util';
+import { mockSpringBootNotFound } from '../../../core/errors/testing/mock-api-error.util';
+import {
+  getApiErrorCode,
+  getApiErrorMessage,
+  getHttpStatus,
+  parseApiError,
+} from './parse-api-error.util';
 
 describe('parseApiError', () => {
   it('extracts body from HttpErrorResponse', () => {
@@ -14,6 +20,7 @@ describe('parseApiError', () => {
       message: 'Token is invalid',
     });
     expect(getApiErrorCode(error)).toBe('INVALID_TOKEN');
+    expect(getApiErrorMessage(error)).toBe('Token is invalid');
     expect(getHttpStatus(error)).toBe(400);
   });
 
@@ -30,6 +37,7 @@ describe('parseApiError', () => {
     const error = { status: 404, error: { code: 'NOT_FOUND' } };
 
     expect(parseApiError(error)).toEqual({ code: 'NOT_FOUND' });
+    expect(getApiErrorMessage(error)).toBeUndefined();
     expect(getHttpStatus(error)).toBe(404);
   });
 
@@ -38,5 +46,19 @@ describe('parseApiError', () => {
 
     expect(parseApiError(error)).toBeNull();
     expect(getApiErrorCode(error)).toBeUndefined();
+  });
+
+  it('parses Spring Boot default 404 without message', () => {
+    const error = mockSpringBootNotFound('/api/students/1/programs');
+
+    expect(parseApiError(error)).toEqual({
+      error: 'Not Found',
+      status: 404,
+      timestamp: '2026-01-01T00:00:00.000+00:00',
+      path: '/api/students/1/programs',
+    });
+    expect(getApiErrorCode(error)).toBe('Not Found');
+    expect(getApiErrorMessage(error)).toBeUndefined();
+    expect(getHttpStatus(error)).toBe(404);
   });
 });

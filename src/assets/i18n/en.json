@@ -14,7 +14,9 @@
       "duplicate_email": "The email address is already registered.",
       "duplicate_employee": "The employee number is already registered.",
       "duplicate_enrollment": "The enrollment ID is already registered.",
+      "graduate_program_not_found": "The requested graduate program was not found.",
       "reference_not_found": "The requested graduate program was not found.",
+      "sabbatical_date_order": "The sabbatical end date must be on or after the start date.",
       "server": "An error occurred while saving the information."
     },
     "FIELDS": {
@@ -68,6 +70,55 @@
       "ACTIVE": "Active",
       "INACTIVE": "Inactive"
     },
+    "STUDENT_PROGRAM": {
+      "BREADCRUMB": {
+        "EDIT": "Edit program",
+        "VIEW": "Academic program"
+      },
+      "CHOOSER": {
+        "SUBTITLE": "Select the program you want to view.",
+        "TITLE": "Choose program"
+      },
+      "EDIT": {
+        "TITLE": "Edit academic program"
+      },
+      "ERRORS": {
+        "date_order": "Graduation date must be on or after the admission date.",
+        "duplicate_advisor_ids": "The same advisor cannot be selected more than once.",
+        "load_failed": "The academic program information could not be loaded.",
+        "no_program": "This student has no registered academic program.",
+        "professor_not_found": "The selected professor was not found.",
+        "program_not_found": "The academic program was not found.",
+        "server": "An error occurred while saving the program.",
+        "student_not_found": "The requested student was not found.",
+        "validation": "Please review the form data.",
+        "withdrawal_reason_required": "Enter a withdrawal reason when the status is Withdrawn."
+      },
+      "FIELDS": {
+        "ADVISORS": "Advisors",
+        "GRADUATION_DATE": "Graduation date",
+        "PROFESSOR_SEARCH": "Search by name",
+        "RESEARCH_AREA": "Research area",
+        "TUTOR": "Tutor",
+        "WITHDRAWAL_REASON": "Withdrawal reason"
+      },
+      "STATUS": {
+        "ACTIVO": "Active",
+        "BAJA": "Withdrawn",
+        "EGRESADO": "Graduated"
+      },
+      "TOAST": {
+        "SAVED": "Program updated successfully."
+      },
+      "VIEW": {
+        "EDIT_ACTION": "Edit program",
+        "IDENTIFICATION": "Identification",
+        "METADATA": "Program information",
+        "NO_ADVISORS": "No advisors assigned",
+        "NO_TUTOR": "No tutor assigned",
+        "TITLE": "Academic program"
+      }
+    },
     "STUDENTS": {
       "CREATE": {
         "ACADEMIC_SECTION": "Academic information",
@@ -80,7 +131,8 @@
         "EMPTY": "No students were found.",
         "SEARCH": "Search by name, email or enrollment ID",
         "SUBTITLE": "Browse and manage graduate students.",
-        "TITLE": "Students"
+        "TITLE": "Students",
+        "VIEW_PROGRAM": "View program"
       }
     },
     "TEMP_PASSWORD": {

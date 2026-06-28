@@ -18,19 +18,30 @@ import { finalize } from 'rxjs';
 import { AuthStateService } from '../../../core/auth/auth.service';
 import { createPairedPasswordFormFeedback } from '../../../core/auth/utils';
 import { passwordsMatchValidator } from '../../../core/auth/utils';
-import { getApiErrorCode, getHttpStatus } from '../../../core/http/utils/parse-api-error.util';
+import { DomainErrorMessagePipe } from '../../../core/errors/pipes/domain-error-message.pipe';
 import { FieldErrorComponent } from '../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../shared/layout/routed-page-host';
 import { isFieldInvalid } from '../../../shared/utils/field-error.util';
 import { PasswordChangeService } from '../services/password-change.service';
-
-type PasswordChangeError = 'current_password' | 'user_not_found' | 'server';
+import {
+  mapPasswordChangeError,
+  PASSWORD_CHANGE_ERROR_I18N_SCOPE,
+  PasswordChangeError,
+} from '../utils/password-change-error.util';
 
 @Component({
   selector: 'app-password-change',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [ReactiveFormsModule, TranslatePipe, Button, Message, Password, FieldErrorComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    Button,
+    Message,
+    Password,
+    FieldErrorComponent,
+    DomainErrorMessagePipe,
+  ],
   templateUrl: './password-change.component.html',
 })
 export class PasswordChangeComponent {
@@ -61,6 +72,7 @@ export class PasswordChangeComponent {
     this.administrative ? 'ACCOUNT.PASSWORD.ADMIN_TITLE' : 'ACCOUNT.PASSWORD.SELF_TITLE',
   );
   readonly isFieldInvalid = isFieldInvalid;
+  readonly passwordChangeErrorScope = PASSWORD_CHANGE_ERROR_I18N_SCOPE;
 
   private readonly passwordFeedback = createPairedPasswordFormFeedback(this.form, this.submitted);
   readonly passwordsMismatch = this.passwordFeedback.passwordsMismatch;
@@ -102,7 +114,7 @@ export class PasswordChangeComponent {
       )
       .subscribe({
         next: () => this.handleSuccess(),
-        error: (error) => this.error.set(this.mapError(error)),
+        error: (error) => this.error.set(mapPasswordChangeError(error)),
       });
   }
 
@@ -125,11 +137,5 @@ export class PasswordChangeComponent {
   private safeReturnUrl(): string {
     const value = this.route.snapshot.queryParamMap.get('returnUrl');
     return value === '/academic-catalog/professors' ? value : '/academic-catalog/students';
-  }
-
-  private mapError(error: unknown): PasswordChangeError {
-    if (getApiErrorCode(error) === 'CURRENT_PASSWORD_INCORRECT') return 'current_password';
-    if (getHttpStatus(error) === 404) return 'user_not_found';
-    return 'server';
   }
 }

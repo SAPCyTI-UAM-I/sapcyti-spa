@@ -9,6 +9,10 @@ export const API_ENDPOINTS = {
     resetPassword: `${environment.apiBaseUrl}/auth/reset-password`,
   },
   students: `${environment.apiBaseUrl}/students`,
+  studentPrograms: (studentId: number): string =>
+    `${environment.apiBaseUrl}/students/${studentId}/programs`,
+  studentProgram: (studentId: number, programId: number): string =>
+    `${environment.apiBaseUrl}/students/${studentId}/programs/${programId}`,
   professors: `${environment.apiBaseUrl}/professors`,
   userPassword: (userId: number): string => `${environment.apiBaseUrl}/users/${userId}/password`,
 } as const;

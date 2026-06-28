@@ -22,6 +22,9 @@ import { StudentMockStore } from '../../features/academic-catalog/mocks/student-
 import { StudentHttpRepository } from '../../features/academic-catalog/repositories/student-http.repository';
 import { StudentMockRepository } from '../../features/academic-catalog/repositories/student-mock.repository';
 import { STUDENT_REPOSITORY } from '../../features/academic-catalog/repositories/student.repository';
+import { StudentProgramHttpRepository } from '../../features/academic-catalog/repositories/student-program-http.repository';
+import { StudentProgramMockRepository } from '../../features/academic-catalog/repositories/student-program-mock.repository';
+import { STUDENT_PROGRAM_REPOSITORY } from '../../features/academic-catalog/repositories/student-program.repository';
 
 export const DATA_LAYER_PROVIDERS: Provider[] = [
   { provide: MOCK_STUDENT_USER_REGISTRY, useExisting: StudentMockStore },
@@ -37,6 +40,12 @@ export const DATA_LAYER_PROVIDERS: Provider[] = [
     PROFESSOR_REPOSITORY,
     ProfessorHttpRepository,
     ProfessorMockRepository,
+  ),
+  ...provideMockOrHttpRepository(
+    'studentPrograms',
+    STUDENT_PROGRAM_REPOSITORY,
+    StudentProgramHttpRepository,
+    StudentProgramMockRepository,
   ),
   ...provideMockOrHttpRepository(
     'passwordChange',
