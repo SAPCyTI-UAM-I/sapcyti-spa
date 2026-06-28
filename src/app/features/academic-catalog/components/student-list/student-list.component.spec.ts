@@ -4,11 +4,9 @@ import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
 import { PageResponse, StudentCatalogItem } from '../../../../models';
-import { StudentProgramService } from '../../services/student-program.service';
 import { StudentService } from '../../services/student.service';
 import { StudentListComponent } from './student-list.component';
 
@@ -47,12 +45,7 @@ describe('StudentListComponent', () => {
     const listStudents = vi.fn(() => of(buildStudentPage()));
     await TestBed.configureTestingModule({
       imports: [StudentListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
-      providers: [
-        provideRouter([]),
-        MessageService,
-        { provide: StudentService, useValue: { listStudents } },
-        { provide: StudentProgramService, useValue: { listPrograms: vi.fn(() => of([])) } },
-      ],
+      providers: [provideRouter([]), { provide: StudentService, useValue: { listStudents } }],
     }).compileComponents();
     const fixture = TestBed.createComponent(StudentListComponent);
     return { fixture, listStudents };

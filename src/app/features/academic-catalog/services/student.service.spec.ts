@@ -5,7 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideAppMockConfig } from '../../../core/mocks/mock.config';
 import { DATA_LAYER_PROVIDERS } from '../../../core/api/data-layer.providers';
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
-import { RegisterStudentRequest } from '../../../models';
+import { RegisterStudentRequest, UpdateStudentRequest } from '../../../models';
 import { StudentService } from './student.service';
 
 const request: RegisterStudentRequest = {
@@ -23,12 +23,26 @@ const request: RegisterStudentRequest = {
   admissionDate: '2026-09-01',
 };
 
+const updateReq: UpdateStudentRequest = {
+  firstName: 'Ana Editada',
+  firstLastName: 'García',
+  email: 'ana.editada@uam.mx',
+  nationality: 'Mexicana',
+  birthDate: '1998-04-12',
+  phone: '5512345678',
+  undergraduateDegree: 'Computación',
+  lastDegreeObtained: 'Licenciatura en Computación',
+  programType: 'MAESTRIA',
+  admissionDate: '2025-09-01',
+  active: true,
+};
+
 describe('StudentService', () => {
   it('uses session mock for list and create', () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        provideAppMockConfig({ students: true }),
+        provideAppMockConfig({ students: true, studentPrograms: true }),
         ...DATA_LAYER_PROVIDERS,
         StudentService,
       ],
@@ -42,6 +56,14 @@ describe('StudentService', () => {
     service.registerStudent(request).subscribe((response) => {
       expect(response.generatedPassword).toBeTruthy();
       expect(response.active).toBe(true);
+    });
+    service.getStudent(1).subscribe((detail) => {
+      expect(detail.id).toBe(1);
+      expect(detail.program.enrollmentId).toBe('223300456');
+    });
+    service.updateStudent(1, updateReq).subscribe((response) => {
+      expect(response.firstName).toBe('Ana Editada');
+      expect(response.email).toBe('ana.editada@uam.mx');
     });
   });
 
@@ -98,6 +120,47 @@ describe('StudentService', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(request);
     req.flush({ ...request, id: 3, userId: 103, active: true, generatedPassword: 'Temp1234' });
+    http.verify();
+  });
+
+  it('gets student details via HTTP', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideAppMockConfig({ students: false }),
+        ...DATA_LAYER_PROVIDERS,
+        StudentService,
+      ],
+    });
+    const service = TestBed.inject(StudentService);
+    const http = TestBed.inject(HttpTestingController);
+
+    service.getStudent(1).subscribe();
+    const req = http.expectOne(API_ENDPOINTS.student(1));
+    expect(req.request.method).toBe('GET');
+    req.flush({ id: 1, firstName: 'Ana' });
+    http.verify();
+  });
+
+  it('updates student details via HTTP', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideAppMockConfig({ students: false }),
+        ...DATA_LAYER_PROVIDERS,
+        StudentService,
+      ],
+    });
+    const service = TestBed.inject(StudentService);
+    const http = TestBed.inject(HttpTestingController);
+
+    service.updateStudent(1, updateReq).subscribe();
+    const req = http.expectOne(API_ENDPOINTS.student(1));
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(updateReq);
+    req.flush({ id: 1, ...updateReq });
     http.verify();
   });
 });

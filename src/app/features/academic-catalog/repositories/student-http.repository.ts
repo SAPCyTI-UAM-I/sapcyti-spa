@@ -9,6 +9,8 @@ import {
   RegisterStudentResponse,
   StudentCatalogItem,
   StudentCatalogQuery,
+  StudentDetailResponse,
+  UpdateStudentRequest,
 } from '../../../models';
 import { StudentRepository } from './student.repository';
 
@@ -29,6 +31,18 @@ export class StudentHttpRepository implements StudentRepository {
 
   registerStudent(request: RegisterStudentRequest): Observable<RegisterStudentResponse> {
     return this.http.post<RegisterStudentResponse>(API_ENDPOINTS.students, request, {
+      withCredentials: true,
+    });
+  }
+
+  getStudent(studentId: number): Observable<StudentDetailResponse> {
+    return this.http.get<StudentDetailResponse>(API_ENDPOINTS.student(studentId), {
+      withCredentials: true,
+    });
+  }
+
+  updateStudent(studentId: number, request: UpdateStudentRequest): Observable<StudentCatalogItem> {
+    return this.http.put<StudentCatalogItem>(API_ENDPOINTS.student(studentId), request, {
       withCredentials: true,
     });
   }

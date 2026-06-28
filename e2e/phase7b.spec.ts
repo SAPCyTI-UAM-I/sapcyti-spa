@@ -8,25 +8,25 @@ async function login(page: Page, email: string): Promise<void> {
   await expect(page).toHaveURL(/dashboard/);
 }
 
-test('coordinator views program, assigns tutor and saves', async ({ page }) => {
+test('coordinator opens student detail, assigns tutor and saves', async ({ page }) => {
   await login(page, 'coordinator@uam.mx');
   await page.getByRole('link', { name: /^Alumnos$|^Students$/ }).click();
   await expect(page).toHaveURL(/academic-catalog\/students$/);
 
-  await page.getByTestId('view-program').first().click();
-  await expect(page).toHaveURL(/academic-catalog\/students\/\d+\/programs\/\d+$/);
-  await expect(page.getByTestId('student-program-view')).toBeVisible();
+  await page.locator('[data-testid="student-catalog"] tbody a').first().click();
+  await expect(page).toHaveURL(/academic-catalog\/students\/\d+$/);
+  await expect(page.getByTestId('student-detail')).toBeVisible();
   await expect(page.getByText(/Sin tutor asignado|No tutor assigned/i)).toBeVisible();
 
-  await page.getByRole('button', { name: /editar programa|edit program/i }).click();
-  await expect(page).toHaveURL(/\/edit$/);
-  await expect(page.getByTestId('student-program-edit')).toBeVisible();
+  await page.getByTestId('edit-student').click();
+  await expect(page).toHaveURL(/academic-catalog\/students\/\d+\/edit$/);
+  await expect(page.getByTestId('student-edit')).toBeVisible();
 
   await page.locator('[formcontrolname="tutorId"]').click();
-  await page.getByRole('option').first().click();
-  await page.getByTestId('save-program').click();
+  await page.getByRole('option', { name: /Cervantes/i }).click();
+  await page.getByTestId('save-student').click();
 
-  await expect(page).toHaveURL(/academic-catalog\/students\/\d+\/programs\/\d+$/);
-  await expect(page.getByTestId('student-program-view')).toBeVisible();
-  await expect(page.getByText(/Cervantes|Martínez/i)).toBeVisible();
+  await expect(page).toHaveURL(/academic-catalog\/students\/\d+$/);
+  await expect(page.getByTestId('student-detail')).toBeVisible();
+  await expect(page.getByText(/Cervantes/i)).toBeVisible();
 });

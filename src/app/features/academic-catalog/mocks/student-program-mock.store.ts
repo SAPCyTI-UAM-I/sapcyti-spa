@@ -7,6 +7,7 @@ import {
   StudentProgramResponse,
   StudentProgramSummary,
   UpdateStudentProgramRequest,
+  isAreaInLine,
 } from '../../../models';
 import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
 import { mockBadRequest, nextId } from './catalog-mock.util';
@@ -50,23 +51,20 @@ export class StudentProgramMockStore {
       advisorIds: [],
       advisors: [],
     },
-    {
-      id: 103,
-      studentId: 3,
-      graduateProgramId: 1,
-      enrollmentId: '223300458',
-      programType: 'DOCTORADO',
-      admissionDate: '2025-09-01',
-      status: 'ACTIVO',
-      advisorIds: [],
-      advisors: [],
-    },
   ];
 
   listPrograms(studentId: number): StudentProgramSummary[] {
     return this.programs
       .filter((program) => program.studentId === studentId)
       .map((program) => this.toSummary(program));
+  }
+
+  getProgramForStudent(studentId: number): StudentProgramResponse {
+    const program = this.programs.find((p) => p.studentId === studentId);
+    if (!program) {
+      throw this.programNotFound();
+    }
+    return this.withResolvedProfessors(program);
   }
 
   getProgram(studentId: number, programId: number): StudentProgramResponse {
@@ -104,6 +102,7 @@ export class StudentProgramMockStore {
       ...current,
       admissionDate: body.admissionDate,
       graduationDate: body.graduationDate,
+      lineOfKnowledge: body.lineOfKnowledge,
       researchArea: body.researchArea,
       status: body.status,
       withdrawalReason: body.withdrawalReason,
@@ -193,6 +192,15 @@ export class StudentProgramMockStore {
     }
     if (new Set(body.advisorIds).size !== body.advisorIds.length) {
       throw mockBadRequest(BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ADVISOR_IDS);
+    }
+    if (body.lineOfKnowledge || body.researchArea) {
+      if (body.lineOfKnowledge && body.researchArea) {
+        if (!isAreaInLine(body.lineOfKnowledge, body.researchArea)) {
+          throw mockBadRequest('Research area does not belong to the selected line of knowledge');
+        }
+      } else if (body.researchArea && !body.lineOfKnowledge) {
+        throw mockBadRequest('Line of knowledge is required when research area is selected');
+      }
     }
   }
 

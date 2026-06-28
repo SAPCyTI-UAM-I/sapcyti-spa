@@ -6,6 +6,7 @@ import {
   RegisterStudentResponse,
   StudentCatalogItem,
   StudentCatalogQuery,
+  UpdateStudentRequest,
 } from '../../../models';
 import {
   generatedPassword,
@@ -93,6 +94,41 @@ export class StudentMockStore {
       );
     });
     return page(filtered, query.page, query.size);
+  }
+
+  getStudent(studentId: number): StudentCatalogItem {
+    const student = this.students.find((s) => s.id === studentId);
+    if (!student) {
+      throw mockNotFound('STUDENT_NOT_FOUND');
+    }
+    return student;
+  }
+
+  updateStudent(studentId: number, body: UpdateStudentRequest): StudentCatalogItem {
+    const index = this.students.findIndex((s) => s.id === studentId);
+    if (index < 0) {
+      throw mockNotFound('STUDENT_NOT_FOUND');
+    }
+
+    if (
+      this.students.some(
+        (student) =>
+          student.id !== studentId && student.email.toLowerCase() === body.email.toLowerCase(),
+      )
+    ) {
+      throw mockConflict('EMAIL_ALREADY_EXISTS');
+    }
+
+    const current = this.students[index]!;
+    const updated: StudentCatalogItem = {
+      ...current,
+      ...body,
+      secondLastName: body.secondLastName?.trim() || undefined,
+      phoneExtension: body.phoneExtension?.trim() || undefined,
+    };
+
+    this.students = [...this.students.slice(0, index), updated, ...this.students.slice(index + 1)];
+    return updated;
   }
 
   createStudent(request: RegisterStudentRequest): RegisterStudentResponse {

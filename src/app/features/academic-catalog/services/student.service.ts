@@ -7,6 +7,8 @@ import {
   RegisterStudentResponse,
   StudentCatalogItem,
   StudentCatalogQuery,
+  StudentDetailResponse,
+  UpdateStudentRequest,
 } from '../../../models';
 import { STUDENT_REPOSITORY } from '../repositories/student.repository';
 
@@ -20,5 +22,13 @@ export class StudentService {
 
   registerStudent(request: RegisterStudentRequest): Observable<RegisterStudentResponse> {
     return this.repository.registerStudent(request);
+  }
+
+  getStudent(studentId: number): Observable<StudentDetailResponse> {
+    return this.repository.getStudent(studentId);
+  }
+
+  updateStudent(studentId: number, request: UpdateStudentRequest): Observable<StudentCatalogItem> {
+    return this.repository.updateStudent(studentId, request);
   }
 }

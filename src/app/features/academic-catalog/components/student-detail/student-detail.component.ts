@@ -7,41 +7,46 @@ import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
 import { finalize } from 'rxjs';
 
-import { StudentProgramResponse } from '../../../../models';
+import {
+  getLineOfKnowledgeLabelKey,
+  getResearchAreaLabelKey,
+  StudentDetailResponse,
+} from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
-import { StudentProgramService } from '../../services/student-program.service';
+import { StudentService } from '../../services/student.service';
 import { formatProfessorName } from '../../utils/professor-display.util';
 import { programStatusSeverity } from '../../utils/program-status.util';
 import {
-  StudentProgramError,
-  mapStudentProgramError,
-  STUDENT_PROGRAM_ERROR_I18N_SCOPE,
-} from '../../utils/student-program-error.util';
+  CATALOG_ERROR_I18N_SCOPE,
+  mapCatalogError,
+  CatalogError,
+} from '../../utils/catalog-error.util';
 
 @Component({
-  selector: 'app-student-program-view',
+  selector: 'app-student-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [RouterLink, TranslatePipe, Button, Message, Tag, DomainErrorMessagePipe],
-  templateUrl: './student-program-view.component.html',
+  imports: [RouterLink, TranslatePipe, Button, Tag, Message, DomainErrorMessagePipe],
+  templateUrl: './student-detail.component.html',
 })
-export class StudentProgramViewComponent {
+export class StudentDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly service = inject(StudentProgramService);
+  private readonly service = inject(StudentService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly studentId = Number(this.route.snapshot.paramMap.get('studentId'));
-  readonly programId = Number(this.route.snapshot.paramMap.get('programId'));
 
   readonly loading = signal(true);
-  readonly error = signal<StudentProgramError | null>(null);
-  readonly program = signal<StudentProgramResponse | null>(null);
+  readonly error = signal<CatalogError | null>(null);
+  readonly student = signal<StudentDetailResponse | null>(null);
 
   readonly formatProfessorName = formatProfessorName;
+  readonly getLineOfKnowledgeLabelKey = getLineOfKnowledgeLabelKey;
+  readonly getResearchAreaLabelKey = getResearchAreaLabelKey;
   readonly programStatusSeverity = programStatusSeverity;
-  readonly studentProgramErrorScope = STUDENT_PROGRAM_ERROR_I18N_SCOPE;
+  readonly catalogErrorScope = CATALOG_ERROR_I18N_SCOPE;
 
   constructor() {
     this.load();
@@ -52,33 +57,27 @@ export class StudentProgramViewComponent {
   }
 
   editRoute(): string[] {
-    return [
-      '/academic-catalog/students',
-      String(this.studentId),
-      'programs',
-      String(this.programId),
-      'edit',
-    ];
+    return ['/academic-catalog/students', String(this.studentId), 'edit'];
   }
 
   private load(): void {
-    if (!Number.isInteger(this.studentId) || !Number.isInteger(this.programId)) {
+    if (!Number.isInteger(this.studentId)) {
       this.loading.set(false);
-      this.error.set('program_not_found');
+      this.error.set('reference_not_found');
       return;
     }
 
     this.loading.set(true);
     this.error.set(null);
     this.service
-      .getProgram(this.studentId, this.programId)
+      .getStudent(this.studentId)
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (program) => this.program.set(program),
-        error: (err) => this.error.set(mapStudentProgramError(err)),
+        next: (student) => this.student.set(student),
+        error: (err) => this.error.set(mapCatalogError(err)),
       });
   }
 }

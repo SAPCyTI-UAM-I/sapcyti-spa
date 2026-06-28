@@ -95,9 +95,12 @@
                 class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
               >
                 <td class="md:p-md col-span-2 md:table-cell">
-                  <span class="text-h3 text-primary font-bold md:font-normal md:text-inherit">
+                  <a
+                    [routerLink]="['/academic-catalog/students', student.id]"
+                    class="text-primary text-h3 font-bold hover:underline md:font-normal md:text-inherit"
+                  >
                     {{ student.firstLastName }} {{ student.secondLastName }} {{ student.firstName }}
-                  </span>
+                  </a>
                 </td>
                 <td class="text-text-secondary md:p-md col-span-2 break-all md:table-cell">
                   {{ student.email }}
@@ -134,16 +137,6 @@
                 <td class="md:p-md col-span-2 md:table-cell">
                   <div class="gap-sm flex flex-col">
                     <p-button
-                      data-testid="view-program"
-                      icon="pi pi-book"
-                      severity="secondary"
-                      variant="outlined"
-                      [fluid]="true"
-                      [label]="'ACADEMIC_CATALOG.STUDENTS.LIST.VIEW_PROGRAM' | translate"
-                      [loading]="openingProgram()"
-                      (onClick)="openProgram(student)"
-                    />
-                    <p-button
                       icon="pi pi-key"
                       severity="secondary"
                       variant="outlined"
@@ -173,24 +166,4 @@
       (onPageChange)="onPageChange($event)"
     />
   </footer>
-
-  <p-dialog
-    [header]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.CHOOSER.TITLE' | translate"
-    [visible]="programChooserVisible()"
-    [modal]="true"
-    [closable]="true"
-    (visibleChange)="programChooserVisible.set($event)"
-  >
-    <p class="text-text-secondary mb-md">
-      {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.CHOOSER.SUBTITLE' | translate }}
-    </p>
-    <div class="gap-sm flex flex-col">
-      @for (program of programChooserPrograms(); track program.id) {
-        <p-button
-          [label]="'ACADEMIC_CATALOG.PROGRAM_TYPES.' + program.programType | translate"
-          (onClick)="selectProgram(programChooserStudentId()!, program.id)"
-        />
-      }
-    </div>
-  </p-dialog>
 </section>

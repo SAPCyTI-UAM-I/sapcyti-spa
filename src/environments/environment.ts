@@ -10,5 +10,6 @@ export const environment = {
     professors: true,
     studentPrograms: true,
     passwordChange: true,
+    researchCatalog: true,
   },
 };

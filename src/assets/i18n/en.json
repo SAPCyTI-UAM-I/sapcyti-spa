@@ -20,6 +20,7 @@
       "server": "An error occurred while saving the information."
     },
     "FIELDS": {
+      "ACTIVE": "Student status",
       "ADMISSION_DATE": "Admission date",
       "BIRTH_DATE": "Birth date",
       "COMMISSION_MEMBER": "Commission member",
@@ -97,10 +98,31 @@
       "FIELDS": {
         "ADVISORS": "Advisors",
         "GRADUATION_DATE": "Graduation date",
+        "LINE_OF_KNOWLEDGE": "Line of knowledge",
         "PROFESSOR_SEARCH": "Search by name",
         "RESEARCH_AREA": "Research area",
         "TUTOR": "Tutor",
+        "UNCLASSIFIED": "Unclassified",
         "WITHDRAWAL_REASON": "Withdrawal reason"
+      },
+      "CATALOG": {
+        "LINES": {
+          "COMPUTER_SCIENCE": "Computer Science and Engineering",
+          "NETWORKS": "Communication Networks"
+        },
+        "AREAS": {
+          "AI": "Artificial intelligence",
+          "BIG_DATA": "Big data",
+          "DIGITAL_SIGNAL_PROCESSING": "Digital signal processing in communications",
+          "HIGH_PERFORMANCE_COMPUTING": "High-performance computing",
+          "IOT": "Internet of Things",
+          "NETWORK_APPLICATIONS": "Network applications",
+          "NETWORK_CODING": "Network coding",
+          "ROUTING": "Routing",
+          "SEMANTIC_WEB": "Semantic web",
+          "SOFTWARE_DEFINED_NETWORKS": "Software-defined networks",
+          "WIRELESS_COMMUNICATIONS": "Wireless communications"
+        }
       },
       "STATUS": {
         "ACTIVO": "Active",
@@ -120,11 +142,31 @@
       }
     },
     "STUDENTS": {
+      "BREADCRUMB": {
+        "DETAIL": "Student details",
+        "EDIT": "Edit student"
+      },
       "CREATE": {
         "ACADEMIC_SECTION": "Academic information",
         "PERSONAL_SECTION": "Personal data",
         "SUBTITLE": "Complete the information and confirm registration. A password will be generated automatically.",
         "TITLE": "Register student"
+      },
+      "DETAIL": {
+        "ACADEMIC_SECTION": "Academic information",
+        "CHANGE_PASSWORD": "Change password",
+        "CONTACT_SECTION": "Contact information",
+        "EDIT_ACTION": "Edit information",
+        "NO_ADVISORS": "No advisors assigned",
+        "NO_TUTOR": "No tutor assigned",
+        "PERSONAL_SECTION": "Personal information",
+        "PROGRAM_SECTION": "Academic program",
+        "TITLE": "Student details"
+      },
+      "EDIT": {
+        "SAVED": "Student updated successfully.",
+        "SUBTITLE": "Modify the student's data and academic program.",
+        "TITLE": "Edit student"
       },
       "LIST": {
         "CREATE": "Create student",

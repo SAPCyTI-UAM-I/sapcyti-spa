@@ -26,6 +26,7 @@ export interface StudentProgramResponse {
   programType: ProgramType;
   admissionDate: string;
   graduationDate?: string;
+  lineOfKnowledge?: string;
   researchArea?: string;
   status: ProgramStatus;
   withdrawalReason?: string;
@@ -38,6 +39,7 @@ export interface StudentProgramResponse {
 export interface UpdateStudentProgramRequest {
   admissionDate: string;
   graduationDate?: string;
+  lineOfKnowledge?: string;
   researchArea?: string;
   status: ProgramStatus;
   withdrawalReason?: string;

@@ -25,6 +25,9 @@ import { STUDENT_REPOSITORY } from '../../features/academic-catalog/repositories
 import { StudentProgramHttpRepository } from '../../features/academic-catalog/repositories/student-program-http.repository';
 import { StudentProgramMockRepository } from '../../features/academic-catalog/repositories/student-program-mock.repository';
 import { STUDENT_PROGRAM_REPOSITORY } from '../../features/academic-catalog/repositories/student-program.repository';
+import { ResearchCatalogHttpRepository } from '../../features/academic-catalog/repositories/research-catalog-http.repository';
+import { ResearchCatalogMockRepository } from '../../features/academic-catalog/repositories/research-catalog-mock.repository';
+import { RESEARCH_CATALOG_REPOSITORY } from '../../features/academic-catalog/repositories/research-catalog.repository';
 
 export const DATA_LAYER_PROVIDERS: Provider[] = [
   { provide: MOCK_STUDENT_USER_REGISTRY, useExisting: StudentMockStore },
@@ -46,6 +49,12 @@ export const DATA_LAYER_PROVIDERS: Provider[] = [
     STUDENT_PROGRAM_REPOSITORY,
     StudentProgramHttpRepository,
     StudentProgramMockRepository,
+  ),
+  ...provideMockOrHttpRepository(
+    'researchCatalog',
+    RESEARCH_CATALOG_REPOSITORY,
+    ResearchCatalogHttpRepository,
+    ResearchCatalogMockRepository,
   ),
   ...provideMockOrHttpRepository(
     'passwordChange',

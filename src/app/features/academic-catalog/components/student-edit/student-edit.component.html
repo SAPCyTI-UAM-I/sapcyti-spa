@@ -1,0 +1,398 @@
+<section class="gap-lg mx-auto flex w-full max-w-4xl flex-col" data-testid="student-edit">
+  <header>
+    <h1 class="text-h2 text-primary font-bold">
+      {{ 'ACADEMIC_CATALOG.STUDENTS.EDIT.TITLE' | translate }}
+    </h1>
+    <p class="text-text-secondary">
+      {{ 'ACADEMIC_CATALOG.STUDENTS.EDIT.SUBTITLE' | translate }}
+    </p>
+  </header>
+
+  @if (loading()) {
+    <div class="p-xl text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else if (displayError(); as errKey) {
+    <p-message severity="error" [text]="translateError(errKey)" />
+  }
+
+  @if (!loading() && student()) {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="gap-lg flex flex-col">
+      <!-- Datos Personales -->
+      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+        <h2 class="text-h3 text-primary font-bold">
+          {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.PERSONAL_SECTION' | translate }}
+        </h2>
+        <div class="gap-md grid md:grid-cols-2">
+          <div class="gap-xs flex flex-col">
+            <label for="firstName" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.FIRST_NAME' | translate }} *
+            </label>
+            <input
+              id="firstName"
+              pInputText
+              formControlName="firstName"
+              [invalid]="isFieldInvalid(form.controls.firstName, submitted())"
+            />
+            <app-field-error [control]="form.controls.firstName" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="firstLastName" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.FIRST_LAST_NAME' | translate }} *
+            </label>
+            <input
+              id="firstLastName"
+              pInputText
+              formControlName="firstLastName"
+              [invalid]="isFieldInvalid(form.controls.firstLastName, submitted())"
+            />
+            <app-field-error [control]="form.controls.firstLastName" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="secondLastName" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.SECOND_LAST_NAME' | translate }}
+            </label>
+            <input
+              id="secondLastName"
+              pInputText
+              formControlName="secondLastName"
+              [invalid]="isFieldInvalid(form.controls.secondLastName, submitted())"
+            />
+            <app-field-error [control]="form.controls.secondLastName" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="birthDate" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.BIRTH_DATE' | translate }} *
+            </label>
+            <input
+              id="birthDate"
+              type="date"
+              pInputText
+              formControlName="birthDate"
+              [invalid]="isFieldInvalid(form.controls.birthDate, submitted())"
+            />
+            <app-field-error [control]="form.controls.birthDate" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="nationality" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.NATIONALITY' | translate }} *
+            </label>
+            <input
+              id="nationality"
+              pInputText
+              formControlName="nationality"
+              [invalid]="isFieldInvalid(form.controls.nationality, submitted())"
+            />
+            <app-field-error [control]="form.controls.nationality" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="email" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.EMAIL' | translate }} *
+            </label>
+            <input
+              id="email"
+              type="email"
+              pInputText
+              formControlName="email"
+              [invalid]="isFieldInvalid(form.controls.email, submitted())"
+            />
+            <app-field-error [control]="form.controls.email" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="phone" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.PHONE' | translate }} *
+            </label>
+            <input
+              id="phone"
+              pInputText
+              formControlName="phone"
+              [invalid]="isFieldInvalid(form.controls.phone, submitted())"
+            />
+            <app-field-error [control]="form.controls.phone" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="phoneExtension" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.PHONE_EXTENSION' | translate }}
+            </label>
+            <input
+              id="phoneExtension"
+              pInputText
+              formControlName="phoneExtension"
+              [invalid]="isFieldInvalid(form.controls.phoneExtension, submitted())"
+            />
+            <app-field-error [control]="form.controls.phoneExtension" [submitted]="submitted()" />
+          </div>
+        </div>
+      </article>
+
+      <!-- Información Académica -->
+      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+        <h2 class="text-h3 text-primary font-bold">
+          {{ 'ACADEMIC_CATALOG.STUDENTS.CREATE.ACADEMIC_SECTION' | translate }}
+        </h2>
+        <div class="gap-md grid md:grid-cols-2">
+          <div class="gap-xs flex flex-col">
+            <span class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.ENROLLMENT_ID' | translate }}
+            </span>
+            <div class="border-outline bg-table-row-hover text-text-secondary p-sm rounded border">
+              {{ student()?.enrollmentId }}
+            </div>
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="undergraduateDegree" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.UNDERGRADUATE_DEGREE' | translate }} *
+            </label>
+            <input
+              id="undergraduateDegree"
+              pInputText
+              formControlName="undergraduateDegree"
+              [invalid]="isFieldInvalid(form.controls.undergraduateDegree, submitted())"
+            />
+            <app-field-error
+              [control]="form.controls.undergraduateDegree"
+              [submitted]="submitted()"
+            />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="lastDegreeObtained" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }} *
+            </label>
+            <input
+              id="lastDegreeObtained"
+              pInputText
+              formControlName="lastDegreeObtained"
+              [invalid]="isFieldInvalid(form.controls.lastDegreeObtained, submitted())"
+            />
+            <app-field-error
+              [control]="form.controls.lastDegreeObtained"
+              [submitted]="submitted()"
+            />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="programType" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate }} *
+            </label>
+            <p-select
+              id="programType"
+              formControlName="programType"
+              [options]="programTypeOptions"
+              optionValue="value"
+              [fluid]="true"
+            >
+              <ng-template #selectedItem let-option>
+                {{ option?.labelKey | translate }}
+              </ng-template>
+              <ng-template #item let-option>
+                {{ option.labelKey | translate }}
+              </ng-template>
+            </p-select>
+            <app-field-error [control]="form.controls.programType" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="admissionDate" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.ADMISSION_DATE' | translate }} *
+            </label>
+            <input
+              id="admissionDate"
+              type="date"
+              pInputText
+              formControlName="admissionDate"
+              [invalid]="isFieldInvalid(form.controls.admissionDate, submitted())"
+            />
+            <app-field-error [control]="form.controls.admissionDate" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="active" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.ACTIVE' | translate }} *
+            </label>
+            <p-select
+              id="active"
+              formControlName="active"
+              [options]="activeOptions"
+              optionValue="value"
+              [fluid]="true"
+            >
+              <ng-template #selectedItem let-option>
+                {{ option?.labelKey | translate }}
+              </ng-template>
+              <ng-template #item let-option>
+                {{ option.labelKey | translate }}
+              </ng-template>
+            </p-select>
+            <app-field-error [control]="form.controls.active" [submitted]="submitted()" />
+          </div>
+        </div>
+      </article>
+
+      <!-- Programa Académico -->
+      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+        <h2 class="text-h3 text-primary font-bold">
+          {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.PROGRAM_SECTION' | translate }}
+        </h2>
+        <div class="gap-md grid md:grid-cols-2">
+          <div class="gap-xs flex flex-col">
+            <label for="status" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }} *
+            </label>
+            <p-select
+              id="status"
+              formControlName="status"
+              [options]="statusOptions"
+              optionValue="value"
+              [fluid]="true"
+            >
+              <ng-template #selectedItem let-option>
+                {{ option?.labelKey | translate }}
+              </ng-template>
+              <ng-template #item let-option>
+                {{ option.labelKey | translate }}
+              </ng-template>
+            </p-select>
+            <app-field-error [control]="form.controls.status" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="graduationDate" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.GRADUATION_DATE' | translate }}
+            </label>
+            <input
+              id="graduationDate"
+              type="date"
+              pInputText
+              formControlName="graduationDate"
+              [invalid]="isFieldInvalid(form.controls.graduationDate, submitted())"
+            />
+            <app-field-error [control]="form.controls.graduationDate" [submitted]="submitted()" />
+          </div>
+
+          @if (form.controls.status.value === 'BAJA') {
+            <div class="gap-xs flex flex-col md:col-span-2">
+              <label for="withdrawalReason" class="text-body font-medium">
+                {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.WITHDRAWAL_REASON' | translate }} *
+              </label>
+              <input
+                id="withdrawalReason"
+                pInputText
+                formControlName="withdrawalReason"
+                [invalid]="isFieldInvalid(form.controls.withdrawalReason, submitted())"
+              />
+              <app-field-error
+                [control]="form.controls.withdrawalReason"
+                [submitted]="submitted()"
+              />
+            </div>
+          }
+
+          <div class="gap-xs flex flex-col">
+            <label for="lineOfKnowledge" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.LINE_OF_KNOWLEDGE' | translate }}
+            </label>
+            <p-select
+              id="lineOfKnowledge"
+              formControlName="lineOfKnowledge"
+              [options]="lineOfKnowledgeOptions()"
+              optionValue="value"
+              [showClear]="true"
+              [fluid]="true"
+            >
+              <ng-template #selectedItem let-option>
+                {{ option?.labelKey | translate }}
+              </ng-template>
+              <ng-template #item let-option>
+                {{ option.labelKey | translate }}
+              </ng-template>
+            </p-select>
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="researchArea" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.RESEARCH_AREA' | translate }}
+            </label>
+            <p-select
+              id="researchArea"
+              formControlName="researchArea"
+              [options]="filteredResearchAreas()"
+              optionValue="value"
+              [showClear]="true"
+              [fluid]="true"
+              [disabled]="!form.controls.lineOfKnowledge.value"
+            >
+              <ng-template #selectedItem let-option>
+                {{ option?.labelKey | translate }}
+              </ng-template>
+              <ng-template #item let-option>
+                {{ option.labelKey | translate }}
+              </ng-template>
+            </p-select>
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="tutorId" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.TUTOR' | translate }}
+            </label>
+            <p-select
+              id="tutorId"
+              formControlName="tutorId"
+              [options]="professorOptions()"
+              optionLabel="label"
+              optionValue="value"
+              [filter]="true"
+              [showClear]="true"
+              [fluid]="true"
+              [loading]="professorsLoading()"
+              (onFilter)="onProfessorFilter($event)"
+            />
+          </div>
+
+          <div class="gap-xs flex flex-col">
+            <label for="advisorIds" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.ADVISORS' | translate }}
+            </label>
+            <p-multiselect
+              id="advisorIds"
+              formControlName="advisorIds"
+              [options]="professorOptions()"
+              optionLabel="label"
+              optionValue="value"
+              [filter]="true"
+              [fluid]="true"
+              [loading]="professorsLoading()"
+              [maxSelectedLabels]="3"
+              (onFilter)="onProfessorFilter($event)"
+            />
+            <app-field-error [control]="form.controls.advisorIds" [submitted]="submitted()" />
+          </div>
+        </div>
+      </article>
+
+      <footer class="gap-md flex flex-wrap justify-end">
+        <p-button
+          severity="secondary"
+          variant="outlined"
+          [label]="'COMMON.ACTIONS.CANCEL' | translate"
+          [disabled]="submitting()"
+          (onClick)="cancel()"
+        />
+        <p-button
+          data-testid="save-student"
+          type="submit"
+          [label]="'COMMON.ACTIONS.SAVE' | translate"
+          [loading]="submitting()"
+        />
+      </footer>
+    </form>
+  }
+</section>

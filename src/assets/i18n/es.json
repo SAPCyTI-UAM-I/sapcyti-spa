@@ -20,6 +20,7 @@
       "server": "Ocurrió un error al guardar la información."
     },
     "FIELDS": {
+      "ACTIVE": "Estado del alumno",
       "ADMISSION_DATE": "Fecha de ingreso",
       "BIRTH_DATE": "Fecha de nacimiento",
       "COMMISSION_MEMBER": "Miembro de comisión",
@@ -97,10 +98,31 @@
       "FIELDS": {
         "ADVISORS": "Asesores",
         "GRADUATION_DATE": "Fecha de egreso",
+        "LINE_OF_KNOWLEDGE": "Línea de conocimiento",
         "PROFESSOR_SEARCH": "Buscar por nombre",
         "RESEARCH_AREA": "Área de investigación",
         "TUTOR": "Tutor",
+        "UNCLASSIFIED": "Sin clasificar",
         "WITHDRAWAL_REASON": "Motivo de baja"
+      },
+      "CATALOG": {
+        "LINES": {
+          "COMPUTER_SCIENCE": "Ciencias e Ingeniería de la Computación",
+          "NETWORKS": "Redes de Comunicaciones"
+        },
+        "AREAS": {
+          "AI": "Inteligencia artificial",
+          "BIG_DATA": "Manejo de datos masivos (Big data)",
+          "DIGITAL_SIGNAL_PROCESSING": "Procesamiento digital de señales en las comunicaciones",
+          "HIGH_PERFORMANCE_COMPUTING": "Supercómputo (cómputo de alto rendimiento)",
+          "IOT": "Internet de las cosas",
+          "NETWORK_APPLICATIONS": "Aplicaciones de redes",
+          "NETWORK_CODING": "Codificación de red",
+          "ROUTING": "Encaminamiento (ruteo)",
+          "SEMANTIC_WEB": "Web semántica",
+          "SOFTWARE_DEFINED_NETWORKS": "Redes definidas por software",
+          "WIRELESS_COMMUNICATIONS": "Comunicaciones inalámbricas"
+        }
       },
       "STATUS": {
         "ACTIVO": "Activo",
@@ -120,11 +142,31 @@
       }
     },
     "STUDENTS": {
+      "BREADCRUMB": {
+        "DETAIL": "Detalles del alumno",
+        "EDIT": "Editar alumno"
+      },
       "CREATE": {
         "ACADEMIC_SECTION": "Información académica",
         "PERSONAL_SECTION": "Datos personales",
         "SUBTITLE": "Complete los datos y confirme el alta. La contraseña se generará automáticamente.",
         "TITLE": "Registrar alumno"
+      },
+      "DETAIL": {
+        "ACADEMIC_SECTION": "Información académica",
+        "CHANGE_PASSWORD": "Cambiar contraseña",
+        "CONTACT_SECTION": "Información de contacto",
+        "EDIT_ACTION": "Editar información",
+        "NO_ADVISORS": "Sin asesores asignados",
+        "NO_TUTOR": "Sin tutor asignado",
+        "PERSONAL_SECTION": "Datos personales",
+        "PROGRAM_SECTION": "Programa académico",
+        "TITLE": "Detalles del alumno"
+      },
+      "EDIT": {
+        "SAVED": "Alumno actualizado correctamente.",
+        "SUBTITLE": "Modifique los datos del alumno y su programa académico.",
+        "TITLE": "Editar alumno"
       },
       "LIST": {
         "CREATE": "Crear alumno",
