@@ -3,6 +3,7 @@
 ## Goal
 Implement the backend contract expected by the SPA for:
 
+- HU-15: student registration (personal + academic data, optional program fields)
 - HU-17: unified student detail
 - HU-18: unified student edit
 - HU-19 / HU-20: academic program detail + update
@@ -81,6 +82,46 @@ Optional:
   advisorIds?: number[];
 }
 ```
+
+### RegisterStudentResponse
+
+Extends the created student record with a one-time password.
+
+Always returned:
+- all fields from `RegisterStudentRequest`
+- `id`
+- `userId`
+- `active` (defaults to `true`)
+- `generatedPassword` (create-only; never returned on list/detail)
+
+```ts
+{
+  id: number;
+  userId: number;
+  active: boolean;
+  generatedPassword: string;
+  enrollmentId: string;
+  email: string;
+  graduateProgramId: number;
+  firstName: string;
+  firstLastName: string;
+  secondLastName?: string;
+  nationality: string;
+  birthDate: string;
+  phone: string;
+  phoneExtension?: string;
+  undergraduateDegree: string;
+  lastDegreeObtained: string;
+  programType: 'MAESTRIA' | 'DOCTORADO';
+  admissionDate: string;
+  lineOfKnowledge?: string;
+  researchArea?: string;
+  tutorId?: number | null;
+  advisorIds?: number[];
+}
+```
+
+Note: optional program fields on registration are persisted into the student's single academic program.
 
 ### UpdateStudentRequest
 
@@ -201,25 +242,18 @@ Always returned:
 Optional:
 - `tutorId`
 
-### ProfessorCatalogItem
+### ProfessorCatalogItem (selectors)
 
-Always returned:
+Full DTO and rules: see `academic-catalog-professors.agent-spec.md`.
+
+Used here only for tutor/advisor selectors via `GET /api/professors?active=true`.
+
+Minimum fields the SPA reads from each list item:
 - `id`
-- `userId`
-- `employeeNumber`
-- `email`
-- `graduateProgramId`
 - `firstName`
 - `firstLastName`
-- `phone`
-- `commissionMember`
+- `secondLastName` (optional)
 - `active`
-
-Optional:
-- `secondLastName`
-- `phoneExtension`
-- `nextSabbaticalStart`
-- `nextSabbaticalEnd`
 
 ### ResearchAreaCatalogItem
 
@@ -250,6 +284,10 @@ Response:
 ```http
 POST /api/students
 ```
+
+Purpose:
+- student registration wizard (HU-15)
+- creates student + single academic program; optional `lineOfKnowledge`, `researchArea`, `tutorId`, `advisorIds`
 
 Request:
 - `RegisterStudentRequest`

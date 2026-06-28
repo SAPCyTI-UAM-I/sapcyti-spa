@@ -99,7 +99,7 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
     firstLastName: ['', [Validators.required, Validators.maxLength(100)]],
     secondLastName: ['', Validators.maxLength(100)],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
-    nationality: ['', [Validators.required, Validators.maxLength(100)]],
+    nationality: ['Mexicana', [Validators.required, Validators.maxLength(100)]],
     birthDate: ['', Validators.required],
     phone: ['', [Validators.required, Validators.maxLength(20)]],
     phoneExtension: ['', Validators.maxLength(10)],

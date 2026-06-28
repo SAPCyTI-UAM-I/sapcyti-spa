@@ -73,6 +73,10 @@ describe('StudentRegistrationComponent', () => {
     component = fixture.componentInstance;
   });
 
+  it('defaults nationality to Mexicana', () => {
+    expect(component.form.controls.nationality.value).toBe('Mexicana');
+  });
+
   it('validates each step and sends one aligned request on confirmation', () => {
     component.next();
     expect(component.step()).toBe(1);

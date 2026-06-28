@@ -211,7 +211,7 @@ PUT /api/professors/{professorId}/deactivate
 ```
 
 Purpose:
-- logical deactivation from detail screen (HU-45)
+- logical deactivation from edit screen (HU-45)
 
 Request body:
 - empty
