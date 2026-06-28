@@ -8,7 +8,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
@@ -78,6 +79,8 @@ export class UeaRegistrationComponent {
   private readonly service = inject(UeaService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly messages = inject(MessageService);
+  private readonly translate = inject(TranslateService);
 
   readonly submitted = signal(false);
   readonly loading = signal(false);
@@ -124,7 +127,14 @@ export class UeaRegistrationComponent {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: () => void this.router.navigate(['/academic-catalog/ueas']),
+        next: () => {
+          this.messages.add({
+            severity: 'success',
+            summary: this.translate.instant('ACADEMIC_CATALOG.UEAS.CREATE.SAVED'),
+            life: 3000,
+          });
+          void this.router.navigate(['/academic-catalog/ueas']);
+        },
         error: (err) => this.error.set(mapCatalogError(err)),
       });
   }
