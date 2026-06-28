@@ -15,6 +15,7 @@
       "duplicate_email": "El correo electrónico ya está registrado.",
       "duplicate_employee": "El número de empleado ya está registrado.",
       "duplicate_enrollment": "La matrícula ya está registrada.",
+      "duplicate_advisor_ids": "No puede repetir el mismo asesor más de una vez.",
       "employee_required_for_interno": "El número de empleado es obligatorio para profesores internos.",
       "file_format_invalid": "Formato de archivo inválido, utilice la plantilla proporcionada.",
       "graduate_program_not_found": "No se encontró el programa de posgrado solicitado.",
@@ -24,7 +25,8 @@
       "reference_not_found": "No se encontró el programa académico solicitado.",
       "sabbatical_date_order": "La fecha final del sabático debe ser posterior o igual a la inicial.",
       "server": "Ocurrió un error al guardar la información.",
-      "uea_already_exists": "Esta UEA ya ha sido registrada."
+      "uea_already_exists": "Esta UEA ya ha sido registrada.",
+      "validation": "Revise los datos del formulario."
     },
     "FIELDS": {
       "ACTIVE": "Estado del alumno",

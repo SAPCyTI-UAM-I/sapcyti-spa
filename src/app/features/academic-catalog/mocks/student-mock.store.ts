@@ -151,7 +151,7 @@ export class StudentMockStore {
       active: true,
     };
     this.students = [student, ...this.students];
-    this.programMockStore.createProgramForStudent(student);
+    this.programMockStore.createProgramForStudent(student, request);
     return { ...student, generatedPassword: generatedPassword(student.userId) };
   }
 

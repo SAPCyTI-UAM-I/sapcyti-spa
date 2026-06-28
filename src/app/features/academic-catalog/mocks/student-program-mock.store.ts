@@ -3,15 +3,15 @@ import { inject, Injectable } from '@angular/core';
 
 import {
   ProfessorReference,
+  RegisterStudentRequest,
   StudentCatalogItem,
   StudentProgramResponse,
   StudentProgramSummary,
   UpdateStudentProgramRequest,
-  isAreaInLine,
 } from '../../../models';
-import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
 import { mockBadRequest, nextId } from './catalog-mock.util';
 import { ProfessorMockStore } from './professor-mock.store';
+import { validateProgramCatalogFields } from '../utils/student-program-form.util';
 
 @Injectable({ providedIn: 'root' })
 export class StudentProgramMockStore {
@@ -38,7 +38,10 @@ export class StudentProgramMockStore {
       programType: 'DOCTORADO',
       admissionDate: '2024-09-01',
       status: 'ACTIVO',
-      advisorIds: [],
+      lineOfKnowledge: 'Ciencias e Ingeniería de la Computación',
+      researchArea: 'Inteligencia artificial',
+      tutorId: 10,
+      advisorIds: [12],
       advisors: [],
     },
     {
@@ -119,7 +122,19 @@ export class StudentProgramMockStore {
     return this.withResolvedProfessors(updated);
   }
 
-  createProgramForStudent(student: StudentCatalogItem): void {
+  createProgramForStudent(student: StudentCatalogItem, request: RegisterStudentRequest): void {
+    this.validateRegistrationProgramFields(request);
+
+    const tutorId = request.tutorId === null ? undefined : request.tutorId;
+    if (tutorId !== undefined) {
+      this.assertProfessorExists(tutorId);
+    }
+
+    const advisorIds = request.advisorIds ?? [];
+    for (const advisorId of advisorIds) {
+      this.assertProfessorExists(advisorId);
+    }
+
     const program: StudentProgramResponse = {
       id: nextId(this.programs),
       studentId: student.id,
@@ -128,10 +143,27 @@ export class StudentProgramMockStore {
       programType: student.programType,
       admissionDate: student.admissionDate,
       status: 'ACTIVO',
-      advisorIds: [],
-      advisors: [],
+      lineOfKnowledge: request.lineOfKnowledge,
+      researchArea: request.researchArea,
+      tutorId,
+      tutor: tutorId !== undefined ? this.resolveProfessor(tutorId) : undefined,
+      advisorIds: [...advisorIds],
+      advisors: advisorIds
+        .map((id) => this.resolveProfessor(id))
+        .filter((professor): professor is ProfessorReference => professor !== undefined),
     };
     this.programs = [...this.programs, program];
+  }
+
+  validateRegistrationProgramFields(request: RegisterStudentRequest): void {
+    const validationError = validateProgramCatalogFields({
+      lineOfKnowledge: request.lineOfKnowledge,
+      researchArea: request.researchArea,
+      advisorIds: request.advisorIds,
+    });
+    if (validationError) {
+      throw mockBadRequest(validationError);
+    }
   }
 
   hasActiveAssignment(professorId: number): boolean {
@@ -200,17 +232,14 @@ export class StudentProgramMockStore {
     if (body.graduationDate && body.admissionDate && body.graduationDate < body.admissionDate) {
       throw mockBadRequest('Graduation date must be on or after admission date');
     }
-    if (new Set(body.advisorIds).size !== body.advisorIds.length) {
-      throw mockBadRequest(BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ADVISOR_IDS);
-    }
-    if (body.lineOfKnowledge || body.researchArea) {
-      if (body.lineOfKnowledge && body.researchArea) {
-        if (!isAreaInLine(body.lineOfKnowledge, body.researchArea)) {
-          throw mockBadRequest('Research area does not belong to the selected line of knowledge');
-        }
-      } else if (body.researchArea && !body.lineOfKnowledge) {
-        throw mockBadRequest('Line of knowledge is required when research area is selected');
-      }
+
+    const validationError = validateProgramCatalogFields({
+      lineOfKnowledge: body.lineOfKnowledge,
+      researchArea: body.researchArea,
+      advisorIds: body.advisorIds,
+    });
+    if (validationError) {
+      throw mockBadRequest(validationError);
     }
   }
 

@@ -15,6 +15,7 @@ export type CatalogError =
   | 'duplicate_email'
   | 'duplicate_enrollment'
   | 'duplicate_employee'
+  | 'duplicate_advisor_ids'
   | 'graduate_program_not_found'
   | 'reference_not_found'
   | 'professor_not_found'
@@ -22,6 +23,7 @@ export type CatalogError =
   | 'professor_has_active_assignments'
   | 'employee_required_for_interno'
   | 'sabbatical_date_order'
+  | 'validation'
   | 'server';
 
 export const mapCatalogError = createDomainErrorMapper<CatalogError>({
@@ -74,8 +76,13 @@ export const mapCatalogError = createDomainErrorMapper<CatalogError>({
       match: matchValidation(BACKEND_MESSAGES.ACADEMIC.SABBATICAL_DATE_ORDER),
       key: 'sabbatical_date_order',
     },
+    {
+      match: matchValidation(BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ADVISOR_IDS),
+      key: 'duplicate_advisor_ids',
+    },
     { match: matchSpringBootNotFound, key: 'reference_not_found' },
     { match: matchStatus(404), key: 'reference_not_found' },
+    { match: matchStatus(400), key: 'validation' },
   ],
   fallback: 'server',
   securityFallback: 'server',

@@ -119,6 +119,75 @@
           <input pInputText type="date" formControlName="admissionDate" />
           <app-field-error [control]="form.controls.admissionDate" [submitted]="submitted()" />
         </label>
+        <div class="gap-xs flex flex-col">
+          <label for="lineOfKnowledge">
+            {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.LINE_OF_KNOWLEDGE' | translate }}
+          </label>
+          <p-select
+            inputId="lineOfKnowledge"
+            formControlName="lineOfKnowledge"
+            [options]="lineOfKnowledgeOptions()"
+            optionValue="value"
+            [showClear]="true"
+            [loading]="catalogLoading()"
+            fluid
+          >
+            <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
+            <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
+          </p-select>
+        </div>
+        <div class="gap-xs flex flex-col">
+          <label for="researchArea">
+            {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.RESEARCH_AREA' | translate }}
+          </label>
+          <p-select
+            inputId="researchArea"
+            formControlName="researchArea"
+            [options]="filteredResearchAreas()"
+            optionValue="value"
+            [showClear]="true"
+            [disabled]="!form.controls.lineOfKnowledge.value"
+            fluid
+          >
+            <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
+            <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
+          </p-select>
+        </div>
+        <div class="gap-xs flex flex-col">
+          <label for="tutorId">
+            {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.TUTOR' | translate }}
+          </label>
+          <p-select
+            inputId="tutorId"
+            formControlName="tutorId"
+            [options]="professorOptions()"
+            optionLabel="label"
+            optionValue="value"
+            [filter]="true"
+            [showClear]="true"
+            [loading]="professorsLoading()"
+            fluid
+            (onFilter)="onProfessorFilter($event)"
+          />
+        </div>
+        <div class="gap-xs flex flex-col md:col-span-2">
+          <label for="advisorIds">
+            {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.ADVISORS' | translate }}
+          </label>
+          <p-multiselect
+            inputId="advisorIds"
+            formControlName="advisorIds"
+            [options]="professorOptions()"
+            optionLabel="label"
+            optionValue="value"
+            [filter]="true"
+            [loading]="professorsLoading()"
+            [maxSelectedLabels]="3"
+            fluid
+            (onFilter)="onProfessorFilter($event)"
+          />
+          <app-field-error [control]="form.controls.advisorIds" [submitted]="submitted()" />
+        </div>
       </div>
     } @else {
       <h2 class="text-h3 font-bold">{{ 'ACADEMIC_CATALOG.WIZARD.CONFIRM_TITLE' | translate }}</h2>
@@ -163,6 +232,38 @@
           </dt>
           <dd>{{ form.value.lastDegreeObtained }}</dd>
         </div>
+        @if (form.value.lineOfKnowledge) {
+          <div>
+            <dt class="text-text-secondary">
+              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.LINE_OF_KNOWLEDGE' | translate }}
+            </dt>
+            <dd>{{ lineLabelKey(form.value.lineOfKnowledge)! | translate }}</dd>
+          </div>
+        }
+        @if (form.value.researchArea) {
+          <div>
+            <dt class="text-text-secondary">
+              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.RESEARCH_AREA' | translate }}
+            </dt>
+            <dd>{{ areaLabelKey(form.value.researchArea)! | translate }}</dd>
+          </div>
+        }
+        @if (form.value.tutorId) {
+          <div>
+            <dt class="text-text-secondary">
+              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.TUTOR' | translate }}
+            </dt>
+            <dd>{{ professorLabel(form.value.tutorId) }}</dd>
+          </div>
+        }
+        @if (form.value.advisorIds?.length) {
+          <div>
+            <dt class="text-text-secondary">
+              {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.ADVISORS' | translate }}
+            </dt>
+            <dd>{{ advisorLabels(form.value.advisorIds) }}</dd>
+          </div>
+        }
       </dl>
     }
 

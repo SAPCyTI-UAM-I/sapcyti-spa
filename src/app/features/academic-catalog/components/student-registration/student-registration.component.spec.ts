@@ -6,6 +6,8 @@ import { MessageService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
+import { ProfessorService } from '../../services/professor.service';
+import { ResearchCatalogService } from '../../services/research-catalog.service';
 import { StudentService } from '../../services/student.service';
 import { StudentRegistrationComponent } from './student-registration.component';
 
@@ -13,6 +15,36 @@ describe('StudentRegistrationComponent', () => {
   let fixture: ComponentFixture<StudentRegistrationComponent>;
   let component: StudentRegistrationComponent;
   const service = { registerStudent: vi.fn() };
+  const professorService = {
+    listProfessors: vi.fn().mockReturnValue(
+      of({
+        content: [
+          {
+            id: 10,
+            firstName: 'Humberto',
+            firstLastName: 'Cervantes',
+            active: true,
+          },
+          {
+            id: 11,
+            firstName: 'Laura',
+            firstLastName: 'Martínez',
+            active: true,
+          },
+        ],
+      }),
+    ),
+  };
+  const researchCatalogService = {
+    getResearchCatalog: vi.fn().mockReturnValue(
+      of([
+        {
+          line: 'Ciencias e Ingeniería de la Computación',
+          areas: ['Inteligencia artificial'],
+        },
+      ]),
+    ),
+  };
 
   beforeEach(async () => {
     service.registerStudent.mockReturnValue(
@@ -29,6 +61,8 @@ describe('StudentRegistrationComponent', () => {
         provideRouter([]),
         MessageService,
         { provide: StudentService, useValue: service },
+        { provide: ProfessorService, useValue: professorService },
+        { provide: ResearchCatalogService, useValue: researchCatalogService },
         {
           provide: AuthStateService,
           useValue: { getCurrentUser: () => ({ graduateProgramId: 1 }) },
@@ -59,6 +93,10 @@ describe('StudentRegistrationComponent', () => {
       lastDegreeObtained: 'Licenciatura en Computación',
       programType: 'MAESTRIA',
       admissionDate: '2026-09-01',
+      lineOfKnowledge: 'Ciencias e Ingeniería de la Computación',
+      researchArea: 'Inteligencia artificial',
+      tutorId: 10,
+      advisorIds: [11],
     });
     component.next();
     component.submit();
@@ -69,6 +107,10 @@ describe('StudentRegistrationComponent', () => {
         graduateProgramId: 1,
         programType: 'MAESTRIA',
         secondLastName: undefined,
+        lineOfKnowledge: 'Ciencias e Ingeniería de la Computación',
+        researchArea: 'Inteligencia artificial',
+        tutorId: 10,
+        advisorIds: [11],
       }),
     );
     expect(component.generatedPassword()).toBe('Temp1234');
@@ -92,6 +134,10 @@ describe('StudentRegistrationComponent', () => {
       lastDegreeObtained: 'Licenciatura en Computación',
       programType: 'MAESTRIA',
       admissionDate: '2026-09-01',
+      lineOfKnowledge: '',
+      researchArea: '',
+      tutorId: null,
+      advisorIds: [],
     });
     component.submit();
     expect(component.error()).toBe('duplicate_enrollment');

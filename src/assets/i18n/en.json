@@ -15,6 +15,7 @@
       "duplicate_email": "The email address is already registered.",
       "duplicate_employee": "The employee number is already registered.",
       "duplicate_enrollment": "The enrollment ID is already registered.",
+      "duplicate_advisor_ids": "You cannot repeat the same advisor more than once.",
       "employee_required_for_interno": "Employee number is required for internal professors.",
       "file_format_invalid": "Invalid file format, please use the provided template.",
       "graduate_program_not_found": "The requested graduate program was not found.",
@@ -24,7 +25,8 @@
       "reference_not_found": "The requested graduate program was not found.",
       "sabbatical_date_order": "The sabbatical end date must be on or after the start date.",
       "server": "An error occurred while saving the information.",
-      "uea_already_exists": "This UEA has already been registered."
+      "uea_already_exists": "This UEA has already been registered.",
+      "validation": "Please review the form data."
     },
     "FIELDS": {
       "ACTIVE": "Student status",

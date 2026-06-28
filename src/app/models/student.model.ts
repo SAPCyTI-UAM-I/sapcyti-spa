@@ -18,6 +18,10 @@ export interface RegisterStudentRequest {
   lastDegreeObtained: string;
   programType: ProgramType;
   admissionDate: string;
+  lineOfKnowledge?: string;
+  researchArea?: string;
+  tutorId?: number | null;
+  advisorIds?: number[];
 }
 
 export interface StudentCatalogItem extends RegisterStudentRequest {
