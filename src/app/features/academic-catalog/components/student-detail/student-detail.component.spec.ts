@@ -5,6 +5,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MessageService } from 'primeng/api';
 
 import { StudentDetailResponse } from '../../../../models';
 import { StudentService } from '../../services/student.service';
@@ -62,6 +63,7 @@ describe('StudentDetailComponent', () => {
           },
         },
         { provide: StudentService, useValue: { getStudent } },
+        MessageService,
       ],
     }).compileComponents();
 

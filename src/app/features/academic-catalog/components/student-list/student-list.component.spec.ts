@@ -5,6 +5,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 import { PageResponse, StudentCatalogItem } from '../../../../models';
 import { StudentService } from '../../services/student.service';
@@ -45,7 +46,7 @@ describe('StudentListComponent', () => {
     const listStudents = vi.fn(() => of(buildStudentPage()));
     await TestBed.configureTestingModule({
       imports: [StudentListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
-      providers: [provideRouter([]), { provide: StudentService, useValue: { listStudents } }],
+      providers: [provideRouter([]), { provide: StudentService, useValue: { listStudents } }, MessageService],
     }).compileComponents();
     const fixture = TestBed.createComponent(StudentListComponent);
     return { fixture, listStudents };
@@ -55,7 +56,7 @@ describe('StudentListComponent', () => {
     fixture: ReturnType<typeof TestBed.createComponent<StudentListComponent>>,
     values: { search?: string; programType?: string; active?: string },
   ): void {
-    const form = fixture.debugElement.query(By.css('form')).injector.get(FormGroupDirective);
+    const form = fixture.debugElement.query(By.directive(FormGroupDirective)).injector.get(FormGroupDirective);
     form.form.patchValue(values);
   }
 
