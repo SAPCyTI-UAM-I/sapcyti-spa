@@ -57,6 +57,28 @@ export const ACADEMIC_CATALOG_ROUTES: Routes = [
     ],
   },
   {
+    path: 'ueas',
+    data: { breadcrumb: 'SHELL.MENU.UEAS' },
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./components/uea-list/uea-list.component').then((m) => m.UeaListComponent),
+        canActivate: [authGuard],
+        data: catalogData,
+      },
+      {
+        path: 'new',
+        loadComponent: () =>
+          import('./components/uea-registration/uea-registration.component').then(
+            (m) => m.UeaRegistrationComponent,
+          ),
+        canActivate: [authGuard],
+        data: { ...catalogData, breadcrumb: 'BREADCRUMB.NEW' },
+      },
+    ],
+  },
+  {
     path: 'professors',
     data: { breadcrumb: 'SHELL.MENU.PROFESSORS' },
     children: [

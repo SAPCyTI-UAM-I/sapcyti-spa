@@ -8,5 +8,7 @@ export const environment = {
     professors: false,
     studentPrograms: false,
     passwordChange: false,
+    researchCatalog: false,
+    ueas: false,
   },
 };

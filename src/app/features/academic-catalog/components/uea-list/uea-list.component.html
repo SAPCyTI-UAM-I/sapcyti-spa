@@ -1,0 +1,286 @@
+<section class="gap-lg flex flex-col" data-testid="uea-catalog">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-h2 text-primary font-bold">
+        {{ 'ACADEMIC_CATALOG.UEAS.LIST.TITLE' | translate }}
+      </h1>
+      <p class="text-text-secondary">
+        {{ 'ACADEMIC_CATALOG.UEAS.LIST.SUBTITLE' | translate }}
+      </p>
+    </div>
+    <div class="gap-sm flex">
+      <p-button
+        data-testid="bulk-upload-uea"
+        icon="pi pi-upload"
+        severity="secondary"
+        variant="outlined"
+        [label]="'ACADEMIC_CATALOG.UEAS.LIST.BULK' | translate"
+        (onClick)="openBulkDialog()"
+      />
+      <p-button
+        data-testid="create-uea"
+        icon="pi pi-plus"
+        [label]="'ACADEMIC_CATALOG.UEAS.LIST.CREATE' | translate"
+        routerLink="/academic-catalog/ueas/new"
+      />
+    </div>
+  </header>
+
+  <form
+    class="border-outline bg-surface p-md gap-md grid rounded-xl border md:grid-cols-[1fr_11rem_auto]"
+    [formGroup]="filters"
+    (ngSubmit)="applyFilters()"
+  >
+    <input
+      pInputText
+      formControlName="search"
+      [placeholder]="'ACADEMIC_CATALOG.UEAS.LIST.SEARCH' | translate"
+    />
+    <p-select formControlName="active" [options]="statuses" optionValue="value" fluid>
+      <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
+      <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
+    </p-select>
+    <div class="gap-sm flex">
+      <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />
+      <p-button
+        type="button"
+        icon="pi pi-filter-slash"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="clearFilters()"
+      />
+    </div>
+  </form>
+
+  <div class="border-outline bg-surface rounded-xl border">
+    @if (loading()) {
+      <div class="p-xl text-text-secondary text-center">
+        <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+      </div>
+    } @else if (loadError()) {
+      <div class="p-xl gap-md flex flex-col items-center">
+        <p class="text-error">{{ 'ACADEMIC_CATALOG.STATES.LOAD_ERROR' | translate }}</p>
+        <p-button [label]="'COMMON.ACTIONS.RETRY' | translate" (onClick)="load()" />
+      </div>
+    } @else if (items().length === 0) {
+      <div class="p-xl text-text-secondary text-center">
+        {{ 'ACADEMIC_CATALOG.UEAS.LIST.EMPTY' | translate }}
+      </div>
+    } @else {
+      <div class="md:overflow-x-auto">
+        <table class="block w-full border-collapse md:table md:min-w-[78rem] md:table-fixed">
+          <thead class="bg-table-header hidden text-left md:table-header-group">
+            <tr>
+              <th class="p-md w-28">{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CLAVE' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.NOMBRE' | translate }}</th>
+              <th class="p-md w-28">{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO' | translate }}</th>
+              <th class="p-md w-36">
+                {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO_FORMACION' | translate }}
+              </th>
+              <th class="p-md w-[5.5rem] text-right">
+                {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.H_TEOR' | translate }}
+              </th>
+              <th class="p-md w-[5.5rem] text-right">
+                {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.H_PRAC' | translate }}
+              </th>
+              <th class="p-md w-[5.5rem] text-right">
+                {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CREDITOS' | translate }}
+              </th>
+              <th class="p-md w-24">{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+            @for (uea of items(); track uea.id) {
+              <tr
+                class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
+              >
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CLAVE' | translate }}
+                  </span>
+                  <span class="font-mono text-sm">{{ uea.clave }}</span>
+                </td>
+                <td class="md:p-md col-span-2 md:table-cell">
+                  <span class="text-h3 text-primary font-bold md:font-normal md:text-inherit">
+                    {{ uea.nombre }}
+                  </span>
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO' | translate }}
+                  </span>
+                  {{ 'ACADEMIC_CATALOG.UEAS.TYPES.' + uea.tipo | translate }}
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO_FORMACION' | translate }}
+                  </span>
+                  {{ 'ACADEMIC_CATALOG.UEAS.FORMATION_TYPES.' + uea.tipoFormacion | translate }}
+                </td>
+                <td class="md:p-md md:table-cell md:text-right">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.H_TEOR' | translate }}
+                  </span>
+                  {{ uea.horasTeoria }}
+                </td>
+                <td class="md:p-md md:table-cell md:text-right">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.H_PRAC' | translate }}
+                  </span>
+                  {{ uea.horasPractica }}
+                </td>
+                <td class="md:p-md md:table-cell md:text-right">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CREDITOS' | translate }}
+                  </span>
+                  {{ uea.creditos }}
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}
+                  </span>
+                  <app-catalog-tag
+                    [value]="
+                      (uea.active
+                        ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
+                        : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
+                      ) | translate
+                    "
+                    [severity]="ueaActiveTagSeverity(uea.active)"
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <footer class="gap-sm flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <span class="text-text-secondary"
+      >{{ 'ACADEMIC_CATALOG.PAGINATION.TOTAL' | translate }}: {{ totalElements() }}</span
+    >
+    <p-paginator
+      [first]="first()"
+      [rows]="pageSize"
+      [totalRecords]="totalElements()"
+      (onPageChange)="onPageChange($event)"
+    />
+  </footer>
+</section>
+
+<!-- Bulk upload dialog -->
+<p-dialog
+  [header]="'ACADEMIC_CATALOG.UEAS.BULK.TITLE' | translate"
+  [visible]="showBulkDialog()"
+  [modal]="true"
+  [style]="{ width: '32rem' }"
+  (onHide)="showBulkDialog.set(false)"
+>
+  <div class="gap-md flex flex-col">
+    <div class="gap-xs flex flex-col">
+      <span class="text-body-sm text-text-secondary">
+        {{ 'ACADEMIC_CATALOG.UEAS.BULK.TEMPLATE_LABEL' | translate }}
+      </span>
+      <div class="gap-sm flex flex-wrap">
+        <a
+          href="assets/uea-template.xlsx"
+          download="uea-template.xlsx"
+          class="text-primary text-sm hover:underline"
+        >
+          <i class="pi pi-file-excel mr-xs"></i>Excel (.xlsx)
+        </a>
+        <a
+          href="assets/uea-template.csv"
+          download="uea-template.csv"
+          class="text-primary text-sm hover:underline"
+        >
+          <i class="pi pi-file mr-xs"></i>CSV (.csv)
+        </a>
+      </div>
+    </div>
+
+    <div class="gap-xs flex flex-col">
+      <span class="text-body-md">{{ 'ACADEMIC_CATALOG.UEAS.BULK.FILE_LABEL' | translate }}</span>
+      <div class="gap-sm flex items-center">
+        <label
+          for="bulk-file-input"
+          class="bg-primary hover:bg-primary-hover text-on-primary cursor-pointer rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+        >
+          <i class="pi pi-folder-open mr-xs"></i>
+          {{ 'ACADEMIC_CATALOG.UEAS.BULK.BROWSE' | translate }}
+        </label>
+        <span class="text-text-secondary truncate text-sm">
+          {{
+            selectedFile()
+              ? selectedFile()!.name
+              : ('ACADEMIC_CATALOG.UEAS.BULK.NO_FILE' | translate)
+          }}
+        </span>
+      </div>
+      <input
+        id="bulk-file-input"
+        data-testid="bulk-file-input"
+        type="file"
+        accept=".xlsx,.csv"
+        class="sr-only"
+        (change)="onFileChange($event)"
+      />
+    </div>
+
+    @if (bulkError()) {
+      <p-message severity="error" [text]="bulkError() | domainError: catalogErrorScope" />
+    }
+
+    @if (bulkResult()) {
+      <div
+        data-testid="bulk-result"
+        class="border-outline rounded-lg border p-3"
+        [class.border-success]="bulkResult()!.errors.length === 0"
+        [class.border-error]="bulkResult()!.errors.length > 0"
+      >
+        @if (bulkResult()!.errors.length === 0) {
+          <p class="text-success font-medium">
+            {{
+              'ACADEMIC_CATALOG.UEAS.BULK.SUMMARY_SUCCESS'
+                | translate: { count: bulkResult()!.created }
+            }}
+          </p>
+        } @else {
+          <p class="text-error font-medium">
+            {{
+              'ACADEMIC_CATALOG.UEAS.BULK.SUMMARY_ERRORS'
+                | translate: { count: bulkResult()!.errors.length }
+            }}
+          </p>
+          <ul class="text-body-md mt-2 list-inside list-disc">
+            @for (err of bulkResult()!.errors; track err.row) {
+              <li>
+                {{ 'ACADEMIC_CATALOG.UEAS.BULK.ROW_LABEL' | translate }} {{ err.row }}:
+                {{ bulkErrorLabel(err.code) | translate }}
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      variant="outlined"
+      [label]="'COMMON.ACTIONS.CLOSE' | translate"
+      (onClick)="showBulkDialog.set(false)"
+    />
+    <p-button
+      data-testid="bulk-upload-submit"
+      icon="pi pi-upload"
+      [label]="'ACADEMIC_CATALOG.UEAS.BULK.UPLOAD' | translate"
+      [loading]="bulkLoading()"
+      [disabled]="!selectedFile() || bulkLoading()"
+      (onClick)="uploadBulk()"
+    />
+  </ng-template>
+</p-dialog>

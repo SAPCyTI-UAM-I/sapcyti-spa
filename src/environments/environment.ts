@@ -11,5 +11,6 @@ export const environment = {
     studentPrograms: true,
     passwordChange: true,
     researchCatalog: true,
+    ueas: true,
   },
 };

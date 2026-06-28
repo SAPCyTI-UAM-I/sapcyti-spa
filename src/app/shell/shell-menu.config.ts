@@ -87,6 +87,12 @@ const COORDINATOR_NAV: ShellNavigation = {
           route: '/academic-catalog/professors',
           icon: 'pi pi-user-edit',
         },
+        {
+          id: 'ueas',
+          labelKey: 'SHELL.MENU.UEAS',
+          route: '/academic-catalog/ueas',
+          icon: 'pi pi-book',
+        },
       ],
     },
     {

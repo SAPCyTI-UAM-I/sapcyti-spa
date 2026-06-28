@@ -16,5 +16,7 @@ export const API_ENDPOINTS = {
     `${environment.apiBaseUrl}/students/${studentId}/programs/${programId}`,
   professors: `${environment.apiBaseUrl}/professors`,
   researchCatalog: `${environment.apiBaseUrl}/research-catalog`,
+  ueas: `${environment.apiBaseUrl}/ueas`,
+  ueasBulk: `${environment.apiBaseUrl}/ueas/bulk`,
   userPassword: (userId: number): string => `${environment.apiBaseUrl}/users/${userId}/password`,
 } as const;
