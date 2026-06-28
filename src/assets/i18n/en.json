@@ -76,6 +76,25 @@
         "EDIT": "Edit program",
         "VIEW": "Academic program"
       },
+      "CATALOG": {
+        "AREAS": {
+          "AI": "Artificial intelligence",
+          "BIG_DATA": "Big data",
+          "DIGITAL_SIGNAL_PROCESSING": "Digital signal processing in communications",
+          "HIGH_PERFORMANCE_COMPUTING": "High-performance computing",
+          "IOT": "Internet of Things",
+          "NETWORK_APPLICATIONS": "Network applications",
+          "NETWORK_CODING": "Network coding",
+          "ROUTING": "Routing",
+          "SEMANTIC_WEB": "Semantic web",
+          "SOFTWARE_DEFINED_NETWORKS": "Software-defined networks",
+          "WIRELESS_COMMUNICATIONS": "Wireless communications"
+        },
+        "LINES": {
+          "COMPUTER_SCIENCE": "Computer Science and Engineering",
+          "NETWORKS": "Communication Networks"
+        }
+      },
       "CHOOSER": {
         "SUBTITLE": "Select the program you want to view.",
         "TITLE": "Choose program"
@@ -104,25 +123,6 @@
         "TUTOR": "Tutor",
         "UNCLASSIFIED": "Unclassified",
         "WITHDRAWAL_REASON": "Withdrawal reason"
-      },
-      "CATALOG": {
-        "LINES": {
-          "COMPUTER_SCIENCE": "Computer Science and Engineering",
-          "NETWORKS": "Communication Networks"
-        },
-        "AREAS": {
-          "AI": "Artificial intelligence",
-          "BIG_DATA": "Big data",
-          "DIGITAL_SIGNAL_PROCESSING": "Digital signal processing in communications",
-          "HIGH_PERFORMANCE_COMPUTING": "High-performance computing",
-          "IOT": "Internet of Things",
-          "NETWORK_APPLICATIONS": "Network applications",
-          "NETWORK_CODING": "Network coding",
-          "ROUTING": "Routing",
-          "SEMANTIC_WEB": "Semantic web",
-          "SOFTWARE_DEFINED_NETWORKS": "Software-defined networks",
-          "WIRELESS_COMMUNICATIONS": "Wireless communications"
-        }
       },
       "STATUS": {
         "ACTIVO": "Active",
@@ -158,6 +158,7 @@
         "CONTACT_SECTION": "Contact information",
         "EDIT_ACTION": "Edit information",
         "NO_ADVISORS": "No advisors assigned",
+        "NO_GRADUATION_DATE": "No graduation date",
         "NO_TUTOR": "No tutor assigned",
         "PERSONAL_SECTION": "Personal information",
         "PROGRAM_SECTION": "Academic program",
@@ -393,6 +394,10 @@
       "SAVE": "Save",
       "SEARCH": "Search",
       "VIEW": "View"
+    },
+    "CLIPBOARD": {
+      "COPIED": "Copied to clipboard.",
+      "COPY": "Click to copy"
     },
     "ERRORS": {
       "ACCESS_DENIED": "Access denied",

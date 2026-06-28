@@ -76,6 +76,25 @@
         "EDIT": "Editar programa",
         "VIEW": "Programa académico"
       },
+      "CATALOG": {
+        "AREAS": {
+          "AI": "Inteligencia artificial",
+          "BIG_DATA": "Manejo de datos masivos (Big data)",
+          "DIGITAL_SIGNAL_PROCESSING": "Procesamiento digital de señales en las comunicaciones",
+          "HIGH_PERFORMANCE_COMPUTING": "Supercómputo (cómputo de alto rendimiento)",
+          "IOT": "Internet de las cosas",
+          "NETWORK_APPLICATIONS": "Aplicaciones de redes",
+          "NETWORK_CODING": "Codificación de red",
+          "ROUTING": "Encaminamiento (ruteo)",
+          "SEMANTIC_WEB": "Web semántica",
+          "SOFTWARE_DEFINED_NETWORKS": "Redes definidas por software",
+          "WIRELESS_COMMUNICATIONS": "Comunicaciones inalámbricas"
+        },
+        "LINES": {
+          "COMPUTER_SCIENCE": "Ciencias e Ingeniería de la Computación",
+          "NETWORKS": "Redes de Comunicaciones"
+        }
+      },
       "CHOOSER": {
         "SUBTITLE": "Seleccione el programa que desea consultar.",
         "TITLE": "Elegir programa"
@@ -104,25 +123,6 @@
         "TUTOR": "Tutor",
         "UNCLASSIFIED": "Sin clasificar",
         "WITHDRAWAL_REASON": "Motivo de baja"
-      },
-      "CATALOG": {
-        "LINES": {
-          "COMPUTER_SCIENCE": "Ciencias e Ingeniería de la Computación",
-          "NETWORKS": "Redes de Comunicaciones"
-        },
-        "AREAS": {
-          "AI": "Inteligencia artificial",
-          "BIG_DATA": "Manejo de datos masivos (Big data)",
-          "DIGITAL_SIGNAL_PROCESSING": "Procesamiento digital de señales en las comunicaciones",
-          "HIGH_PERFORMANCE_COMPUTING": "Supercómputo (cómputo de alto rendimiento)",
-          "IOT": "Internet de las cosas",
-          "NETWORK_APPLICATIONS": "Aplicaciones de redes",
-          "NETWORK_CODING": "Codificación de red",
-          "ROUTING": "Encaminamiento (ruteo)",
-          "SEMANTIC_WEB": "Web semántica",
-          "SOFTWARE_DEFINED_NETWORKS": "Redes definidas por software",
-          "WIRELESS_COMMUNICATIONS": "Comunicaciones inalámbricas"
-        }
       },
       "STATUS": {
         "ACTIVO": "Activo",
@@ -158,6 +158,7 @@
         "CONTACT_SECTION": "Información de contacto",
         "EDIT_ACTION": "Editar información",
         "NO_ADVISORS": "Sin asesores asignados",
+        "NO_GRADUATION_DATE": "Sin fecha de egreso",
         "NO_TUTOR": "Sin tutor asignado",
         "PERSONAL_SECTION": "Datos personales",
         "PROGRAM_SECTION": "Programa académico",
@@ -393,6 +394,10 @@
       "SAVE": "Guardar",
       "SEARCH": "Buscar",
       "VIEW": "Ver"
+    },
+    "CLIPBOARD": {
+      "COPIED": "Copiado al portapapeles.",
+      "COPY": "Clic para copiar"
     },
     "ERRORS": {
       "ACCESS_DENIED": "Acceso denegado",

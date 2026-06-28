@@ -11,7 +11,19 @@ import { PasswordChangeService } from '../services/password-change.service';
 import { PasswordChangeComponent } from './password-change.component';
 
 describe('PasswordChangeComponent', () => {
-  async function createComponent(userId: string | null, returnUrl: string | null = null) {
+  async function createComponent(
+    userId: string | null,
+    returnUrl: string | null = null,
+    targetName: string | null = null,
+  ) {
+    const queryParams: Record<string, string> = {};
+    if (returnUrl) {
+      queryParams['returnUrl'] = returnUrl;
+    }
+    if (targetName) {
+      queryParams['targetName'] = targetName;
+    }
+
     const service = { changePassword: vi.fn(() => of(void 0)) };
     const auth = {
       getCurrentUser: () => ({ id: 4 }),
@@ -28,7 +40,7 @@ describe('PasswordChangeComponent', () => {
           useValue: {
             snapshot: {
               paramMap: convertToParamMap(userId ? { userId } : {}),
-              queryParamMap: convertToParamMap(returnUrl ? { returnUrl } : {}),
+              queryParamMap: convertToParamMap(queryParams),
             },
           },
         },
@@ -58,6 +70,16 @@ describe('PasswordChangeComponent', () => {
     );
     expect(auth.logout).toHaveBeenCalled();
     expect(router.navigateByUrl).toHaveBeenCalledWith('/auth/login');
+  });
+
+  it('uses targetName from query params in admin mode', async () => {
+    const { component } = await createComponent('101', null, 'Ana García López');
+    expect(component.targetDisplayName).toBe('Ana García López');
+  });
+
+  it('falls back to user id when targetName is missing in admin mode', async () => {
+    const { component } = await createComponent('101');
+    expect(component.targetDisplayName).toBe('101');
   });
 
   it('omits current password and returns to professor catalog in admin mode', async () => {

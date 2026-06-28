@@ -394,5 +394,25 @@
         />
       </footer>
     </form>
+
+    @if (student(); as current) {
+      <div
+        class="border-outline pt-lg gap-sm flex flex-wrap"
+        data-testid="student-edit-actions"
+      >
+        <p-button
+          data-testid="change-student-password"
+          icon="pi pi-key"
+          severity="secondary"
+          variant="outlined"
+          [label]="'ACADEMIC_CATALOG.STUDENTS.DETAIL.CHANGE_PASSWORD' | translate"
+          [routerLink]="['/account/users', current.userId, 'password']"
+          [queryParams]="{
+            returnUrl: '/academic-catalog/students/' + current.id + '/edit',
+            targetName: formatPersonName(current),
+          }"
+        />
+      </div>
+    }
   }
 </section>

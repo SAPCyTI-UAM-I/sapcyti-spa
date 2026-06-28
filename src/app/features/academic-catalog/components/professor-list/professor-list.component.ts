@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import { PageResponse } from '../../../../models';
 import { ProfessorCatalogItem } from '../../../../models';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
+import { formatProfessorName } from '../../utils/professor-display.util';
 import { ProfessorService } from '../../services/professor.service';
 import {
   CATALOG_STATUS_FILTER_OPTIONS,
@@ -35,6 +36,7 @@ export class ProfessorListComponent extends CatalogListBase<ProfessorCatalogItem
   });
 
   readonly statuses = CATALOG_STATUS_FILTER_OPTIONS;
+  readonly formatProfessorName = formatProfessorName;
 
   protected override fetchItems(): Observable<PageResponse<ProfessorCatalogItem>> {
     const filters = this.filters.getRawValue();

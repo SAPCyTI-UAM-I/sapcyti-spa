@@ -9,6 +9,7 @@ import { Select } from 'primeng/select';
 import { Observable } from 'rxjs';
 
 import { PageResponse, StudentCatalogItem } from '../../../../models';
+import { CopyableTextComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
 import {
@@ -23,7 +24,16 @@ import { CatalogListBase } from '../catalog-list.base';
   selector: 'app-student-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [ReactiveFormsModule, RouterLink, TranslatePipe, Button, InputText, Select, Paginator],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    TranslatePipe,
+    Button,
+    InputText,
+    Select,
+    Paginator,
+    CopyableTextComponent,
+  ],
   templateUrl: './student-list.component.html',
 })
 export class StudentListComponent extends CatalogListBase<StudentCatalogItem> {

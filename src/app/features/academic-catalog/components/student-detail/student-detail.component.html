@@ -6,20 +6,12 @@
       </h1>
     </div>
     <div class="gap-sm flex flex-wrap">
-      @if (student(); as current) {
+      @if (student()) {
         <p-button
           data-testid="edit-student"
           icon="pi pi-pencil"
           [label]="'ACADEMIC_CATALOG.STUDENTS.DETAIL.EDIT_ACTION' | translate"
           [routerLink]="editRoute()"
-        />
-        <p-button
-          icon="pi pi-key"
-          severity="secondary"
-          variant="outlined"
-          [label]="'ACADEMIC_CATALOG.STUDENTS.DETAIL.CHANGE_PASSWORD' | translate"
-          [routerLink]="['/account/users', current.userId, 'password']"
-          [queryParams]="{ returnUrl: '/academic-catalog/students/' + current.id }"
         />
       }
       <p-button
@@ -53,26 +45,30 @@
         <h2 class="text-h2 text-on-surface font-bold" data-testid="student-name">
           {{ current.firstName }} {{ current.firstLastName }} {{ current.secondLastName || '' }}
         </h2>
-        <p class="text-text-secondary gap-xs flex items-center">
+        <div class="text-text-secondary gap-xs flex items-center">
           <i class="pi pi-id-card" aria-hidden="true"></i>
-          <span>{{ current.enrollmentId }}</span>
-        </p>
+          <app-copyable-text [value]="current.enrollmentId">
+            {{ current.enrollmentId }}
+          </app-copyable-text>
+        </div>
       </div>
       <div
         class="text-text-secondary gap-xs border-outline pt-md sm:pl-lg flex flex-col border-t sm:items-end sm:border-t-0 sm:border-l sm:pt-0 sm:text-right"
       >
         <span class="gap-xs flex items-center">
           <i class="pi pi-envelope" aria-hidden="true"></i>
-          <span class="break-all">{{ current.email }}</span>
+          <app-copyable-text [value]="current.email">
+            <span class="break-all">{{ current.email }}</span>
+          </app-copyable-text>
         </span>
         <span class="gap-xs flex items-center">
           <i class="pi pi-phone" aria-hidden="true"></i>
-          <span>
+          <app-copyable-text [value]="current.phone">
             {{ current.phone }}
-            @if (current.phoneExtension) {
-              <span>ext. {{ current.phoneExtension }}</span>
-            }
-          </span>
+          </app-copyable-text>
+          @if (current.phoneExtension) {
+            <span>ext. {{ current.phoneExtension }}</span>
+          }
         </span>
       </div>
     </div>
@@ -121,7 +117,9 @@
         </h3>
         <dl class="gap-x-xxl grid sm:grid-cols-2">
           <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.ENROLLMENT_ID' | translate">
-            {{ current.enrollmentId }}
+            <app-copyable-text [value]="current.enrollmentId">
+              {{ current.enrollmentId }}
+            </app-copyable-text>
           </app-profile-field>
           <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.ADMISSION_DATE' | translate">
             {{ current.admissionDate }}
@@ -169,13 +167,17 @@
                 </span>
               }
             </app-profile-field>
-            @if (prog.graduationDate) {
-              <app-profile-field
-                [label]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.GRADUATION_DATE' | translate"
-              >
+            <app-profile-field
+              [label]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.GRADUATION_DATE' | translate"
+            >
+              @if (prog.graduationDate) {
                 {{ prog.graduationDate }}
-              </app-profile-field>
-            }
+              } @else {
+                <span class="text-text-tertiary font-normal italic">
+                  {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.NO_GRADUATION_DATE' | translate }}
+                </span>
+              }
+            </app-profile-field>
             @if (prog.status === 'BAJA' && prog.withdrawalReason) {
               <app-profile-field
                 [label]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.WITHDRAWAL_REASON' | translate"

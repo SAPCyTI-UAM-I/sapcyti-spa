@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
@@ -37,6 +37,7 @@ import { StudentProgramService } from '../../services/student-program.service';
 import { ProfessorService } from '../../services/professor.service';
 import { ResearchCatalogService } from '../../services/research-catalog.service';
 import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error.component';
+import { formatPersonName } from '../../../../shared/utils/person-name.util';
 import { isFieldInvalid } from '../../../../shared/utils/field-error.util';
 import {
   graduationDateAfterAdmissionValidator,
@@ -63,6 +64,7 @@ interface ProfessorOption {
   host: ROUTED_PAGE_HOST,
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     TranslatePipe,
     Button,
     InputText,
@@ -97,6 +99,7 @@ export class StudentEditComponent {
   readonly professorsLoading = signal(false);
 
   readonly isFieldInvalid = isFieldInvalid;
+  readonly formatPersonName = formatPersonName;
   readonly programTypeOptions = CATALOG_PROGRAM_TYPE_OPTIONS;
   readonly statusOptions = STUDENT_PROGRAM_STATUS_OPTIONS;
 

@@ -77,7 +77,7 @@
       </div>
     } @else {
       <div class="md:overflow-x-auto">
-        <table class="block w-full border-collapse md:table md:min-w-[58rem]">
+        <table class="block w-full border-collapse md:table md:min-w-[48rem]">
           <thead class="bg-table-header hidden text-left md:table-header-group">
             <tr>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.NAME' | translate }}</th>
@@ -86,7 +86,6 @@
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.PROGRAM' | translate }}</th>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ADMISSION' | translate }}</th>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}</th>
-              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
@@ -103,13 +102,20 @@
                   </a>
                 </td>
                 <td class="text-text-secondary md:p-md col-span-2 break-all md:table-cell">
-                  {{ student.email }}
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}
+                  </span>
+                  <app-copyable-text [value]="student.email">
+                    {{ student.email }}
+                  </app-copyable-text>
                 </td>
                 <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.ENROLLMENT' | translate }}
                   </span>
-                  {{ student.enrollmentId }}
+                  <app-copyable-text [value]="student.enrollmentId">
+                    {{ student.enrollmentId }}
+                  </app-copyable-text>
                 </td>
                 <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
@@ -133,19 +139,6 @@
                       : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
                     ) | translate
                   }}
-                </td>
-                <td class="md:p-md col-span-2 md:table-cell">
-                  <div class="gap-sm flex flex-col">
-                    <p-button
-                      icon="pi pi-key"
-                      severity="secondary"
-                      variant="outlined"
-                      [fluid]="true"
-                      [label]="'ACCOUNT.PASSWORD.ADMIN_ACTION' | translate"
-                      [routerLink]="['/account/users', student.userId, 'password']"
-                      [queryParams]="{ returnUrl: '/academic-catalog/students' }"
-                    />
-                  </div>
                 </td>
               </tr>
             }

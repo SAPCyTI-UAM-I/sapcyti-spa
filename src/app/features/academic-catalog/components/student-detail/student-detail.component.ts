@@ -13,7 +13,7 @@ import {
   StudentDetailResponse,
 } from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { ProfileFieldComponent } from '../../../../shared/components';
+import { CopyableTextComponent, ProfileFieldComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
 import { formatProfessorName } from '../../utils/professor-display.util';
@@ -36,6 +36,7 @@ import {
     Message,
     DomainErrorMessagePipe,
     ProfileFieldComponent,
+    CopyableTextComponent,
   ],
   templateUrl: './student-detail.component.html',
 })

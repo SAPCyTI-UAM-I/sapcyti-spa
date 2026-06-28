@@ -105,7 +105,10 @@
                     [fluid]="true"
                     [label]="'ACCOUNT.PASSWORD.ADMIN_ACTION' | translate"
                     [routerLink]="['/account/users', professor.userId, 'password']"
-                    [queryParams]="{ returnUrl: '/academic-catalog/professors' }"
+                    [queryParams]="{
+                      returnUrl: '/academic-catalog/professors',
+                      targetName: formatProfessorName(professor),
+                    }"
                   />
                 </td>
               </tr>
