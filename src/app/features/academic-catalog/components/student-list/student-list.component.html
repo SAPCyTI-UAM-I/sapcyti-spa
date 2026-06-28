@@ -121,7 +121,10 @@
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.PROGRAM' | translate }}
                   </span>
-                  {{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + student.programType | translate }}
+                  <app-catalog-tag
+                    [value]="'ACADEMIC_CATALOG.PROGRAM_TYPES.' + student.programType | translate"
+                    [severity]="programTypeTagSeverity(student.programType)"
+                  />
                 </td>
                 <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
@@ -133,12 +136,15 @@
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}
                   </span>
-                  {{
-                    (student.active
-                      ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
-                      : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
-                    ) | translate
-                  }}
+                  <app-catalog-tag
+                    [value]="
+                      (student.active
+                        ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
+                        : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
+                      ) | translate
+                    "
+                    [severity]="studentActiveTagSeverity(student.active)"
+                  />
                 </td>
               </tr>
             }

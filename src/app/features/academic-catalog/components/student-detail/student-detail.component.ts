@@ -4,7 +4,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
-import { Tag } from 'primeng/tag';
 import { finalize } from 'rxjs';
 
 import {
@@ -13,11 +12,14 @@ import {
   StudentDetailResponse,
 } from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { CopyableTextComponent, ProfileFieldComponent } from '../../../../shared/components';
+import { CatalogTagComponent, CopyableTextComponent, ProfileFieldComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
 import { formatProfessorName } from '../../utils/professor-display.util';
-import { programStatusSeverity } from '../../utils/program-status.util';
+import {
+  programStatusSeverity,
+  programTypeTagSeverity,
+} from '../../utils/catalog-tag.util';
 import {
   CATALOG_ERROR_I18N_SCOPE,
   mapCatalogError,
@@ -32,11 +34,11 @@ import {
     RouterLink,
     TranslatePipe,
     Button,
-    Tag,
     Message,
     DomainErrorMessagePipe,
     ProfileFieldComponent,
     CopyableTextComponent,
+    CatalogTagComponent,
   ],
   templateUrl: './student-detail.component.html',
 })
@@ -56,6 +58,7 @@ export class StudentDetailComponent {
   readonly getLineOfKnowledgeLabelKey = getLineOfKnowledgeLabelKey;
   readonly getResearchAreaLabelKey = getResearchAreaLabelKey;
   readonly programStatusSeverity = programStatusSeverity;
+  readonly programTypeTagSeverity = programTypeTagSeverity;
   readonly catalogErrorScope = CATALOG_ERROR_I18N_SCOPE;
 
   constructor() {

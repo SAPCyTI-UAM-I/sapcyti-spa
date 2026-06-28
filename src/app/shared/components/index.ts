@@ -1,6 +1,7 @@
 export { AccessDeniedComponent } from './access-denied/access-denied.component';
 export { AuthFooterComponent } from './auth-footer/auth-footer.component';
 export { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
+export { CatalogTagComponent } from './catalog-tag/catalog-tag.component';
 export { CopyableTextComponent } from './copyable-text/copyable-text.component';
 export { AuthPageLayoutComponent } from './auth-page-layout/auth-page-layout.component';
 export { FeaturePlaceholderComponent } from './feature-placeholder/feature-placeholder.component';

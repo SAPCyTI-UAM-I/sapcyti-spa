@@ -4,6 +4,7 @@
  * Consumed by:
  *  - `sapcyti-preset.ts`  → PrimeNG semantic tokens
  *  - `styles.css`         → Tailwind @theme `--color-brand-*` variables
+ *  - `catalog-tag.util.ts` → `CATALOG_TAG_SEVERITY` → PrimeNG `p-tag` severities
  *
  * When adding or changing a colour, update it HERE first and keep the
  * Tailwind @theme block in `styles.css` in sync.
@@ -74,3 +75,48 @@ export const SEMANTIC = {
   accentContainer: '#EEF2FF',
   accentMuted: '#818CF8',
 } as const;
+
+/**
+ * PrimeNG `p-tag` severity keys for catalog badges.
+ * Colors resolve through `sapcyti-preset` → `tag.colorScheme` (SEMANTIC palette above).
+ * Map domain values with helpers in `features/academic-catalog/utils/catalog-tag.util.ts`.
+ */
+export type CatalogTagSeverity =
+  | 'success'
+  | 'info'
+  | 'warn'
+  | 'secondary'
+  | 'maestria'
+  | 'doctorado';
+
+/** Tag colors for program-type badges (`CatalogTagComponent` applies these inline). */
+export const CATALOG_PROGRAM_TYPE_TAG = {
+  maestria: {
+    background: SECONDARY[100],
+    color: SECONDARY[700],
+  },
+  doctorado: {
+    background: '#E9D5FF',
+    color: '#6B21A8',
+  },
+} as const;
+
+export const CATALOG_TAG_SEVERITY = {
+  programType: {
+    MAESTRIA: 'maestria',
+    DOCTORADO: 'doctorado',
+  },
+  studentAccountStatus: {
+    active: 'success',
+    inactive: 'secondary',
+  },
+  programStatus: {
+    ACTIVO: 'success',
+    BAJA: 'warn',
+    EGRESADO: 'info',
+  },
+} as const satisfies {
+  programType: Record<'MAESTRIA' | 'DOCTORADO', CatalogTagSeverity>;
+  studentAccountStatus: Record<'active' | 'inactive', CatalogTagSeverity>;
+  programStatus: Record<'ACTIVO' | 'BAJA' | 'EGRESADO', CatalogTagSeverity>;
+};

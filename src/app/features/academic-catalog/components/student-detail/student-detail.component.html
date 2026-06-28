@@ -83,18 +83,16 @@
         </h3>
         <dl class="flex flex-col">
           <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate">
-            <p-tag
+            <app-catalog-tag
               [value]="'ACADEMIC_CATALOG.PROGRAM_TYPES.' + current.programType | translate"
-              severity="info"
-              [rounded]="true"
+              [severity]="programTypeTagSeverity(current.programType)"
             />
           </app-profile-field>
           @if (current.program; as prog) {
             <app-profile-field [label]="'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate">
-              <p-tag
+              <app-catalog-tag
                 [value]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.STATUS.' + prog.status | translate"
                 [severity]="programStatusSeverity(prog.status)"
-                [rounded]="true"
               />
             </app-profile-field>
           }

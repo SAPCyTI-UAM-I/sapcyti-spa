@@ -9,9 +9,13 @@ import { Select } from 'primeng/select';
 import { Observable } from 'rxjs';
 
 import { PageResponse, StudentCatalogItem } from '../../../../models';
-import { CopyableTextComponent } from '../../../../shared/components';
+import { CopyableTextComponent, CatalogTagComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
+import {
+  programTypeTagSeverity,
+  studentActiveTagSeverity,
+} from '../../utils/catalog-tag.util';
 import {
   CATALOG_PROGRAM_TYPE_FILTER_OPTIONS,
   CATALOG_STATUS_FILTER_OPTIONS,
@@ -33,6 +37,7 @@ import { CatalogListBase } from '../catalog-list.base';
     Select,
     Paginator,
     CopyableTextComponent,
+    CatalogTagComponent,
   ],
   templateUrl: './student-list.component.html',
 })
@@ -48,6 +53,8 @@ export class StudentListComponent extends CatalogListBase<StudentCatalogItem> {
 
   readonly programTypes = CATALOG_PROGRAM_TYPE_FILTER_OPTIONS;
   readonly statuses = CATALOG_STATUS_FILTER_OPTIONS;
+  readonly programTypeTagSeverity = programTypeTagSeverity;
+  readonly studentActiveTagSeverity = studentActiveTagSeverity;
 
   protected override fetchItems(): Observable<PageResponse<StudentCatalogItem>> {
     const filters = this.filters.getRawValue();
