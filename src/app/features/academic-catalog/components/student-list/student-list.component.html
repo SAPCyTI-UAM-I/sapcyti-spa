@@ -14,10 +14,9 @@
     />
   </header>
 
-  <form
+  <div
     class="border-outline bg-surface p-md gap-md grid rounded-xl border md:grid-cols-[1fr_13rem_11rem_auto]"
     [formGroup]="filters"
-    (ngSubmit)="applyFilters()"
   >
     <input
       pInputText
@@ -49,7 +48,6 @@
       <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
     </p-select>
     <div class="gap-sm flex">
-      <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />
       <p-button
         type="button"
         icon="pi pi-filter-slash"
@@ -59,7 +57,7 @@
         (onClick)="clearFilters()"
       />
     </div>
-  </form>
+  </div>
 
   <div class="border-outline bg-surface rounded-xl border">
     @if (loading()) {
@@ -96,7 +94,7 @@
                 <td class="md:p-md col-span-2 md:table-cell">
                   <a
                     [routerLink]="['/academic-catalog/students', student.id]"
-                    class="text-primary text-h3 font-bold hover:underline md:font-normal md:text-inherit"
+                    class="text-primary hover:text-primary-hover active:text-primary-hover text-h3 md:text-body-md font-bold md:font-medium -mx-xs px-xs py-xs max-md:-mx-sm max-md:px-sm max-md:py-sm inline-block w-fit max-md:block max-md:w-full cursor-pointer rounded-sm underline underline-offset-2 transition-colors hover:bg-primary-container active:bg-primary-container md:no-underline hover:underline active:underline focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none"
                   >
                     {{ student.firstLastName }} {{ student.secondLastName }} {{ student.firstName }}
                   </a>
