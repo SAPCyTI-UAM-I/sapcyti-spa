@@ -13,6 +13,7 @@ import {
   StudentDetailResponse,
 } from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
+import { ProfileFieldComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
 import { formatProfessorName } from '../../utils/professor-display.util';
@@ -27,7 +28,15 @@ import {
   selector: 'app-student-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [RouterLink, TranslatePipe, Button, Tag, Message, DomainErrorMessagePipe],
+  imports: [
+    RouterLink,
+    TranslatePipe,
+    Button,
+    Tag,
+    Message,
+    DomainErrorMessagePipe,
+    ProfileFieldComponent,
+  ],
   templateUrl: './student-detail.component.html',
 })
 export class StudentDetailComponent {
@@ -58,6 +67,16 @@ export class StudentDetailComponent {
 
   editRoute(): string[] {
     return ['/academic-catalog/students', String(this.studentId), 'edit'];
+  }
+
+  initials(): string {
+    const current = this.student();
+    if (!current) {
+      return '';
+    }
+    const first = current.firstName?.trim().charAt(0) ?? '';
+    const last = current.firstLastName?.trim().charAt(0) ?? '';
+    return `${first}${last}`.toUpperCase();
   }
 
   private load(): void {

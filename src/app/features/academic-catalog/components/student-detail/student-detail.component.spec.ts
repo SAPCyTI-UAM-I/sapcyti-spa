@@ -76,8 +76,8 @@ describe('StudentDetailComponent', () => {
     expect(getStudent).toHaveBeenCalledWith(1);
     expect(fixture.componentInstance.student()).toEqual(mockResponse);
 
-    const nameHeader = fixture.debugElement.query(By.css('header p'));
-    expect(nameHeader.nativeElement.textContent).toContain('García López Ana');
+    const nameHeader = fixture.debugElement.query(By.css('[data-testid="student-name"]'));
+    expect(nameHeader.nativeElement.textContent).toContain('Ana García López');
   });
 
   it('renders p-message when student details fail to load', async () => {

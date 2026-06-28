@@ -4,11 +4,6 @@
       <h1 class="text-h2 text-primary font-bold">
         {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.TITLE' | translate }}
       </h1>
-      @if (student(); as current) {
-        <p class="text-text-secondary">
-          {{ current.firstLastName }} {{ current.secondLastName || '' }} {{ current.firstName }}
-        </p>
-      }
     </div>
     <div class="gap-sm flex flex-wrap">
       @if (student(); as current) {
@@ -44,223 +39,172 @@
   } @else if (error()) {
     <p-message severity="error" [text]="error() | domainError: catalogErrorScope" />
   } @else if (student(); as current) {
-    <div class="gap-lg grid lg:grid-cols-2">
-      <!-- Datos Personales -->
-      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
-        <h2 class="text-h3 text-primary font-bold">
+    <!-- Encabezado de perfil -->
+    <div
+      class="border-outline bg-surface p-lg gap-lg flex flex-col rounded-xl border sm:flex-row sm:items-center"
+    >
+      <div
+        class="bg-primary-container text-primary text-h1 flex h-20 w-20 shrink-0 items-center justify-center rounded-full font-bold"
+        aria-hidden="true"
+      >
+        {{ initials() }}
+      </div>
+      <div class="gap-xs flex min-w-0 flex-1 flex-col">
+        <h2 class="text-h2 text-on-surface font-bold" data-testid="student-name">
+          {{ current.firstName }} {{ current.firstLastName }} {{ current.secondLastName || '' }}
+        </h2>
+        <p class="text-text-secondary gap-xs flex items-center">
+          <i class="pi pi-id-card" aria-hidden="true"></i>
+          <span>{{ current.enrollmentId }}</span>
+        </p>
+      </div>
+      <div
+        class="text-text-secondary gap-xs border-outline pt-md sm:pl-lg flex flex-col border-t sm:items-end sm:border-t-0 sm:border-l sm:pt-0 sm:text-right"
+      >
+        <span class="gap-xs flex items-center">
+          <i class="pi pi-envelope" aria-hidden="true"></i>
+          <span class="break-all">{{ current.email }}</span>
+        </span>
+        <span class="gap-xs flex items-center">
+          <i class="pi pi-phone" aria-hidden="true"></i>
+          <span>
+            {{ current.phone }}
+            @if (current.phoneExtension) {
+              <span>ext. {{ current.phoneExtension }}</span>
+            }
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Secciones de detalle -->
+    <div class="gap-lg grid items-start lg:grid-cols-3">
+      <!-- Datos personales -->
+      <article class="border-outline bg-surface p-lg gap-xs flex flex-col rounded-xl border">
+        <h3 class="text-h3 text-primary gap-sm flex items-center font-bold">
+          <i class="pi pi-user" aria-hidden="true"></i>
           {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.PERSONAL_SECTION' | translate }}
-        </h2>
-        <dl class="gap-sm grid">
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.FIRST_NAME' | translate }}
-            </dt>
-            <dd>{{ current.firstName }}</dd>
-          </div>
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.FIRST_LAST_NAME' | translate }}
-            </dt>
-            <dd>{{ current.firstLastName }}</dd>
-          </div>
-          @if (current.secondLastName) {
-            <div class="gap-xs flex flex-col">
-              <dt class="text-caption text-text-secondary">
-                {{ 'ACADEMIC_CATALOG.FIELDS.SECOND_LAST_NAME' | translate }}
-              </dt>
-              <dd>{{ current.secondLastName }}</dd>
-            </div>
-          }
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.BIRTH_DATE' | translate }}
-            </dt>
-            <dd>{{ current.birthDate }}</dd>
-          </div>
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.NATIONALITY' | translate }}
-            </dt>
-            <dd>{{ current.nationality }}</dd>
-          </div>
-        </dl>
-      </article>
-
-      <!-- Información de Contacto -->
-      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
-        <h2 class="text-h3 text-primary font-bold">
-          {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.CONTACT_SECTION' | translate }}
-        </h2>
-        <dl class="gap-sm grid">
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.EMAIL' | translate }}
-            </dt>
-            <dd class="break-all">{{ current.email }}</dd>
-          </div>
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.PHONE' | translate }}
-            </dt>
-            <dd>
-              {{ current.phone }}
-              @if (current.phoneExtension) {
-                <span>ext. {{ current.phoneExtension }}</span>
-              }
-            </dd>
-          </div>
-        </dl>
-      </article>
-
-      <!-- Información Académica -->
-      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
-        <h2 class="text-h3 text-primary font-bold">
-          {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.ACADEMIC_SECTION' | translate }}
-        </h2>
-        <dl class="gap-sm grid">
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.ENROLLMENT_ID' | translate }}
-            </dt>
-            <dd>{{ current.enrollmentId }}</dd>
-          </div>
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate }}
-            </dt>
-            <dd>{{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + current.programType | translate }}</dd>
-          </div>
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.UNDERGRADUATE_DEGREE' | translate }}
-            </dt>
-            <dd>{{ current.undergraduateDegree }}</dd>
-          </div>
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }}
-            </dt>
-            <dd>{{ current.lastDegreeObtained }}</dd>
-          </div>
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.ADMISSION_DATE' | translate }}
-            </dt>
-            <dd>{{ current.admissionDate }}</dd>
-          </div>
-          <div class="gap-xs flex flex-col">
-            <dt class="text-caption text-text-secondary">
-              {{ 'ACADEMIC_CATALOG.FIELDS.ACTIVE' | translate }}
-            </dt>
-            <dd>
+        </h3>
+        <dl class="flex flex-col">
+          <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate">
+            <p-tag
+              [value]="'ACADEMIC_CATALOG.PROGRAM_TYPES.' + current.programType | translate"
+              severity="info"
+              [rounded]="true"
+            />
+          </app-profile-field>
+          @if (current.program; as prog) {
+            <app-profile-field [label]="'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate">
               <p-tag
-                [value]="
-                  (current.active
-                    ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
-                    : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
-                  ) | translate
-                "
-                [severity]="current.active ? 'success' : 'secondary'"
+                [value]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.STATUS.' + prog.status | translate"
+                [severity]="programStatusSeverity(prog.status)"
                 [rounded]="true"
               />
-            </dd>
-          </div>
+            </app-profile-field>
+          }
+          <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.BIRTH_DATE' | translate">
+            {{ current.birthDate }}
+          </app-profile-field>
+          <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.NATIONALITY' | translate">
+            {{ current.nationality }}
+          </app-profile-field>
         </dl>
       </article>
 
-      <!-- Programa Académico -->
-      <article class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
-        <h2 class="text-h3 text-primary font-bold">
-          {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.PROGRAM_SECTION' | translate }}
-        </h2>
-        @if (current.program; as prog) {
-          <dl class="gap-sm grid">
-            <div class="gap-xs flex flex-col">
-              <dt class="text-caption text-text-secondary">
-                {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}
-              </dt>
-              <dd>
-                <p-tag
-                  [value]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.STATUS.' + prog.status | translate"
-                  [severity]="programStatusSeverity(prog.status)"
-                  [rounded]="true"
-                />
-              </dd>
-            </div>
-            @if (prog.status === 'BAJA' && prog.withdrawalReason) {
-              <div class="gap-xs flex flex-col">
-                <dt class="text-caption text-text-secondary">
-                  {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.WITHDRAWAL_REASON' | translate }}
-                </dt>
-                <dd>{{ prog.withdrawalReason }}</dd>
-              </div>
-            }
+      <!-- Información académica (incluye datos del programa) -->
+      <article
+        class="border-outline bg-surface p-lg gap-xs flex flex-col rounded-xl border lg:col-span-2"
+      >
+        <h3 class="text-h3 text-primary gap-sm flex items-center font-bold">
+          <i class="pi pi-book" aria-hidden="true"></i>
+          {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.ACADEMIC_SECTION' | translate }}
+        </h3>
+        <dl class="gap-x-xxl grid sm:grid-cols-2">
+          <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.ENROLLMENT_ID' | translate">
+            {{ current.enrollmentId }}
+          </app-profile-field>
+          <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.ADMISSION_DATE' | translate">
+            {{ current.admissionDate }}
+          </app-profile-field>
+          <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.UNDERGRADUATE_DEGREE' | translate">
+            {{ current.undergraduateDegree }}
+          </app-profile-field>
+          <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate">
+            {{ current.lastDegreeObtained }}
+          </app-profile-field>
+          @if (current.program; as prog) {
+            <app-profile-field
+              [label]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.LINE_OF_KNOWLEDGE' | translate"
+            >
+              @if (
+                prog.lineOfKnowledge && getLineOfKnowledgeLabelKey(prog.lineOfKnowledge);
+                as labelKey
+              ) {
+                {{ labelKey | translate }}
+              } @else {
+                <span class="text-text-tertiary font-normal italic">
+                  {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.UNCLASSIFIED' | translate }}
+                </span>
+              }
+            </app-profile-field>
+            <app-profile-field
+              [label]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.RESEARCH_AREA' | translate"
+            >
+              @if (prog.researchArea && getResearchAreaLabelKey(prog.researchArea); as labelKey) {
+                {{ labelKey | translate }}
+              } @else {
+                <span class="text-text-tertiary font-normal italic">
+                  {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.UNCLASSIFIED' | translate }}
+                </span>
+              }
+            </app-profile-field>
+            <app-profile-field
+              [label]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.TUTOR' | translate"
+            >
+              @if (prog.tutor) {
+                {{ formatProfessorName(prog.tutor) }}
+              } @else {
+                <span class="text-text-tertiary font-normal italic">
+                  {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.NO_TUTOR' | translate }}
+                </span>
+              }
+            </app-profile-field>
             @if (prog.graduationDate) {
-              <div class="gap-xs flex flex-col">
-                <dt class="text-caption text-text-secondary">
-                  {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.GRADUATION_DATE' | translate }}
-                </dt>
-                <dd>{{ prog.graduationDate }}</dd>
-              </div>
+              <app-profile-field
+                [label]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.GRADUATION_DATE' | translate"
+              >
+                {{ prog.graduationDate }}
+              </app-profile-field>
             }
-            <div class="gap-xs flex flex-col">
-              <dt class="text-caption text-text-secondary">
-                {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.LINE_OF_KNOWLEDGE' | translate }}
-              </dt>
-              <dd>
-                @if (prog.lineOfKnowledge && getLineOfKnowledgeLabelKey(prog.lineOfKnowledge); as labelKey) {
-                  {{ labelKey | translate }}
-                } @else {
-                  {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.UNCLASSIFIED' | translate }}
-                }
-              </dd>
-            </div>
-            <div class="gap-xs flex flex-col">
-              <dt class="text-caption text-text-secondary">
-                {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.RESEARCH_AREA' | translate }}
-              </dt>
-              <dd>
-                @if (prog.researchArea && getResearchAreaLabelKey(prog.researchArea); as labelKey) {
-                  {{ labelKey | translate }}
-                } @else {
-                  {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.UNCLASSIFIED' | translate }}
-                }
-              </dd>
-            </div>
-            <div class="gap-xs flex flex-col">
-              <dt class="text-caption text-text-secondary">
-                {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.TUTOR' | translate }}
-              </dt>
-              <dd>
-                @if (prog.tutor) {
-                  {{ formatProfessorName(prog.tutor) }}
-                } @else {
-                  <span class="text-text-secondary">
-                    {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.NO_TUTOR' | translate }}
-                  </span>
-                }
-              </dd>
-            </div>
-            <div class="gap-xs flex flex-col">
-              <dt class="text-caption text-text-secondary">
+            @if (prog.status === 'BAJA' && prog.withdrawalReason) {
+              <app-profile-field
+                [label]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.WITHDRAWAL_REASON' | translate"
+              >
+                {{ prog.withdrawalReason }}
+              </app-profile-field>
+            }
+            <div class="gap-md py-sm sm:col-span-2">
+              <dt class="text-caption text-text-secondary mb-xs">
                 {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.ADVISORS' | translate }}
               </dt>
               <dd>
                 @if (prog.advisors.length > 0) {
-                  <ul class="pl-md list-disc">
+                  <ul class="gap-xs flex flex-wrap">
                     @for (advisor of prog.advisors; track advisor.id) {
-                      <li>{{ formatProfessorName(advisor) }}</li>
+                      <li class="bg-surface-muted text-body-md px-sm py-xs rounded-full font-medium">
+                        {{ formatProfessorName(advisor) }}
+                      </li>
                     }
                   </ul>
                 } @else {
-                  <span class="text-text-secondary">
+                  <span class="text-text-tertiary text-body-md italic">
                     {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.NO_ADVISORS' | translate }}
                   </span>
                 }
               </dd>
             </div>
-          </dl>
-        }
+          }
+        </dl>
       </article>
     </div>
   }

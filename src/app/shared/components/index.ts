@@ -6,6 +6,7 @@ export { FeaturePlaceholderComponent } from './feature-placeholder/feature-place
 export { FieldErrorComponent } from './field-error/field-error.component';
 export { LanguageSwitcherComponent } from './language-switcher/language-switcher.component';
 export { NotFoundComponent } from './not-found/not-found.component';
+export { ProfileFieldComponent } from './profile-field/profile-field.component';
 export { ShellSidebarLinkComponent } from './shell-sidebar-link/shell-sidebar-link.component';
 export { ShellSidebarNavComponent } from './shell-sidebar-nav/shell-sidebar-nav.component';
 export { StatCardComponent, type CardTone } from './stat-card/stat-card.component';
