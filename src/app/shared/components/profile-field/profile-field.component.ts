@@ -13,10 +13,10 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   },
   template: `
     <div
-      class="gap-md py-sm border-outline flex items-baseline justify-between border-b last:border-b-0"
+      class="gap-x-md py-sm border-outline flex min-w-0 items-start justify-between border-b last:border-b-0"
     >
-      <dt class="text-caption text-text-secondary shrink-0">{{ label() }}</dt>
-      <dd class="text-body-md text-right font-medium">
+      <dt class="text-caption text-text-secondary min-w-0 pr-sm break-words">{{ label() }}</dt>
+      <dd class="text-body-md min-w-0 flex-1 break-words text-right font-medium">
         <ng-content />
       </dd>
     </div>

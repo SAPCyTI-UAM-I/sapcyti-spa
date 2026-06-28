@@ -42,7 +42,10 @@
         {{ initials() }}
       </div>
       <div class="gap-xs flex min-w-0 flex-1 flex-col">
-        <h2 class="text-h2 text-on-surface font-bold" data-testid="student-name">
+        <h2
+          class="text-h2 text-on-surface break-words font-bold"
+          data-testid="student-name"
+        >
           {{ current.firstName }} {{ current.firstLastName }} {{ current.secondLastName || '' }}
         </h2>
         <div class="text-text-secondary gap-xs flex items-center">
@@ -53,15 +56,15 @@
         </div>
       </div>
       <div
-        class="text-text-secondary gap-xs border-outline pt-md sm:pl-lg flex flex-col border-t sm:items-end sm:border-t-0 sm:border-l sm:pt-0 sm:text-right"
+        class="text-text-secondary gap-xs border-outline pt-md sm:pl-lg flex min-w-0 flex-col flex-wrap border-t sm:items-end sm:border-t-0 sm:border-l sm:pt-0 sm:text-right"
       >
-        <span class="gap-xs flex items-center">
+        <span class="gap-xs flex min-w-0 flex-wrap items-center">
           <i class="pi pi-envelope" aria-hidden="true"></i>
           <app-copyable-text [value]="current.email">
             <span class="break-all">{{ current.email }}</span>
           </app-copyable-text>
         </span>
-        <span class="gap-xs flex items-center">
+        <span class="gap-xs flex min-w-0 flex-wrap items-center">
           <i class="pi pi-phone" aria-hidden="true"></i>
           <app-copyable-text [value]="current.phone">
             {{ current.phone }}
@@ -74,14 +77,16 @@
     </div>
 
     <!-- Secciones de detalle -->
-    <div class="gap-lg grid items-start lg:grid-cols-3">
+    <div class="gap-lg grid min-w-0 items-start lg:grid-cols-3">
       <!-- Datos personales -->
-      <article class="border-outline bg-surface p-lg gap-xs flex flex-col rounded-xl border">
+      <article
+        class="border-outline bg-surface p-lg gap-xs flex min-w-0 flex-col rounded-xl border"
+      >
         <h3 class="text-h3 text-primary gap-sm flex items-center font-bold">
           <i class="pi pi-user" aria-hidden="true"></i>
           {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.PERSONAL_SECTION' | translate }}
         </h3>
-        <dl class="flex flex-col">
+        <dl class="flex min-w-0 flex-col">
           <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate">
             <app-catalog-tag
               [value]="'ACADEMIC_CATALOG.PROGRAM_TYPES.' + current.programType | translate"
@@ -107,13 +112,13 @@
 
       <!-- Información académica (incluye datos del programa) -->
       <article
-        class="border-outline bg-surface p-lg gap-xs flex flex-col rounded-xl border lg:col-span-2"
+        class="border-outline bg-surface p-lg gap-xs flex min-w-0 flex-col rounded-xl border lg:col-span-2"
       >
         <h3 class="text-h3 text-primary gap-sm flex items-center font-bold">
           <i class="pi pi-book" aria-hidden="true"></i>
           {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.ACADEMIC_SECTION' | translate }}
         </h3>
-        <dl class="gap-x-xxl grid sm:grid-cols-2">
+        <dl class="gap-x-xxl grid min-w-0 md:grid-cols-2">
           <app-profile-field [label]="'ACADEMIC_CATALOG.FIELDS.ENROLLMENT_ID' | translate">
             <app-copyable-text [value]="current.enrollmentId">
               {{ current.enrollmentId }}
@@ -183,11 +188,11 @@
                 {{ prog.withdrawalReason }}
               </app-profile-field>
             }
-            <div class="gap-md py-sm sm:col-span-2">
-              <dt class="text-caption text-text-secondary mb-xs">
+            <div class="gap-xs py-sm min-w-0 md:col-span-2">
+              <dt class="text-caption text-text-secondary mb-xs min-w-0 break-words">
                 {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.ADVISORS' | translate }}
               </dt>
-              <dd>
+              <dd class="min-w-0">
                 @if (prog.advisors.length > 0) {
                   <ul class="gap-xs flex flex-wrap">
                     @for (advisor of prog.advisors; track advisor.id) {
