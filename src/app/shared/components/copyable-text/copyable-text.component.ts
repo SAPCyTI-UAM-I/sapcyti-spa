@@ -4,6 +4,7 @@ import { MessageService } from 'primeng/api';
 import { Tooltip } from 'primeng/tooltip';
 
 import { copyTextToClipboard } from '../../utils/clipboard.util';
+import { TOAST_LIFE } from '../../utils/toast.util';
 
 @Component({
   selector: 'app-copyable-text',
@@ -43,7 +44,7 @@ export class CopyableTextComponent {
       this.messages.add({
         severity: 'success',
         summary: this.translate.instant('COMMON.CLIPBOARD.COPIED'),
-        life: 1600,
+        life: TOAST_LIFE.BRIEF,
       });
     });
   }

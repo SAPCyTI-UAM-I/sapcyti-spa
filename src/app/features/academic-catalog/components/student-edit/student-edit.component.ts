@@ -32,6 +32,7 @@ import {
   toResearchAreaOptions,
 } from '../../../../models';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
+import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { StudentService } from '../../services/student.service';
 import { StudentProgramService } from '../../services/student-program.service';
 import { ProfessorService } from '../../services/professor.service';
@@ -273,7 +274,7 @@ export class StudentEditComponent {
           this.messages.add({
             severity: 'success',
             summary: this.translate.instant('ACADEMIC_CATALOG.STUDENTS.EDIT.SAVED'),
-            life: 3000,
+            life: TOAST_LIFE.DEFAULT,
           });
           void this.router.navigate(['/academic-catalog/students', this.studentId]);
         },

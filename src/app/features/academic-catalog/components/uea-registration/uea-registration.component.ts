@@ -20,6 +20,7 @@ import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-err
 import { RegisterUeaRequest } from '../../../../models';
 import { FieldErrorComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
+import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { UeaService } from '../../services/uea.service';
 import {
   CatalogError,
@@ -131,7 +132,7 @@ export class UeaRegistrationComponent {
           this.messages.add({
             severity: 'success',
             summary: this.translate.instant('ACADEMIC_CATALOG.UEAS.CREATE.SAVED'),
-            life: 3000,
+            life: TOAST_LIFE.DEFAULT,
           });
           void this.router.navigate(['/academic-catalog/ueas']);
         },

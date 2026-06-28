@@ -6,6 +6,7 @@ import { Dialog } from 'primeng/dialog';
 import { Tooltip } from 'primeng/tooltip';
 
 import { copyTextToClipboard } from '../../utils/clipboard.util';
+import { TOAST_LIFE } from '../../utils/toast.util';
 
 @Component({
   selector: 'app-temporary-password-dialog',
@@ -101,7 +102,7 @@ export class TemporaryPasswordDialogComponent {
     this.messages.add({
       severity: 'success',
       summary: this.translate.instant('ACADEMIC_CATALOG.TEMP_PASSWORD.COPIED'),
-      life: 1600,
+      life: TOAST_LIFE.BRIEF,
     });
   }
 }
