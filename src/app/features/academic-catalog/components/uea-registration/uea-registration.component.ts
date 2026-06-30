@@ -13,12 +13,11 @@ import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
-import { Select } from 'primeng/select';
 import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { RegisterUeaRequest } from '../../../../models';
-import { FieldErrorComponent } from '../../../../shared/components';
+import { FieldErrorComponent, I18nSelectComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { UeaService } from '../../services/uea.service';
@@ -68,7 +67,7 @@ const UEA_FORMACION_OPTIONS = [
     Button,
     InputText,
     Message,
-    Select,
+    I18nSelectComponent,
     FieldErrorComponent,
     DomainErrorMessagePipe,
   ],

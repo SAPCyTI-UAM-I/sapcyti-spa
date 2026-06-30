@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -27,7 +21,7 @@ import {
   toLineOfKnowledgeOptions,
   toResearchAreaOptions,
 } from '../../../../models';
-import { FieldErrorComponent } from '../../../../shared/components';
+import { FieldErrorComponent, I18nSelectComponent } from '../../../../shared/components';
 import { TemporaryPasswordDialogComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { ProfessorService } from '../../services/professor.service';
@@ -54,6 +48,7 @@ interface ProfessorOption {
     InputText,
     Select,
     MultiSelect,
+    I18nSelectComponent,
     FieldErrorComponent,
     TemporaryPasswordDialogComponent,
     DomainErrorMessagePipe,

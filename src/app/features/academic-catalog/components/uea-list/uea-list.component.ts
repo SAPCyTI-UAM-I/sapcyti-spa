@@ -5,11 +5,15 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Paginator } from 'primeng/paginator';
-import { Select } from 'primeng/select';
 import { Observable } from 'rxjs';
 
 import { PageResponse, UeaCatalogItem } from '../../../../models';
-import { CatalogTagComponent, CopyableTextComponent } from '../../../../shared/components';
+import {
+  CatalogTagComponent,
+  CopyableTextComponent,
+  I18nSelectComponent,
+  LoadStateComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { UeaService } from '../../services/uea.service';
 import {
@@ -31,7 +35,8 @@ import { UeaBulkUploadDialogComponent } from '../uea-bulk-upload-dialog/uea-bulk
     Button,
     InputText,
     Paginator,
-    Select,
+    I18nSelectComponent,
+    LoadStateComponent,
     CatalogTagComponent,
     CopyableTextComponent,
     UeaBulkUploadDialogComponent,

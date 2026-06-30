@@ -25,8 +25,6 @@ import {
   ResearchCatalogOption,
   StudentDetailResponse,
   StudentProgramResponse,
-  UpdateStudentProgramRequest,
-  UpdateStudentRequest,
   ResearchAreaCatalogItem,
   toLineOfKnowledgeOptions,
   toResearchAreaOptions,
@@ -38,10 +36,14 @@ import { StudentProgramService } from '../../services/student-program.service';
 import { ProfessorService } from '../../services/professor.service';
 import { ResearchCatalogService } from '../../services/research-catalog.service';
 import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error.component';
+import { I18nSelectComponent } from '../../../../shared/components';
 import { formatPersonName } from '../../../../shared/utils/person-name.util';
 import { isFieldInvalid } from '../../../../shared/utils/field-error.util';
 import {
+  buildUpdateStudentProgramRequest,
+  buildUpdateStudentRequest,
   graduationDateAfterAdmissionValidator,
+  reconcileProgramCatalogSelection,
   uniqueAdvisorIdsValidator,
   withdrawalReasonWhenBajaValidator,
 } from '../../utils/student-program-form.util';
@@ -72,6 +74,7 @@ interface ProfessorOption {
     Message,
     MultiSelect,
     Select,
+    I18nSelectComponent,
     FieldErrorComponent,
   ],
   templateUrl: './student-edit.component.html',
@@ -231,33 +234,8 @@ export class StudentEditComponent {
     }
 
     const value = this.form.getRawValue();
-    const studentBody: UpdateStudentRequest = {
-      firstName: value.firstName.trim(),
-      firstLastName: value.firstLastName.trim(),
-      secondLastName: value.secondLastName.trim() || undefined,
-      email: value.email.trim(),
-      nationality: value.nationality.trim(),
-      birthDate: value.birthDate,
-      phone: value.phone.trim(),
-      phoneExtension: value.phoneExtension.trim() || undefined,
-      undergraduateDegree: value.undergraduateDegree.trim(),
-      lastDegreeObtained: value.lastDegreeObtained.trim(),
-      programType: value.programType,
-      admissionDate: value.admissionDate,
-      active: value.active,
-    };
-
-    const programBody: UpdateStudentProgramRequest = {
-      admissionDate: value.admissionDate,
-      graduationDate: value.graduationDate.trim() || undefined,
-      lineOfKnowledge: value.lineOfKnowledge || undefined,
-      researchArea: value.researchArea || undefined,
-      status: value.status,
-      withdrawalReason:
-        value.status === 'BAJA' ? value.withdrawalReason.trim() || undefined : undefined,
-      tutorId: value.tutorId,
-      advisorIds: value.advisorIds,
-    };
+    const studentBody = buildUpdateStudentRequest(value);
+    const programBody = buildUpdateStudentProgramRequest(value);
 
     this.submitting.set(true);
 
@@ -318,18 +296,11 @@ export class StudentEditComponent {
           this.mergeProfessorOptions(professors.content);
 
           const prog = student.program;
-          let initialLine = prog.lineOfKnowledge ?? '';
-          let initialArea = prog.researchArea ?? '';
-
-          if (initialLine && !catalog.some((c) => c.line === initialLine)) {
-            initialLine = '';
-            initialArea = '';
-          } else if (initialLine && initialArea) {
-            const lineItem = catalog.find((c) => c.line === initialLine);
-            if (!lineItem || !lineItem.areas.includes(initialArea)) {
-              initialArea = '';
-            }
-          }
+          const { line: initialLine, area: initialArea } = reconcileProgramCatalogSelection(
+            catalog,
+            prog.lineOfKnowledge ?? '',
+            prog.researchArea ?? '',
+          );
 
           this.lineOfKnowledgeControlValue.set(initialLine);
 

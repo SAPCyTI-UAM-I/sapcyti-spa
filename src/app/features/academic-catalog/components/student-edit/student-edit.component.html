@@ -183,20 +183,11 @@
             <label for="programType" class="text-body font-medium">
               {{ 'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate }} *
             </label>
-            <p-select
-              id="programType"
-              formControlName="programType"
+            <app-i18n-select
+              inputId="programType"
+              controlName="programType"
               [options]="programTypeOptions"
-              optionValue="value"
-              [fluid]="true"
-            >
-              <ng-template #selectedItem let-option>
-                {{ option?.labelKey | translate }}
-              </ng-template>
-              <ng-template #item let-option>
-                {{ option.labelKey | translate }}
-              </ng-template>
-            </p-select>
+            />
             <app-field-error [control]="form.controls.programType" [submitted]="submitted()" />
           </div>
 
@@ -218,20 +209,7 @@
             <label for="active" class="text-body font-medium">
               {{ 'ACADEMIC_CATALOG.FIELDS.ACTIVE' | translate }} *
             </label>
-            <p-select
-              id="active"
-              formControlName="active"
-              [options]="activeOptions"
-              optionValue="value"
-              [fluid]="true"
-            >
-              <ng-template #selectedItem let-option>
-                {{ option?.labelKey | translate }}
-              </ng-template>
-              <ng-template #item let-option>
-                {{ option.labelKey | translate }}
-              </ng-template>
-            </p-select>
+            <app-i18n-select inputId="active" controlName="active" [options]="activeOptions" />
             <app-field-error [control]="form.controls.active" [submitted]="submitted()" />
           </div>
 
@@ -239,20 +217,7 @@
             <label for="status" class="text-body font-medium">
               {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }} *
             </label>
-            <p-select
-              id="status"
-              formControlName="status"
-              [options]="statusOptions"
-              optionValue="value"
-              [fluid]="true"
-            >
-              <ng-template #selectedItem let-option>
-                {{ option?.labelKey | translate }}
-              </ng-template>
-              <ng-template #item let-option>
-                {{ option.labelKey | translate }}
-              </ng-template>
-            </p-select>
+            <app-i18n-select inputId="status" controlName="status" [options]="statusOptions" />
             <app-field-error [control]="form.controls.status" [submitted]="submitted()" />
           </div>
 
@@ -292,43 +257,25 @@
             <label for="lineOfKnowledge" class="text-body font-medium">
               {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.LINE_OF_KNOWLEDGE' | translate }}
             </label>
-            <p-select
-              id="lineOfKnowledge"
-              formControlName="lineOfKnowledge"
+            <app-i18n-select
+              inputId="lineOfKnowledge"
+              controlName="lineOfKnowledge"
               [options]="lineOfKnowledgeOptions()"
-              optionValue="value"
               [showClear]="true"
-              [fluid]="true"
-            >
-              <ng-template #selectedItem let-option>
-                {{ option?.labelKey | translate }}
-              </ng-template>
-              <ng-template #item let-option>
-                {{ option.labelKey | translate }}
-              </ng-template>
-            </p-select>
+            />
           </div>
 
           <div class="gap-xs flex flex-col">
             <label for="researchArea" class="text-body font-medium">
               {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.RESEARCH_AREA' | translate }}
             </label>
-            <p-select
-              id="researchArea"
-              formControlName="researchArea"
+            <app-i18n-select
+              inputId="researchArea"
+              controlName="researchArea"
               [options]="filteredResearchAreas()"
-              optionValue="value"
               [showClear]="true"
-              [fluid]="true"
               [disabled]="!form.controls.lineOfKnowledge.value"
-            >
-              <ng-template #selectedItem let-option>
-                {{ option?.labelKey | translate }}
-              </ng-template>
-              <ng-template #item let-option>
-                {{ option.labelKey | translate }}
-              </ng-template>
-            </p-select>
+            />
           </div>
 
           <div class="gap-xs flex flex-col">

@@ -32,16 +32,7 @@
 
       <div class="gap-xs flex flex-col">
         <label for="uea-tipo">{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO' | translate }} *</label>
-        <p-select
-          inputId="uea-tipo"
-          formControlName="tipo"
-          [options]="tipoOptions"
-          optionValue="value"
-          fluid
-        >
-          <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
-          <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
-        </p-select>
+        <app-i18n-select inputId="uea-tipo" controlName="tipo" [options]="tipoOptions" />
         <app-field-error [control]="form.controls.tipo" [submitted]="submitted()" />
       </div>
 
@@ -49,16 +40,11 @@
         <label for="uea-modalidad">{{
           'ACADEMIC_CATALOG.UEAS.FIELDS.MODALIDAD' | translate
         }}</label>
-        <p-select
+        <app-i18n-select
           inputId="uea-modalidad"
-          formControlName="modalidad"
+          controlName="modalidad"
           [options]="modalidadOptions"
-          optionValue="value"
-          fluid
-        >
-          <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
-          <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
-        </p-select>
+        />
       </div>
 
       <label class="gap-xs flex flex-col">
@@ -77,16 +63,11 @@
         <label for="uea-tipo-formacion"
           >{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO_FORMACION' | translate }} *</label
         >
-        <p-select
+        <app-i18n-select
           inputId="uea-tipo-formacion"
-          formControlName="tipoFormacion"
+          controlName="tipoFormacion"
           [options]="formacionOptions"
-          optionValue="value"
-          fluid
-        >
-          <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
-          <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
-        </p-select>
+        />
         <app-field-error [control]="form.controls.tipoFormacion" [submitted]="submitted()" />
       </div>
 

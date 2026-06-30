@@ -36,10 +36,7 @@
       formControlName="search"
       [placeholder]="'ACADEMIC_CATALOG.UEAS.LIST.SEARCH' | translate"
     />
-    <p-select formControlName="active" [options]="statuses" optionValue="value" fluid>
-      <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
-      <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
-    </p-select>
+    <app-i18n-select controlName="active" [options]="statuses" />
     <div class="gap-sm flex">
       <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />
       <p-button
@@ -53,27 +50,24 @@
   </form>
 
   <div class="border-outline bg-surface rounded-xl border">
-    @if (loading()) {
-      <div class="p-xl text-text-secondary text-center">
-        <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
-      </div>
-    } @else if (loadError()) {
-      <div class="p-xl gap-md flex flex-col items-center">
-        <p class="text-error">{{ 'ACADEMIC_CATALOG.STATES.LOAD_ERROR' | translate }}</p>
-        <p-button [label]="'COMMON.ACTIONS.RETRY' | translate" (onClick)="load()" />
-      </div>
-    } @else if (items().length === 0) {
-      <div class="p-xl text-text-secondary text-center">
-        {{ 'ACADEMIC_CATALOG.UEAS.LIST.EMPTY' | translate }}
-      </div>
-    } @else {
+    <app-load-state
+      [loading]="loading()"
+      [error]="loadError()"
+      [empty]="items().length === 0"
+      emptyMessage="ACADEMIC_CATALOG.UEAS.LIST.EMPTY"
+      (retry)="load()"
+    >
       <div class="md:overflow-x-auto">
         <table class="block w-full border-collapse md:table md:min-w-[78rem] md:table-fixed">
           <thead class="bg-table-header hidden text-left md:table-header-group">
             <tr>
-              <th class="px-md py-smd w-28">{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CLAVE' | translate }}</th>
+              <th class="px-md py-smd w-28">
+                {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CLAVE' | translate }}
+              </th>
               <th class="px-md py-smd">{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.NOMBRE' | translate }}</th>
-              <th class="px-md py-smd w-28">{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO' | translate }}</th>
+              <th class="px-md py-smd w-28">
+                {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO' | translate }}
+              </th>
               <th class="px-md py-smd w-36">
                 {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO_FORMACION' | translate }}
               </th>
@@ -99,7 +93,7 @@
                     {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CLAVE' | translate }}
                   </span>
                   <app-copyable-text [value]="uea.clave">
-                    <span class="font-mono text-sm">{{ uea.clave }}</span>
+                    <span class="text-body-md font-mono">{{ uea.clave }}</span>
                   </app-copyable-text>
                 </td>
                 <td
@@ -161,7 +155,7 @@
           </tbody>
         </table>
       </div>
-    }
+    </app-load-state>
   </div>
 
   <footer class="gap-sm flex flex-col sm:flex-row sm:items-center sm:justify-between">

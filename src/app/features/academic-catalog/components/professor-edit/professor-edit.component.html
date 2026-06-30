@@ -35,16 +35,11 @@
       <div class="gap-md grid md:grid-cols-2">
         <label for="professorTypeEdit" class="gap-xs flex flex-col md:col-span-2">
           <span>{{ 'ACADEMIC_CATALOG.PROFESSORS.FIELDS.PROFESSOR_TYPE' | translate }} *</span>
-          <p-select
+          <app-i18n-select
             inputId="professorTypeEdit"
-            formControlName="professorType"
+            controlName="professorType"
             [options]="professorTypeOptions"
-            optionValue="value"
-            fluid
-          >
-            <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
-            <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
-          </p-select>
+          />
         </label>
         <label class="gap-xs flex flex-col">
           <span>{{ 'ACADEMIC_CATALOG.FIELDS.FIRST_NAME' | translate }} *</span>

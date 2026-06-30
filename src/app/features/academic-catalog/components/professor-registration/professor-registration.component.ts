@@ -5,7 +5,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
 import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
 import { Observable } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
@@ -15,7 +14,7 @@ import {
   RegisterProfessorRequest,
   RegisterProfessorResponse,
 } from '../../../../models';
-import { FieldErrorComponent } from '../../../../shared/components';
+import { FieldErrorComponent, I18nSelectComponent } from '../../../../shared/components';
 import { TemporaryPasswordDialogComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { ProfessorService } from '../../services/professor.service';
@@ -36,7 +35,7 @@ import {
     Button,
     Checkbox,
     InputText,
-    Select,
+    I18nSelectComponent,
     FieldErrorComponent,
     TemporaryPasswordDialogComponent,
     DomainErrorMessagePipe,

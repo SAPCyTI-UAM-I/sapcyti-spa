@@ -6,11 +6,16 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Paginator } from 'primeng/paginator';
-import { Select } from 'primeng/select';
 import { debounceTime, merge, Observable } from 'rxjs';
 
 import { PageResponse, StudentCatalogItem } from '../../../../models';
-import { CopyableTextComponent, CatalogTagComponent } from '../../../../shared/components';
+import {
+  CopyableTextComponent,
+  CatalogRowLinkDirective,
+  CatalogTagComponent,
+  I18nSelectComponent,
+  LoadStateComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
 import { activeTagSeverity, programTypeTagSeverity } from '../../utils/catalog-tag.util';
@@ -32,9 +37,11 @@ import { CatalogListBase } from '../catalog-list.base';
     TranslatePipe,
     Button,
     InputText,
-    Select,
+    I18nSelectComponent,
+    LoadStateComponent,
     Paginator,
     CopyableTextComponent,
+    CatalogRowLinkDirective,
     CatalogTagComponent,
   ],
   templateUrl: './student-list.component.html',
