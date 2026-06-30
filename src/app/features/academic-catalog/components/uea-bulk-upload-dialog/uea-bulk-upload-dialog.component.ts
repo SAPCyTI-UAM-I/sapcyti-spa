@@ -7,7 +7,8 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { Message } from 'primeng/message';
@@ -15,6 +16,7 @@ import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { UeaBulkUploadResult, BulkErrorCode } from '../../../../models';
+import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { UeaService } from '../../services/uea.service';
 import { CATALOG_ERROR_I18N_SCOPE } from '../../utils/catalog-error.util';
 import { UeaError, mapUeaError } from '../../utils/uea-error.util';
@@ -29,6 +31,8 @@ import type { I18nKey } from '../../../../core/i18n/i18n-keys.generated';
 export class UeaBulkUploadDialogComponent {
   private readonly service = inject(UeaService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly messages = inject(MessageService);
+  private readonly translate = inject(TranslateService);
 
   readonly uploaded = output<void>();
 
@@ -73,6 +77,18 @@ export class UeaBulkUploadDialogComponent {
           this.bulkResult.set(result);
           if (result.created > 0) {
             this.uploaded.emit();
+          }
+          // Fully successful upload: notify via toast and close. Partial/error
+          // results keep the dialog open so the user can see the failed rows.
+          if (result.created > 0 && result.errors.length === 0) {
+            this.messages.add({
+              severity: 'success',
+              summary: this.translate.instant('ACADEMIC_CATALOG.UEAS.BULK.SUMMARY_SUCCESS', {
+                count: result.created,
+              }),
+              life: TOAST_LIFE.DEFAULT,
+            });
+            this.visible.set(false);
           }
         },
         error: (error) => this.bulkError.set(mapUeaError(error)),
