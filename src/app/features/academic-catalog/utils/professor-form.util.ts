@@ -35,36 +35,29 @@ export function normalizeProfessorEmployeeNumber(
   return trimmed || undefined;
 }
 
-export function buildRegisterProfessorRequest(
-  value: RegisterProfessorRequest & { graduateProgramId: number },
-): RegisterProfessorRequest {
-  const employeeNumber = normalizeProfessorEmployeeNumber(
-    value.professorType,
-    value.employeeNumber ?? '',
-  );
+/** Shared normalization for the register/update professor payloads. */
+function normalizeProfessorRequestFields<T extends UpdateProfessorRequest>(value: T): T {
   return {
     ...value,
     secondLastName: value.secondLastName?.trim() || undefined,
     phoneExtension: value.phoneExtension?.trim() || undefined,
     nextSabbaticalStart: value.nextSabbaticalStart || undefined,
     nextSabbaticalEnd: value.nextSabbaticalEnd || undefined,
-    employeeNumber,
+    employeeNumber: normalizeProfessorEmployeeNumber(
+      value.professorType,
+      value.employeeNumber ?? '',
+    ),
   };
 }
 
+export function buildRegisterProfessorRequest(
+  value: RegisterProfessorRequest & { graduateProgramId: number },
+): RegisterProfessorRequest {
+  return normalizeProfessorRequestFields(value);
+}
+
 export function buildUpdateProfessorRequest(value: UpdateProfessorRequest): UpdateProfessorRequest {
-  const employeeNumber = normalizeProfessorEmployeeNumber(
-    value.professorType,
-    value.employeeNumber ?? '',
-  );
-  return {
-    ...value,
-    secondLastName: value.secondLastName?.trim() || undefined,
-    phoneExtension: value.phoneExtension?.trim() || undefined,
-    nextSabbaticalStart: value.nextSabbaticalStart || undefined,
-    nextSabbaticalEnd: value.nextSabbaticalEnd || undefined,
-    employeeNumber,
-  };
+  return normalizeProfessorRequestFields(value);
 }
 
 export function sabbaticalDateOrderValidator(

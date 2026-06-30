@@ -4,8 +4,16 @@ export interface PersonNameParts {
   readonly secondLastName?: string | null;
 }
 
-export function formatPersonName(parts: PersonNameParts): string {
-  return [parts.firstName, parts.firstLastName, parts.secondLastName]
-    .filter((part): part is string => !!part?.trim())
-    .join(' ');
+/** `first-last` → "Ada Lovelace King"; `last-first` → "Lovelace King Ada". */
+export type PersonNameOrder = 'first-last' | 'last-first';
+
+export function formatPersonName(
+  parts: PersonNameParts,
+  order: PersonNameOrder = 'first-last',
+): string {
+  const ordered =
+    order === 'last-first'
+      ? [parts.firstLastName, parts.secondLastName, parts.firstName]
+      : [parts.firstName, parts.firstLastName, parts.secondLastName];
+  return ordered.filter((part): part is string => !!part?.trim()).join(' ');
 }
