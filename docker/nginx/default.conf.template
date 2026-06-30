@@ -1,4 +1,7 @@
 # SPEC-010 — edge proxy: static SPA + /api reverse proxy to Spring Boot
+# API_URL holds host:port only (no scheme). The scheme is hardcoded here so the
+# variable + resolver let Nginx re-resolve the upstream via Docker DNS at request
+# time (survives the API being slow/down at boot, no stale IP).
 server {
     listen 80;
     server_name localhost;
@@ -16,8 +19,8 @@ server {
 
     location /api/actuator/ {
         set $api_backend ${API_URL};
-        proxy_pass $api_backend/actuator/;
-        
+        rewrite ^/api/actuator/(.*)$ /actuator/$1 break;
+        proxy_pass http://$api_backend;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -28,8 +31,7 @@ server {
 
     location /api/ {
         set $api_backend ${API_URL};
-        proxy_pass $api_backend/api/;
-        
+        proxy_pass http://$api_backend;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

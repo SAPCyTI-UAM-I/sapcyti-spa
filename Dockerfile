@@ -18,7 +18,7 @@ FROM nginx:1.27-alpine AS runtime
 RUN apk add --no-cache curl
 
 ENV PORT=80
-ENV API_URL=http://api:8080
+ENV API_URL=api:8080
 ENV NGINX_ENVSUBST_FILTER=API_URL
 
 COPY --from=build /app/dist/sapcyti-spa/browser /usr/share/nginx/html
