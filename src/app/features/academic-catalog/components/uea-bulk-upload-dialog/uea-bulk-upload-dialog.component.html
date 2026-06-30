@@ -7,21 +7,21 @@
 >
   <div class="gap-md flex flex-col">
     <div class="gap-xs flex flex-col">
-      <span class="text-body-sm text-text-secondary">
+      <span class="text-caption text-text-secondary">
         {{ 'ACADEMIC_CATALOG.UEAS.BULK.TEMPLATE_LABEL' | translate }}
       </span>
       <div class="gap-sm flex flex-wrap">
         <a
           href="assets/uea-template.xlsx"
           download="uea-template.xlsx"
-          class="text-primary text-sm hover:underline"
+          class="text-primary text-body-md hover:underline"
         >
           <i class="pi pi-file-excel mr-xs"></i>Excel (.xlsx)
         </a>
         <a
           href="assets/uea-template.csv"
           download="uea-template.csv"
-          class="text-primary text-sm hover:underline"
+          class="text-primary text-body-md hover:underline"
         >
           <i class="pi pi-file mr-xs"></i>CSV (.csv)
         </a>
@@ -33,12 +33,12 @@
       <div class="gap-sm flex items-center">
         <label
           for="bulk-file-input"
-          class="bg-primary hover:bg-primary-hover text-on-primary cursor-pointer rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+          class="bg-primary hover:bg-primary-hover text-on-primary px-md py-sm text-label-md cursor-pointer rounded-lg font-medium transition-colors"
         >
           <i class="pi pi-folder-open mr-xs"></i>
           {{ 'ACADEMIC_CATALOG.UEAS.BULK.BROWSE' | translate }}
         </label>
-        <span class="text-text-secondary truncate text-sm">
+        <span class="text-text-secondary text-body-md truncate">
           {{
             selectedFile()
               ? selectedFile()!.name

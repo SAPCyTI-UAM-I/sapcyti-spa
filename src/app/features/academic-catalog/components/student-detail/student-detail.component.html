@@ -31,9 +31,12 @@
   } @else if (error()) {
     <p-message severity="error" [text]="error() | domainError: catalogErrorScope" />
   } @else if (student(); as current) {
-    <article class="border-outline bg-surface overflow-hidden rounded-2xl border" data-testid="student-card">
+    <article
+      class="border-outline bg-surface overflow-hidden rounded-2xl border"
+      data-testid="student-card"
+    >
       <div
-        class="from-primary-container to-surface p-md gap-md flex min-w-0 flex-col bg-gradient-to-br sm:p-lg lg:flex-row lg:items-stretch"
+        class="from-primary-container to-surface p-md gap-md sm:p-lg flex min-w-0 flex-col bg-gradient-to-br lg:flex-row lg:items-stretch"
       >
         <div class="gap-md flex min-w-0 flex-1 items-center">
           <div
@@ -74,7 +77,7 @@
         </div>
 
         <div
-          class="bg-surface/80 border-outline p-sm gap-sm grid min-w-0 shrink-0 rounded-xl border backdrop-blur sm:grid-cols-2 sm:p-md lg:min-w-[22rem] lg:grid-cols-1 xl:grid-cols-2 xl:gap-x-lg"
+          class="bg-surface/80 border-outline p-sm gap-sm sm:p-md xl:gap-x-lg grid min-w-0 shrink-0 rounded-xl border backdrop-blur sm:grid-cols-2 lg:min-w-[22rem] lg:grid-cols-1 xl:grid-cols-2"
         >
           <span class="gap-xs text-text-secondary flex min-w-0 items-center">
             <i class="pi pi-envelope text-primary shrink-0" aria-hidden="true"></i>
@@ -94,7 +97,7 @@
         </div>
       </div>
 
-      <div class="p-md gap-md flex flex-col sm:p-lg">
+      <div class="p-md gap-md sm:p-lg flex flex-col">
         <h3 class="text-h3 text-primary gap-sm flex items-center font-bold">
           <i class="pi pi-book" aria-hidden="true"></i>
           {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.ACADEMIC_SECTION' | translate }}
@@ -102,7 +105,9 @@
 
         <dl class="gap-md flex min-w-0 flex-col">
           <!-- Matrícula · ingreso · egreso -->
-          <div class="bg-page border-outline/60 divide-outline grid divide-y rounded-xl border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div
+            class="bg-page border-outline/60 divide-outline grid divide-y rounded-xl border sm:grid-cols-3 sm:divide-x sm:divide-y-0"
+          >
             <div class="px-md py-sm gap-xs flex min-w-0 flex-col">
               <dt class="text-caption text-text-secondary">
                 {{ 'ACADEMIC_CATALOG.FIELDS.ENROLLMENT_ID' | translate }}
@@ -117,7 +122,9 @@
               <dt class="text-caption text-text-secondary">
                 {{ 'ACADEMIC_CATALOG.FIELDS.ADMISSION_DATE' | translate }}
               </dt>
-              <dd class="text-body-md text-on-surface font-semibold">{{ current.admissionDate }}</dd>
+              <dd class="text-body-md text-on-surface font-semibold">
+                {{ current.admissionDate }}
+              </dd>
             </div>
             <div class="px-md py-sm gap-xs flex min-w-0 flex-col">
               <dt class="text-caption text-text-secondary">
@@ -136,30 +143,41 @@
           </div>
 
           <!-- Grados -->
-          <div class="bg-page border-outline/60 divide-outline grid divide-y rounded-xl border lg:grid-cols-2 lg:divide-x lg:divide-y-0">
+          <div
+            class="bg-page border-outline/60 divide-outline grid divide-y rounded-xl border lg:grid-cols-2 lg:divide-x lg:divide-y-0"
+          >
             <div class="px-md py-sm gap-xs flex min-w-0 flex-col">
               <dt class="text-caption text-text-secondary">
                 {{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }}
               </dt>
-              <dd class="text-body-md text-on-surface font-semibold">{{ current.lastDegreeObtained }}</dd>
+              <dd class="text-body-md text-on-surface font-semibold">
+                {{ current.lastDegreeObtained }}
+              </dd>
             </div>
             <div class="px-md py-sm gap-xs flex min-w-0 flex-col">
               <dt class="text-caption text-text-secondary">
                 {{ 'ACADEMIC_CATALOG.FIELDS.UNDERGRADUATE_DEGREE' | translate }}
               </dt>
-              <dd class="text-body-md text-on-surface font-semibold">{{ current.undergraduateDegree }}</dd>
+              <dd class="text-body-md text-on-surface font-semibold">
+                {{ current.undergraduateDegree }}
+              </dd>
             </div>
           </div>
 
           @if (current.program; as prog) {
             <!-- Investigación -->
-            <div class="bg-page border-outline/60 divide-outline grid divide-y rounded-xl border lg:grid-cols-2 lg:divide-x lg:divide-y-0">
+            <div
+              class="bg-page border-outline/60 divide-outline grid divide-y rounded-xl border lg:grid-cols-2 lg:divide-x lg:divide-y-0"
+            >
               <div class="px-md py-sm gap-xs flex min-w-0 flex-col">
                 <dt class="text-caption text-text-secondary">
                   {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.RESEARCH_AREA' | translate }}
                 </dt>
                 <dd class="text-body-md text-on-surface font-semibold">
-                  @if (prog.researchArea && getResearchAreaLabelKey(prog.researchArea); as labelKey) {
+                  @if (
+                    prog.researchArea && getResearchAreaLabelKey(prog.researchArea);
+                    as labelKey
+                  ) {
                     {{ labelKey | translate }}
                   } @else {
                     <span class="text-text-tertiary text-sm italic">
@@ -214,7 +232,7 @@
                     <ul class="gap-xs flex flex-wrap">
                       @for (advisor of prog.advisors; track advisor.id) {
                         <li
-                          class="bg-surface-muted text-body-sm px-sm py-xs rounded-full font-medium"
+                          class="bg-surface-muted text-caption px-sm py-xs rounded-full font-medium"
                         >
                           {{ formatProfessorName(advisor) }}
                         </li>
@@ -230,11 +248,15 @@
             </div>
 
             @if (prog.status === 'BAJA' && prog.withdrawalReason) {
-              <div class="bg-page border-outline/60 px-md py-sm gap-xs flex min-w-0 flex-col rounded-xl border">
+              <div
+                class="bg-page border-outline/60 px-md py-sm gap-xs flex min-w-0 flex-col rounded-xl border"
+              >
                 <dt class="text-caption text-text-secondary">
                   {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.WITHDRAWAL_REASON' | translate }}
                 </dt>
-                <dd class="text-body-md text-on-surface font-semibold">{{ prog.withdrawalReason }}</dd>
+                <dd class="text-body-md text-on-surface font-semibold">
+                  {{ prog.withdrawalReason }}
+                </dd>
               </div>
             }
           }

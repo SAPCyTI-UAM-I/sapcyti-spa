@@ -38,6 +38,12 @@ export const SECONDARY = {
   950: '#00201D',
 } as const;
 
+/** Accent used only for the doctorado program-type badge. */
+export const ACCENT_PURPLE = {
+  100: '#E9D5FF',
+  700: '#6B21A8',
+} as const;
+
 export const SURFACE = {
   0: '#FFFFFF',
   50: '#F7F8FA',
@@ -96,8 +102,8 @@ export const CATALOG_PROGRAM_TYPE_TAG = {
     color: SECONDARY[700],
   },
   doctorado: {
-    background: '#E9D5FF',
-    color: '#6B21A8',
+    background: ACCENT_PURPLE[100],
+    color: ACCENT_PURPLE[700],
   },
 } as const;
 

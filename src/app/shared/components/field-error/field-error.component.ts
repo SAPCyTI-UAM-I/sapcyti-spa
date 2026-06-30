@@ -13,11 +13,11 @@ import { minLengthRemaining, shouldShowFieldError } from '../../utils/field-erro
     @if (shouldShow()) {
       @for (key of errorKeys(); track key) {
         @if (key === 'MINLENGTH' && minLengthRemainingKey()) {
-          <small class="text-error mt-1 block text-xs">
+          <small class="text-error mt-xs text-caption block">
             {{ minLengthRemainingKey()! | translate: { remaining: remainingChars() } }}
           </small>
         } @else {
-          <small class="text-error mt-1 block text-xs">
+          <small class="text-error mt-xs text-caption block">
             {{ 'COMMON.VALIDATION.' + key | translate }}
           </small>
         }

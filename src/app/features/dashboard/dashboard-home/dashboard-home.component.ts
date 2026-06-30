@@ -6,11 +6,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AuthStateService } from '../../../core/auth/auth.service';
 import { resolveShellMenuRole } from '../../../shell/shell-menu.config';
 import { StatCardComponent } from '../../../shared/components';
+import { ROUTED_PAGE_HOST } from '../../../shared/layout/routed-page-host';
 import { DASHBOARD_CARDS_BY_ROLE } from '../dashboard-home.config';
 
 @Component({
   selector: 'app-dashboard-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: ROUTED_PAGE_HOST,
   imports: [RouterLink, TranslateModule, StatCardComponent],
   templateUrl: './dashboard-home.component.html',
 })
