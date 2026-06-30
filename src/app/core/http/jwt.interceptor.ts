@@ -2,7 +2,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
-import { isAuthEndpoint, shouldSkipBearer } from '../auth/auth.endpoints';
+import { isAuthEndpoint, isAuthSessionRequest } from '../auth/auth.endpoints';
 import { AuthStateService } from '../auth/auth.service';
 import { getRequestLanguage } from '../i18n/request-language.util';
 
@@ -17,7 +17,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   let headers = req.headers.set('Accept-Language', lang);
   const token = auth.getAccessToken();
 
-  if (token && isApiRequest(req.url) && !shouldSkipBearer(req.url)) {
+  if (token && isApiRequest(req.url) && !isAuthSessionRequest(req.url)) {
     headers = headers.set('Authorization', `Bearer ${token}`);
   }
 
