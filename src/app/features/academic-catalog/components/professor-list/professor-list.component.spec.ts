@@ -42,7 +42,11 @@ describe('ProfessorListComponent', () => {
     const listProfessors = vi.fn(() => of(buildProfessorPage()));
     await TestBed.configureTestingModule({
       imports: [ProfessorListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
-      providers: [provideRouter([]), { provide: ProfessorService, useValue: { listProfessors } }, MessageService],
+      providers: [
+        provideRouter([]),
+        { provide: ProfessorService, useValue: { listProfessors } },
+        MessageService,
+      ],
     }).compileComponents();
     const fixture = TestBed.createComponent(ProfessorListComponent);
     return { fixture, listProfessors };

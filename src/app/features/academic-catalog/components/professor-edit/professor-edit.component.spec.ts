@@ -46,7 +46,10 @@ describe('ProfessorEditComponent', () => {
           },
         },
         MessageService,
-        { provide: ProfessorService, useValue: { getProfessor, updateProfessor, deactivateProfessor } },
+        {
+          provide: ProfessorService,
+          useValue: { getProfessor, updateProfessor, deactivateProfessor },
+        },
       ],
     }).compileComponents();
 
@@ -128,7 +131,10 @@ describe('ProfessorEditComponent', () => {
           },
         },
         MessageService,
-        { provide: ProfessorService, useValue: { getProfessor, updateProfessor, deactivateProfessor } },
+        {
+          provide: ProfessorService,
+          useValue: { getProfessor, updateProfessor, deactivateProfessor },
+        },
       ],
     }).compileComponents();
 
