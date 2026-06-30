@@ -17,21 +17,9 @@ export interface RegisterProfessorRequest {
   nextSabbaticalEnd?: string;
 }
 
-export interface ProfessorCatalogItem {
+export interface ProfessorCatalogItem extends RegisterProfessorRequest {
   id: number;
   userId: number;
-  professorType: ProfessorType;
-  employeeNumber?: string | null;
-  email: string;
-  graduateProgramId: number;
-  firstName: string;
-  firstLastName: string;
-  secondLastName?: string;
-  phone: string;
-  phoneExtension?: string;
-  commissionMember: boolean;
-  nextSabbaticalStart?: string;
-  nextSabbaticalEnd?: string;
   active: boolean;
 }
 
