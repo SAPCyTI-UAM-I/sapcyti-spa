@@ -54,6 +54,8 @@ export class PasswordChangeComponent {
 
   readonly targetUserId = Number(this.route.snapshot.paramMap.get('userId'));
   readonly administrative = Number.isInteger(this.targetUserId) && this.targetUserId > 0;
+  readonly targetDisplayName =
+    this.route.snapshot.queryParamMap.get('targetName')?.trim() || String(this.targetUserId);
   readonly submitting = signal(false);
   readonly submitted = signal(false);
   readonly error = signal<PasswordChangeError | null>(null);

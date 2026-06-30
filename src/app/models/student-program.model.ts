@@ -7,6 +7,7 @@ export interface ProfessorReference {
   firstName: string;
   firstLastName: string;
   secondLastName?: string;
+  active?: boolean;
 }
 
 export interface StudentProgramSummary {
@@ -26,6 +27,7 @@ export interface StudentProgramResponse {
   programType: ProgramType;
   admissionDate: string;
   graduationDate?: string;
+  lineOfKnowledge?: string;
   researchArea?: string;
   status: ProgramStatus;
   withdrawalReason?: string;
@@ -38,6 +40,7 @@ export interface StudentProgramResponse {
 export interface UpdateStudentProgramRequest {
   admissionDate: string;
   graduationDate?: string;
+  lineOfKnowledge?: string;
   researchArea?: string;
   status: ProgramStatus;
   withdrawalReason?: string;

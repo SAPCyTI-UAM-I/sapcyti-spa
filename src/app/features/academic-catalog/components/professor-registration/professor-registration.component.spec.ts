@@ -33,6 +33,7 @@ describe('ProfessorRegistrationComponent', () => {
     component.next();
     expect(component.step()).toBe(1);
     component.form.setValue({
+      professorType: 'INTERNO',
       firstName: 'Laura',
       firstLastName: 'Martínez',
       secondLastName: '',

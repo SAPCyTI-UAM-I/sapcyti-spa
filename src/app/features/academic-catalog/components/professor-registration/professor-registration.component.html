@@ -33,6 +33,14 @@
   >
     @if (step() === 1) {
       <div class="gap-md grid md:grid-cols-2">
+        <label for="professorType" class="gap-xs flex flex-col md:col-span-2">
+          <span>{{ 'ACADEMIC_CATALOG.PROFESSORS.FIELDS.PROFESSOR_TYPE' | translate }} *</span>
+          <app-i18n-select
+            inputId="professorType"
+            controlName="professorType"
+            [options]="professorTypeOptions"
+          />
+        </label>
         <label class="gap-xs flex flex-col"
           ><span>{{ 'ACADEMIC_CATALOG.FIELDS.FIRST_NAME' | translate }} *</span
           ><input pInputText formControlName="firstName" /><app-field-error
@@ -102,14 +110,33 @@
           </dd>
         </div>
         <div>
-          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}</dt>
-          <dd>{{ form.value.email }}</dd>
+          <dt class="text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.PROFESSORS.FIELDS.PROFESSOR_TYPE' | translate }}
+          </dt>
+          <dd>
+            {{
+              (form.value.professorType === 'INTERNO'
+                ? 'ACADEMIC_CATALOG.PROFESSORS.TYPES.INTERNO'
+                : 'ACADEMIC_CATALOG.PROFESSORS.TYPES.EXTERNO'
+              ) | translate
+            }}
+          </dd>
         </div>
         <div>
           <dt class="text-text-secondary">
             {{ 'ACADEMIC_CATALOG.COLUMNS.EMPLOYEE_NUMBER' | translate }}
           </dt>
-          <dd>{{ form.value.employeeNumber }}</dd>
+          <dd>
+            @if (form.value.professorType === 'INTERNO') {
+              {{ form.value.employeeNumber }}
+            } @else {
+              {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.NO_EMPLOYEE_NUMBER' | translate }}
+            }
+          </dd>
+        </div>
+        <div>
+          <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}</dt>
+          <dd>{{ form.value.email }}</dd>
         </div>
         <div>
           <dt class="text-text-secondary">{{ 'ACADEMIC_CATALOG.FIELDS.PHONE' | translate }}</dt>

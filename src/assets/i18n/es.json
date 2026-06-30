@@ -11,15 +11,25 @@
       "STATUS": "Estado"
     },
     "ERRORS": {
+      "clave_invalid_format": "La clave debe contener solo dígitos.",
       "duplicate_email": "El correo electrónico ya está registrado.",
       "duplicate_employee": "El número de empleado ya está registrado.",
       "duplicate_enrollment": "La matrícula ya está registrada.",
+      "duplicate_advisor_ids": "No puede repetir el mismo asesor más de una vez.",
+      "employee_required_for_interno": "El número de empleado es obligatorio para profesores internos.",
+      "file_format_invalid": "Formato de archivo inválido, utilice la plantilla proporcionada.",
       "graduate_program_not_found": "No se encontró el programa de posgrado solicitado.",
+      "professor_already_inactive": "El profesor ya está inactivo.",
+      "professor_has_active_assignments": "Debe reasignar tutor o asesores antes de dar de baja al profesor.",
+      "professor_not_found": "No se encontró el profesor solicitado.",
       "reference_not_found": "No se encontró el programa académico solicitado.",
       "sabbatical_date_order": "La fecha final del sabático debe ser posterior o igual a la inicial.",
-      "server": "Ocurrió un error al guardar la información."
+      "server": "Ocurrió un error al guardar la información.",
+      "uea_already_exists": "Esta UEA ya ha sido registrada.",
+      "validation": "Revise los datos del formulario."
     },
     "FIELDS": {
+      "ACTIVE": "Estado del alumno",
       "ADMISSION_DATE": "Fecha de ingreso",
       "BIRTH_DATE": "Fecha de nacimiento",
       "COMMISSION_MEMBER": "Miembro de comisión",
@@ -47,9 +57,35 @@
       "TOTAL": "Total"
     },
     "PROFESSORS": {
+      "BREADCRUMB": {
+        "DETAIL": "Detalle del profesor",
+        "EDIT": "Editar profesor"
+      },
       "CREATE": {
         "SUBTITLE": "Complete los datos institucionales y confirme el alta.",
         "TITLE": "Registrar profesor"
+      },
+      "DEACTIVATE": {
+        "ACTION": "Dar de baja",
+        "CONFIRM_MESSAGE": "El profesor dejará de estar disponible para nuevas asignaciones y no podrá iniciar sesión. Esta acción conserva su historial académico.",
+        "CONFIRM_TITLE": "Confirmar baja del profesor",
+        "SUCCESS": "Profesor dado de baja correctamente."
+      },
+      "DETAIL": {
+        "CHANGE_PASSWORD": "Cambiar contraseña",
+        "EDIT_ACTION": "Editar",
+        "NO_EMPLOYEE_NUMBER": "No aplica",
+        "NO_SABBATICAL": "Sin fecha registrada",
+        "PERSONAL_SECTION": "Información del profesor",
+        "TITLE": "Detalle del profesor"
+      },
+      "EDIT": {
+        "SAVED": "Profesor actualizado correctamente.",
+        "SUBTITLE": "Actualice los datos del profesor y guarde los cambios.",
+        "TITLE": "Editar profesor"
+      },
+      "FIELDS": {
+        "PROFESSOR_TYPE": "Tipo de profesor"
       },
       "LIST": {
         "CREATE": "Crear profesor",
@@ -57,6 +93,10 @@
         "SEARCH": "Buscar por nombre, correo o número de empleado",
         "SUBTITLE": "Consulte y administre los profesores del posgrado.",
         "TITLE": "Profesores"
+      },
+      "TYPES": {
+        "EXTERNO": "Externo",
+        "INTERNO": "Interno"
       }
     },
     "PROGRAM_TYPES": {
@@ -74,6 +114,25 @@
       "BREADCRUMB": {
         "EDIT": "Editar programa",
         "VIEW": "Programa académico"
+      },
+      "CATALOG": {
+        "AREAS": {
+          "AI": "Inteligencia artificial",
+          "BIG_DATA": "Manejo de datos masivos (Big data)",
+          "DIGITAL_SIGNAL_PROCESSING": "Procesamiento digital de señales en las comunicaciones",
+          "HIGH_PERFORMANCE_COMPUTING": "Supercómputo (cómputo de alto rendimiento)",
+          "IOT": "Internet de las cosas",
+          "NETWORK_APPLICATIONS": "Aplicaciones de redes",
+          "NETWORK_CODING": "Codificación de red",
+          "ROUTING": "Encaminamiento (ruteo)",
+          "SEMANTIC_WEB": "Web semántica",
+          "SOFTWARE_DEFINED_NETWORKS": "Redes definidas por software",
+          "WIRELESS_COMMUNICATIONS": "Comunicaciones inalámbricas"
+        },
+        "LINES": {
+          "COMPUTER_SCIENCE": "Ciencias e Ingeniería de la Computación",
+          "NETWORKS": "Redes de Comunicaciones"
+        }
       },
       "CHOOSER": {
         "SUBTITLE": "Seleccione el programa que desea consultar.",
@@ -97,9 +156,11 @@
       "FIELDS": {
         "ADVISORS": "Asesores",
         "GRADUATION_DATE": "Fecha de egreso",
+        "LINE_OF_KNOWLEDGE": "Línea de conocimiento",
         "PROFESSOR_SEARCH": "Buscar por nombre",
         "RESEARCH_AREA": "Área de investigación",
         "TUTOR": "Tutor",
+        "UNCLASSIFIED": "Sin clasificar",
         "WITHDRAWAL_REASON": "Motivo de baja"
       },
       "STATUS": {
@@ -120,11 +181,32 @@
       }
     },
     "STUDENTS": {
+      "BREADCRUMB": {
+        "DETAIL": "Detalles del alumno",
+        "EDIT": "Editar alumno"
+      },
       "CREATE": {
         "ACADEMIC_SECTION": "Información académica",
         "PERSONAL_SECTION": "Datos personales",
         "SUBTITLE": "Complete los datos y confirme el alta. La contraseña se generará automáticamente.",
         "TITLE": "Registrar alumno"
+      },
+      "DETAIL": {
+        "ACADEMIC_SECTION": "Información académica",
+        "CHANGE_PASSWORD": "Cambiar contraseña",
+        "CONTACT_SECTION": "Información de contacto",
+        "EDIT_ACTION": "Editar información",
+        "NO_ADVISORS": "Sin asesores asignados",
+        "NO_GRADUATION_DATE": "Sin fecha de egreso",
+        "NO_TUTOR": "Sin tutor asignado",
+        "PERSONAL_SECTION": "Datos personales",
+        "PROGRAM_SECTION": "Programa académico",
+        "TITLE": "Detalles del alumno"
+      },
+      "EDIT": {
+        "SAVED": "Alumno actualizado correctamente.",
+        "SUBTITLE": "Modifique los datos del alumno y su programa académico.",
+        "TITLE": "Editar alumno"
       },
       "LIST": {
         "CREATE": "Crear alumno",
@@ -143,6 +225,61 @@
       "SUBTITLE": "La cuenta fue creada correctamente",
       "TITLE": "Registro completado",
       "WARNING": "Por seguridad, la contraseña no volverá a mostrarse."
+    },
+    "UEAS": {
+      "BULK": {
+        "BROWSE": "Seleccionar archivo",
+        "ERRORS": {
+          "DUPLICATE_CLAVE": "Clave duplicada",
+          "INVALID_CREDITS": "Créditos inválidos (debe ser entero mayor a 0)",
+          "INVALID_FORMAT": "Formato inválido",
+          "MISSING_FIELD": "Campo obligatorio faltante"
+        },
+        "FILE_LABEL": "Archivo (.xlsx o .csv)",
+        "NO_FILE": "Ningún archivo seleccionado",
+        "ROW_LABEL": "Fila",
+        "SUMMARY_ERRORS": "{{count}} errores detectados:",
+        "SUMMARY_SUCCESS": "{{count}} creadas, 0 errores",
+        "TEMPLATE": "Descargar plantilla CSV",
+        "TEMPLATE_LABEL": "Descargar plantilla",
+        "TITLE": "Carga masiva de UEAs",
+        "UPLOAD": "Subir archivo"
+      },
+      "CREATE": {
+        "SAVED": "UEA registrada correctamente.",
+        "SUBTITLE": "Complete los datos de la nueva materia.",
+        "TITLE": "Registrar UEA"
+      },
+      "FIELDS": {
+        "CLAVE": "Clave",
+        "CREDITOS": "Créditos",
+        "H_PRAC": "H. Práctica",
+        "H_TEOR": "H. Teoría",
+        "MODALIDAD": "Modalidad",
+        "NOMBRE": "Nombre UEA",
+        "TIPO": "Tipo",
+        "TIPO_FORMACION": "Tipo formación"
+      },
+      "FORMATION_TYPES": {
+        "BASICA": "Básica",
+        "COMPLEMENTARIA": "Complementaria",
+        "INVESTIGACION": "Investigación"
+      },
+      "LIST": {
+        "BULK": "Carga masiva",
+        "CREATE": "Registrar UEA",
+        "EMPTY": "No se encontraron UEAs en el catálogo.",
+        "SEARCH": "Buscar por clave o nombre",
+        "SUBTITLE": "Consulte y registre las Unidades de Enseñanza Aprendizaje del posgrado.",
+        "TITLE": "Catálogo de UEAs"
+      },
+      "MODALITY": {
+        "MIXTA": "Mixta"
+      },
+      "TYPES": {
+        "OBLIGATORIA": "Obligatoria",
+        "OPTATIVA": "Optativa"
+      }
     },
     "WIZARD": {
       "CONFIRM_TITLE": "Revise la información antes de confirmar",
@@ -343,6 +480,7 @@
       "BACK": "Regresar",
       "CANCEL": "Cancelar",
       "CLEAR": "Limpiar",
+      "CLOSE": "Cerrar",
       "CONFIRM": "Confirmar",
       "DELETE": "Eliminar",
       "EDIT": "Editar",
@@ -351,6 +489,10 @@
       "SAVE": "Guardar",
       "SEARCH": "Buscar",
       "VIEW": "Ver"
+    },
+    "CLIPBOARD": {
+      "COPIED": "Copiado al portapapeles.",
+      "COPY": "Clic para copiar"
     },
     "ERRORS": {
       "ACCESS_DENIED": "Acceso denegado",
@@ -366,8 +508,11 @@
     },
     "VALIDATION": {
       "EMAIL": "Ingrese una dirección de correo válida.",
+      "INTEGER": "Ingrese un número entero mayor a 0.",
       "MAXLENGTH": "El valor es demasiado largo.",
+      "MIN": "El valor debe ser mayor o igual a 0.",
       "MINLENGTH": "El valor es demasiado corto.",
+      "ONLYDIGITS": "La clave debe contener solo dígitos.",
       "PASSWORDS_MISMATCH": "Las contraseñas no coinciden.",
       "PATTERN": "Formato inválido.",
       "REQUIRED": "Este campo es obligatorio."
@@ -491,7 +636,8 @@
       "PRESENTATIONS": "Ponencias",
       "PROFESSORS": "Profesores",
       "STUDENTS": "Alumnos",
-      "TERMS_OFFER": "Trimestres y oferta académica"
+      "TERMS_OFFER": "Trimestres y oferta académica",
+      "UEAS": "Catálogo de UEAs"
     },
     "SECTIONS": {
       "ACADEMIC_MANAGEMENT": "Gestión académica",

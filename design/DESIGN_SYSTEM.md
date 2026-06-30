@@ -98,6 +98,22 @@ All fonts use `Inter`. Apply using the composite class (sets font-family, size, 
 | `rounded-xl` | 12px |
 | `rounded-full` | 9999px |
 
+### 2.6 Catalog badge severities (`design-tokens.ts` → `CATALOG_TAG_SEVERITY`)
+
+Catalog list and detail views use PrimeNG `p-tag` with severities mapped in **`CATALOG_TAG_SEVERITY`** (`src/app/core/theme/design-tokens.ts`). Colors resolve through `sapcyti-preset` → `tag.colorScheme` (SEMANTIC palette).
+
+| Domain value | Tag severity | Visual |
+|--------------|--------------|--------|
+| Program type Maestría | `maestria` | Teal (brand secondary) |
+| Program type Doctorado | `doctorado` | Purple (violet) |
+| Student account active | `success` | Green |
+| Student account inactive | `secondary` | Gray |
+| Program status ACTIVO | `success` | Green |
+| Program status BAJA | `warn` | Amber |
+| Program status EGRESADO | `info` | Blue |
+
+**Do not hardcode** severities or hex colors on catalog tags. Use `app-catalog-tag` with helpers in `catalog-tag.util.ts`. Program-type colors live in `CATALOG_PROGRAM_TYPE_TAG`.
+
 ---
 
 ## 3. PrimeNG Preset (`sapcyti-preset.ts`)

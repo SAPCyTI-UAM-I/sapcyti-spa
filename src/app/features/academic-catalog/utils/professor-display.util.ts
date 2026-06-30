@@ -1,13 +1,12 @@
 import { ProfessorCatalogItem, ProfessorReference } from '../../../models';
+import { formatPersonName } from '../../../shared/utils/person-name.util';
 
 export function formatProfessorName(professor: ProfessorReference | null | undefined): string {
   if (!professor) {
     return '';
   }
 
-  return [professor.firstLastName, professor.secondLastName, professor.firstName]
-    .filter((part): part is string => !!part?.trim())
-    .join(' ');
+  return formatPersonName(professor, 'last-first');
 }
 
 export function professorToOption(professor: ProfessorCatalogItem): {

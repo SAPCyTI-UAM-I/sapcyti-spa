@@ -4,11 +4,10 @@ import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 import { PageResponse, StudentCatalogItem } from '../../../../models';
-import { StudentProgramService } from '../../services/student-program.service';
 import { StudentService } from '../../services/student.service';
 import { StudentListComponent } from './student-list.component';
 
@@ -49,9 +48,8 @@ describe('StudentListComponent', () => {
       imports: [StudentListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
         provideRouter([]),
-        MessageService,
         { provide: StudentService, useValue: { listStudents } },
-        { provide: StudentProgramService, useValue: { listPrograms: vi.fn(() => of([])) } },
+        MessageService,
       ],
     }).compileComponents();
     const fixture = TestBed.createComponent(StudentListComponent);
@@ -62,7 +60,9 @@ describe('StudentListComponent', () => {
     fixture: ReturnType<typeof TestBed.createComponent<StudentListComponent>>,
     values: { search?: string; programType?: string; active?: string },
   ): void {
-    const form = fixture.debugElement.query(By.css('form')).injector.get(FormGroupDirective);
+    const form = fixture.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective);
     form.form.patchValue(values);
   }
 

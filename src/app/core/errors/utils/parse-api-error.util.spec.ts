@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { mockSpringBootNotFound } from '../../../core/errors/testing/mock-api-error.util';
+import { mockSpringBootNotFound } from '../testing/mock-api-error.util';
 import {
   getApiErrorCode,
   getApiErrorMessage,

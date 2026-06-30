@@ -3,14 +3,15 @@ import { inject, Injectable } from '@angular/core';
 
 import {
   ProfessorReference,
+  RegisterStudentRequest,
   StudentCatalogItem,
   StudentProgramResponse,
   StudentProgramSummary,
   UpdateStudentProgramRequest,
 } from '../../../models';
-import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
 import { mockBadRequest, nextId } from './catalog-mock.util';
 import { ProfessorMockStore } from './professor-mock.store';
+import { validateProgramCatalogFields } from '../utils/student-program-form.util';
 
 @Injectable({ providedIn: 'root' })
 export class StudentProgramMockStore {
@@ -25,6 +26,7 @@ export class StudentProgramMockStore {
       programType: 'MAESTRIA',
       admissionDate: '2025-09-01',
       status: 'ACTIVO',
+      tutorId: 10,
       advisorIds: [],
       advisors: [],
     },
@@ -36,7 +38,10 @@ export class StudentProgramMockStore {
       programType: 'DOCTORADO',
       admissionDate: '2024-09-01',
       status: 'ACTIVO',
-      advisorIds: [],
+      lineOfKnowledge: 'Ciencias e Ingeniería de la Computación',
+      researchArea: 'Inteligencia artificial',
+      tutorId: 10,
+      advisorIds: [12],
       advisors: [],
     },
     {
@@ -50,23 +55,20 @@ export class StudentProgramMockStore {
       advisorIds: [],
       advisors: [],
     },
-    {
-      id: 103,
-      studentId: 3,
-      graduateProgramId: 1,
-      enrollmentId: '223300458',
-      programType: 'DOCTORADO',
-      admissionDate: '2025-09-01',
-      status: 'ACTIVO',
-      advisorIds: [],
-      advisors: [],
-    },
   ];
 
   listPrograms(studentId: number): StudentProgramSummary[] {
     return this.programs
       .filter((program) => program.studentId === studentId)
       .map((program) => this.toSummary(program));
+  }
+
+  getProgramForStudent(studentId: number): StudentProgramResponse {
+    const program = this.programs.find((p) => p.studentId === studentId);
+    if (!program) {
+      throw this.programNotFound();
+    }
+    return this.withResolvedProfessors(program);
   }
 
   getProgram(studentId: number, programId: number): StudentProgramResponse {
@@ -104,6 +106,7 @@ export class StudentProgramMockStore {
       ...current,
       admissionDate: body.admissionDate,
       graduationDate: body.graduationDate,
+      lineOfKnowledge: body.lineOfKnowledge,
       researchArea: body.researchArea,
       status: body.status,
       withdrawalReason: body.withdrawalReason,
@@ -119,7 +122,19 @@ export class StudentProgramMockStore {
     return this.withResolvedProfessors(updated);
   }
 
-  createProgramForStudent(student: StudentCatalogItem): void {
+  createProgramForStudent(student: StudentCatalogItem, request: RegisterStudentRequest): void {
+    this.validateRegistrationProgramFields(request);
+
+    const tutorId = request.tutorId === null ? undefined : request.tutorId;
+    if (tutorId !== undefined) {
+      this.assertProfessorExists(tutorId);
+    }
+
+    const advisorIds = request.advisorIds ?? [];
+    for (const advisorId of advisorIds) {
+      this.assertProfessorExists(advisorId);
+    }
+
     const program: StudentProgramResponse = {
       id: nextId(this.programs),
       studentId: student.id,
@@ -128,10 +143,35 @@ export class StudentProgramMockStore {
       programType: student.programType,
       admissionDate: student.admissionDate,
       status: 'ACTIVO',
-      advisorIds: [],
-      advisors: [],
+      lineOfKnowledge: request.lineOfKnowledge,
+      researchArea: request.researchArea,
+      tutorId,
+      tutor: tutorId !== undefined ? this.resolveProfessor(tutorId) : undefined,
+      advisorIds: [...advisorIds],
+      advisors: advisorIds
+        .map((id) => this.resolveProfessor(id))
+        .filter((professor): professor is ProfessorReference => professor !== undefined),
     };
     this.programs = [...this.programs, program];
+  }
+
+  validateRegistrationProgramFields(request: RegisterStudentRequest): void {
+    const validationError = validateProgramCatalogFields({
+      lineOfKnowledge: request.lineOfKnowledge,
+      researchArea: request.researchArea,
+      advisorIds: request.advisorIds,
+    });
+    if (validationError) {
+      throw mockBadRequest(validationError);
+    }
+  }
+
+  hasActiveAssignment(professorId: number): boolean {
+    return this.programs.some(
+      (program) =>
+        program.status === 'ACTIVO' &&
+        (program.tutorId === professorId || program.advisorIds.includes(professorId)),
+    );
   }
 
   private findProgram(studentId: number, programId: number): StudentProgramResponse | undefined {
@@ -172,6 +212,7 @@ export class StudentProgramMockStore {
       firstName: professor.firstName,
       firstLastName: professor.firstLastName,
       secondLastName: professor.secondLastName,
+      active: professor.active,
     };
   }
 
@@ -191,8 +232,14 @@ export class StudentProgramMockStore {
     if (body.graduationDate && body.admissionDate && body.graduationDate < body.admissionDate) {
       throw mockBadRequest('Graduation date must be on or after admission date');
     }
-    if (new Set(body.advisorIds).size !== body.advisorIds.length) {
-      throw mockBadRequest(BACKEND_MESSAGES.ACADEMIC.DUPLICATE_ADVISOR_IDS);
+
+    const validationError = validateProgramCatalogFields({
+      lineOfKnowledge: body.lineOfKnowledge,
+      researchArea: body.researchArea,
+      advisorIds: body.advisorIds,
+    });
+    if (validationError) {
+      throw mockBadRequest(validationError);
     }
   }
 

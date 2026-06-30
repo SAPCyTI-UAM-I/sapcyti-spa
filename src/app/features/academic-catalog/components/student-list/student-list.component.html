@@ -14,42 +14,26 @@
     />
   </header>
 
-  <form
+  <div
     class="border-outline bg-surface p-md gap-md grid rounded-xl border md:grid-cols-[1fr_13rem_11rem_auto]"
     [formGroup]="filters"
-    (ngSubmit)="applyFilters()"
   >
     <input
       pInputText
       formControlName="search"
       [placeholder]="'ACADEMIC_CATALOG.STUDENTS.LIST.SEARCH' | translate"
     />
-    <p-select
-      formControlName="programType"
+    <app-i18n-select
+      controlName="programType"
       [options]="programTypes"
-      optionValue="value"
       [placeholder]="'ACADEMIC_CATALOG.FILTERS.PROGRAM_TYPE' | translate"
-      fluid
-    >
-      <ng-template #selectedItem let-option>
-        {{ option?.labelKey | translate }}
-      </ng-template>
-      <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
-    </p-select>
-    <p-select
-      formControlName="active"
+    />
+    <app-i18n-select
+      controlName="active"
       [options]="statuses"
-      optionValue="value"
       [placeholder]="'ACADEMIC_CATALOG.FILTERS.STATUS' | translate"
-      fluid
-    >
-      <ng-template #selectedItem let-option>
-        {{ option?.labelKey | translate }}
-      </ng-template>
-      <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
-    </p-select>
+    />
     <div class="gap-sm flex">
-      <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />
       <p-button
         type="button"
         icon="pi pi-filter-slash"
@@ -59,25 +43,18 @@
         (onClick)="clearFilters()"
       />
     </div>
-  </form>
+  </div>
 
   <div class="border-outline bg-surface rounded-xl border">
-    @if (loading()) {
-      <div class="p-xl text-text-secondary text-center">
-        <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
-      </div>
-    } @else if (loadError()) {
-      <div class="p-xl gap-md flex flex-col items-center text-center">
-        <p class="text-error">{{ 'ACADEMIC_CATALOG.STATES.LOAD_ERROR' | translate }}</p>
-        <p-button [label]="'COMMON.ACTIONS.RETRY' | translate" (onClick)="load()" />
-      </div>
-    } @else if (items().length === 0) {
-      <div class="p-xl text-text-secondary text-center">
-        {{ 'ACADEMIC_CATALOG.STUDENTS.LIST.EMPTY' | translate }}
-      </div>
-    } @else {
+    <app-load-state
+      [loading]="loading()"
+      [error]="loadError()"
+      [empty]="items().length === 0"
+      emptyMessage="ACADEMIC_CATALOG.STUDENTS.LIST.EMPTY"
+      (retry)="load()"
+    >
       <div class="md:overflow-x-auto">
-        <table class="block w-full border-collapse md:table md:min-w-[58rem]">
+        <table class="block w-full border-collapse md:table md:min-w-[48rem]">
           <thead class="bg-table-header hidden text-left md:table-header-group">
             <tr>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.NAME' | translate }}</th>
@@ -86,7 +63,6 @@
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.PROGRAM' | translate }}</th>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ADMISSION' | translate }}</th>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}</th>
-              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
@@ -95,24 +71,34 @@
                 class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
               >
                 <td class="md:p-md col-span-2 md:table-cell">
-                  <span class="text-h3 text-primary font-bold md:font-normal md:text-inherit">
+                  <a appCatalogRowLink [routerLink]="['/academic-catalog/students', student.id]">
                     {{ student.firstLastName }} {{ student.secondLastName }} {{ student.firstName }}
-                  </span>
+                  </a>
                 </td>
                 <td class="text-text-secondary md:p-md col-span-2 break-all md:table-cell">
-                  {{ student.email }}
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}
+                  </span>
+                  <app-copyable-text [value]="student.email">
+                    {{ student.email }}
+                  </app-copyable-text>
                 </td>
                 <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.ENROLLMENT' | translate }}
                   </span>
-                  {{ student.enrollmentId }}
+                  <app-copyable-text [value]="student.enrollmentId">
+                    {{ student.enrollmentId }}
+                  </app-copyable-text>
                 </td>
                 <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.PROGRAM' | translate }}
                   </span>
-                  {{ 'ACADEMIC_CATALOG.PROGRAM_TYPES.' + student.programType | translate }}
+                  <app-catalog-tag
+                    [value]="'ACADEMIC_CATALOG.PROGRAM_TYPES.' + student.programType | translate"
+                    [severity]="programTypeTagSeverity(student.programType)"
+                  />
                 </td>
                 <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
@@ -124,42 +110,22 @@
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}
                   </span>
-                  {{
-                    (student.active
-                      ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
-                      : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
-                    ) | translate
-                  }}
-                </td>
-                <td class="md:p-md col-span-2 md:table-cell">
-                  <div class="gap-sm flex flex-col">
-                    <p-button
-                      data-testid="view-program"
-                      icon="pi pi-book"
-                      severity="secondary"
-                      variant="outlined"
-                      [fluid]="true"
-                      [label]="'ACADEMIC_CATALOG.STUDENTS.LIST.VIEW_PROGRAM' | translate"
-                      [loading]="openingProgram()"
-                      (onClick)="openProgram(student)"
-                    />
-                    <p-button
-                      icon="pi pi-key"
-                      severity="secondary"
-                      variant="outlined"
-                      [fluid]="true"
-                      [label]="'ACCOUNT.PASSWORD.ADMIN_ACTION' | translate"
-                      [routerLink]="['/account/users', student.userId, 'password']"
-                      [queryParams]="{ returnUrl: '/academic-catalog/students' }"
-                    />
-                  </div>
+                  <app-catalog-tag
+                    [value]="
+                      (student.active
+                        ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
+                        : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
+                      ) | translate
+                    "
+                    [severity]="activeTagSeverity(student.active)"
+                  />
                 </td>
               </tr>
             }
           </tbody>
         </table>
       </div>
-    }
+    </app-load-state>
   </div>
 
   <footer class="gap-sm flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -173,24 +139,4 @@
       (onPageChange)="onPageChange($event)"
     />
   </footer>
-
-  <p-dialog
-    [header]="'ACADEMIC_CATALOG.STUDENT_PROGRAM.CHOOSER.TITLE' | translate"
-    [visible]="programChooserVisible()"
-    [modal]="true"
-    [closable]="true"
-    (visibleChange)="programChooserVisible.set($event)"
-  >
-    <p class="text-text-secondary mb-md">
-      {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.CHOOSER.SUBTITLE' | translate }}
-    </p>
-    <div class="gap-sm flex flex-col">
-      @for (program of programChooserPrograms(); track program.id) {
-        <p-button
-          [label]="'ACADEMIC_CATALOG.PROGRAM_TYPES.' + program.programType | translate"
-          (onClick)="selectProgram(programChooserStudentId()!, program.id)"
-        />
-      }
-    </div>
-  </p-dialog>
 </section>

@@ -15,46 +15,39 @@
       routerLink="/academic-catalog/professors/new"
     />
   </header>
-  <form
+  <div
     class="border-outline bg-surface p-md gap-md grid rounded-xl border md:grid-cols-[1fr_11rem_auto]"
     [formGroup]="filters"
-    (ngSubmit)="applyFilters()"
   >
     <input
       pInputText
       formControlName="search"
       [placeholder]="'ACADEMIC_CATALOG.PROFESSORS.LIST.SEARCH' | translate"
     />
-    <p-select formControlName="active" [options]="statuses" optionValue="value" fluid>
-      <ng-template #selectedItem let-option>{{ option?.labelKey | translate }}</ng-template>
-      <ng-template #item let-option>{{ option.labelKey | translate }}</ng-template>
-    </p-select>
+    <app-i18n-select
+      controlName="active"
+      [options]="statuses"
+      [placeholder]="'ACADEMIC_CATALOG.FILTERS.STATUS' | translate"
+    />
     <div class="gap-sm flex">
-      <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />
       <p-button
         type="button"
         icon="pi pi-filter-slash"
         severity="secondary"
         variant="outlined"
+        [attr.aria-label]="'COMMON.ACTIONS.CLEAR' | translate"
         (onClick)="clearFilters()"
       />
     </div>
-  </form>
+  </div>
   <div class="border-outline bg-surface rounded-xl border">
-    @if (loading()) {
-      <div class="p-xl text-text-secondary text-center">
-        <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
-      </div>
-    } @else if (loadError()) {
-      <div class="p-xl gap-md flex flex-col items-center">
-        <p class="text-error">{{ 'ACADEMIC_CATALOG.STATES.LOAD_ERROR' | translate }}</p>
-        <p-button [label]="'COMMON.ACTIONS.RETRY' | translate" (onClick)="load()" />
-      </div>
-    } @else if (items().length === 0) {
-      <div class="p-xl text-text-secondary text-center">
-        {{ 'ACADEMIC_CATALOG.PROFESSORS.LIST.EMPTY' | translate }}
-      </div>
-    } @else {
+    <app-load-state
+      [loading]="loading()"
+      [error]="loadError()"
+      [empty]="items().length === 0"
+      emptyMessage="ACADEMIC_CATALOG.PROFESSORS.LIST.EMPTY"
+      (retry)="load()"
+    >
       <div class="md:overflow-x-auto">
         <table class="block w-full border-collapse md:table md:min-w-[48rem]">
           <thead class="bg-table-header hidden text-left md:table-header-group">
@@ -63,7 +56,6 @@
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}</th>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.EMPLOYEE_NUMBER' | translate }}</th>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}</th>
-              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
@@ -72,40 +64,48 @@
                 class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
               >
                 <td class="md:p-md col-span-2 md:table-cell">
-                  <span class="text-h3 text-primary font-bold md:font-normal md:text-inherit">
+                  <a
+                    appCatalogRowLink
+                    [routerLink]="['/academic-catalog/professors', professor.id]"
+                  >
                     {{ professor.firstLastName }} {{ professor.secondLastName }}
                     {{ professor.firstName }}
-                  </span>
+                  </a>
                 </td>
                 <td class="text-text-secondary md:p-md col-span-2 break-all md:table-cell">
-                  {{ professor.email }}
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}
+                  </span>
+                  <app-copyable-text [value]="professor.email">
+                    {{ professor.email }}
+                  </app-copyable-text>
                 </td>
                 <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.EMPLOYEE_NUMBER' | translate }}
                   </span>
-                  {{ professor.employeeNumber }}
+                  @if (professor.employeeNumber) {
+                    <app-copyable-text [value]="professor.employeeNumber">
+                      {{ professor.employeeNumber }}
+                    </app-copyable-text>
+                  } @else {
+                    <span class="text-text-tertiary italic">
+                      {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.NO_EMPLOYEE_NUMBER' | translate }}
+                    </span>
+                  }
                 </td>
                 <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}
                   </span>
-                  {{
-                    (professor.active
-                      ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
-                      : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
-                    ) | translate
-                  }}
-                </td>
-                <td class="md:p-md col-span-2 md:table-cell">
-                  <p-button
-                    icon="pi pi-key"
-                    severity="secondary"
-                    variant="outlined"
-                    [fluid]="true"
-                    [label]="'ACCOUNT.PASSWORD.ADMIN_ACTION' | translate"
-                    [routerLink]="['/account/users', professor.userId, 'password']"
-                    [queryParams]="{ returnUrl: '/academic-catalog/professors' }"
+                  <app-catalog-tag
+                    [value]="
+                      (professor.active
+                        ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
+                        : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
+                      ) | translate
+                    "
+                    [severity]="activeTagSeverity(professor.active)"
                   />
                 </td>
               </tr>
@@ -113,7 +113,7 @@
           </tbody>
         </table>
       </div>
-    }
+    </app-load-state>
   </div>
   <footer class="gap-sm flex flex-col sm:flex-row sm:items-center sm:justify-between">
     <span class="text-text-secondary"

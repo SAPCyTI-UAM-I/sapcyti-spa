@@ -21,6 +21,38 @@
 | **Alta cohesión** | Todo lo de un dominio vive en `features/{dominio}/`. |
 | **Spec-driven** | El contrato API/DTO viene de la spec aprobada; el SPA lo refleja en `models/`. |
 
+### 1.1 Cómo nos movemos (prácticas concretas)
+
+Reglas operativas que cualquier agente debe seguir en este SPA. Resumen: **reutiliza antes de crear, extrae solo cuando duele, no rompas comportamiento.**
+
+**DRY — extraer con criterio (no por reflejo)**
+
+- **Antes de escribir, busca**: ¿ya existe un componente en `shared/components/`, un util en `shared/utils/` o `features/{f}/utils/`, o un feature similar que resuelva esto? Reutilízalo.
+- **Cuándo extraer** un patrón a algo compartido: cuando se **repite en ≥3 lugares** *y* es **estable**. Patrón de plantilla repetido → componente/directiva en `shared/`. Lógica o transformación repetida → función pura en `utils/`.
+- **Una sola fuente de verdad**: URLs en `api-endpoints.ts`, colores en `design-tokens.ts` (+ `@theme`), tipos en `models/`, claves i18n en `es/en.json`. Nunca dupliques estos valores; impórtalos.
+- **Cuándo NO extraer**: 2 usos triviales no justifican una abstracción. Si el componente compartido necesita 4–5 inputs para cubrir variantes, o un flag de modo para no cambiar comportamiento, probablemente es sobre-ingeniería: déjalo inline. La duplicación barata es más barata que la abstracción equivocada.
+
+**Clean code — legible para el siguiente humano**
+
+- El componente es **UI**: sin lógica de negocio en el template ni en el `.ts`. Las reglas (armado de payloads, validaciones, mapeos) viven en **funciones puras** de `utils/`.
+- Nombres explícitos, funciones cortas, **sin `any`**. El código dice *qué* hace; los comentarios solo explican el *por qué* no obvio.
+- **Borra lo muerto**: código sin usos, `@deprecated` sin consumidores, shims de re-export. No lo dejes "por si acaso".
+- **Sistema de diseño, no valores crudos**: tokens semánticos (`gap-md`, `text-h2`, `bg-surface`), nunca `#fff`, `p-[12px]`, `text-sm` sueltos. Texto visible siempre i18n.
+
+**SOLID — aplicado, no decorativo**
+
+- **SRP**: si un componente acumula responsabilidades (formulario + cascadas + carga de datos + armado de varios payloads), extrae lo que no sea UI a utils/servicios.
+- **OCP/DIP**: depende de **tokens** (`ENTITY_REPOSITORY`), no de implementaciones; mock/HTTP se intercambian por DI. Prohibido `if (useMock)` en componentes/servicios.
+- Componentes **standalone, OnPush, signals, `inject()`**; suscripciones con `takeUntilDestroyed`.
+
+**Mantenibilidad por humanos**
+
+- **Cambios pequeños y verificables**. Antes de dar algo por terminado: `pnpm run lint && pnpm test && pnpm run build` en verde.
+- **Lógica no trivial deja un test** (función pura testeable). Si no sabes cómo testearlo, probablemente está en el lugar equivocado (sácalo del componente).
+- **Refactor = mismo comportamiento.** Una mejora que cambie comportamiento (UX, semántica, contrato) deja de ser refactor: confírmalo antes de hacerlo, no lo cueles.
+- **No toques lo ajeno sin razón**: no reformatees ni "mejores" archivos fuera del alcance de tu cambio; mantén el diff acotado y revisable.
+- **Respeta el contrato**: el DTO/los modelos vienen de la spec; no los modifiques desde el SPA para acomodar la UI.
+
 ---
 
 ## 2. Estructura del proyecto
@@ -153,7 +185,7 @@ Cada dominio con datos remotos tiene su propia clave en `AppMockConfig`. Los fla
 
 ### Errores API en SPA
 
-- Util central: `core/http/utils/parse-api-error.util.ts` (`getApiErrorCode`, `getApiErrorMessage`, `getHttpStatus`).
+- Util central: `core/errors/utils/parse-api-error.util.ts` (`getApiErrorCode`, `getApiErrorMessage`, `getHttpStatus`).
 - Mapeo por dominio: `{entidad}-error.util.ts` en `utils/` del feature.
 - Cuando varios 404 comparten el mismo código (`NOT_FOUND`), discriminar por **`message`** o contexto HTTP.
 
@@ -207,7 +239,8 @@ Extender bases abstractas con `@Directive()` cuando usen `inject()` (requisito d
 | Caso | Componente |
 |------|------------|
 | Botones / acciones | `p-button` |
-| Select con opciones i18n | `p-select` + plantillas `#item` / `#selectedItem` con `\| translate` |
+| Select con opciones i18n | `app-i18n-select` (envuelve `p-select`; opciones `{ labelKey, value }` + `controlName`) |
+| Select con label de datos / filtro | `p-select` (`optionLabel`, `[filter]`) — cuando el label NO es clave i18n |
 | Selección múltiple | `p-multiselect` |
 | Fechas | `<input type="date">` + ISO `YYYY-MM-DD` en el modelo |
 | Etiquetas de estado | `p-tag` + util de severidad en `utils/` del feature |
@@ -215,6 +248,7 @@ Extender bases abstractas con `@Directive()` cuando usen `inject()` (requisito d
 | Éxito transitorio | `MessageService` + `<p-toast />` en root |
 | Diálogos modales | `p-dialog` |
 | Tablas de listado | `<table>` responsive (patrón actual del catálogo) |
+| Estado carga/error/vacío | `app-load-state` (proyecta el contenido cargado vía `<ng-content>`) |
 
 ### Tipografía y color (tokens)
 
@@ -266,7 +300,7 @@ Convenciones:
 1. Claves en **es.json y en.json** (misma estructura).
 2. Formato: `DOMINIO.SECCION.CLAVE` (ej. `ACADEMIC_CATALOG.STUDENTS.LIST.TITLE`).
 3. Reutilizar `COMMON.*` antes de duplicar.
-4. Selects: `labelKey: I18nKey` en TypeScript; template con `| translate`.
+4. Selects con opciones i18n: definir `labelKey: I18nKey` y usar `app-i18n-select` (no repetir las plantillas `| translate`).
 5. Tras editar JSON: `pnpm run i18n:sync` (regenera `i18n-keys.generated.ts`).
 6. `pnpm run lint` incluye paridad i18n (`i18n:check`).
 

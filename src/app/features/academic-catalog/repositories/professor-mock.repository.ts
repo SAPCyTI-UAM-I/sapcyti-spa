@@ -1,12 +1,14 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 
 import { PageResponse } from '../../../models';
 import {
   ProfessorCatalogItem,
   ProfessorCatalogQuery,
+  ProfessorDetailResponse,
   RegisterProfessorRequest,
   RegisterProfessorResponse,
+  UpdateProfessorRequest,
 } from '../../../models';
 import { ProfessorMockStore } from '../mocks/professor-mock.store';
 import { ProfessorRepository } from './professor.repository';
@@ -20,6 +22,37 @@ export class ProfessorMockRepository implements ProfessorRepository {
   }
 
   registerProfessor(request: RegisterProfessorRequest): Observable<RegisterProfessorResponse> {
-    return of(this.mockStore.createProfessor(request));
+    try {
+      return of(this.mockStore.createProfessor(request));
+    } catch (error) {
+      return throwError(() => error);
+    }
+  }
+
+  getProfessor(professorId: number): Observable<ProfessorDetailResponse> {
+    try {
+      return of(this.mockStore.getProfessor(professorId));
+    } catch (error) {
+      return throwError(() => error);
+    }
+  }
+
+  updateProfessor(
+    professorId: number,
+    request: UpdateProfessorRequest,
+  ): Observable<ProfessorDetailResponse> {
+    try {
+      return of(this.mockStore.updateProfessor(professorId, request));
+    } catch (error) {
+      return throwError(() => error);
+    }
+  }
+
+  deactivateProfessor(professorId: number): Observable<ProfessorDetailResponse> {
+    try {
+      return of(this.mockStore.deactivateProfessor(professorId));
+    } catch (error) {
+      return throwError(() => error);
+    }
   }
 }

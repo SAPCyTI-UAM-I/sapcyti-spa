@@ -1,0 +1,180 @@
+<section class="gap-lg mx-auto flex max-w-3xl flex-col" data-testid="professor-edit">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-h2 text-primary font-bold">
+        {{ 'ACADEMIC_CATALOG.PROFESSORS.EDIT.TITLE' | translate }}
+      </h1>
+      <p class="text-text-secondary">
+        {{ 'ACADEMIC_CATALOG.PROFESSORS.EDIT.SUBTITLE' | translate }}
+      </p>
+    </div>
+    <p-button
+      severity="secondary"
+      variant="outlined"
+      icon="pi pi-arrow-left"
+      [label]="'COMMON.ACTIONS.BACK' | translate"
+      (onClick)="backToDetail()"
+    />
+  </header>
+
+  @if (loading()) {
+    <div class="p-xl text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else if (error() && !professor()) {
+    <p-message severity="error" [text]="error() | domainError: catalogErrorScope" />
+  } @else {
+    @if (error()) {
+      <p-message severity="error" [text]="error() | domainError: catalogErrorScope" />
+    }
+    <form
+      class="border-outline bg-surface p-lg sm:p-xl gap-lg flex flex-col rounded-xl border"
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+    >
+      <div class="gap-md grid md:grid-cols-2">
+        <label for="professorTypeEdit" class="gap-xs flex flex-col md:col-span-2">
+          <span>{{ 'ACADEMIC_CATALOG.PROFESSORS.FIELDS.PROFESSOR_TYPE' | translate }} *</span>
+          <app-i18n-select
+            inputId="professorTypeEdit"
+            controlName="professorType"
+            [options]="professorTypeOptions"
+          />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.FIRST_NAME' | translate }} *</span>
+          <input pInputText formControlName="firstName" />
+          <app-field-error [control]="form.controls.firstName" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.FIRST_LAST_NAME' | translate }} *</span>
+          <input pInputText formControlName="firstLastName" />
+          <app-field-error [control]="form.controls.firstLastName" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.SECOND_LAST_NAME' | translate }}</span>
+          <input pInputText formControlName="secondLastName" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.EMAIL' | translate }} *</span>
+          <input pInputText type="email" formControlName="email" />
+          <app-field-error [control]="form.controls.email" [submitted]="submitted()" />
+        </label>
+        <label class="gap-xs flex flex-col md:col-span-2">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.EMPLOYEE_NUMBER' | translate }} *</span>
+          <input pInputText formControlName="employeeNumber" />
+          <app-field-error [control]="form.controls.employeeNumber" [submitted]="submitted()" />
+        </label>
+        <div class="gap-md grid grid-cols-[1fr_8rem] md:col-span-2">
+          <label class="gap-xs flex flex-col">
+            <span>{{ 'ACADEMIC_CATALOG.FIELDS.PHONE' | translate }} *</span>
+            <input pInputText type="tel" formControlName="phone" />
+            <app-field-error [control]="form.controls.phone" [submitted]="submitted()" />
+          </label>
+          <label class="gap-xs flex flex-col">
+            <span>{{ 'ACADEMIC_CATALOG.FIELDS.PHONE_EXTENSION' | translate }}</span>
+            <input pInputText formControlName="phoneExtension" />
+          </label>
+        </div>
+        <div class="gap-sm flex items-center md:col-span-2">
+          <p-checkbox
+            inputId="commissionMemberEdit"
+            formControlName="commissionMember"
+            [binary]="true"
+          />
+          <label for="commissionMemberEdit">
+            {{ 'ACADEMIC_CATALOG.FIELDS.COMMISSION_MEMBER' | translate }}
+          </label>
+        </div>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.NEXT_SABBATICAL_START' | translate }}</span>
+          <input pInputText type="date" formControlName="nextSabbaticalStart" />
+        </label>
+        <label class="gap-xs flex flex-col">
+          <span>{{ 'ACADEMIC_CATALOG.FIELDS.NEXT_SABBATICAL_END' | translate }}</span>
+          <input pInputText type="date" formControlName="nextSabbaticalEnd" />
+        </label>
+      </div>
+      <footer class="border-outline pt-md gap-sm flex justify-end border-t">
+        <p-button
+          type="submit"
+          data-testid="save-professor"
+          icon="pi pi-save"
+          [label]="'COMMON.ACTIONS.SAVE' | translate"
+          [loading]="submitting()"
+          [disabled]="submitting()"
+        />
+      </footer>
+    </form>
+
+    @if (professor(); as current) {
+      <div
+        class="border-outline pt-lg gap-sm flex flex-wrap justify-between"
+        data-testid="professor-edit-actions"
+      >
+        <p-button
+          data-testid="change-professor-password"
+          icon="pi pi-key"
+          severity="secondary"
+          variant="outlined"
+          [label]="'ACADEMIC_CATALOG.PROFESSORS.DETAIL.CHANGE_PASSWORD' | translate"
+          [routerLink]="['/account/users', current.userId, 'password']"
+          [queryParams]="{
+            returnUrl: '/academic-catalog/professors/' + current.id + '/edit',
+            targetName: formatPersonName(current),
+          }"
+        />
+        @if (current.active) {
+          <p-button
+            data-testid="deactivate-professor"
+            severity="danger"
+            variant="outlined"
+            icon="pi pi-user-minus"
+            [label]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.ACTION' | translate"
+            (onClick)="openDeactivateDialog()"
+          />
+        }
+      </div>
+    }
+  }
+</section>
+
+<p-dialog
+  [header]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.CONFIRM_TITLE' | translate"
+  [modal]="true"
+  [visible]="showDeactivateDialog()"
+  [closable]="!deactivating()"
+  [style]="{ width: 'min(100%, 32rem)' }"
+  (visibleChange)="showDeactivateDialog.set($event)"
+  (onHide)="closeDeactivateDialog()"
+>
+  <p class="text-body-md text-text-secondary">
+    {{ 'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.CONFIRM_MESSAGE' | translate }}
+  </p>
+  @if (deactivateError()) {
+    <p-message
+      class="mt-md block"
+      severity="error"
+      [text]="deactivateError() | domainError: catalogErrorScope"
+    />
+  }
+  <ng-template #footer>
+    <div class="gap-sm flex justify-end">
+      <p-button
+        severity="secondary"
+        variant="outlined"
+        [label]="'COMMON.ACTIONS.CANCEL' | translate"
+        [disabled]="deactivating()"
+        (onClick)="closeDeactivateDialog()"
+      />
+      <p-button
+        data-testid="confirm-deactivate-professor"
+        severity="danger"
+        [label]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.ACTION' | translate"
+        [loading]="deactivating()"
+        [disabled]="deactivating()"
+        (onClick)="confirmDeactivate()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

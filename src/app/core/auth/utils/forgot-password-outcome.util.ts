@@ -1,4 +1,4 @@
-import { getHttpStatus } from '../../http/utils/parse-api-error.util';
+import { getHttpStatus } from '../../errors/utils/parse-api-error.util';
 
 export type ForgotPasswordOutcome = 'navigate_sent' | 'show_server_error';
 

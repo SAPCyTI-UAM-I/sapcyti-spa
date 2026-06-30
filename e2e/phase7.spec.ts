@@ -75,10 +75,12 @@ test('coordinator changes a student password and returns to its catalog', async 
   await login(page, 'coordinator@uam.mx');
   await page.getByRole('link', { name: /^Alumnos$|^Students$/ }).click();
   await expect(page).toHaveURL(/academic-catalog\/students$/);
-  await page
-    .getByRole('button', { name: /cambiar contraseña|change password/i })
-    .first()
-    .click();
+
+  await page.locator('[data-testid="student-catalog"] tbody a').first().click();
+  await page.getByTestId('edit-student').click();
+  await expect(page).toHaveURL(/academic-catalog\/students\/\d+\/edit$/);
+  await page.getByTestId('change-student-password').click();
+
   await page.locator('[formcontrolname="newPassword"] input').fill('temporary-password');
   await page.locator('[formcontrolname="confirmPassword"] input').fill('temporary-password');
   await page.getByTestId('submit-password-change').click();

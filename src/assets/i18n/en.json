@@ -11,15 +11,25 @@
       "STATUS": "Status"
     },
     "ERRORS": {
+      "clave_invalid_format": "The course code must contain digits only.",
       "duplicate_email": "The email address is already registered.",
       "duplicate_employee": "The employee number is already registered.",
       "duplicate_enrollment": "The enrollment ID is already registered.",
+      "duplicate_advisor_ids": "You cannot repeat the same advisor more than once.",
+      "employee_required_for_interno": "Employee number is required for internal professors.",
+      "file_format_invalid": "Invalid file format, please use the provided template.",
       "graduate_program_not_found": "The requested graduate program was not found.",
+      "professor_already_inactive": "The professor is already inactive.",
+      "professor_has_active_assignments": "Reassign tutor or advisors before deactivating this professor.",
+      "professor_not_found": "The requested professor was not found.",
       "reference_not_found": "The requested graduate program was not found.",
       "sabbatical_date_order": "The sabbatical end date must be on or after the start date.",
-      "server": "An error occurred while saving the information."
+      "server": "An error occurred while saving the information.",
+      "uea_already_exists": "This UEA has already been registered.",
+      "validation": "Please review the form data."
     },
     "FIELDS": {
+      "ACTIVE": "Student status",
       "ADMISSION_DATE": "Admission date",
       "BIRTH_DATE": "Birth date",
       "COMMISSION_MEMBER": "Commission member",
@@ -47,9 +57,35 @@
       "TOTAL": "Total"
     },
     "PROFESSORS": {
+      "BREADCRUMB": {
+        "DETAIL": "Professor detail",
+        "EDIT": "Edit professor"
+      },
       "CREATE": {
         "SUBTITLE": "Complete the institutional data and confirm registration.",
         "TITLE": "Register professor"
+      },
+      "DEACTIVATE": {
+        "ACTION": "Deactivate",
+        "CONFIRM_MESSAGE": "The professor will no longer be available for new assignments and will not be able to sign in. Their academic history will be preserved.",
+        "CONFIRM_TITLE": "Confirm professor deactivation",
+        "SUCCESS": "Professor deactivated successfully."
+      },
+      "DETAIL": {
+        "CHANGE_PASSWORD": "Change password",
+        "EDIT_ACTION": "Edit",
+        "NO_EMPLOYEE_NUMBER": "Not applicable",
+        "NO_SABBATICAL": "No date recorded",
+        "PERSONAL_SECTION": "Professor information",
+        "TITLE": "Professor detail"
+      },
+      "EDIT": {
+        "SAVED": "Professor updated successfully.",
+        "SUBTITLE": "Update the professor data and save your changes.",
+        "TITLE": "Edit professor"
+      },
+      "FIELDS": {
+        "PROFESSOR_TYPE": "Professor type"
       },
       "LIST": {
         "CREATE": "Create professor",
@@ -57,6 +93,10 @@
         "SEARCH": "Search by name, email or employee number",
         "SUBTITLE": "Browse and manage graduate professors.",
         "TITLE": "Professors"
+      },
+      "TYPES": {
+        "EXTERNO": "External",
+        "INTERNO": "Internal"
       }
     },
     "PROGRAM_TYPES": {
@@ -74,6 +114,25 @@
       "BREADCRUMB": {
         "EDIT": "Edit program",
         "VIEW": "Academic program"
+      },
+      "CATALOG": {
+        "AREAS": {
+          "AI": "Artificial intelligence",
+          "BIG_DATA": "Big data",
+          "DIGITAL_SIGNAL_PROCESSING": "Digital signal processing in communications",
+          "HIGH_PERFORMANCE_COMPUTING": "High-performance computing",
+          "IOT": "Internet of Things",
+          "NETWORK_APPLICATIONS": "Network applications",
+          "NETWORK_CODING": "Network coding",
+          "ROUTING": "Routing",
+          "SEMANTIC_WEB": "Semantic web",
+          "SOFTWARE_DEFINED_NETWORKS": "Software-defined networks",
+          "WIRELESS_COMMUNICATIONS": "Wireless communications"
+        },
+        "LINES": {
+          "COMPUTER_SCIENCE": "Computer Science and Engineering",
+          "NETWORKS": "Communication Networks"
+        }
       },
       "CHOOSER": {
         "SUBTITLE": "Select the program you want to view.",
@@ -97,9 +156,11 @@
       "FIELDS": {
         "ADVISORS": "Advisors",
         "GRADUATION_DATE": "Graduation date",
+        "LINE_OF_KNOWLEDGE": "Line of knowledge",
         "PROFESSOR_SEARCH": "Search by name",
         "RESEARCH_AREA": "Research area",
         "TUTOR": "Tutor",
+        "UNCLASSIFIED": "Unclassified",
         "WITHDRAWAL_REASON": "Withdrawal reason"
       },
       "STATUS": {
@@ -120,11 +181,32 @@
       }
     },
     "STUDENTS": {
+      "BREADCRUMB": {
+        "DETAIL": "Student details",
+        "EDIT": "Edit student"
+      },
       "CREATE": {
         "ACADEMIC_SECTION": "Academic information",
         "PERSONAL_SECTION": "Personal data",
         "SUBTITLE": "Complete the information and confirm registration. A password will be generated automatically.",
         "TITLE": "Register student"
+      },
+      "DETAIL": {
+        "ACADEMIC_SECTION": "Academic information",
+        "CHANGE_PASSWORD": "Change password",
+        "CONTACT_SECTION": "Contact information",
+        "EDIT_ACTION": "Edit information",
+        "NO_ADVISORS": "No advisors assigned",
+        "NO_GRADUATION_DATE": "No graduation date",
+        "NO_TUTOR": "No tutor assigned",
+        "PERSONAL_SECTION": "Personal information",
+        "PROGRAM_SECTION": "Academic program",
+        "TITLE": "Student details"
+      },
+      "EDIT": {
+        "SAVED": "Student updated successfully.",
+        "SUBTITLE": "Modify the student's data and academic program.",
+        "TITLE": "Edit student"
       },
       "LIST": {
         "CREATE": "Create student",
@@ -143,6 +225,61 @@
       "SUBTITLE": "The account was created successfully",
       "TITLE": "Registration completed",
       "WARNING": "For security, the password will not be shown again."
+    },
+    "UEAS": {
+      "BULK": {
+        "BROWSE": "Select file",
+        "ERRORS": {
+          "DUPLICATE_CLAVE": "Duplicate course code",
+          "INVALID_CREDITS": "Invalid credits (must be a positive integer)",
+          "INVALID_FORMAT": "Invalid format",
+          "MISSING_FIELD": "Missing required field"
+        },
+        "FILE_LABEL": "File (.xlsx or .csv)",
+        "NO_FILE": "No file selected",
+        "ROW_LABEL": "Row",
+        "SUMMARY_ERRORS": "{{count}} errors detected:",
+        "SUMMARY_SUCCESS": "{{count}} created, 0 errors",
+        "TEMPLATE": "Download CSV template",
+        "TEMPLATE_LABEL": "Download template",
+        "TITLE": "Bulk upload UEAs",
+        "UPLOAD": "Upload file"
+      },
+      "CREATE": {
+        "SAVED": "UEA registered successfully.",
+        "SUBTITLE": "Fill in the details for the new course.",
+        "TITLE": "Register UEA"
+      },
+      "FIELDS": {
+        "CLAVE": "Code",
+        "CREDITOS": "Credits",
+        "H_PRAC": "Practice hours",
+        "H_TEOR": "Theory hours",
+        "MODALIDAD": "Modality",
+        "NOMBRE": "Course name",
+        "TIPO": "Type",
+        "TIPO_FORMACION": "Formation type"
+      },
+      "FORMATION_TYPES": {
+        "BASICA": "Basic",
+        "COMPLEMENTARIA": "Complementary",
+        "INVESTIGACION": "Research"
+      },
+      "LIST": {
+        "BULK": "Bulk upload",
+        "CREATE": "Register UEA",
+        "EMPTY": "No UEAs found in the catalog.",
+        "SEARCH": "Search by code or name",
+        "SUBTITLE": "Browse and register the graduate program course catalog.",
+        "TITLE": "Course Catalog (UEAs)"
+      },
+      "MODALITY": {
+        "MIXTA": "Mixed"
+      },
+      "TYPES": {
+        "OBLIGATORIA": "Mandatory",
+        "OPTATIVA": "Optional"
+      }
     },
     "WIZARD": {
       "CONFIRM_TITLE": "Review the information before confirming",
@@ -343,6 +480,7 @@
       "BACK": "Go back",
       "CANCEL": "Cancel",
       "CLEAR": "Clear",
+      "CLOSE": "Close",
       "CONFIRM": "Confirm",
       "DELETE": "Delete",
       "EDIT": "Edit",
@@ -351,6 +489,10 @@
       "SAVE": "Save",
       "SEARCH": "Search",
       "VIEW": "View"
+    },
+    "CLIPBOARD": {
+      "COPIED": "Copied to clipboard.",
+      "COPY": "Click to copy"
     },
     "ERRORS": {
       "ACCESS_DENIED": "Access denied",
@@ -366,8 +508,11 @@
     },
     "VALIDATION": {
       "EMAIL": "Enter a valid email address.",
+      "INTEGER": "Enter a positive integer.",
       "MAXLENGTH": "The value is too long.",
+      "MIN": "The value must be 0 or greater.",
       "MINLENGTH": "The value is too short.",
+      "ONLYDIGITS": "The code must contain digits only.",
       "PASSWORDS_MISMATCH": "Passwords do not match.",
       "PATTERN": "Invalid format.",
       "REQUIRED": "This field is required."
@@ -491,7 +636,8 @@
       "PRESENTATIONS": "Presentations",
       "PROFESSORS": "Professors",
       "STUDENTS": "Students",
-      "TERMS_OFFER": "Terms and academic offer"
+      "TERMS_OFFER": "Terms and academic offer",
+      "UEAS": "Course Catalog (UEAs)"
     },
     "SECTIONS": {
       "ACADEMIC_MANAGEMENT": "Academic management",

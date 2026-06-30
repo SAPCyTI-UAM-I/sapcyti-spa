@@ -1,5 +1,8 @@
+export type ProfessorType = 'INTERNO' | 'EXTERNO';
+
 export interface RegisterProfessorRequest {
-  employeeNumber: string;
+  professorType: ProfessorType;
+  employeeNumber?: string | null;
   email: string;
   graduateProgramId: number;
   firstName: string;
@@ -10,6 +13,7 @@ export interface RegisterProfessorRequest {
   commissionMember: boolean;
   /** ISO date (YYYY-MM-DD), optional. */
   nextSabbaticalStart?: string;
+  /** ISO date (YYYY-MM-DD), optional. */
   nextSabbaticalEnd?: string;
 }
 
@@ -18,6 +22,10 @@ export interface ProfessorCatalogItem extends RegisterProfessorRequest {
   userId: number;
   active: boolean;
 }
+
+export type ProfessorDetailResponse = ProfessorCatalogItem;
+
+export type UpdateProfessorRequest = Omit<RegisterProfessorRequest, 'graduateProgramId'>;
 
 export interface RegisterProfessorResponse extends ProfessorCatalogItem {
   generatedPassword: string;

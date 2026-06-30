@@ -44,7 +44,7 @@ describe('StudentProgramService', () => {
     });
   });
 
-  it('lists dual programs for student 3 in mock mode', () => {
+  it('returns a single program for student 3 in mock mode', () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
@@ -56,8 +56,9 @@ describe('StudentProgramService', () => {
     const service = TestBed.inject(StudentProgramService);
 
     service.listPrograms(3).subscribe((programs) => {
-      expect(programs).toHaveLength(2);
-      expect(programs.map((program) => program.id).sort()).toEqual([102, 103]);
+      expect(programs).toHaveLength(1);
+      expect(programs[0]?.id).toBe(102);
+      expect(programs[0]?.programType).toBe('MAESTRIA');
     });
   });
 

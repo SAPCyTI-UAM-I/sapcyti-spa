@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
 import { PageResponse, ProfessorCatalogItem } from '../../../../models';
@@ -13,6 +14,7 @@ import { ProfessorListComponent } from './professor-list.component';
 const sampleProfessor: ProfessorCatalogItem = {
   id: 2,
   userId: 202,
+  professorType: 'INTERNO',
   active: true,
   employeeNumber: '40001',
   email: 'laura@uam.mx',
@@ -40,7 +42,11 @@ describe('ProfessorListComponent', () => {
     const listProfessors = vi.fn(() => of(buildProfessorPage()));
     await TestBed.configureTestingModule({
       imports: [ProfessorListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
-      providers: [provideRouter([]), { provide: ProfessorService, useValue: { listProfessors } }],
+      providers: [
+        provideRouter([]),
+        { provide: ProfessorService, useValue: { listProfessors } },
+        MessageService,
+      ],
     }).compileComponents();
     const fixture = TestBed.createComponent(ProfessorListComponent);
     return { fixture, listProfessors };
@@ -50,11 +56,13 @@ describe('ProfessorListComponent', () => {
     fixture: ReturnType<typeof TestBed.createComponent<ProfessorListComponent>>,
     values: { search?: string; active?: string },
   ): void {
-    const form = fixture.debugElement.query(By.css('form')).injector.get(FormGroupDirective);
+    const form = fixture.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective);
     form.form.patchValue(values);
   }
 
-  it('calls listProfessors on init with page 0 and size 10', async () => {
+  it('calls listProfessors on init with page 0, size 10 and active-only default', async () => {
     const { fixture, listProfessors } = await setup();
     fixture.detectChanges();
 
@@ -63,7 +71,7 @@ describe('ProfessorListComponent', () => {
       page: 0,
       size: 10,
       search: undefined,
-      active: undefined,
+      active: true,
     });
   });
 

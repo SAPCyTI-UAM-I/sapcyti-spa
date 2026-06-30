@@ -14,7 +14,7 @@ export abstract class CatalogListBase<TItem> implements OnInit {
   readonly loading = signal(false);
   readonly loadError = signal(false);
   readonly page = signal(0);
-  readonly pageSize = 10;
+  readonly pageSize: number = 10;
   readonly totalElements = signal(0);
   readonly first = computed(() => this.page() * this.pageSize);
 

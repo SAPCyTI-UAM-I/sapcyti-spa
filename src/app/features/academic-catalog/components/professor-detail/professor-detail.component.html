@@ -1,0 +1,157 @@
+<section class="gap-lg flex flex-col" data-testid="professor-detail">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-h2 text-primary font-bold">
+        {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.TITLE' | translate }}
+      </h1>
+    </div>
+    <div class="gap-sm flex flex-wrap">
+      @if (professor()) {
+        <p-button
+          data-testid="edit-professor"
+          icon="pi pi-pencil"
+          [label]="'ACADEMIC_CATALOG.PROFESSORS.DETAIL.EDIT_ACTION' | translate"
+          [routerLink]="editRoute()"
+        />
+      }
+      <p-button
+        severity="secondary"
+        variant="outlined"
+        icon="pi pi-arrow-left"
+        [label]="'COMMON.ACTIONS.BACK' | translate"
+        (onClick)="backToCatalog()"
+      />
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="p-xl text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else if (error()) {
+    <p-message severity="error" [text]="error() | domainError: catalogErrorScope" />
+  } @else if (professor(); as current) {
+    <article
+      class="border-outline bg-surface overflow-hidden rounded-2xl border"
+      data-testid="professor-card"
+    >
+      <div
+        class="from-primary-container to-surface p-md gap-md sm:p-lg flex min-w-0 flex-col bg-gradient-to-br lg:flex-row lg:items-stretch"
+      >
+        <div class="gap-md flex min-w-0 flex-1 items-center">
+          <div
+            class="bg-primary text-on-primary text-h1 shadow-card flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl font-bold sm:h-20 sm:w-20"
+            aria-hidden="true"
+          >
+            {{ initials() }}
+          </div>
+          <div class="gap-xs flex min-w-0 flex-col">
+            <h2 class="text-h2 text-on-surface font-bold break-words" data-testid="professor-name">
+              {{ current.firstName }} {{ current.firstLastName }} {{ current.secondLastName || '' }}
+            </h2>
+            <div class="gap-sm flex flex-wrap items-center">
+              <app-catalog-tag
+                [value]="professorTypeLabelKey(current) | translate"
+                severity="secondary"
+              />
+              <app-catalog-tag
+                [value]="
+                  (current.active
+                    ? 'ACADEMIC_CATALOG.STATUS.ACTIVE'
+                    : 'ACADEMIC_CATALOG.STATUS.INACTIVE'
+                  ) | translate
+                "
+                [severity]="activeTagSeverity(current.active)"
+              />
+            </div>
+            <dl class="text-text-secondary mt-xs gap-x-md gap-y-xs flex flex-wrap text-sm">
+              <div class="gap-xs flex min-w-0 items-center">
+                <dt class="sr-only">{{ 'ACADEMIC_CATALOG.FIELDS.EMPLOYEE_NUMBER' | translate }}</dt>
+                <i class="pi pi-id-card text-primary shrink-0" aria-hidden="true"></i>
+                <dd class="min-w-0">
+                  @if (current.professorType === 'INTERNO' && current.employeeNumber) {
+                    <app-copyable-text [value]="current.employeeNumber">
+                      {{ current.employeeNumber }}
+                    </app-copyable-text>
+                  } @else {
+                    <span class="text-text-tertiary italic">
+                      {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.NO_EMPLOYEE_NUMBER' | translate }}
+                    </span>
+                  }
+                </dd>
+              </div>
+              @if (current.commissionMember) {
+                <div class="gap-xs flex items-center">
+                  <i class="pi pi-users text-primary shrink-0" aria-hidden="true"></i>
+                  <span>{{ 'ACADEMIC_CATALOG.FIELDS.COMMISSION_MEMBER' | translate }}</span>
+                </div>
+              }
+            </dl>
+          </div>
+        </div>
+
+        <div
+          class="bg-surface/80 border-outline p-sm gap-sm sm:p-md xl:gap-x-lg grid min-w-0 shrink-0 rounded-xl border backdrop-blur sm:grid-cols-2 lg:min-w-[22rem] lg:grid-cols-1 xl:grid-cols-2"
+        >
+          <span class="gap-xs text-text-secondary flex min-w-0 items-center">
+            <i class="pi pi-envelope text-primary shrink-0" aria-hidden="true"></i>
+            <app-copyable-text [value]="current.email">
+              <span class="truncate">{{ current.email }}</span>
+            </app-copyable-text>
+          </span>
+          <span class="gap-xs text-text-secondary flex min-w-0 items-center">
+            <i class="pi pi-phone text-primary shrink-0" aria-hidden="true"></i>
+            <app-copyable-text [value]="current.phone">
+              {{ current.phone }}
+            </app-copyable-text>
+            @if (current.phoneExtension) {
+              <span class="shrink-0">ext. {{ current.phoneExtension }}</span>
+            }
+          </span>
+        </div>
+      </div>
+
+      <div class="p-md gap-md sm:p-lg flex flex-col">
+        <h3 class="text-h3 text-primary gap-sm flex items-center font-bold">
+          <i class="pi pi-user" aria-hidden="true"></i>
+          {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.PERSONAL_SECTION' | translate }}
+        </h3>
+
+        <dl class="gap-md flex min-w-0 flex-col">
+          <div
+            class="bg-page border-outline/60 divide-outline grid divide-y rounded-xl border lg:grid-cols-2 lg:divide-x lg:divide-y-0"
+          >
+            <div class="px-md py-sm gap-xs flex min-w-0 flex-col">
+              <dt class="text-caption text-text-secondary">
+                {{ 'ACADEMIC_CATALOG.FIELDS.NEXT_SABBATICAL_START' | translate }}
+              </dt>
+              <dd class="text-body-md text-on-surface font-semibold">
+                @if (current.nextSabbaticalStart) {
+                  {{ current.nextSabbaticalStart }}
+                } @else {
+                  <span class="text-text-tertiary text-sm italic">
+                    {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.NO_SABBATICAL' | translate }}
+                  </span>
+                }
+              </dd>
+            </div>
+            <div class="px-md py-sm gap-xs flex min-w-0 flex-col">
+              <dt class="text-caption text-text-secondary">
+                {{ 'ACADEMIC_CATALOG.FIELDS.NEXT_SABBATICAL_END' | translate }}
+              </dt>
+              <dd class="text-body-md text-on-surface font-semibold">
+                @if (current.nextSabbaticalEnd) {
+                  {{ current.nextSabbaticalEnd }}
+                } @else {
+                  <span class="text-text-tertiary text-sm italic">
+                    {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.NO_SABBATICAL' | translate }}
+                  </span>
+                }
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+    </article>
+  }
+</section>
