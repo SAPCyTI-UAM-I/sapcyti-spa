@@ -98,7 +98,9 @@
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CLAVE' | translate }}
                   </span>
-                  <span class="font-mono text-sm">{{ uea.clave }}</span>
+                  <app-copyable-text [value]="uea.clave">
+                    <span class="font-mono text-sm">{{ uea.clave }}</span>
+                  </app-copyable-text>
                 </td>
                 <td class="md:p-md col-span-2 md:table-cell md:truncate" [title]="uea.nombre">
                   <span class="text-h3 text-primary font-bold md:font-normal md:text-inherit">

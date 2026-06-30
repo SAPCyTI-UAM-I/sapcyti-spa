@@ -9,7 +9,7 @@ import { Select } from 'primeng/select';
 import { Observable } from 'rxjs';
 
 import { PageResponse, UeaCatalogItem } from '../../../../models';
-import { CatalogTagComponent } from '../../../../shared/components';
+import { CatalogTagComponent, CopyableTextComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { UeaService } from '../../services/uea.service';
 import {
@@ -33,6 +33,7 @@ import { UeaBulkUploadDialogComponent } from '../uea-bulk-upload-dialog/uea-bulk
     Paginator,
     Select,
     CatalogTagComponent,
+    CopyableTextComponent,
     UeaBulkUploadDialogComponent,
   ],
   templateUrl: './uea-list.component.html',
@@ -40,6 +41,8 @@ import { UeaBulkUploadDialogComponent } from '../uea-bulk-upload-dialog/uea-bulk
 export class UeaListComponent extends CatalogListBase<UeaCatalogItem> {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly service = inject(UeaService);
+
+  override readonly pageSize = 8;
 
   protected override readonly filters = this.fb.group({
     search: [''],
