@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -43,6 +43,12 @@ export class UeaListComponent extends CatalogListBase<UeaCatalogItem> {
   private readonly service = inject(UeaService);
 
   override readonly pageSize = 8;
+
+  readonly expandedNameId = signal<number | null>(null);
+
+  toggleName(id: number): void {
+    this.expandedNameId.update((current) => (current === id ? null : id));
+  }
 
   protected override readonly filters = this.fb.group({
     search: [''],
