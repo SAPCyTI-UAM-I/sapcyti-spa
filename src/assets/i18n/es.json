@@ -10,6 +10,11 @@
       "PROGRAM": "Programa",
       "STATUS": "Estado"
     },
+    "DEGREE_LEVELS": {
+      "DOCTORADO": "Doctorado",
+      "LICENCIATURA": "Licenciatura",
+      "MAESTRIA": "Maestría"
+    },
     "ERRORS": {
       "clave_invalid_format": "La clave debe contener solo dígitos.",
       "duplicate_advisor_ids": "No puede repetir el mismo asesor más de una vez.",
@@ -19,6 +24,9 @@
       "employee_required_for_interno": "El número de empleado es obligatorio para profesores internos.",
       "file_format_invalid": "Formato de archivo inválido, utilice la plantilla proporcionada.",
       "graduate_program_not_found": "No se encontró el programa de posgrado solicitado.",
+      "invalid_type_change": "Un profesor interno no puede cambiar a externo.",
+      "nemp_immutable": "El número económico no puede modificarse.",
+      "professor_already_active": "El profesor ya está activo.",
       "professor_already_inactive": "El profesor ya está inactivo.",
       "professor_has_active_assignments": "Debe reasignar tutor o asesores antes de dar de baja al profesor.",
       "professor_not_found": "No se encontró el profesor solicitado.",
@@ -48,7 +56,7 @@
       "PHONE_EXTENSION": "Extensión",
       "PROGRAM_TYPE": "Tipo de programa",
       "SECOND_LAST_NAME": "Apellido materno",
-      "UNDERGRADUATE_DEGREE": "Carrera de licenciatura"
+      "UNDERGRADUATE_DEGREE": "Universidad de procedencia"
     },
     "FILTERS": {
       "ALL": "Todos",
@@ -82,6 +90,7 @@
         "TITLE": "Detalle del profesor"
       },
       "EDIT": {
+        "NEMP_LOCKED": "El número económico no puede modificarse una vez asignado.",
         "SAVED": "Profesor actualizado correctamente.",
         "SUBTITLE": "Actualice los datos del profesor y guarde los cambios.",
         "TITLE": "Editar profesor"
@@ -95,6 +104,12 @@
         "SEARCH": "Buscar por nombre, correo o número de empleado",
         "SUBTITLE": "Consulte y administre los profesores del posgrado.",
         "TITLE": "Profesores"
+      },
+      "RESTORE": {
+        "ACTION": "Restaurar",
+        "MESSAGE": "¿Restaurar a {{name}}? Volverá a estar disponible para asignaciones.",
+        "SUCCESS": "Profesor restaurado correctamente.",
+        "TITLE": "Confirmar restauración"
       },
       "TYPES": {
         "EXTERNO": "Externo",

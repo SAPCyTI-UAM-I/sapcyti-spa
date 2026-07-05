@@ -10,6 +10,11 @@
       "PROGRAM": "Program",
       "STATUS": "Status"
     },
+    "DEGREE_LEVELS": {
+      "DOCTORADO": "Doctorate",
+      "LICENCIATURA": "Bachelor's degree",
+      "MAESTRIA": "Master's degree"
+    },
     "ERRORS": {
       "clave_invalid_format": "The course code must contain digits only.",
       "duplicate_advisor_ids": "You cannot repeat the same advisor more than once.",
@@ -19,6 +24,9 @@
       "employee_required_for_interno": "Employee number is required for internal professors.",
       "file_format_invalid": "Invalid file format, please use the provided template.",
       "graduate_program_not_found": "The requested graduate program was not found.",
+      "invalid_type_change": "An internal professor cannot become external.",
+      "nemp_immutable": "The employee number cannot be changed.",
+      "professor_already_active": "The professor is already active.",
       "professor_already_inactive": "The professor is already inactive.",
       "professor_has_active_assignments": "Reassign tutor or advisors before deactivating this professor.",
       "professor_not_found": "The requested professor was not found.",
@@ -48,7 +56,7 @@
       "PHONE_EXTENSION": "Extension",
       "PROGRAM_TYPE": "Program type",
       "SECOND_LAST_NAME": "Second last name",
-      "UNDERGRADUATE_DEGREE": "Undergraduate degree"
+      "UNDERGRADUATE_DEGREE": "University of origin"
     },
     "FILTERS": {
       "ALL": "All",
@@ -82,6 +90,7 @@
         "TITLE": "Professor detail"
       },
       "EDIT": {
+        "NEMP_LOCKED": "The employee number cannot be changed once assigned.",
         "SAVED": "Professor updated successfully.",
         "SUBTITLE": "Update the professor data and save your changes.",
         "TITLE": "Edit professor"
@@ -95,6 +104,12 @@
         "SEARCH": "Search by name, email or employee number",
         "SUBTITLE": "Browse and manage graduate professors.",
         "TITLE": "Professors"
+      },
+      "RESTORE": {
+        "ACTION": "Restore",
+        "MESSAGE": "Restore {{name}}? They will be available for assignments again.",
+        "SUCCESS": "Professor restored successfully.",
+        "TITLE": "Confirm restore"
       },
       "TYPES": {
         "EXTERNO": "External",
