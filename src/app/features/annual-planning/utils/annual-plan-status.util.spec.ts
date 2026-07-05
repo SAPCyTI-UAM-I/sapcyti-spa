@@ -1,4 +1,9 @@
-import { isAdjacent, nextStatuses, statusTagSeverity } from './annual-plan-status.util';
+import {
+  isAdjacent,
+  nextStatuses,
+  statusActionLabelKey,
+  statusTagSeverity,
+} from './annual-plan-status.util';
 
 describe('statusTagSeverity', () => {
   it('maps each status to a badge severity', () => {
@@ -22,5 +27,16 @@ describe('isAdjacent', () => {
     expect(isAdjacent('TERMINADA', 'ARCHIVADA')).toBe(true);
     expect(isAdjacent('BORRADOR', 'ARCHIVADA')).toBe(false);
     expect(isAdjacent('BORRADOR', 'BORRADOR')).toBe(false);
+  });
+});
+
+describe('statusActionLabelKey', () => {
+  it('names each transition by current + target', () => {
+    expect(statusActionLabelKey('BORRADOR', 'TERMINADA')).toBe('ANNUAL_PLANNING.ACTIONS.FINISH');
+    expect(statusActionLabelKey('TERMINADA', 'ARCHIVADA')).toBe('ANNUAL_PLANNING.ACTIONS.ARCHIVE');
+    expect(statusActionLabelKey('TERMINADA', 'BORRADOR')).toBe('ANNUAL_PLANNING.ACTIONS.REOPEN');
+    expect(statusActionLabelKey('ARCHIVADA', 'TERMINADA')).toBe(
+      'ANNUAL_PLANNING.ACTIONS.UNARCHIVE',
+    );
   });
 });

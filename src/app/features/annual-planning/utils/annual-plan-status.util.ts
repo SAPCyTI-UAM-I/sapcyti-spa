@@ -26,3 +26,17 @@ export function nextStatuses(status: AnnualPlanStatus): AnnualPlanStatus[] {
 export function isAdjacent(from: AnnualPlanStatus, to: AnnualPlanStatus): boolean {
   return Math.abs(STATUS_ORDER.indexOf(from) - STATUS_ORDER.indexOf(to)) === 1;
 }
+
+/** i18n key for the button that transitions `current` → `target`. */
+export function statusActionLabelKey(current: AnnualPlanStatus, target: AnnualPlanStatus): string {
+  if (target === 'ARCHIVADA') {
+    return 'ANNUAL_PLANNING.ACTIONS.ARCHIVE';
+  }
+  if (target === 'BORRADOR') {
+    return 'ANNUAL_PLANNING.ACTIONS.REOPEN';
+  }
+  // target === 'TERMINADA'
+  return current === 'BORRADOR'
+    ? 'ANNUAL_PLANNING.ACTIONS.FINISH'
+    : 'ANNUAL_PLANNING.ACTIONS.UNARCHIVE';
+}

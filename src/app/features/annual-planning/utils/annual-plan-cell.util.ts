@@ -49,17 +49,15 @@ export function cycleMark(current: AnnualPlanMark | undefined): AnnualPlanMark |
   }
 }
 
+/** The 6 editable group/quota cell fields, in grid column order. */
+export const CELL_FIELDS = ['gruposI', 'cupoI', 'gruposP', 'cupoP', 'gruposO', 'cupoO'] as const;
+export type CellField = (typeof CELL_FIELDS)[number];
+
 /** Editable value of one grid row (snapshot fields live outside the form). */
-export interface AnnualPlanEntryFormValue {
+export type AnnualPlanEntryFormValue = Record<CellField, string> & {
   id: number;
-  gruposI: string;
-  cupoI: string;
-  gruposP: string;
-  cupoP: string;
-  gruposO: string;
-  cupoO: string;
   marks: AnnualPlanMarks;
-}
+};
 
 function normalizeCell(value: string): AnnualPlanCell {
   const v = value.trim();
@@ -81,15 +79,11 @@ function cleanMarks(marks: AnnualPlanMarks): AnnualPlanMarks {
 /** Builds the full-replacement save payload; never carries snapshot fields. */
 export function buildSaveEntriesRequest(entries: AnnualPlanEntryFormValue[]): SaveEntriesRequest {
   return {
-    entries: entries.map((entry) => ({
-      id: entry.id,
-      gruposI: normalizeCell(entry.gruposI),
-      cupoI: normalizeCell(entry.cupoI),
-      gruposP: normalizeCell(entry.gruposP),
-      cupoP: normalizeCell(entry.cupoP),
-      gruposO: normalizeCell(entry.gruposO),
-      cupoO: normalizeCell(entry.cupoO),
-      marks: cleanMarks(entry.marks),
-    })),
+    entries: entries.map((entry) => {
+      const cells = Object.fromEntries(
+        CELL_FIELDS.map((field) => [field, normalizeCell(entry[field])]),
+      ) as Record<CellField, AnnualPlanCell>;
+      return { id: entry.id, ...cells, marks: cleanMarks(entry.marks) };
+    }),
   };
 }
