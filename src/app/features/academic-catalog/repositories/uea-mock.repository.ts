@@ -19,16 +19,21 @@ import { UeaRepository } from './uea.repository';
 export class UeaMockRepository implements UeaRepository {
   private readonly mockStore = inject(UeaMockStore);
 
+  /** Runs a (synchronous) store call, surfacing thrown mock errors as `error`. */
+  private fromStore<T>(produce: () => T): Observable<T> {
+    try {
+      return of(produce());
+    } catch (error) {
+      return throwError(() => error);
+    }
+  }
+
   listUeas(query: UeaCatalogQuery): Observable<PageResponse<UeaCatalogItem>> {
     return of(this.mockStore.listUeas(query));
   }
 
   registerUea(request: RegisterUeaRequest): Observable<UeaCatalogItem> {
-    try {
-      return of(this.mockStore.createUea(request));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return this.fromStore(() => this.mockStore.createUea(request));
   }
 
   bulkUploadUeas(file: File): Observable<UeaBulkUploadResult> {
@@ -60,34 +65,18 @@ export class UeaMockRepository implements UeaRepository {
   }
 
   getUea(ueaId: number): Observable<UeaCatalogItem> {
-    try {
-      return of(this.mockStore.getUea(ueaId));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return this.fromStore(() => this.mockStore.getUea(ueaId));
   }
 
   updateUea(ueaId: number, request: UpdateUeaRequest): Observable<UeaCatalogItem> {
-    try {
-      return of(this.mockStore.updateUea(ueaId, request));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return this.fromStore(() => this.mockStore.updateUea(ueaId, request));
   }
 
   deactivateUea(ueaId: number): Observable<UeaCatalogItem> {
-    try {
-      return of(this.mockStore.deactivateUea(ueaId));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return this.fromStore(() => this.mockStore.deactivateUea(ueaId));
   }
 
   restoreUea(ueaId: number): Observable<UeaCatalogItem> {
-    try {
-      return of(this.mockStore.restoreUea(ueaId));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return this.fromStore(() => this.mockStore.restoreUea(ueaId));
   }
 }
