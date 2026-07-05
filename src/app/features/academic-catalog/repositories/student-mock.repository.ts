@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
+import { fromMockStore } from '../../../core/mocks/from-mock-store.util';
 import { PageResponse } from '../../../models';
 import {
   RegisterStudentRequest,
@@ -28,23 +29,13 @@ export class StudentMockRepository implements StudentRepository {
   }
 
   getStudent(studentId: number): Observable<StudentDetailResponse> {
-    try {
-      const student = this.mockStore.getStudent(studentId);
-      const program = this.programMockStore.getProgramForStudent(studentId);
-      return of({
-        ...student,
-        program,
-      });
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromMockStore(() => ({
+      ...this.mockStore.getStudent(studentId),
+      program: this.programMockStore.getProgramForStudent(studentId),
+    }));
   }
 
   updateStudent(studentId: number, request: UpdateStudentRequest): Observable<StudentCatalogItem> {
-    try {
-      return of(this.mockStore.updateStudent(studentId, request));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromMockStore(() => this.mockStore.updateStudent(studentId, request));
   }
 }
