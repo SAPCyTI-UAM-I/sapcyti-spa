@@ -4,45 +4,53 @@
     >{{ 'ANNUAL_PLANNING.DETAIL.BACK' | translate }}
   </a>
 
-  @if (loading()) {
-    <div class="p-xl text-text-secondary text-center">
-      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
-    </div>
-  } @else if (loadError()) {
-    <div class="p-xl gap-md flex flex-col items-center">
-      <p class="text-error">{{ 'ANNUAL_PLANNING.STATES.LOAD_ERROR' | translate }}</p>
-      <p-button [label]="'COMMON.ACTIONS.RETRY' | translate" (onClick)="load()" />
-    </div>
-  } @else if (plan(); as plan) {
-    <div class="gap-md flex flex-wrap items-center justify-between">
-      <div class="gap-sm flex items-center">
-        <h1 class="text-h2">{{ 'ANNUAL_PLANNING.DETAIL.TITLE' | translate }} {{ plan.year }}</h1>
-        <app-catalog-tag
-          [value]="'ANNUAL_PLANNING.STATUS.' + plan.status | translate"
-          [severity]="statusTagSeverity(plan.status)"
-        />
-      </div>
-
-      <div class="gap-sm flex flex-wrap">
-        <p-button
-          severity="secondary"
-          icon="pi pi-file-excel"
-          [label]="'ANNUAL_PLANNING.DETAIL.DOWNLOAD' | translate"
-          [loading]="exporting()"
-          (onClick)="downloadExcel()"
-        />
-        @for (action of statusActions(); track action.target) {
-          <p-button
-            [label]="action.labelKey | translate"
-            [outlined]="true"
-            (onClick)="askStatusChange(action.target)"
-          />
-        }
-      </div>
-    </div>
-
-    <app-annual-plan-grid [plan]="plan" (saved)="onSaved($event)" />
+  @if (actionError()) {
+    <p-message severity="error" [text]="actionError() | domainError: errorScope" />
   }
+
+  <app-load-state
+    [loading]="loading()"
+    [error]="loadError()"
+    [empty]="false"
+    emptyMessage="ANNUAL_PLANNING.STATES.LOAD_ERROR"
+    errorMessage="ANNUAL_PLANNING.STATES.LOAD_ERROR"
+    (retry)="load()"
+  >
+    @if (plan(); as plan) {
+      <div class="gap-lg flex flex-col">
+        <div class="gap-md flex flex-wrap items-center justify-between">
+          <div class="gap-sm flex items-center">
+            <h1 class="text-h2">
+              {{ 'ANNUAL_PLANNING.DETAIL.TITLE' | translate }} {{ plan.year }}
+            </h1>
+            <app-catalog-tag
+              [value]="'ANNUAL_PLANNING.STATUS.' + plan.status | translate"
+              [severity]="statusTagSeverity(plan.status)"
+            />
+          </div>
+
+          <div class="gap-sm flex flex-wrap">
+            <p-button
+              severity="secondary"
+              icon="pi pi-file-excel"
+              [label]="'ANNUAL_PLANNING.DETAIL.DOWNLOAD' | translate"
+              [loading]="exporting()"
+              (onClick)="downloadExcel()"
+            />
+            @for (action of statusActions(); track action.target) {
+              <p-button
+                [label]="action.labelKey | translate"
+                [outlined]="true"
+                (onClick)="askStatusChange(action.target)"
+              />
+            }
+          </div>
+        </div>
+
+        <app-annual-plan-grid [plan]="plan" (saved)="onSaved($event)" />
+      </div>
+    }
+  </app-load-state>
 </section>
 
 <!-- HU-53 — status change confirmation. Reopening shows a mandatory warning. -->

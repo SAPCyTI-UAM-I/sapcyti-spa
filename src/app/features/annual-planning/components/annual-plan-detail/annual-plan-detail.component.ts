@@ -9,20 +9,27 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { MessageService } from 'primeng/api';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
+import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { AnnualPlanDetail, AnnualPlanStatus } from '../../../../models';
-import { CatalogTagComponent } from '../../../../shared/components';
+import { CatalogTagComponent, LoadStateComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
-import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { AnnualPlanService } from '../../services/annual-plan.service';
-import { mapAnnualPlanError } from '../../utils/annual-plan-error.util';
-import { nextStatuses, statusTagSeverity } from '../../utils/annual-plan-status.util';
+import {
+  ANNUAL_PLAN_ERROR_I18N_SCOPE,
+  AnnualPlanError,
+  mapAnnualPlanError,
+} from '../../utils/annual-plan-error.util';
+import {
+  nextStatuses,
+  statusActionLabelKey,
+  statusTagSeverity,
+} from '../../utils/annual-plan-status.util';
 import { AnnualPlanGridComponent } from '../annual-plan-grid/annual-plan-grid.component';
 
 interface StatusAction {
@@ -41,7 +48,9 @@ interface StatusAction {
     Button,
     Dialog,
     Message,
+    DomainErrorMessagePipe,
     CatalogTagComponent,
+    LoadStateComponent,
     AnnualPlanGridComponent,
   ],
   templateUrl: './annual-plan-detail.component.html',
@@ -49,15 +58,15 @@ interface StatusAction {
 export class AnnualPlanDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly service = inject(AnnualPlanService);
-  private readonly messages = inject(MessageService);
-  private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly year = Number(this.route.snapshot.paramMap.get('year'));
+  readonly errorScope = ANNUAL_PLAN_ERROR_I18N_SCOPE;
 
   readonly plan = signal<AnnualPlanDetail | null>(null);
   readonly loading = signal(false);
   readonly loadError = signal(false);
+  readonly actionError = signal<AnnualPlanError | null>(null);
 
   readonly pendingStatus = signal<AnnualPlanStatus | null>(null);
   readonly changingStatus = signal(false);
@@ -72,7 +81,7 @@ export class AnnualPlanDetailComponent implements OnInit {
     }
     return nextStatuses(current).map((target) => ({
       target,
-      labelKey: actionLabelKey(current, target),
+      labelKey: statusActionLabelKey(current, target),
     }));
   });
 
@@ -116,6 +125,7 @@ export class AnnualPlanDetailComponent implements OnInit {
       return;
     }
     this.changingStatus.set(true);
+    this.actionError.set(null);
     this.service
       .changeStatus(this.year, { status: target })
       .pipe(
@@ -129,17 +139,15 @@ export class AnnualPlanDetailComponent implements OnInit {
           this.load();
         },
         error: (error) => {
-          this.messages.add({
-            severity: 'error',
-            summary: this.translate.instant(`ANNUAL_PLANNING.ERRORS.${mapAnnualPlanError(error)}`),
-            life: TOAST_LIFE.DEFAULT,
-          });
+          this.pendingStatus.set(null);
+          this.actionError.set(mapAnnualPlanError(error));
         },
       });
   }
 
   downloadExcel(): void {
     this.exporting.set(true);
+    this.actionError.set(null);
     this.service
       .export(this.year)
       .pipe(
@@ -148,13 +156,7 @@ export class AnnualPlanDetailComponent implements OnInit {
       )
       .subscribe({
         next: (blob) => this.triggerDownload(blob),
-        error: (error) => {
-          this.messages.add({
-            severity: 'error',
-            summary: this.translate.instant(`ANNUAL_PLANNING.ERRORS.${mapAnnualPlanError(error)}`),
-            life: TOAST_LIFE.DEFAULT,
-          });
-        },
+        error: (error) => this.actionError.set(mapAnnualPlanError(error)),
       });
   }
 
@@ -167,17 +169,4 @@ export class AnnualPlanDetailComponent implements OnInit {
     anchor.click();
     URL.revokeObjectURL(url);
   }
-}
-
-function actionLabelKey(current: AnnualPlanStatus, target: AnnualPlanStatus): string {
-  if (target === 'ARCHIVADA') {
-    return 'ANNUAL_PLANNING.ACTIONS.ARCHIVE';
-  }
-  if (target === 'BORRADOR') {
-    return 'ANNUAL_PLANNING.ACTIONS.REOPEN';
-  }
-  // target === 'TERMINADA'
-  return current === 'BORRADOR'
-    ? 'ANNUAL_PLANNING.ACTIONS.FINISH'
-    : 'ANNUAL_PLANNING.ACTIONS.UNARCHIVE';
 }

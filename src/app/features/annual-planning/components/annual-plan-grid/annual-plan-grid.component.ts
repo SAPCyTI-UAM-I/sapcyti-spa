@@ -12,6 +12,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
+  FormControl,
   FormGroup,
   NonNullableFormBuilder,
   ReactiveFormsModule,
@@ -20,19 +21,27 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
+import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
+import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { AnnualPlanDetail, AnnualPlanMark, AnnualPlanMarks, ProgramCode } from '../../../../models';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { AnnualPlanService } from '../../services/annual-plan.service';
 import {
   AnnualPlanEntryFormValue,
   buildSaveEntriesRequest,
+  CELL_FIELDS,
+  CellField,
   cycleMark,
   isValidCell,
   PROGRAM_CODES,
 } from '../../utils/annual-plan-cell.util';
-import { mapAnnualPlanError } from '../../utils/annual-plan-error.util';
+import {
+  ANNUAL_PLAN_ERROR_I18N_SCOPE,
+  AnnualPlanError,
+  mapAnnualPlanError,
+} from '../../utils/annual-plan-error.util';
 
 /** Marks a group/quota cell invalid when it is not empty, `"*"` or a positive int. */
 function cellValidator(control: AbstractControl): ValidationErrors | null {
@@ -47,7 +56,7 @@ function cellValidator(control: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-annual-plan-grid',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, TranslatePipe, Button],
+  imports: [ReactiveFormsModule, TranslatePipe, Button, Message, DomainErrorMessagePipe],
   templateUrl: './annual-plan-grid.component.html',
 })
 export class AnnualPlanGridComponent {
@@ -61,8 +70,13 @@ export class AnnualPlanGridComponent {
   readonly saved = output<AnnualPlanDetail>();
 
   readonly programCodes = PROGRAM_CODES;
+  readonly cellFields = CELL_FIELDS;
+  readonly errorScope = ANNUAL_PLAN_ERROR_I18N_SCOPE;
+
   readonly saving = signal(false);
   readonly submitted = signal(false);
+  readonly invalidOnSubmit = signal(false);
+  readonly error = signal<AnnualPlanError | null>(null);
 
   readonly editable = computed(() => this.plan().status === 'BORRADOR');
 
@@ -77,19 +91,15 @@ export class AnnualPlanGridComponent {
   private buildForm(plan: AnnualPlanDetail): void {
     this.rows.clear();
     for (const entry of plan.entries) {
-      this.rows.push(
-        this.fb.group({
-          gruposI: this.fb.control(entry.gruposI ?? '', cellValidator),
-          cupoI: this.fb.control(entry.cupoI ?? '', cellValidator),
-          gruposP: this.fb.control(entry.gruposP ?? '', cellValidator),
-          cupoP: this.fb.control(entry.cupoP ?? '', cellValidator),
-          gruposO: this.fb.control(entry.gruposO ?? '', cellValidator),
-          cupoO: this.fb.control(entry.cupoO ?? '', cellValidator),
-        }),
-      );
+      const controls = Object.fromEntries(
+        CELL_FIELDS.map((field) => [field, this.fb.control(entry[field] ?? '', cellValidator)]),
+      ) as Record<CellField, FormControl<string>>;
+      this.rows.push(this.fb.group(controls));
     }
     this.marks.set(plan.entries.map((entry) => ({ ...entry.marks })));
     this.submitted.set(false);
+    this.invalidOnSubmit.set(false);
+    this.error.set(null);
   }
 
   rowGroup(index: number): FormGroup {
@@ -126,19 +136,17 @@ export class AnnualPlanGridComponent {
 
   save(): void {
     this.submitted.set(true);
+    this.error.set(null);
     if (this.rows.invalid) {
-      this.messages.add({
-        severity: 'error',
-        summary: this.translate.instant('ANNUAL_PLANNING.GRID.INVALID_CELLS'),
-        life: TOAST_LIFE.DEFAULT,
-      });
+      this.invalidOnSubmit.set(true);
       return;
     }
+    this.invalidOnSubmit.set(false);
 
     const plan = this.plan();
     const values: AnnualPlanEntryFormValue[] = plan.entries.map((entry, index) => ({
       id: entry.id,
-      ...(this.rowGroup(index).getRawValue() as Omit<AnnualPlanEntryFormValue, 'id' | 'marks'>),
+      ...(this.rowGroup(index).getRawValue() as Record<CellField, string>),
       marks: this.marks()[index] ?? {},
     }));
 
@@ -158,13 +166,7 @@ export class AnnualPlanGridComponent {
           });
           this.saved.emit(detail);
         },
-        error: (error) => {
-          this.messages.add({
-            severity: 'error',
-            summary: this.translate.instant(`ANNUAL_PLANNING.ERRORS.${mapAnnualPlanError(error)}`),
-            life: TOAST_LIFE.DEFAULT,
-          });
-        },
+        error: (error) => this.error.set(mapAnnualPlanError(error)),
       });
   }
 }

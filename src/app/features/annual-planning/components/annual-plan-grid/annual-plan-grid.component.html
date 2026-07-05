@@ -7,6 +7,13 @@
     <span><strong>*</strong> = {{ 'ANNUAL_PLANNING.LEGEND.STAR' | translate }}</span>
   </div>
 
+  @if (invalidOnSubmit()) {
+    <p-message severity="error" [text]="'ANNUAL_PLANNING.GRID.INVALID_CELLS' | translate" />
+  }
+  @if (error()) {
+    <p-message severity="error" [text]="error() | domainError: errorScope" />
+  }
+
   <div class="annual-grid-scroll border-outline max-h-[70vh] overflow-auto rounded-xl border">
     <table class="annual-grid text-body-md w-max border-collapse">
       <thead>
@@ -64,10 +71,7 @@
               {{ entry.nombre }}
             </td>
 
-            @for (
-              cell of ['gruposI', 'cupoI', 'gruposP', 'cupoP', 'gruposO', 'cupoO'];
-              track cell
-            ) {
+            @for (cell of cellFields; track cell) {
               <td class="border-outline p-xs border text-center">
                 @if (editable()) {
                   <input
