@@ -75,10 +75,16 @@ export class AnnualPlanGridComponent {
 
   readonly saving = signal(false);
   readonly submitted = signal(false);
-  readonly invalidOnSubmit = signal(false);
   readonly error = signal<AnnualPlanError | null>(null);
+  /** Bumped on every cell change so `cellInvalid`/`showInvalidMessage` recompute live. */
+  private readonly revision = signal(0);
 
   readonly editable = computed(() => this.plan().status === 'BORRADOR');
+
+  readonly showInvalidMessage = computed(() => {
+    this.revision();
+    return this.submitted() && this.rows.invalid;
+  });
 
   /** One group of 6 cell controls per entry, aligned by index with `plan().entries`. */
   readonly rows = this.fb.array<FormGroup>([]);
@@ -86,6 +92,9 @@ export class AnnualPlanGridComponent {
 
   constructor() {
     effect(() => this.buildForm(this.plan()));
+    this.rows.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.revision.update((value) => value + 1));
   }
 
   private buildForm(plan: AnnualPlanDetail): void {
@@ -98,7 +107,6 @@ export class AnnualPlanGridComponent {
     }
     this.marks.set(plan.entries.map((entry) => ({ ...entry.marks })));
     this.submitted.set(false);
-    this.invalidOnSubmit.set(false);
     this.error.set(null);
   }
 
@@ -107,6 +115,7 @@ export class AnnualPlanGridComponent {
   }
 
   cellInvalid(index: number, name: string): boolean {
+    this.revision();
     return this.submitted() && !!this.rowGroup(index).get(name)?.invalid;
   }
 
@@ -138,10 +147,8 @@ export class AnnualPlanGridComponent {
     this.submitted.set(true);
     this.error.set(null);
     if (this.rows.invalid) {
-      this.invalidOnSubmit.set(true);
       return;
     }
-    this.invalidOnSubmit.set(false);
 
     const plan = this.plan();
     const values: AnnualPlanEntryFormValue[] = plan.entries.map((entry, index) => ({

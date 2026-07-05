@@ -433,6 +433,7 @@
     },
     "GRID": {
       "CLAVE": "Key",
+      "EMPTY": "empty",
       "GROUPS": "Groups",
       "INVALID_CELLS": "Some cells have invalid values. Fix them before saving.",
       "MODALITY": "Modality",

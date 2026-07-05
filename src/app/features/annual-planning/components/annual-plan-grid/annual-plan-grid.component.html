@@ -7,7 +7,7 @@
     <span><strong>*</strong> = {{ 'ANNUAL_PLANNING.LEGEND.STAR' | translate }}</span>
   </div>
 
-  @if (invalidOnSubmit()) {
+  @if (showInvalidMessage()) {
     <p-message severity="error" [text]="'ANNUAL_PLANNING.GRID.INVALID_CELLS' | translate" />
   }
   @if (error()) {
@@ -16,35 +16,43 @@
 
   <div class="annual-grid-scroll border-outline max-h-[70vh] overflow-auto rounded-xl border">
     <table class="annual-grid text-body-md w-max border-collapse">
+      <!--
+        Two-level sticky header. Row 1 is pinned to a fixed height (h-9 = 2.25rem) and
+        every cell is whitespace-nowrap, so the row-2 offset (top-9) is deterministic
+        regardless of font/zoom (rem-based) — no fragile measured value.
+      -->
       <thead>
-        <tr class="text-label-md">
+        <tr class="text-label-md h-9">
           <th
-            class="bg-surface-subtle border-outline p-sm sticky top-0 left-0 z-30 w-24 border text-left"
+            class="bg-surface-subtle border-outline p-sm sticky top-0 left-0 z-30 w-24 border text-left whitespace-nowrap"
             rowspan="2"
           >
             {{ 'ANNUAL_PLANNING.GRID.CLAVE' | translate }}
           </th>
           <th
-            class="bg-surface-subtle border-outline p-sm sticky top-0 left-24 z-30 w-56 border text-left"
+            class="bg-surface-subtle border-outline p-sm sticky top-0 left-24 z-30 w-56 border text-left whitespace-nowrap"
             rowspan="2"
           >
             {{ 'ANNUAL_PLANNING.GRID.NAME' | translate }}
           </th>
           @for (term of plan().terms; track $index) {
-            <th class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border" colspan="2">
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border whitespace-nowrap"
+              colspan="2"
+            >
               {{ term }}
             </th>
           }
           @for (code of programCodes; track code) {
             <th
-              class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border align-bottom"
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border align-bottom whitespace-nowrap"
               rowspan="2"
             >
               {{ code }}
             </th>
           }
           <th
-            class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border align-bottom"
+            class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border align-bottom whitespace-nowrap"
             rowspan="2"
           >
             {{ 'ANNUAL_PLANNING.GRID.MODALITY' | translate }}
@@ -52,10 +60,14 @@
         </tr>
         <tr class="text-caption text-text-secondary">
           @for (term of plan().terms; track $index) {
-            <th class="bg-surface-subtle border-outline p-sm sticky top-9 z-20 border">
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-9 z-20 border whitespace-nowrap"
+            >
               {{ 'ANNUAL_PLANNING.GRID.GROUPS' | translate }}
             </th>
-            <th class="bg-surface-subtle border-outline p-sm sticky top-9 z-20 border">
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-9 z-20 border whitespace-nowrap"
+            >
               {{ 'ANNUAL_PLANNING.GRID.QUOTA' | translate }}
             </th>
           }
@@ -87,12 +99,21 @@
             }
 
             @for (code of programCodes; track code) {
-              <td
-                class="border-outline hover:bg-surface-subtle p-sm border text-center"
-                [class.cursor-pointer]="editable()"
-                (click)="cycle(i, code)"
-              >
-                {{ markAt(i, code) ?? '' }}
+              <td class="border-outline border p-0 text-center">
+                @if (editable()) {
+                  <button
+                    type="button"
+                    class="hover:bg-surface-subtle focus:bg-surface-subtle p-sm h-full w-full outline-none"
+                    [attr.aria-label]="
+                      code + ': ' + (markAt(i, code) ?? ('ANNUAL_PLANNING.GRID.EMPTY' | translate))
+                    "
+                    (click)="cycle(i, code)"
+                  >
+                    {{ markAt(i, code) ?? '' }}
+                  </button>
+                } @else {
+                  <span class="p-sm block">{{ markAt(i, code) ?? '' }}</span>
+                }
               </td>
             }
 

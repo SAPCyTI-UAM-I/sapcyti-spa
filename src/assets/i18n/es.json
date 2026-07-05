@@ -433,6 +433,7 @@
     },
     "GRID": {
       "CLAVE": "Clave",
+      "EMPTY": "vacío",
       "GROUPS": "Grupos",
       "INVALID_CELLS": "Hay celdas con valores inválidos. Corrígelas antes de guardar.",
       "MODALITY": "Modalidad",
