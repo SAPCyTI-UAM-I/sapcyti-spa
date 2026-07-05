@@ -76,6 +76,13 @@ export const ACADEMIC_CATALOG_ROUTES: Routes = [
         canActivate: [authGuard],
         data: { ...catalogData, breadcrumb: 'BREADCRUMB.NEW' },
       },
+      {
+        path: ':ueaId/edit',
+        loadComponent: () =>
+          import('./components/uea-edit/uea-edit.component').then((m) => m.UeaEditComponent),
+        canActivate: [authGuard],
+        data: { ...catalogData, breadcrumb: 'ACADEMIC_CATALOG.UEAS.EDIT.BREADCRUMB' },
+      },
     ],
   },
   {
