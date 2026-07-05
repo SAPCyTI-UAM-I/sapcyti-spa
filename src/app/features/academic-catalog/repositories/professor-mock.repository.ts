@@ -13,6 +13,15 @@ import {
 import { ProfessorMockStore } from '../mocks/professor-mock.store';
 import { ProfessorRepository } from './professor.repository';
 
+/** Runs the (synchronous) store call, surfacing thrown mock errors as `error`. */
+function fromStore<T>(produce: () => T): Observable<T> {
+  try {
+    return of(produce());
+  } catch (error) {
+    return throwError(() => error);
+  }
+}
+
 @Injectable()
 export class ProfessorMockRepository implements ProfessorRepository {
   private readonly mockStore = inject(ProfessorMockStore);
@@ -22,45 +31,25 @@ export class ProfessorMockRepository implements ProfessorRepository {
   }
 
   registerProfessor(request: RegisterProfessorRequest): Observable<RegisterProfessorResponse> {
-    try {
-      return of(this.mockStore.createProfessor(request));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromStore(() => this.mockStore.createProfessor(request));
   }
 
   getProfessor(professorId: number): Observable<ProfessorDetailResponse> {
-    try {
-      return of(this.mockStore.getProfessor(professorId));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromStore(() => this.mockStore.getProfessor(professorId));
   }
 
   updateProfessor(
     professorId: number,
     request: UpdateProfessorRequest,
   ): Observable<ProfessorDetailResponse> {
-    try {
-      return of(this.mockStore.updateProfessor(professorId, request));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromStore(() => this.mockStore.updateProfessor(professorId, request));
   }
 
   deactivateProfessor(professorId: number): Observable<ProfessorDetailResponse> {
-    try {
-      return of(this.mockStore.deactivateProfessor(professorId));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromStore(() => this.mockStore.deactivateProfessor(professorId));
   }
 
   restoreProfessor(professorId: number): Observable<ProfessorDetailResponse> {
-    try {
-      return of(this.mockStore.restoreProfessor(professorId));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromStore(() => this.mockStore.restoreProfessor(professorId));
   }
 }
