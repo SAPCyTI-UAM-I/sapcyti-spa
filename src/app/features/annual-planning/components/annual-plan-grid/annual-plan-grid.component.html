@@ -1,0 +1,112 @@
+<section class="gap-md flex flex-col">
+  <!-- Legend (official format notation — not translated) -->
+  <div class="text-caption text-text-secondary gap-md flex flex-wrap">
+    <span><strong>X</strong> = {{ 'ANNUAL_PLANNING.LEGEND.X' | translate }}</span>
+    <span><strong>O</strong> = {{ 'ANNUAL_PLANNING.LEGEND.O' | translate }}</span>
+    <span><strong>X/O</strong> = {{ 'ANNUAL_PLANNING.LEGEND.X_O' | translate }}</span>
+    <span><strong>*</strong> = {{ 'ANNUAL_PLANNING.LEGEND.STAR' | translate }}</span>
+  </div>
+
+  <div class="annual-grid-scroll border-outline max-h-[70vh] overflow-auto rounded-xl border">
+    <table class="annual-grid text-body-md w-max border-collapse">
+      <thead>
+        <tr class="text-label-md">
+          <th
+            class="bg-surface-subtle border-outline p-sm sticky top-0 left-0 z-30 w-24 border text-left"
+            rowspan="2"
+          >
+            {{ 'ANNUAL_PLANNING.GRID.CLAVE' | translate }}
+          </th>
+          <th
+            class="bg-surface-subtle border-outline p-sm sticky top-0 left-24 z-30 w-56 border text-left"
+            rowspan="2"
+          >
+            {{ 'ANNUAL_PLANNING.GRID.NAME' | translate }}
+          </th>
+          @for (term of plan().terms; track $index) {
+            <th class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border" colspan="2">
+              {{ term }}
+            </th>
+          }
+          @for (code of programCodes; track code) {
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border align-bottom"
+              rowspan="2"
+            >
+              {{ code }}
+            </th>
+          }
+          <th
+            class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border align-bottom"
+            rowspan="2"
+          >
+            {{ 'ANNUAL_PLANNING.GRID.MODALITY' | translate }}
+          </th>
+        </tr>
+        <tr class="text-caption text-text-secondary">
+          @for (term of plan().terms; track $index) {
+            <th class="bg-surface-subtle border-outline p-sm sticky top-9 z-20 border">
+              {{ 'ANNUAL_PLANNING.GRID.GROUPS' | translate }}
+            </th>
+            <th class="bg-surface-subtle border-outline p-sm sticky top-9 z-20 border">
+              {{ 'ANNUAL_PLANNING.GRID.QUOTA' | translate }}
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (entry of plan().entries; track entry.id; let i = $index) {
+          <tr [formGroup]="rowGroup(i)">
+            <td class="bg-surface border-outline p-sm sticky left-0 z-10 border font-medium">
+              {{ entry.clave }}
+            </td>
+            <td class="bg-surface border-outline p-sm sticky left-24 z-10 border">
+              {{ entry.nombre }}
+            </td>
+
+            @for (
+              cell of ['gruposI', 'cupoI', 'gruposP', 'cupoP', 'gruposO', 'cupoO'];
+              track cell
+            ) {
+              <td class="border-outline p-xs border text-center">
+                @if (editable()) {
+                  <input
+                    type="text"
+                    class="border-outline focus:border-primary px-xs w-14 rounded border bg-transparent py-[2px] text-center outline-none"
+                    [class.border-error]="cellInvalid(i, cell)"
+                    [formControlName]="cell"
+                  />
+                } @else {
+                  <span>{{ rowGroup(i).get(cell)?.value }}</span>
+                }
+              </td>
+            }
+
+            @for (code of programCodes; track code) {
+              <td
+                class="border-outline hover:bg-surface-subtle p-sm border text-center"
+                [class.cursor-pointer]="editable()"
+                (click)="cycle(i, code)"
+              >
+                {{ markAt(i, code) ?? '' }}
+              </td>
+            }
+
+            <td class="border-outline p-sm border text-center">{{ entry.modalidad }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (editable()) {
+    <div class="flex justify-end">
+      <p-button
+        [label]="'COMMON.ACTIONS.SAVE' | translate"
+        icon="pi pi-save"
+        [loading]="saving()"
+        (onClick)="save()"
+      />
+    </div>
+  }
+</section>

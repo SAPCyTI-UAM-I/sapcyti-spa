@@ -1,0 +1,74 @@
+<section class="gap-lg flex flex-col">
+  <a routerLink="/annual-planning" class="text-primary text-body-md hover:underline">
+    <i class="pi pi-arrow-left mr-xs text-[12px]"></i
+    >{{ 'ANNUAL_PLANNING.DETAIL.BACK' | translate }}
+  </a>
+
+  @if (loading()) {
+    <div class="p-xl text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else if (loadError()) {
+    <div class="p-xl gap-md flex flex-col items-center">
+      <p class="text-error">{{ 'ANNUAL_PLANNING.STATES.LOAD_ERROR' | translate }}</p>
+      <p-button [label]="'COMMON.ACTIONS.RETRY' | translate" (onClick)="load()" />
+    </div>
+  } @else if (plan(); as plan) {
+    <div class="gap-md flex flex-wrap items-center justify-between">
+      <div class="gap-sm flex items-center">
+        <h1 class="text-h2">{{ 'ANNUAL_PLANNING.DETAIL.TITLE' | translate }} {{ plan.year }}</h1>
+        <app-catalog-tag
+          [value]="'ANNUAL_PLANNING.STATUS.' + plan.status | translate"
+          [severity]="statusTagSeverity(plan.status)"
+        />
+      </div>
+
+      <div class="gap-sm flex flex-wrap">
+        <p-button
+          severity="secondary"
+          icon="pi pi-file-excel"
+          [label]="'ANNUAL_PLANNING.DETAIL.DOWNLOAD' | translate"
+          [loading]="exporting()"
+          (onClick)="downloadExcel()"
+        />
+        @for (action of statusActions(); track action.target) {
+          <p-button
+            [label]="action.labelKey | translate"
+            [outlined]="true"
+            (onClick)="askStatusChange(action.target)"
+          />
+        }
+      </div>
+    </div>
+
+    <app-annual-plan-grid [plan]="plan" (saved)="onSaved($event)" />
+  }
+</section>
+
+<!-- HU-53 — status change confirmation. Reopening shows a mandatory warning. -->
+<p-dialog
+  [header]="'ANNUAL_PLANNING.DETAIL.CONFIRM_TITLE' | translate"
+  [visible]="pendingStatus() !== null"
+  [modal]="true"
+  [style]="{ width: '30rem' }"
+  (onHide)="cancelStatusChange()"
+>
+  @if (isReopenPending()) {
+    <p-message severity="warn" [text]="'ANNUAL_PLANNING.DETAIL.REOPEN_WARNING' | translate" />
+  } @else {
+    <p class="text-body-md">{{ 'ANNUAL_PLANNING.DETAIL.CONFIRM_MESSAGE' | translate }}</p>
+  }
+
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="cancelStatusChange()"
+    />
+    <p-button
+      [label]="'COMMON.ACTIONS.CONFIRM' | translate"
+      [loading]="changingStatus()"
+      (onClick)="confirmStatusChange()"
+    />
+  </ng-template>
+</p-dialog>
