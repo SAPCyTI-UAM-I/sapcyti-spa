@@ -25,7 +25,9 @@
       "reference_not_found": "The requested graduate program was not found.",
       "sabbatical_date_order": "The sabbatical end date must be on or after the start date.",
       "server": "An error occurred while saving the information.",
+      "uea_already_active": "The UEA is already active.",
       "uea_already_exists": "This UEA has already been registered.",
+      "uea_already_inactive": "The UEA is already inactive.",
       "validation": "Please review the form data."
     },
     "FIELDS": {
@@ -227,6 +229,10 @@
       "WARNING": "For security, the password will not be shown again."
     },
     "UEAS": {
+      "ACTIONS": {
+        "EDIT": "Edit",
+        "REACTIVATE": "Reactivate"
+      },
       "BULK": {
         "BROWSE": "Select file",
         "ERRORS": {
@@ -249,6 +255,20 @@
         "SAVED": "UEA registered successfully.",
         "SUBTITLE": "Fill in the details for the new course.",
         "TITLE": "Register UEA"
+      },
+      "DEACTIVATE": {
+        "ACTION": "Deactivate",
+        "SUCCESS": "UEA deactivated successfully.",
+        "TITLE": "Confirm deactivation",
+        "WARNING": "The UEA will no longer appear in Draft annual plans. This action keeps the history."
+      },
+      "EDIT": {
+        "BACK": "Back to list",
+        "BREADCRUMB": "Edit",
+        "CLAVE_READONLY": "The key cannot be changed.",
+        "SAVED": "UEA updated successfully.",
+        "SUBTITLE": "Update the course details.",
+        "TITLE": "Edit UEA"
       },
       "FIELDS": {
         "CLAVE": "Code",
@@ -275,6 +295,11 @@
       },
       "MODALITY": {
         "MIXTA": "Mixed"
+      },
+      "RESTORE": {
+        "MESSAGE": "Reactivate UEA {{clave}}? It will be available for planning again.",
+        "SUCCESS": "UEA reactivated successfully.",
+        "TITLE": "Confirm reactivation"
       },
       "TYPES": {
         "OBLIGATORIA": "Mandatory",
