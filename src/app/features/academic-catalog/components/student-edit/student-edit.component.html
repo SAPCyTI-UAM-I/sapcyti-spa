@@ -13,7 +13,7 @@
       <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
     </div>
   } @else if (displayError(); as errKey) {
-    <p-message severity="error" [text]="translateError(errKey)" />
+    <p-message severity="error" [text]="errorI18nKey(errKey) | translate" />
   }
 
   @if (!loading() && student()) {

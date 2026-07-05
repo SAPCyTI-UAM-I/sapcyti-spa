@@ -9,7 +9,29 @@ import {
   mapStudentProgramError,
   mapStudentProgramFormError,
   mapStudentProgramListError,
+  studentEditErrorI18nKey,
 } from './student-program-error.util';
+
+describe('studentEditErrorI18nKey', () => {
+  it('scopes program-originated keys to the program errors namespace', () => {
+    expect(studentEditErrorI18nKey('date_order')).toBe(
+      'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.date_order',
+    );
+    expect(studentEditErrorI18nKey('validation')).toBe(
+      'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.validation',
+    );
+    expect(studentEditErrorI18nKey('professor_not_found')).toBe(
+      'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS.professor_not_found',
+    );
+  });
+
+  it('scopes other keys to the catalog errors namespace', () => {
+    expect(studentEditErrorI18nKey('server')).toBe('ACADEMIC_CATALOG.ERRORS.server');
+    expect(studentEditErrorI18nKey('reference_not_found')).toBe(
+      'ACADEMIC_CATALOG.ERRORS.reference_not_found',
+    );
+  });
+});
 
 describe('student-program-error util', () => {
   it('maps known validation messages from the API', () => {

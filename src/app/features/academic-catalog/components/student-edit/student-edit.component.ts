@@ -16,7 +16,7 @@ import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
 import { InputText } from 'primeng/inputtext';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, merge } from 'rxjs';
 
 import {
   DegreeLevel,
@@ -51,10 +51,11 @@ import {
   CATALOG_PROGRAM_TYPE_OPTIONS,
   DEGREE_LEVEL_OPTIONS,
 } from '../../utils/catalog-filter.options';
-import { CATALOG_ERROR_I18N_SCOPE, mapCatalogError } from '../../utils/catalog-error.util';
+import { mapCatalogError } from '../../utils/catalog-error.util';
 import {
   mapStudentProgramError,
   mapStudentProgramFormError,
+  studentEditErrorI18nKey,
 } from '../../utils/student-program-error.util';
 
 @Component({
@@ -155,14 +156,12 @@ export class StudentEditComponent {
   );
 
   constructor() {
-    // Cross validators setup
-    this.form.controls.status.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.form.updateValueAndValidity({ emitEvent: false }));
-    this.form.controls.admissionDate.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.form.updateValueAndValidity({ emitEvent: false }));
-    this.form.controls.graduationDate.valueChanges
+    // Cross validators: any of these fields re-runs the form-level validators.
+    merge(
+      this.form.controls.status.valueChanges,
+      this.form.controls.admissionDate.valueChanges,
+      this.form.controls.graduationDate.valueChanges,
+    )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.form.updateValueAndValidity({ emitEvent: false }));
 
@@ -187,21 +186,7 @@ export class StudentEditComponent {
     return null;
   }
 
-  translateError(key: string): string {
-    const programErrors = [
-      'date_order',
-      'withdrawal_reason_required',
-      'duplicate_advisor_ids',
-      'validation',
-      'program_not_found',
-      'professor_not_found',
-      'student_not_found',
-    ];
-    const scope = programErrors.includes(key)
-      ? 'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS'
-      : CATALOG_ERROR_I18N_SCOPE;
-    return this.translate.instant(`${scope}.${key}`);
-  }
+  readonly errorI18nKey = studentEditErrorI18nKey;
 
   onProfessorFilter(event: { filter?: string | null }): void {
     this.professorPicker.onFilter(event.filter);
