@@ -50,6 +50,18 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'annual-planning',
+        loadChildren: () =>
+          import('./features/annual-planning/annual-planning.routes').then(
+            (m) => m.ANNUAL_PLANNING_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.annualPlanning,
+          breadcrumb: 'SHELL.MENU.PLAN_ANNUAL',
+        },
+      },
+      {
         path: 'account',
         loadChildren: () =>
           import('./features/account/account.routes').then((m) => m.ACCOUNT_ROUTES),

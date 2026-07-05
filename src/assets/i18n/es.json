@@ -12,10 +12,10 @@
     },
     "ERRORS": {
       "clave_invalid_format": "La clave debe contener solo dígitos.",
+      "duplicate_advisor_ids": "No puede repetir el mismo asesor más de una vez.",
       "duplicate_email": "El correo electrónico ya está registrado.",
       "duplicate_employee": "El número de empleado ya está registrado.",
       "duplicate_enrollment": "La matrícula ya está registrada.",
-      "duplicate_advisor_ids": "No puede repetir el mismo asesor más de una vez.",
       "employee_required_for_interno": "El número de empleado es obligatorio para profesores internos.",
       "file_format_invalid": "Formato de archivo inválido, utilice la plantilla proporcionada.",
       "graduate_program_not_found": "No se encontró el programa de posgrado solicitado.",
@@ -406,6 +406,85 @@
       "TARGET_USER": "Usuario objetivo"
     }
   },
+  "ANNUAL_PLANNING": {
+    "ACTIONS": {
+      "ARCHIVE": "Archivar",
+      "FINISH": "Terminar",
+      "REOPEN": "Reabrir",
+      "UNARCHIVE": "Desarchivar"
+    },
+    "DETAIL": {
+      "BACK": "Volver a planeaciones",
+      "BREADCRUMB": "Planeación",
+      "CONFIRM_MESSAGE": "¿Confirmas el cambio de estado de la planeación?",
+      "CONFIRM_TITLE": "Confirmar cambio de estado",
+      "DOWNLOAD": "Descargar Excel",
+      "REOPEN_WARNING": "El plan se sincronizará con el catálogo actual: los nombres se actualizarán y las UEAs desactivadas desaparecerán con sus valores capturados.",
+      "TITLE": "Planeación"
+    },
+    "ERRORS": {
+      "already_exists": "Ya existe una planeación para este año.",
+      "file_format_invalid": "El archivo no tiene el formato esperado.",
+      "invalid_transition": "Transición de estado no permitida.",
+      "not_editable": "Solo se puede editar una planeación en Borrador.",
+      "not_found": "No se encontró la planeación.",
+      "server": "Ocurrió un error inesperado. Inténtalo de nuevo.",
+      "validation": "Ocurrió un error al guardar la información."
+    },
+    "GRID": {
+      "CLAVE": "Clave",
+      "GROUPS": "Grupos",
+      "INVALID_CELLS": "Hay celdas con valores inválidos. Corrígelas antes de guardar.",
+      "MODALITY": "Modalidad",
+      "NAME": "Nombre UEA",
+      "QUOTA": "Cupo",
+      "SAVED": "Planeación guardada."
+    },
+    "LEGEND": {
+      "O": "Optativa",
+      "STAR": "Se abrirá conforme a demanda",
+      "X": "Obligatoria para este posgrado",
+      "X_O": "Obligatoria u optativa"
+    },
+    "LIST": {
+      "EMPTY": "Aún no hay planeaciones registradas.",
+      "NEW": "Nueva planeación",
+      "OPEN": "Abrir",
+      "STATUS": "Estado",
+      "SUBTITLE": "Consulta y edita la oferta anual de UEAs por año.",
+      "TITLE": "Planeación anual",
+      "YEAR": "Año"
+    },
+    "STATES": {
+      "LOAD_ERROR": "No se pudieron cargar las planeaciones."
+    },
+    "STATUS": {
+      "ARCHIVADA": "Archivada",
+      "BORRADOR": "Borrador",
+      "TERMINADA": "Terminada"
+    },
+    "WIZARD": {
+      "BROWSE": "Elegir archivo",
+      "CLEAN": "El archivo coincide con el catálogo. Puedes crear la planeación.",
+      "CREATE": "Crear planeación",
+      "DIFFERENCES_HINT": "Se encontraron diferencias. Puedes corregirlas en el catálogo y volver a revisar, o continuar de todos modos.",
+      "MISSING_IN_CATALOG": "Claves en el archivo que no están en el catálogo activo",
+      "MISSING_IN_FILE": "UEAs activas que faltan en el archivo",
+      "MISSING_PROGRAM": "Columna faltante",
+      "NAME_MISMATCHES": "Nombres distintos entre catálogo y archivo",
+      "NO_FILE": "Ningún archivo seleccionado",
+      "OPEN_EXISTING": "Abrir la planeación existente",
+      "PROGRAM_NOTICE": "Avisos de columnas de posgrado",
+      "RUN_CHECK": "Revisar archivo",
+      "STEP_CHECK": "Chequeo",
+      "STEP_REVIEW": "Revisión",
+      "STEP_YEAR": "Año",
+      "TITLE": "Nueva planeación anual",
+      "UNKNOWN_PROGRAM": "Columna no reconocida",
+      "UPLOAD_HINT": "Sube el archivo .xlsx de la oferta para revisar las UEAs contra el catálogo.",
+      "YEAR_LABEL": "Año de la planeación"
+    }
+  },
   "AUTH": {
     "FORGOT_PASSWORD": {
       "BACK_TO_LOGIN": "Volver al inicio de sesión",
@@ -509,6 +588,7 @@
     "VALIDATION": {
       "EMAIL": "Ingrese una dirección de correo válida.",
       "INTEGER": "Ingrese un número entero mayor a 0.",
+      "MAX": "El valor supera el máximo permitido.",
       "MAXLENGTH": "El valor es demasiado largo.",
       "MIN": "El valor debe ser mayor o igual a 0.",
       "MINLENGTH": "El valor es demasiado corto.",

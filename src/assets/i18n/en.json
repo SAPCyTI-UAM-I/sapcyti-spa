@@ -12,10 +12,10 @@
     },
     "ERRORS": {
       "clave_invalid_format": "The course code must contain digits only.",
+      "duplicate_advisor_ids": "You cannot repeat the same advisor more than once.",
       "duplicate_email": "The email address is already registered.",
       "duplicate_employee": "The employee number is already registered.",
       "duplicate_enrollment": "The enrollment ID is already registered.",
-      "duplicate_advisor_ids": "You cannot repeat the same advisor more than once.",
       "employee_required_for_interno": "Employee number is required for internal professors.",
       "file_format_invalid": "Invalid file format, please use the provided template.",
       "graduate_program_not_found": "The requested graduate program was not found.",
@@ -406,6 +406,85 @@
       "TARGET_USER": "Target user"
     }
   },
+  "ANNUAL_PLANNING": {
+    "ACTIONS": {
+      "ARCHIVE": "Archive",
+      "FINISH": "Complete",
+      "REOPEN": "Reopen",
+      "UNARCHIVE": "Unarchive"
+    },
+    "DETAIL": {
+      "BACK": "Back to plans",
+      "BREADCRUMB": "Plan",
+      "CONFIRM_MESSAGE": "Do you confirm the plan status change?",
+      "CONFIRM_TITLE": "Confirm status change",
+      "DOWNLOAD": "Download Excel",
+      "REOPEN_WARNING": "The plan will sync with the current catalog: names will update and deactivated UEAs will disappear along with their captured values.",
+      "TITLE": "Plan"
+    },
+    "ERRORS": {
+      "already_exists": "An annual plan for this year already exists.",
+      "file_format_invalid": "The file does not have the expected format.",
+      "invalid_transition": "Status transition not allowed.",
+      "not_editable": "Only a Draft plan can be edited.",
+      "not_found": "The plan was not found.",
+      "server": "An unexpected error occurred. Please try again.",
+      "validation": "An error occurred while saving."
+    },
+    "GRID": {
+      "CLAVE": "Key",
+      "GROUPS": "Groups",
+      "INVALID_CELLS": "Some cells have invalid values. Fix them before saving.",
+      "MODALITY": "Modality",
+      "NAME": "UEA name",
+      "QUOTA": "Quota",
+      "SAVED": "Plan saved."
+    },
+    "LEGEND": {
+      "O": "Elective",
+      "STAR": "Opens on demand",
+      "X": "Compulsory for this program",
+      "X_O": "Compulsory or elective"
+    },
+    "LIST": {
+      "EMPTY": "No plans yet.",
+      "NEW": "New plan",
+      "OPEN": "Open",
+      "STATUS": "Status",
+      "SUBTITLE": "Review and edit the annual UEA offering by year.",
+      "TITLE": "Annual planning",
+      "YEAR": "Year"
+    },
+    "STATES": {
+      "LOAD_ERROR": "Could not load the plans."
+    },
+    "STATUS": {
+      "ARCHIVADA": "Archived",
+      "BORRADOR": "Draft",
+      "TERMINADA": "Completed"
+    },
+    "WIZARD": {
+      "BROWSE": "Choose file",
+      "CLEAN": "The file matches the catalog. You can create the plan.",
+      "CREATE": "Create plan",
+      "DIFFERENCES_HINT": "Differences were found. You can fix them in the catalog and re-check, or continue anyway.",
+      "MISSING_IN_CATALOG": "Keys in the file not in the active catalog",
+      "MISSING_IN_FILE": "Active UEAs missing from the file",
+      "MISSING_PROGRAM": "Missing column",
+      "NAME_MISMATCHES": "Names differing between catalog and file",
+      "NO_FILE": "No file selected",
+      "OPEN_EXISTING": "Open the existing plan",
+      "PROGRAM_NOTICE": "Program column notices",
+      "RUN_CHECK": "Check file",
+      "STEP_CHECK": "Check",
+      "STEP_REVIEW": "Review",
+      "STEP_YEAR": "Year",
+      "TITLE": "New annual plan",
+      "UNKNOWN_PROGRAM": "Unrecognized column",
+      "UPLOAD_HINT": "Upload the offering .xlsx to check its UEAs against the catalog.",
+      "YEAR_LABEL": "Plan year"
+    }
+  },
   "AUTH": {
     "FORGOT_PASSWORD": {
       "BACK_TO_LOGIN": "Back to sign in",
@@ -509,6 +588,7 @@
     "VALIDATION": {
       "EMAIL": "Enter a valid email address.",
       "INTEGER": "Enter a positive integer.",
+      "MAX": "The value exceeds the maximum allowed.",
       "MAXLENGTH": "The value is too long.",
       "MIN": "The value must be 0 or greater.",
       "MINLENGTH": "The value is too short.",

@@ -13,6 +13,7 @@ export const ROUTE_PERMISSIONS = {
   enrollmentStatus: ['COORDINATOR'],
   academicCatalog: ['COORDINATOR'],
   academicOffering: ['COORDINATOR'],
+  annualPlanning: ['COORDINATOR'],
   account: ['SYSTEM_ADMIN', 'COORDINATOR', 'ASSISTANT', 'PROFESSOR', 'STUDENT', 'SPEAKER'],
   passwordAdministration: ['COORDINATOR'],
   presentations: ['SYSTEM_ADMIN', 'COORDINATOR', 'SPEAKER'],
