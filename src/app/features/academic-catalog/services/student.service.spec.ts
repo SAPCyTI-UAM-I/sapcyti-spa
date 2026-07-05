@@ -18,7 +18,7 @@ const request: RegisterStudentRequest = {
   birthDate: '1999-01-15',
   phone: '5510002000',
   undergraduateDegree: 'Computación',
-  lastDegreeObtained: 'Licenciatura en Computación',
+  lastDegreeObtained: 'LICENCIATURA',
   programType: 'MAESTRIA',
   admissionDate: '2026-09-01',
 };
@@ -31,7 +31,7 @@ const updateReq: UpdateStudentRequest = {
   birthDate: '1998-04-12',
   phone: '5512345678',
   undergraduateDegree: 'Computación',
-  lastDegreeObtained: 'Licenciatura en Computación',
+  lastDegreeObtained: 'LICENCIATURA',
   programType: 'MAESTRIA',
   admissionDate: '2025-09-01',
   active: true,

@@ -151,7 +151,7 @@
                 {{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }}
               </dt>
               <dd class="text-body-md text-on-surface font-semibold">
-                {{ current.lastDegreeObtained }}
+                {{ 'ACADEMIC_CATALOG.DEGREE_LEVELS.' + current.lastDegreeObtained | translate }}
               </dd>
             </div>
             <div class="px-md py-sm gap-xs flex min-w-0 flex-col">

@@ -93,11 +93,17 @@
             [submitted]="submitted()"
           />
         </label>
-        <label class="gap-xs flex flex-col">
-          <span>{{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }} *</span>
-          <input pInputText formControlName="lastDegreeObtained" />
+        <div class="gap-xs flex flex-col">
+          <label for="lastDegreeObtained">
+            {{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }} *
+          </label>
+          <app-i18n-select
+            inputId="lastDegreeObtained"
+            controlName="lastDegreeObtained"
+            [options]="degreeOptions"
+          />
           <app-field-error [control]="form.controls.lastDegreeObtained" [submitted]="submitted()" />
-        </label>
+        </div>
         <div class="gap-xs flex flex-col">
           <label for="programType">
             {{ 'ACADEMIC_CATALOG.FIELDS.PROGRAM_TYPE' | translate }} *
@@ -215,7 +221,9 @@
           <dt class="text-text-secondary">
             {{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }}
           </dt>
-          <dd>{{ form.value.lastDegreeObtained }}</dd>
+          <dd>
+            {{ 'ACADEMIC_CATALOG.DEGREE_LEVELS.' + form.value.lastDegreeObtained | translate }}
+          </dd>
         </div>
         @if (form.value.lineOfKnowledge) {
           <div>

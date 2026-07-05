@@ -24,7 +24,7 @@ const sampleStudent: StudentCatalogItem = {
   birthDate: '1998-04-12',
   phone: '5512345678',
   undergraduateDegree: 'Computación',
-  lastDegreeObtained: 'Licenciatura en Computación',
+  lastDegreeObtained: 'LICENCIATURA',
   programType: 'MAESTRIA',
   admissionDate: '2025-09-01',
 };

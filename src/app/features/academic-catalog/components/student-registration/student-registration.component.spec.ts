@@ -94,7 +94,7 @@ describe('StudentRegistrationComponent', () => {
     component.form.patchValue({
       enrollmentId: '223300999',
       undergraduateDegree: 'Computación',
-      lastDegreeObtained: 'Licenciatura en Computación',
+      lastDegreeObtained: 'LICENCIATURA',
       programType: 'MAESTRIA',
       admissionDate: '2026-09-01',
       lineOfKnowledge: 'Ciencias e Ingeniería de la Computación',
@@ -135,7 +135,7 @@ describe('StudentRegistrationComponent', () => {
       phoneExtension: '',
       enrollmentId: '223300999',
       undergraduateDegree: 'Computación',
-      lastDegreeObtained: 'Licenciatura en Computación',
+      lastDegreeObtained: 'LICENCIATURA',
       programType: 'MAESTRIA',
       admissionDate: '2026-09-01',
       lineOfKnowledge: '',

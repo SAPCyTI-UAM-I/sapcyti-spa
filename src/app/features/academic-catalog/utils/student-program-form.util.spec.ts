@@ -20,7 +20,7 @@ const baseFormValue: StudentEditFormValue = {
   phone: ' 5512345678 ',
   phoneExtension: '   ',
   undergraduateDegree: ' Matemáticas ',
-  lastDegreeObtained: ' Maestría ',
+  lastDegreeObtained: 'MAESTRIA',
   programType: 'MAESTRIA',
   admissionDate: '2025-09-01',
   active: true,

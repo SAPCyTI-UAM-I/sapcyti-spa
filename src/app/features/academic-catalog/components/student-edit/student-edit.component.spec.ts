@@ -28,7 +28,7 @@ const sampleStudentDetail: StudentDetailResponse = {
   phone: '5512345678',
   phoneExtension: '101',
   undergraduateDegree: 'Computación',
-  lastDegreeObtained: 'Licenciatura en Computación',
+  lastDegreeObtained: 'LICENCIATURA',
   programType: 'MAESTRIA',
   admissionDate: '2025-09-01',
   active: true,

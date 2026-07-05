@@ -19,6 +19,7 @@ import { InputText } from 'primeng/inputtext';
 import { finalize, forkJoin } from 'rxjs';
 
 import {
+  DegreeLevel,
   ProgramStatus,
   ProgramType,
   ProfessorCatalogItem,
@@ -49,7 +50,10 @@ import {
 } from '../../utils/student-program-form.util';
 import { professorReferenceToOption, professorToOption } from '../../utils/professor-display.util';
 import { STUDENT_PROGRAM_STATUS_OPTIONS } from '../../utils/student-program-filter.options';
-import { CATALOG_PROGRAM_TYPE_OPTIONS } from '../../utils/catalog-filter.options';
+import {
+  CATALOG_PROGRAM_TYPE_OPTIONS,
+  DEGREE_LEVEL_OPTIONS,
+} from '../../utils/catalog-filter.options';
 import { CATALOG_ERROR_I18N_SCOPE, mapCatalogError } from '../../utils/catalog-error.util';
 import {
   mapStudentProgramError,
@@ -105,18 +109,13 @@ export class StudentEditComponent {
   readonly isFieldInvalid = isFieldInvalid;
   readonly formatPersonName = formatPersonName;
   readonly programTypeOptions = CATALOG_PROGRAM_TYPE_OPTIONS;
+  readonly degreeOptions = DEGREE_LEVEL_OPTIONS;
   readonly statusOptions = STUDENT_PROGRAM_STATUS_OPTIONS;
 
   readonly researchCatalog = signal<ResearchAreaCatalogItem[]>([]);
   readonly lineOfKnowledgeOptions = computed<ResearchCatalogOption[]>(() =>
     toLineOfKnowledgeOptions(this.researchCatalog()),
   );
-
-  // Active status options mapped to es/en keys
-  readonly activeOptions = [
-    { labelKey: 'ACADEMIC_CATALOG.STATUS.ACTIVE', value: true },
-    { labelKey: 'ACADEMIC_CATALOG.STATUS.INACTIVE', value: false },
-  ];
 
   private readonly assignedProfessorOptions = signal<ProfessorOption[]>([]);
   private professorSearchTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -145,9 +144,10 @@ export class StudentEditComponent {
 
       // Academic data
       undergraduateDegree: ['', [Validators.required, Validators.maxLength(200)]],
-      lastDegreeObtained: ['', [Validators.required, Validators.maxLength(200)]],
+      lastDegreeObtained: ['' as DegreeLevel, Validators.required],
       programType: ['MAESTRIA' as ProgramType, Validators.required],
       admissionDate: ['', Validators.required],
+      // active se conserva y se envía tal como está en BD; la baja lógica no se edita desde este formulario
       active: [true, Validators.required],
 
       // Program academic data

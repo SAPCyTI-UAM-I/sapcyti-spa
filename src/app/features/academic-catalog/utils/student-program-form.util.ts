@@ -2,6 +2,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
 import {
+  DegreeLevel,
   isAreaInLine,
   ProgramStatus,
   ProgramType,
@@ -32,7 +33,7 @@ export interface StudentEditFormValue {
   phone: string;
   phoneExtension: string;
   undergraduateDegree: string;
-  lastDegreeObtained: string;
+  lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
   active: boolean;
@@ -57,7 +58,7 @@ export function buildUpdateStudentRequest(value: StudentEditFormValue): UpdateSt
     phone: value.phone.trim(),
     phoneExtension: value.phoneExtension.trim() || undefined,
     undergraduateDegree: value.undergraduateDegree.trim(),
-    lastDegreeObtained: value.lastDegreeObtained.trim(),
+    lastDegreeObtained: value.lastDegreeObtained,
     programType: value.programType,
     admissionDate: value.admissionDate,
     active: value.active,

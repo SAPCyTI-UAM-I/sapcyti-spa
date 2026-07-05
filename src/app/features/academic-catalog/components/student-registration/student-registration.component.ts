@@ -11,6 +11,7 @@ import { finalize, forkJoin, Observable } from 'rxjs';
 import { AuthStateService } from '../../../../core/auth/auth.service';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import {
+  DegreeLevel,
   getLineOfKnowledgeLabelKey,
   getResearchAreaLabelKey,
   ProfessorCatalogItem,
@@ -27,7 +28,10 @@ import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { ProfessorService } from '../../services/professor.service';
 import { ResearchCatalogService } from '../../services/research-catalog.service';
 import { StudentService } from '../../services/student.service';
-import { CATALOG_PROGRAM_TYPE_OPTIONS } from '../../utils/catalog-filter.options';
+import {
+  CATALOG_PROGRAM_TYPE_OPTIONS,
+  DEGREE_LEVEL_OPTIONS,
+} from '../../utils/catalog-filter.options';
 import { professorToOption } from '../../utils/professor-display.util';
 import { uniqueAdvisorIdsValidator } from '../../utils/student-program-form.util';
 import { CatalogRegistrationBase } from '../catalog-registration.base';
@@ -66,6 +70,7 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
   protected override readonly maxStep = 3;
 
   readonly programTypes = CATALOG_PROGRAM_TYPE_OPTIONS;
+  readonly degreeOptions = DEGREE_LEVEL_OPTIONS;
   readonly lineLabelKey = getLineOfKnowledgeLabelKey;
   readonly areaLabelKey = getResearchAreaLabelKey;
 
@@ -100,7 +105,7 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
     phoneExtension: ['', Validators.maxLength(10)],
     enrollmentId: ['', [Validators.required, Validators.maxLength(20)]],
     undergraduateDegree: ['', [Validators.required, Validators.maxLength(200)]],
-    lastDegreeObtained: ['', [Validators.required, Validators.maxLength(200)]],
+    lastDegreeObtained: ['' as DegreeLevel, Validators.required],
     programType: ['', Validators.required],
     admissionDate: ['', Validators.required],
     lineOfKnowledge: [''],
