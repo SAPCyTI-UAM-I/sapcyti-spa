@@ -21,5 +21,14 @@ export const API_ENDPOINTS = {
   researchCatalog: `${environment.apiBaseUrl}/research-catalog`,
   ueas: `${environment.apiBaseUrl}/ueas`,
   ueasBulk: `${environment.apiBaseUrl}/ueas/bulk`,
+  annualPlans: `${environment.apiBaseUrl}/annual-plans`,
+  annualPlansCheck: `${environment.apiBaseUrl}/annual-plans/check`,
+  annualPlan: (year: number): string => `${environment.apiBaseUrl}/annual-plans/${year}`,
+  annualPlanEntries: (year: number): string =>
+    `${environment.apiBaseUrl}/annual-plans/${year}/entries`,
+  annualPlanStatus: (year: number): string =>
+    `${environment.apiBaseUrl}/annual-plans/${year}/status`,
+  annualPlanExport: (year: number): string =>
+    `${environment.apiBaseUrl}/annual-plans/${year}/export`,
   userPassword: (userId: number): string => `${environment.apiBaseUrl}/users/${userId}/password`,
 } as const;

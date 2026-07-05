@@ -31,6 +31,9 @@ import { RESEARCH_CATALOG_REPOSITORY } from '../../features/academic-catalog/rep
 import { UeaHttpRepository } from '../../features/academic-catalog/repositories/uea-http.repository';
 import { UeaMockRepository } from '../../features/academic-catalog/repositories/uea-mock.repository';
 import { UEA_REPOSITORY } from '../../features/academic-catalog/repositories/uea.repository';
+import { AnnualPlanHttpRepository } from '../../features/annual-planning/repositories/annual-plan-http.repository';
+import { AnnualPlanMockRepository } from '../../features/annual-planning/repositories/annual-plan-mock.repository';
+import { ANNUAL_PLAN_REPOSITORY } from '../../features/annual-planning/repositories/annual-plan.repository';
 
 export const DATA_LAYER_PROVIDERS: Provider[] = [
   { provide: MOCK_STUDENT_USER_REGISTRY, useExisting: StudentMockStore },
@@ -60,6 +63,12 @@ export const DATA_LAYER_PROVIDERS: Provider[] = [
     ResearchCatalogMockRepository,
   ),
   ...provideMockOrHttpRepository('ueas', UEA_REPOSITORY, UeaHttpRepository, UeaMockRepository),
+  ...provideMockOrHttpRepository(
+    'annualPlanning',
+    ANNUAL_PLAN_REPOSITORY,
+    AnnualPlanHttpRepository,
+    AnnualPlanMockRepository,
+  ),
   ...provideMockOrHttpRepository(
     'passwordChange',
     PASSWORD_CHANGE_REPOSITORY,
