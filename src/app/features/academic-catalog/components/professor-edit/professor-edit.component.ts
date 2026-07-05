@@ -32,6 +32,7 @@ import {
   mapProfessorError,
 } from '../../utils/catalog-error.util';
 import {
+  applyProfessorEditLockRules,
   applyProfessorTypeEmployeeRules,
   buildUpdateProfessorRequest,
   PROFESSOR_TYPE_OPTIONS,
@@ -75,6 +76,8 @@ export class ProfessorEditComponent implements OnInit {
   readonly deactivateError = signal<CatalogError | null>(null);
   readonly professor = signal<ProfessorDetailResponse | null>(null);
   readonly showDeactivateDialog = signal(false);
+  /** HU-24: NEMP already assigned → shown read-only with a hint. */
+  readonly nempLocked = signal(false);
 
   readonly isFieldInvalid = isFieldInvalid;
   readonly formatPersonName = formatPersonName;
@@ -209,6 +212,12 @@ export class ProfessorEditComponent implements OnInit {
             professor.professorType,
             this.form.controls.employeeNumber,
           );
+          applyProfessorEditLockRules(
+            professor,
+            this.form.controls.professorType,
+            this.form.controls.employeeNumber,
+          );
+          this.nempLocked.set(!!professor.employeeNumber);
         },
         error: (err) => this.error.set(mapProfessorError(err)),
       });

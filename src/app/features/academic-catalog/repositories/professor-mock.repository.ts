@@ -55,4 +55,12 @@ export class ProfessorMockRepository implements ProfessorRepository {
       return throwError(() => error);
     }
   }
+
+  restoreProfessor(professorId: number): Observable<ProfessorDetailResponse> {
+    try {
+      return of(this.mockStore.restoreProfessor(professorId));
+    } catch (error) {
+      return throwError(() => error);
+    }
+  }
 }

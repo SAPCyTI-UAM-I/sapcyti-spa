@@ -63,6 +63,11 @@
         <label class="gap-xs flex flex-col md:col-span-2">
           <span>{{ 'ACADEMIC_CATALOG.FIELDS.EMPLOYEE_NUMBER' | translate }} *</span>
           <input pInputText formControlName="employeeNumber" />
+          @if (nempLocked()) {
+            <small class="text-caption text-text-secondary">
+              {{ 'ACADEMIC_CATALOG.PROFESSORS.EDIT.NEMP_LOCKED' | translate }}
+            </small>
+          }
           <app-field-error [control]="form.controls.employeeNumber" [submitted]="submitted()" />
         </label>
         <div class="gap-md grid grid-cols-[1fr_8rem] md:col-span-2">

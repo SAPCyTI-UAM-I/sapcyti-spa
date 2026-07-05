@@ -79,4 +79,19 @@ describe('mapCatalogError', () => {
   it('falls back to server for unknown failures', () => {
     expect(mapCatalogError(mockApiError({ status: 500 }))).toBe('server');
   });
+
+  it('maps the professor HU-24/HU-54 codes', () => {
+    expect(mapCatalogError(mockApiError({ status: 409, error: 'NEMP_IMMUTABLE' }))).toBe(
+      'nemp_immutable',
+    );
+    expect(mapCatalogError(mockApiError({ status: 409, error: 'INVALID_TYPE_CHANGE' }))).toBe(
+      'invalid_type_change',
+    );
+    expect(mapCatalogError(mockApiError({ status: 409, error: 'PROFESSOR_ALREADY_ACTIVE' }))).toBe(
+      'professor_already_active',
+    );
+    expect(mapCatalogError(mockApiError({ status: 409, error: 'DUPLICATE_EMPLOYEE_NUMBER' }))).toBe(
+      'duplicate_employee',
+    );
+  });
 });

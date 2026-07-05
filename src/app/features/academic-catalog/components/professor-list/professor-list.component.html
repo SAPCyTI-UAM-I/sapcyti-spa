@@ -56,6 +56,7 @@
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.EMAIL' | translate }}</th>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.EMPLOYEE_NUMBER' | translate }}</th>
               <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}</th>
+              <th class="p-md">{{ 'ACADEMIC_CATALOG.COLUMNS.ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
@@ -108,6 +109,22 @@
                     [severity]="activeTagSeverity(professor.active)"
                   />
                 </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'ACADEMIC_CATALOG.COLUMNS.ACTIONS' | translate }}
+                  </span>
+                  @if (!professor.active) {
+                    <button
+                      type="button"
+                      class="text-primary text-body-md hover:underline"
+                      [attr.data-testid]="'restore-professor-' + professor.id"
+                      (click)="askRestore(professor)"
+                    >
+                      <i class="pi pi-user-plus mr-xs text-[12px]"></i
+                      >{{ 'ACADEMIC_CATALOG.PROFESSORS.RESTORE.ACTION' | translate }}
+                    </button>
+                  }
+                </td>
               </tr>
             }
           </tbody>
@@ -127,3 +144,41 @@
     />
   </footer>
 </section>
+
+<!-- HU-54 — restore confirmation -->
+<p-dialog
+  [header]="'ACADEMIC_CATALOG.PROFESSORS.RESTORE.TITLE' | translate"
+  [visible]="restoreTarget() !== null"
+  [modal]="true"
+  [style]="{ width: '30rem' }"
+  (onHide)="cancelRestore()"
+>
+  @if (restoreTarget(); as target) {
+    <p class="text-body-md">
+      {{
+        'ACADEMIC_CATALOG.PROFESSORS.RESTORE.MESSAGE'
+          | translate: { name: formatPersonName(target) }
+      }}
+    </p>
+  }
+  @if (restoreError()) {
+    <p-message
+      severity="error"
+      class="mt-md block"
+      [text]="restoreError() | domainError: catalogErrorScope"
+    />
+  }
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="cancelRestore()"
+    />
+    <p-button
+      data-testid="confirm-restore-professor"
+      [label]="'ACADEMIC_CATALOG.PROFESSORS.RESTORE.ACTION' | translate"
+      [loading]="restoring()"
+      (onClick)="confirmRestore()"
+    />
+  </ng-template>
+</p-dialog>

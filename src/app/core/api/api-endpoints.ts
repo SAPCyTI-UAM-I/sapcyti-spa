@@ -18,6 +18,8 @@ export const API_ENDPOINTS = {
   professor: (professorId: number): string => `${environment.apiBaseUrl}/professors/${professorId}`,
   professorDeactivate: (professorId: number): string =>
     `${environment.apiBaseUrl}/professors/${professorId}/deactivate`,
+  professorRestore: (professorId: number): string =>
+    `${environment.apiBaseUrl}/professors/${professorId}/restore`,
   researchCatalog: `${environment.apiBaseUrl}/research-catalog`,
   ueas: `${environment.apiBaseUrl}/ueas`,
   ueasBulk: `${environment.apiBaseUrl}/ueas/bulk`,
