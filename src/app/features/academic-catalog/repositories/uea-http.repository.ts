@@ -9,6 +9,7 @@ import {
   UeaBulkUploadResult,
   UeaCatalogItem,
   UeaCatalogQuery,
+  UpdateUeaRequest,
 } from '../../../models';
 import { UeaRepository } from './uea.repository';
 
@@ -38,5 +39,31 @@ export class UeaHttpRepository implements UeaRepository {
     return this.http.post<UeaBulkUploadResult>(API_ENDPOINTS.ueasBulk, formData, {
       withCredentials: true,
     });
+  }
+
+  getUea(ueaId: number): Observable<UeaCatalogItem> {
+    return this.http.get<UeaCatalogItem>(API_ENDPOINTS.uea(ueaId), { withCredentials: true });
+  }
+
+  updateUea(ueaId: number, request: UpdateUeaRequest): Observable<UeaCatalogItem> {
+    return this.http.put<UeaCatalogItem>(API_ENDPOINTS.uea(ueaId), request, {
+      withCredentials: true,
+    });
+  }
+
+  deactivateUea(ueaId: number): Observable<UeaCatalogItem> {
+    return this.http.put<UeaCatalogItem>(
+      API_ENDPOINTS.ueaDeactivate(ueaId),
+      {},
+      { withCredentials: true },
+    );
+  }
+
+  restoreUea(ueaId: number): Observable<UeaCatalogItem> {
+    return this.http.put<UeaCatalogItem>(
+      API_ENDPOINTS.ueaRestore(ueaId),
+      {},
+      { withCredentials: true },
+    );
   }
 }

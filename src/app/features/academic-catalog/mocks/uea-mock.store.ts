@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 
-import { PageResponse, UeaCatalogItem, UeaCatalogQuery, RegisterUeaRequest } from '../../../models';
-import { mockConflict, nextId, normalizeSearch, page } from './catalog-mock.util';
+import {
+  PageResponse,
+  RegisterUeaRequest,
+  UeaCatalogItem,
+  UeaCatalogQuery,
+  UpdateUeaRequest,
+} from '../../../models';
+import { mockConflict, mockNotFound, nextId, normalizeSearch, page } from './catalog-mock.util';
 
 @Injectable({ providedIn: 'root' })
 export class UeaMockStore {
@@ -485,6 +491,43 @@ export class UeaMockStore {
       active: true,
     };
     this.ueas = [uea, ...this.ueas];
+    return uea;
+  }
+
+  getUea(ueaId: number): UeaCatalogItem {
+    return this.requireUea(ueaId);
+  }
+
+  updateUea(ueaId: number, request: UpdateUeaRequest): UeaCatalogItem {
+    const uea = this.requireUea(ueaId);
+    // clave/id/active are preserved; only the editable fields change (HU-47).
+    Object.assign(uea, request);
+    return uea;
+  }
+
+  deactivateUea(ueaId: number): UeaCatalogItem {
+    const uea = this.requireUea(ueaId);
+    if (!uea.active) {
+      throw mockConflict('UEA_ALREADY_INACTIVE');
+    }
+    uea.active = false;
+    return uea;
+  }
+
+  restoreUea(ueaId: number): UeaCatalogItem {
+    const uea = this.requireUea(ueaId);
+    if (uea.active) {
+      throw mockConflict('UEA_ALREADY_ACTIVE');
+    }
+    uea.active = true;
+    return uea;
+  }
+
+  private requireUea(ueaId: number): UeaCatalogItem {
+    const uea = this.ueas.find((u) => u.id === ueaId);
+    if (!uea) {
+      throw mockNotFound('UEA_NOT_FOUND');
+    }
     return uea;
   }
 

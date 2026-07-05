@@ -8,6 +8,7 @@ import {
   UeaBulkUploadResult,
   UeaCatalogItem,
   UeaCatalogQuery,
+  UpdateUeaRequest,
 } from '../../../models';
 import { mockApiError } from '../../../core/errors/testing/mock-api-error.util';
 import { UeaMockStore } from '../mocks/uea-mock.store';
@@ -56,5 +57,37 @@ export class UeaMockRepository implements UeaRepository {
         return result;
       }),
     );
+  }
+
+  getUea(ueaId: number): Observable<UeaCatalogItem> {
+    try {
+      return of(this.mockStore.getUea(ueaId));
+    } catch (error) {
+      return throwError(() => error);
+    }
+  }
+
+  updateUea(ueaId: number, request: UpdateUeaRequest): Observable<UeaCatalogItem> {
+    try {
+      return of(this.mockStore.updateUea(ueaId, request));
+    } catch (error) {
+      return throwError(() => error);
+    }
+  }
+
+  deactivateUea(ueaId: number): Observable<UeaCatalogItem> {
+    try {
+      return of(this.mockStore.deactivateUea(ueaId));
+    } catch (error) {
+      return throwError(() => error);
+    }
+  }
+
+  restoreUea(ueaId: number): Observable<UeaCatalogItem> {
+    try {
+      return of(this.mockStore.restoreUea(ueaId));
+    } catch (error) {
+      return throwError(() => error);
+    }
   }
 }

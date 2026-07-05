@@ -18,6 +18,9 @@ export interface UeaCatalogItem extends RegisterUeaRequest {
   active: boolean;
 }
 
+/** HU-47: edit payload — same fields as register minus the immutable `clave`. */
+export type UpdateUeaRequest = Omit<RegisterUeaRequest, 'clave'>;
+
 export interface UeaCatalogQuery {
   page: number;
   size: number;
