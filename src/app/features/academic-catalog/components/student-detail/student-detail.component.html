@@ -61,7 +61,7 @@
                 />
               }
             </div>
-            <dl class="text-text-secondary mt-xs gap-x-md gap-y-xs flex flex-wrap text-sm">
+            <dl class="text-text-secondary mt-xs gap-x-md gap-y-xs text-body-md flex flex-wrap">
               <div class="gap-xs flex items-center">
                 <dt class="sr-only">{{ 'ACADEMIC_CATALOG.FIELDS.BIRTH_DATE' | translate }}</dt>
                 <i class="pi pi-calendar text-primary" aria-hidden="true"></i>
@@ -134,7 +134,7 @@
                 @if (current.program.graduationDate) {
                   {{ current.program.graduationDate }}
                 } @else {
-                  <span class="text-text-tertiary text-sm italic">
+                  <span class="text-text-tertiary text-body-md italic">
                     {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.NO_GRADUATION_DATE' | translate }}
                   </span>
                 }
@@ -180,7 +180,7 @@
                   ) {
                     {{ labelKey | translate }}
                   } @else {
-                    <span class="text-text-tertiary text-sm italic">
+                    <span class="text-text-tertiary text-body-md italic">
                       {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.UNCLASSIFIED' | translate }}
                     </span>
                   }
@@ -197,7 +197,7 @@
                   ) {
                     {{ labelKey | translate }}
                   } @else {
-                    <span class="text-text-tertiary text-sm italic">
+                    <span class="text-text-tertiary text-body-md italic">
                       {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.UNCLASSIFIED' | translate }}
                     </span>
                   }
@@ -217,7 +217,7 @@
                   @if (prog.tutor) {
                     {{ formatProfessorName(prog.tutor) }}
                   } @else {
-                    <span class="text-text-tertiary text-sm italic">
+                    <span class="text-text-tertiary text-body-md italic">
                       {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.NO_TUTOR' | translate }}
                     </span>
                   }
@@ -239,7 +239,7 @@
                       }
                     </ul>
                   } @else {
-                    <span class="text-text-tertiary text-sm italic">
+                    <span class="text-text-tertiary text-body-md italic">
                       {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.NO_ADVISORS' | translate }}
                     </span>
                   }

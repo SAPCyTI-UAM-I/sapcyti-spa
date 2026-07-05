@@ -64,7 +64,7 @@
                 [severity]="activeTagSeverity(current.active)"
               />
             </div>
-            <dl class="text-text-secondary mt-xs gap-x-md gap-y-xs flex flex-wrap text-sm">
+            <dl class="text-text-secondary mt-xs gap-x-md gap-y-xs text-body-md flex flex-wrap">
               <div class="gap-xs flex min-w-0 items-center">
                 <dt class="sr-only">{{ 'ACADEMIC_CATALOG.FIELDS.EMPLOYEE_NUMBER' | translate }}</dt>
                 <i class="pi pi-id-card text-primary shrink-0" aria-hidden="true"></i>
@@ -129,7 +129,7 @@
                 @if (current.nextSabbaticalStart) {
                   {{ current.nextSabbaticalStart }}
                 } @else {
-                  <span class="text-text-tertiary text-sm italic">
+                  <span class="text-text-tertiary text-body-md italic">
                     {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.NO_SABBATICAL' | translate }}
                   </span>
                 }
@@ -143,7 +143,7 @@
                 @if (current.nextSabbaticalEnd) {
                   {{ current.nextSabbaticalEnd }}
                 } @else {
-                  <span class="text-text-tertiary text-sm italic">
+                  <span class="text-text-tertiary text-body-md italic">
                     {{ 'ACADEMIC_CATALOG.PROFESSORS.DETAIL.NO_SABBATICAL' | translate }}
                   </span>
                 }
