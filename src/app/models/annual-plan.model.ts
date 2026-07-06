@@ -41,7 +41,7 @@ export interface AnnualPlanEntry {
   ueaId: number;
   clave: string; // snapshot, read-only
   nombre: string; // snapshot, read-only
-  modalidad: string; // editable per plan (HU-51)
+  modalidad: string; // snapshot from the UEA catalog, read-only
   gruposI: AnnualPlanCell;
   cupoI: AnnualPlanCell;
   gruposP: AnnualPlanCell;
@@ -73,10 +73,9 @@ export interface CreateAnnualPlanRequest {
   year: number;
 }
 
-/** A single entry payload for the full-replacement save (HU-51). `clave`/`nombre` stay read-only. */
+/** A single entry payload for the full-replacement save (HU-51). `clave`/`nombre`/`modalidad` stay read-only. */
 export interface SaveEntryRequest {
   id: number;
-  modalidad: string;
   gruposI: AnnualPlanCell;
   cupoI: AnnualPlanCell;
   gruposP: AnnualPlanCell;

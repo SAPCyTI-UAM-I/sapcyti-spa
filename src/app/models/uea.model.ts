@@ -26,6 +26,8 @@ export interface UeaCatalogQuery {
   size: number;
   search?: string;
   active?: boolean;
+  /** `field,dir` e.g. `clave,asc` — sorts by `clave` or `nombre`. */
+  sort?: string;
 }
 
 export type BulkErrorCode =

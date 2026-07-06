@@ -6,13 +6,24 @@
       </h1>
     </div>
     <div class="gap-sm flex flex-wrap">
-      @if (professor()) {
+      @if (professor(); as current) {
         <p-button
           data-testid="edit-professor"
           icon="pi pi-pencil"
           [label]="'ACADEMIC_CATALOG.PROFESSORS.DETAIL.EDIT_ACTION' | translate"
           [routerLink]="editRoute()"
         />
+        @if (!current.active) {
+          <p-button
+            data-testid="restore-professor"
+            severity="success"
+            variant="outlined"
+            icon="pi pi-user-plus"
+            [label]="'ACADEMIC_CATALOG.PROFESSORS.RESTORE.ACTION' | translate"
+            [loading]="restoring()"
+            (onClick)="restore()"
+          />
+        }
       }
       <p-button
         severity="secondary"
@@ -23,6 +34,10 @@
       />
     </div>
   </header>
+
+  @if (restoreError()) {
+    <p-message severity="error" [text]="restoreError() | domainError: catalogErrorScope" />
+  }
 
   @if (loading()) {
     <div class="p-xl text-text-secondary text-center">

@@ -56,12 +56,38 @@ describe('AnnualPlanGridComponent', () => {
     expect(fixture.componentInstance.editable()).toBe(false);
   });
 
-  it('cycles a program mark on interaction', async () => {
+  it('orders display rows by clave/nombre while keeping the form in plan order', async () => {
+    const two: AnnualPlanDetail = {
+      year: 2027,
+      status: 'BORRADOR',
+      terms: ['27-I', '27-P', '27-O'],
+      entries: [
+        { ...planFixture().entries[0]!, id: 1, clave: '2200', nombre: 'Zeta' },
+        { ...planFixture().entries[0]!, id: 2, clave: '2100', nombre: 'Alfa' },
+      ],
+    };
+    const { fixture } = await setup(two);
+    const grid = fixture.componentInstance;
+
+    expect(grid.orderedRows().map((r) => r.entry.clave)).toEqual(['2200', '2100']);
+    grid.sortBy('clave');
+    expect(grid.orderedRows().map((r) => r.entry.clave)).toEqual(['2100', '2200']);
+    grid.sortBy('clave');
+    expect(grid.orderedRows().map((r) => r.entry.clave)).toEqual(['2200', '2100']);
+    grid.sortBy('nombre');
+    expect(grid.orderedRows().map((r) => r.entry.nombre)).toEqual(['Alfa', 'Zeta']);
+    // Form row 0 still maps to the first plan entry (2200), independent of display order.
+    expect(grid.rowGroup(0).get('gruposI')?.value).toBe('1');
+  });
+
+  it('cycles editable marks but leaves PCyTI (catalog-derived) read-only', async () => {
     const { fixture } = await setup(planFixture());
     const grid = fixture.componentInstance;
+    // PCyTI's obligatoria/optativa mark comes from the catalog — clicking does nothing.
     expect(grid.markAt(0, 'PCYTI')).toBe('X');
     grid.cycle(0, 'PCYTI');
-    expect(grid.markAt(0, 'PCYTI')).toBe('O');
+    expect(grid.markAt(0, 'PCYTI')).toBe('X');
+    // Other program columns still cycle empty → X → O → empty.
     grid.cycle(0, 'P_MAT');
     expect(grid.markAt(0, 'P_MAT')).toBe('X');
   });

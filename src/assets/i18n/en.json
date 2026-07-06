@@ -449,7 +449,7 @@
   "ANNUAL_PLANNING": {
     "ACTIONS": {
       "ARCHIVE": "Archive",
-      "FINISH": "Complete",
+      "FINISH": "Mark as completed",
       "REOPEN": "Reopen",
       "UNARCHIVE": "Unarchive"
     },

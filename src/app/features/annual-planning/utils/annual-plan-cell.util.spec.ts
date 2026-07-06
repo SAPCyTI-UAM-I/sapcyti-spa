@@ -34,11 +34,10 @@ describe('cycleMark', () => {
 });
 
 describe('buildSaveEntriesRequest', () => {
-  it('carries modalidad, normalizes empty cells to null and drops absent marks; no clave/nombre', () => {
+  it('normalizes empty cells to null and drops absent marks; no clave/nombre/modalidad', () => {
     const rows: AnnualPlanEntryFormValue[] = [
       {
         id: 7,
-        modalidad: 'PRESENCIAL',
         gruposI: '1',
         cupoI: '',
         gruposP: '*',
@@ -55,7 +54,6 @@ describe('buildSaveEntriesRequest', () => {
       entries: [
         {
           id: 7,
-          modalidad: 'PRESENCIAL',
           gruposI: '1',
           cupoI: null,
           gruposP: '*',
@@ -67,6 +65,7 @@ describe('buildSaveEntriesRequest', () => {
       ],
     });
     expect(request.entries[0]).not.toHaveProperty('clave');
+    expect(request.entries[0]).not.toHaveProperty('modalidad');
   });
 
   it('exposes the 9 program codes in format order', () => {

@@ -47,6 +47,15 @@
               [loading]="exporting()"
               (onClick)="downloadExcel()"
             />
+            @if (plan.status === 'BORRADOR') {
+              <p-button
+                icon="pi pi-save"
+                severity="secondary"
+                [label]="'COMMON.ACTIONS.SAVE' | translate"
+                [loading]="grid.saving()"
+                (onClick)="grid.save()"
+              />
+            }
             @for (action of statusActions(); track action.target) {
               <p-button
                 [label]="action.labelKey | translate"
@@ -57,7 +66,7 @@
           </div>
         </div>
 
-        <app-annual-plan-grid [plan]="plan" (saved)="onSaved($event)" />
+        <app-annual-plan-grid #grid [plan]="plan" (saved)="onSaved($event)" />
       </div>
     }
   </app-load-state>

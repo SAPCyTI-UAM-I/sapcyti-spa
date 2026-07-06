@@ -25,14 +25,26 @@
           <th
             class="bg-surface-subtle border-outline p-sm sticky top-0 left-0 z-30 w-24 border text-left whitespace-nowrap"
             rowspan="2"
+            [attr.aria-sort]="ariaSort('clave')"
           >
-            {{ 'ANNUAL_PLANNING.GRID.CLAVE' | translate }}
+            <button type="button" class="gap-xs flex w-full items-center" (click)="sortBy('clave')">
+              {{ 'ANNUAL_PLANNING.GRID.CLAVE' | translate }}
+              <i class="pi {{ sortIcon('clave') }} text-[10px]"></i>
+            </button>
           </th>
           <th
             class="bg-surface-subtle border-outline p-sm sticky top-0 left-24 z-30 w-56 border text-left whitespace-nowrap"
             rowspan="2"
+            [attr.aria-sort]="ariaSort('nombre')"
           >
-            {{ 'ANNUAL_PLANNING.GRID.NAME' | translate }}
+            <button
+              type="button"
+              class="gap-xs flex w-full items-center"
+              (click)="sortBy('nombre')"
+            >
+              {{ 'ANNUAL_PLANNING.GRID.NAME' | translate }}
+              <i class="pi {{ sortIcon('nombre') }} text-[10px]"></i>
+            </button>
           </th>
           @for (term of plan().terms; track $index) {
             <th
@@ -73,7 +85,9 @@
         </tr>
       </thead>
       <tbody>
-        @for (entry of plan().entries; track entry.id; let i = $index) {
+        @for (row of orderedRows(); track row.entry.id) {
+          @let i = row.index;
+          @let entry = row.entry;
           <tr [formGroup]="rowGroup(i)">
             <td class="bg-surface border-outline p-sm sticky left-0 z-10 border font-medium">
               {{ entry.clave }}
@@ -99,7 +113,7 @@
 
             @for (code of programCodes; track code) {
               <td class="border-outline border p-0 text-center">
-                @if (editable()) {
+                @if (editable() && !readonlyMark(code)) {
                   <button
                     type="button"
                     class="hover:bg-surface-subtle focus:bg-surface-subtle p-sm h-full w-full outline-none"
@@ -116,29 +130,12 @@
               </td>
             }
 
-            <td class="border-outline p-xs w-40 border">
-              @if (editable()) {
-                <app-i18n-select controlName="modalidad" [options]="modalidadOptions" />
-              } @else {
-                <span class="p-sm block text-center">
-                  {{ 'ANNUAL_PLANNING.MODALITY.' + entry.modalidad | translate }}
-                </span>
-              }
+            <td class="border-outline p-sm w-40 border text-center">
+              {{ 'ANNUAL_PLANNING.MODALITY.' + entry.modalidad | translate }}
             </td>
           </tr>
         }
       </tbody>
     </table>
   </div>
-
-  @if (editable()) {
-    <div class="flex justify-end">
-      <p-button
-        [label]="'COMMON.ACTIONS.SAVE' | translate"
-        icon="pi pi-save"
-        [loading]="saving()"
-        (onClick)="save()"
-      />
-    </div>
-  }
 </section>

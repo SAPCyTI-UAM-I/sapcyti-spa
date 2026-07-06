@@ -68,9 +68,11 @@ export class UeaEditComponent implements OnInit {
   readonly loading = signal(true);
   readonly submitting = signal(false);
   readonly deactivating = signal(false);
+  readonly reactivating = signal(false);
   readonly submitted = signal(false);
   readonly error = signal<UeaError | null>(null);
   readonly deactivateError = signal<UeaError | null>(null);
+  readonly reactivateError = signal<UeaError | null>(null);
   readonly uea = signal<UeaCatalogItem | null>(null);
   readonly showDeactivateDialog = signal(false);
 
@@ -149,6 +151,29 @@ export class UeaEditComponent implements OnInit {
           void this.router.navigate([UEAS_LIST_ROUTE]);
         },
         error: (err) => this.deactivateError.set(mapUeaError(err)),
+      });
+  }
+
+  /** HU-55 — reactivate an inactive UEA (moved here from the list actions column). */
+  reactivate(): void {
+    this.reactivating.set(true);
+    this.reactivateError.set(null);
+    this.service
+      .restoreUea(this.ueaId)
+      .pipe(
+        finalize(() => this.reactivating.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: () => {
+          this.messages.add({
+            severity: 'success',
+            summary: this.translate.instant('ACADEMIC_CATALOG.UEAS.RESTORE.SUCCESS'),
+            life: TOAST_LIFE.DEFAULT,
+          });
+          void this.router.navigate([UEAS_LIST_ROUTE]);
+        },
+        error: (err) => this.reactivateError.set(mapUeaError(err)),
       });
   }
 

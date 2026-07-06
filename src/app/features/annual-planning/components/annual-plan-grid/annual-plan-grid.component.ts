@@ -20,13 +20,17 @@ import {
 } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { AnnualPlanDetail, AnnualPlanMark, AnnualPlanMarks, ProgramCode } from '../../../../models';
-import { I18nSelectComponent } from '../../../../shared/components';
+import {
+  AnnualPlanDetail,
+  AnnualPlanEntry,
+  AnnualPlanMark,
+  AnnualPlanMarks,
+  ProgramCode,
+} from '../../../../models';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { AnnualPlanService } from '../../services/annual-plan.service';
 import {
@@ -36,7 +40,6 @@ import {
   CellField,
   cycleMark,
   isValidCell,
-  MODALIDAD_OPTIONS,
   PROGRAM_CODES,
 } from '../../utils/annual-plan-cell.util';
 import {
@@ -58,14 +61,7 @@ function cellValidator(control: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-annual-plan-grid',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ReactiveFormsModule,
-    TranslatePipe,
-    Button,
-    Message,
-    DomainErrorMessagePipe,
-    I18nSelectComponent,
-  ],
+  imports: [ReactiveFormsModule, TranslatePipe, Message, DomainErrorMessagePipe],
   templateUrl: './annual-plan-grid.component.html',
 })
 export class AnnualPlanGridComponent {
@@ -80,8 +76,9 @@ export class AnnualPlanGridComponent {
 
   readonly programCodes = PROGRAM_CODES;
   readonly cellFields = CELL_FIELDS;
-  readonly modalidadOptions = MODALIDAD_OPTIONS;
   readonly errorScope = ANNUAL_PLAN_ERROR_I18N_SCOPE;
+  /** PCyTI's obligatoria/optativa mark comes from the UEA catalog — read-only here. */
+  readonly readonlyMark = (code: ProgramCode): boolean => code === 'PCYTI';
 
   readonly saving = signal(false);
   readonly submitted = signal(false);
@@ -100,6 +97,44 @@ export class AnnualPlanGridComponent {
   readonly rows = this.fb.array<FormGroup>([]);
   readonly marks = signal<AnnualPlanMarks[]>([]);
 
+  // Display order only (clave/nombre); the form stays aligned with plan().entries so
+  // sorting never rebuilds controls or drops unsaved edits.
+  readonly sortField = signal<'clave' | 'nombre' | null>(null);
+  readonly sortDir = signal<'asc' | 'desc'>('asc');
+
+  readonly orderedRows = computed<{ index: number; entry: AnnualPlanEntry }[]>(() => {
+    const rows = this.plan().entries.map((entry, index) => ({ index, entry }));
+    const field = this.sortField();
+    if (!field) {
+      return rows;
+    }
+    const dir = this.sortDir() === 'asc' ? 1 : -1;
+    return [...rows].sort((a, b) => a.entry[field].localeCompare(b.entry[field], 'es') * dir);
+  });
+
+  sortBy(field: 'clave' | 'nombre'): void {
+    if (this.sortField() === field) {
+      this.sortDir.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortField.set(field);
+      this.sortDir.set('asc');
+    }
+  }
+
+  ariaSort(field: 'clave' | 'nombre'): 'ascending' | 'descending' | 'none' {
+    if (this.sortField() !== field) {
+      return 'none';
+    }
+    return this.sortDir() === 'asc' ? 'ascending' : 'descending';
+  }
+
+  sortIcon(field: 'clave' | 'nombre'): string {
+    if (this.sortField() !== field) {
+      return 'pi-sort-alt text-text-tertiary';
+    }
+    return this.sortDir() === 'asc' ? 'pi-sort-amount-up-alt' : 'pi-sort-amount-down';
+  }
+
   constructor() {
     effect(() => this.buildForm(this.plan()));
     this.rows.valueChanges
@@ -113,9 +148,7 @@ export class AnnualPlanGridComponent {
       const controls = Object.fromEntries(
         CELL_FIELDS.map((field) => [field, this.fb.control(entry[field] ?? '', cellValidator)]),
       ) as Record<CellField, FormControl<string>>;
-      this.rows.push(
-        this.fb.group({ ...controls, modalidad: this.fb.control(entry.modalidad || 'MIXTA') }),
-      );
+      this.rows.push(this.fb.group(controls));
     }
     this.marks.set(plan.entries.map((entry) => ({ ...entry.marks })));
     this.submitted.set(false);
@@ -136,7 +169,7 @@ export class AnnualPlanGridComponent {
   }
 
   cycle(index: number, code: ProgramCode): void {
-    if (!this.editable()) {
+    if (!this.editable() || this.readonlyMark(code)) {
       return;
     }
     this.marks.update((list) => {
@@ -165,7 +198,7 @@ export class AnnualPlanGridComponent {
     const plan = this.plan();
     const values: AnnualPlanEntryFormValue[] = plan.entries.map((entry, index) => ({
       id: entry.id,
-      ...(this.rowGroup(index).getRawValue() as Record<CellField, string> & { modalidad: string }),
+      ...(this.rowGroup(index).getRawValue() as Record<CellField, string>),
       marks: this.marks()[index] ?? {},
     }));
 

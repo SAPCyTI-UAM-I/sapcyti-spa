@@ -78,6 +78,20 @@ describe('UeaEditComponent', () => {
     expect(navigate).toHaveBeenCalledWith(['/academic-catalog/ueas']);
   });
 
+  it('reactivates an inactive UEA and navigates back to the list', async () => {
+    const restoreUea = vi.fn(() => of({ ...uea, active: true }));
+    const fixture = await setup({
+      getUea: vi.fn(() => of({ ...uea, active: false })),
+      restoreUea,
+    });
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    fixture.componentInstance.reactivate();
+
+    expect(restoreUea).toHaveBeenCalledWith(5);
+    expect(navigate).toHaveBeenCalledWith(['/academic-catalog/ueas']);
+  });
+
   it('surfaces UEA_ALREADY_INACTIVE inline on deactivate', async () => {
     const deactivateUea = vi.fn(() => throwError(() => conflict('UEA_ALREADY_INACTIVE')));
     const fixture = await setup({ getUea: vi.fn(() => of(uea)), deactivateUea });

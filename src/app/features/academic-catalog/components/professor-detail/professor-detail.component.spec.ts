@@ -23,9 +23,9 @@ describe('ProfessorDetailComponent', () => {
     active: true,
   };
 
-  async function setup() {
-    const getProfessor = vi.fn(() => of(professor));
-
+  async function setup(
+    service: Partial<ProfessorService> = { getProfessor: vi.fn(() => of(professor)) },
+  ) {
     await TestBed.configureTestingModule({
       imports: [ProfessorDetailComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
@@ -41,19 +41,32 @@ describe('ProfessorDetailComponent', () => {
           },
         },
         MessageService,
-        { provide: ProfessorService, useValue: { getProfessor } },
+        { provide: ProfessorService, useValue: service },
       ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ProfessorDetailComponent);
-    return { fixture, getProfessor };
+    return { fixture };
   }
 
   it('loads professor detail', async () => {
-    const { fixture, getProfessor } = await setup();
+    const getProfessor = vi.fn(() => of(professor));
+    const { fixture } = await setup({ getProfessor });
     fixture.detectChanges();
 
     expect(getProfessor).toHaveBeenCalledWith(11);
     expect(fixture.componentInstance.professor()?.firstName).toBe('Laura');
+  });
+
+  it('restores an inactive professor and reloads the detail (HU-54)', async () => {
+    const getProfessor = vi.fn(() => of({ ...professor, active: false }));
+    const restoreProfessor = vi.fn(() => of({ ...professor, active: true }));
+    const { fixture } = await setup({ getProfessor, restoreProfessor });
+    fixture.detectChanges();
+
+    fixture.componentInstance.restore();
+
+    expect(restoreProfessor).toHaveBeenCalledWith(11);
+    expect(getProfessor).toHaveBeenCalledTimes(2); // initial load + reload
   });
 });

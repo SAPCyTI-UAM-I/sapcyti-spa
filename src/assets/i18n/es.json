@@ -449,7 +449,7 @@
   "ANNUAL_PLANNING": {
     "ACTIONS": {
       "ARCHIVE": "Archivar",
-      "FINISH": "Terminar",
+      "FINISH": "Marcar como completada",
       "REOPEN": "Reabrir",
       "UNARCHIVE": "Desarchivar"
     },

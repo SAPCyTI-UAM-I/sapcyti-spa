@@ -17,11 +17,16 @@ export class UeaMockStore {
 
   listUeas(query: UeaCatalogQuery): PageResponse<UeaCatalogItem> {
     const search = normalizeSearch(query.search ?? '');
-    const filtered = this.ueas.filter((uea) => {
+    let filtered = this.ueas.filter((uea) => {
       const matchesSearch =
         !search || normalizeSearch(`${uea.clave} ${uea.nombre}`).includes(search);
       return matchesSearch && (query.active === undefined || uea.active === query.active);
     });
+    const [field, dir] = (query.sort ?? '').split(',');
+    if (field === 'clave' || field === 'nombre') {
+      const sign = dir === 'desc' ? -1 : 1;
+      filtered = [...filtered].sort((a, b) => a[field].localeCompare(b[field], 'es') * sign);
+    }
     return page(filtered, query.page, query.size);
   }
 

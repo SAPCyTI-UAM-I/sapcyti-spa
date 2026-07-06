@@ -18,6 +18,38 @@ export abstract class CatalogListBase<TItem> implements OnInit {
   readonly totalElements = signal(0);
   readonly first = computed(() => this.page() * this.pageSize);
 
+  /** Optional column sort (`field,dir`), sent to the backend/mock; null = default order. */
+  readonly sortField = signal<string | null>(null);
+  readonly sortDir = signal<'asc' | 'desc'>('asc');
+  readonly sortParam = computed(() =>
+    this.sortField() ? `${this.sortField()},${this.sortDir()}` : undefined,
+  );
+
+  sortBy(field: string): void {
+    if (this.sortField() === field) {
+      this.sortDir.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortField.set(field);
+      this.sortDir.set('asc');
+    }
+    this.page.set(0);
+    this.load();
+  }
+
+  ariaSort(field: string): 'ascending' | 'descending' | 'none' {
+    if (this.sortField() !== field) {
+      return 'none';
+    }
+    return this.sortDir() === 'asc' ? 'ascending' : 'descending';
+  }
+
+  sortIcon(field: string): string {
+    if (this.sortField() !== field) {
+      return 'pi-sort-alt text-text-tertiary';
+    }
+    return this.sortDir() === 'asc' ? 'pi-sort-amount-up-alt' : 'pi-sort-amount-down';
+  }
+
   protected abstract readonly filters: FormGroup;
   protected abstract fetchItems(): Observable<PageResponse<TItem>>;
 

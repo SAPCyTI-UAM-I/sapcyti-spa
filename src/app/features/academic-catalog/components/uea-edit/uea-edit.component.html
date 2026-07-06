@@ -83,16 +83,33 @@
         </label>
       </div>
 
+      @if (reactivateError()) {
+        <p-message severity="error" [text]="reactivateError() | domainError: catalogErrorScope" />
+      }
+
       <footer class="border-outline pt-md gap-sm flex flex-wrap justify-between border-t">
-        <p-button
-          type="button"
-          severity="danger"
-          variant="outlined"
-          icon="pi pi-ban"
-          data-testid="deactivate-uea"
-          [label]="'ACADEMIC_CATALOG.UEAS.DEACTIVATE.ACTION' | translate"
-          (onClick)="openDeactivateDialog()"
-        />
+        @if (uea()!.active) {
+          <p-button
+            type="button"
+            severity="danger"
+            variant="outlined"
+            icon="pi pi-ban"
+            data-testid="deactivate-uea"
+            [label]="'ACADEMIC_CATALOG.UEAS.DEACTIVATE.ACTION' | translate"
+            (onClick)="openDeactivateDialog()"
+          />
+        } @else {
+          <p-button
+            type="button"
+            severity="success"
+            variant="outlined"
+            icon="pi pi-refresh"
+            data-testid="reactivate-uea"
+            [label]="'ACADEMIC_CATALOG.UEAS.ACTIONS.REACTIVATE' | translate"
+            [loading]="reactivating()"
+            (onClick)="reactivate()"
+          />
+        }
         <div class="gap-sm flex">
           <p-button
             type="button"

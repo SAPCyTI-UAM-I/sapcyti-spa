@@ -21,6 +21,7 @@ export class UeaHttpRepository implements UeaRepository {
     let params = new HttpParams().set('page', query.page).set('size', query.size);
     if (query.search) params = params.set('search', query.search);
     if (query.active !== undefined) params = params.set('active', query.active);
+    if (query.sort) params = params.set('sort', query.sort);
     return this.http.get<PageResponse<UeaCatalogItem>>(API_ENDPOINTS.ueas, {
       params,
       withCredentials: true,

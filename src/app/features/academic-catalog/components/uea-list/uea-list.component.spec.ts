@@ -1,73 +1,80 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { FormGroupDirective } from '@angular/forms';
+import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 
 import { PageResponse, UeaCatalogItem } from '../../../../models';
 import { UeaService } from '../../services/uea.service';
 import { UeaListComponent } from './uea-list.component';
 
-const inactiveUea: UeaCatalogItem = {
-  id: 38,
-  clave: '2159018',
-  nombre: 'SEMINARIO DE INVESTIGACIÓN DOCTORAL III',
+const uea: UeaCatalogItem = {
+  id: 1,
+  clave: '2156024',
+  nombre: 'REDES Y PROTOCOLOS DE COMUNICACIONES',
   tipo: 'OBLIGATORIA',
   modalidad: 'MIXTA',
   horasTeoria: 3,
   horasPractica: 0,
-  tipoFormacion: 'INVESTIGACION',
+  tipoFormacion: 'BASICA',
   creditos: 6,
-  active: false,
+  active: true,
 };
 
 function ueaPage(content: UeaCatalogItem[]): PageResponse<UeaCatalogItem> {
   return { content, totalElements: content.length, totalPages: 1, size: 8, number: 0 };
 }
 
-describe('UeaListComponent restore (HU-55)', () => {
-  async function setup(restoreUea = vi.fn(() => of({ ...inactiveUea, active: true }))) {
-    const listUeas = vi.fn(() => of(ueaPage([inactiveUea])));
+describe('UeaListComponent', () => {
+  async function setup(listUeas = vi.fn(() => of(ueaPage([uea])))) {
     await TestBed.configureTestingModule({
       imports: [UeaListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
         provideRouter([]),
-        { provide: UeaService, useValue: { listUeas, restoreUea } },
+        { provide: UeaService, useValue: { listUeas } },
         MessageService,
       ],
     }).compileComponents();
     const fixture = TestBed.createComponent(UeaListComponent);
-    fixture.detectChanges();
-    return { fixture, listUeas, restoreUea };
+    return { fixture, listUeas };
   }
 
-  it('restores an inactive UEA and reloads the list', async () => {
-    const { fixture, listUeas, restoreUea } = await setup();
+  function patchFilters(
+    fixture: ReturnType<typeof TestBed.createComponent<UeaListComponent>>,
+    values: { search?: string; active?: string },
+  ): void {
+    fixture.debugElement
+      .query(By.directive(FormGroupDirective))
+      .injector.get(FormGroupDirective)
+      .form.patchValue(values);
+  }
 
-    fixture.componentInstance.askRestore(inactiveUea);
-    expect(fixture.componentInstance.restoreTarget()).toEqual(inactiveUea);
+  it('loads UEAs on init with page 0, size 8 and no sort by default', async () => {
+    const { fixture, listUeas } = await setup();
+    fixture.detectChanges();
 
-    fixture.componentInstance.confirmRestore();
-
-    expect(restoreUea).toHaveBeenCalledWith(38);
-    expect(fixture.componentInstance.restoreTarget()).toBeNull();
-    expect(listUeas).toHaveBeenCalledTimes(2); // initial load + reload
+    expect(listUeas).toHaveBeenCalledWith({
+      page: 0,
+      size: 8,
+      search: undefined,
+      active: undefined,
+      sort: undefined,
+    });
   });
 
-  it('surfaces UEA_ALREADY_ACTIVE inline', async () => {
-    const restoreUea = vi.fn(() =>
-      throwError(
-        () => new HttpErrorResponse({ status: 409, error: { error: 'UEA_ALREADY_ACTIVE' } }),
-      ),
-    );
-    const { fixture } = await setup(restoreUea);
+  it('reloads with a debounced live search as the user types', async () => {
+    const { fixture, listUeas } = await setup();
+    fixture.detectChanges();
+    vi.useFakeTimers();
+    listUeas.mockClear();
 
-    fixture.componentInstance.askRestore(inactiveUea);
-    fixture.componentInstance.confirmRestore();
+    patchFilters(fixture, { search: '  redes  ' });
+    vi.advanceTimersByTime(300);
 
-    expect(fixture.componentInstance.restoreError()).toBe('uea_already_active');
-    expect(fixture.componentInstance.restoreTarget()).toEqual(inactiveUea);
+    expect(listUeas).toHaveBeenCalledWith(expect.objectContaining({ page: 0, search: 'redes' }));
+    vi.useRealTimers();
   });
 });
