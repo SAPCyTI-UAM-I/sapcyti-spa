@@ -223,16 +223,19 @@ export class AnnualPlanMockStore {
 
 function seedDraft2027(): AnnualPlanDetail {
   const entries = SEED_CATALOG.map((seed, index) => emptyEntry(index + 1, seed));
-  // A couple of rows preloaded so the grid isn't blank on first open.
-  Object.assign(entries[0]!, { gruposI: '1', cupoI: '15', marks: { PCYTI: 'X', P_FIS: 'O' } });
-  Object.assign(entries[1]!, { gruposO: '2', cupoO: '*', marks: { PCYTI: 'O' } });
+  // A couple of rows preloaded so the grid isn't blank on first open. Only editable fields
+  // are set; the PCYTI mark stays derived from the catalog `tipo` (never overridden here).
+  Object.assign(entries[0]!, { gruposI: '1', cupoI: '15' });
+  entries[0]!.marks = { ...entries[0]!.marks, P_FIS: 'O' };
+  Object.assign(entries[1]!, { gruposO: '2', cupoO: '*' });
   return { year: 2027, status: 'BORRADOR', terms: termsForYear(2027), entries };
 }
 
 function seedCompleted2026(): AnnualPlanDetail {
   const entries = SEED_CATALOG.map((seed, index) => {
     const entry = emptyEntry(index + 101, seed);
-    Object.assign(entry, { gruposI: '1', cupoI: '15', marks: { PCYTI: 'X' } });
+    // Editable cells only; PCYTI stays derived from `tipo`.
+    Object.assign(entry, { gruposI: '1', cupoI: '15' });
     return entry;
   });
   return { year: 2026, status: 'TERMINADA', terms: termsForYear(2026), entries };
