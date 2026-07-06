@@ -26,19 +26,19 @@ describe('isValidCell', () => {
 });
 
 describe('cycleMark', () => {
-  it('cycles empty → X → O → X/O → empty', () => {
+  it('cycles empty → X → O → empty (no combined X/O)', () => {
     expect(cycleMark(undefined)).toBe('X');
     expect(cycleMark('X')).toBe('O');
-    expect(cycleMark('O')).toBe('X/O');
-    expect(cycleMark('X/O')).toBeUndefined();
+    expect(cycleMark('O')).toBeUndefined();
   });
 });
 
 describe('buildSaveEntriesRequest', () => {
-  it('normalizes empty cells to null and drops absent marks; no snapshot fields', () => {
+  it('carries modalidad, normalizes empty cells to null and drops absent marks; no clave/nombre', () => {
     const rows: AnnualPlanEntryFormValue[] = [
       {
         id: 7,
+        modalidad: 'PRESENCIAL',
         gruposI: '1',
         cupoI: '',
         gruposP: '*',
@@ -55,6 +55,7 @@ describe('buildSaveEntriesRequest', () => {
       entries: [
         {
           id: 7,
+          modalidad: 'PRESENCIAL',
           gruposI: '1',
           cupoI: null,
           gruposP: '*',

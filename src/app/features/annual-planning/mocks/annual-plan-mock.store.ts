@@ -13,13 +13,93 @@ import {
 import { isAdjacent } from '../utils/annual-plan-status.util';
 import { isValidCell } from '../utils/annual-plan-cell.util';
 
-/** Fixed catalog UEAs used to generate entries on plan creation (mock only). */
+/** Active UEA catalog used to generate plan entries (mock only; the backend reads the real catalog). */
 const SEED_CATALOG: { ueaId: number; clave: string; nombre: string; modalidad: string }[] = [
-  { ueaId: 1, clave: '2156024', nombre: 'Redes y sistemas distribuidos', modalidad: 'MIXTA' },
-  { ueaId: 2, clave: '2156038', nombre: 'Algoritmos distribuidos', modalidad: 'MIXTA' },
-  { ueaId: 3, clave: '2156053', nombre: 'Ingeniería de software I', modalidad: 'PRESENCIAL' },
-  { ueaId: 4, clave: '2156059', nombre: 'Inteligencia computacional', modalidad: 'MIXTA' },
-  { ueaId: 5, clave: '2159007', nombre: 'Investigación Doctoral I', modalidad: 'PRESENCIAL' },
+  {
+    ueaId: 1,
+    clave: '2156024',
+    nombre: 'REDES Y PROTOCOLOS DE COMUNICACIONES',
+    modalidad: 'PRESENCIAL',
+  },
+  { ueaId: 2, clave: '2156027', nombre: 'INTELIGENCIA ARTIFICIAL', modalidad: 'MIXTA' },
+  {
+    ueaId: 3,
+    clave: '2156028',
+    nombre: 'SEMINARIO DE CIENCIAS Y TECNOLOGÍAS DE LA INFORMACIÓN',
+    modalidad: 'VIRTUAL',
+  },
+  { ueaId: 4, clave: '2156033', nombre: 'EVALUACIÓN DE DESEMPEÑO', modalidad: 'PRESENCIAL' },
+  { ueaId: 5, clave: '2156038', nombre: 'ALGORITMOS DISTRIBUIDOS', modalidad: 'MIXTA' },
+  { ueaId: 6, clave: '2156040', nombre: 'VERIFICACIÓN DE PROGRAMAS', modalidad: 'VIRTUAL' },
+  {
+    ueaId: 7,
+    clave: '2156041',
+    nombre: 'MÉTODOS MATEMÁTICOS PARA LA INTELIGENCIA ARTIFICIAL',
+    modalidad: 'PRESENCIAL',
+  },
+  {
+    ueaId: 8,
+    clave: '2156043',
+    nombre: 'TEMAS SELECTOS DE CIENCIAS Y TECNOLOGÍAS I',
+    modalidad: 'MIXTA',
+  },
+  {
+    ueaId: 9,
+    clave: '2156044',
+    nombre: 'TEMAS SELECTOS DE CIENCIAS Y TECNOLOGÍAS II',
+    modalidad: 'VIRTUAL',
+  },
+  {
+    ueaId: 10,
+    clave: '2156045',
+    nombre: 'TEMAS SELECTOS DE CIENCIAS Y TECNOLOGÍAS III',
+    modalidad: 'PRESENCIAL',
+  },
+  { ueaId: 11, clave: '2156047', nombre: 'PROYECTO DE INVESTIGACIÓN II', modalidad: 'MIXTA' },
+  { ueaId: 12, clave: '2156049', nombre: 'PROYECTO DE INVESTIGACIÓN I', modalidad: 'VIRTUAL' },
+  { ueaId: 13, clave: '2156050', nombre: 'PROYECTO DE INVESTIGACIÓN III', modalidad: 'PRESENCIAL' },
+  { ueaId: 14, clave: '2156051', nombre: 'ADMINISTRACIÓN DE PROYECTOS', modalidad: 'MIXTA' },
+  { ueaId: 15, clave: '2156052', nombre: 'PROGRAMACIÓN CONCURRENTE', modalidad: 'VIRTUAL' },
+  { ueaId: 16, clave: '2156053', nombre: 'INGENIERÍA DE SOFTWARE I', modalidad: 'PRESENCIAL' },
+  { ueaId: 17, clave: '2156054', nombre: 'INGENIERÍA DE SOFTWARE II', modalidad: 'MIXTA' },
+  { ueaId: 18, clave: '2156055', nombre: 'MODELOS DE REFERENCIA', modalidad: 'VIRTUAL' },
+  { ueaId: 19, clave: '2156056', nombre: 'COMUNICACIONES INALÁMBRICAS', modalidad: 'PRESENCIAL' },
+  { ueaId: 20, clave: '2156057', nombre: 'CÓMPUTO PARALELO', modalidad: 'MIXTA' },
+  { ueaId: 21, clave: '2156058', nombre: 'INTELIGENCIA ARTIFICIAL APLICADA', modalidad: 'VIRTUAL' },
+  { ueaId: 22, clave: '2156059', nombre: 'INTELIGENCIA COMPUTACIONAL', modalidad: 'PRESENCIAL' },
+  {
+    ueaId: 23,
+    clave: '2156072',
+    nombre: 'PROCESAMIENTO DE SEÑALES Y APRENDIZAJE AUTOMÁTICO',
+    modalidad: 'MIXTA',
+  },
+  {
+    ueaId: 24,
+    clave: '2156073',
+    nombre: 'FUNDAMENTOS DE SISTEMAS DE COMUNICACIONES DIGITALES',
+    modalidad: 'VIRTUAL',
+  },
+  { ueaId: 25, clave: '2156074', nombre: 'ARQUITECTURA DE SOFTWARE', modalidad: 'PRESENCIAL' },
+  { ueaId: 26, clave: '2156075', nombre: 'SERVICIOS DISTRIBUIDOS BÁSICOS', modalidad: 'MIXTA' },
+  { ueaId: 27, clave: '2159007', nombre: 'INVESTIGACIÓN DOCTORAL I', modalidad: 'VIRTUAL' },
+  { ueaId: 28, clave: '2159008', nombre: 'INVESTIGACIÓN DOCTORAL II', modalidad: 'PRESENCIAL' },
+  { ueaId: 29, clave: '2159009', nombre: 'INVESTIGACIÓN DOCTORAL III', modalidad: 'MIXTA' },
+  {
+    ueaId: 30,
+    clave: '2159010',
+    nombre: 'SEMINARIO DE INVESTIGACIÓN DOCTORAL I',
+    modalidad: 'VIRTUAL',
+  },
+  { ueaId: 31, clave: '2159011', nombre: 'INVESTIGACIÓN DOCTORAL IV', modalidad: 'PRESENCIAL' },
+  { ueaId: 32, clave: '2159012', nombre: 'INVESTIGACIÓN DOCTORAL V', modalidad: 'MIXTA' },
+  { ueaId: 33, clave: '2159013', nombre: 'INVESTIGACIÓN DOCTORAL VI', modalidad: 'VIRTUAL' },
+  {
+    ueaId: 34,
+    clave: '2159014',
+    nombre: 'SEMINARIO DE INVESTIGACIÓN DOCTORAL II',
+    modalidad: 'PRESENCIAL',
+  },
+  { ueaId: 35, clave: '2159015', nombre: 'INVESTIGACIÓN DOCTORAL VII', modalidad: 'MIXTA' },
 ];
 
 function termsForYear(year: number): [string, string, string] {
@@ -78,7 +158,7 @@ export class AnnualPlanMockStore {
       });
     }
     // ponytail: mock devuelve un reporte de muestra con diferencias para ejercitar
-    // el paso 3 del wizard; el backend real compara contra el catálogo activo.
+    // el diálogo de comparación; el backend real compara contra el catálogo activo.
     return {
       missingInCatalog: [{ clave: '2156099', nombre: 'Tópicos selectos (baja)' }],
       missingInFile: [{ clave: '2159007', nombre: 'Investigación Doctoral I' }],
@@ -170,6 +250,7 @@ export class AnnualPlanMockStore {
     for (const update of request.entries) {
       const entry = plan.entries.find((e) => e.id === update.id)!;
       Object.assign(entry, {
+        modalidad: update.modalidad,
         gruposI: update.gruposI,
         cupoI: update.cupoI,
         gruposP: update.gruposP,

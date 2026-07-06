@@ -26,6 +26,7 @@ import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { AnnualPlanDetail, AnnualPlanMark, AnnualPlanMarks, ProgramCode } from '../../../../models';
+import { I18nSelectComponent } from '../../../../shared/components';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { AnnualPlanService } from '../../services/annual-plan.service';
 import {
@@ -35,6 +36,7 @@ import {
   CellField,
   cycleMark,
   isValidCell,
+  MODALIDAD_OPTIONS,
   PROGRAM_CODES,
 } from '../../utils/annual-plan-cell.util';
 import {
@@ -56,7 +58,14 @@ function cellValidator(control: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-annual-plan-grid',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, TranslatePipe, Button, Message, DomainErrorMessagePipe],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    Button,
+    Message,
+    DomainErrorMessagePipe,
+    I18nSelectComponent,
+  ],
   templateUrl: './annual-plan-grid.component.html',
 })
 export class AnnualPlanGridComponent {
@@ -71,6 +80,7 @@ export class AnnualPlanGridComponent {
 
   readonly programCodes = PROGRAM_CODES;
   readonly cellFields = CELL_FIELDS;
+  readonly modalidadOptions = MODALIDAD_OPTIONS;
   readonly errorScope = ANNUAL_PLAN_ERROR_I18N_SCOPE;
 
   readonly saving = signal(false);
@@ -103,7 +113,9 @@ export class AnnualPlanGridComponent {
       const controls = Object.fromEntries(
         CELL_FIELDS.map((field) => [field, this.fb.control(entry[field] ?? '', cellValidator)]),
       ) as Record<CellField, FormControl<string>>;
-      this.rows.push(this.fb.group(controls));
+      this.rows.push(
+        this.fb.group({ ...controls, modalidad: this.fb.control(entry.modalidad || 'MIXTA') }),
+      );
     }
     this.marks.set(plan.entries.map((entry) => ({ ...entry.marks })));
     this.submitted.set(false);
@@ -153,7 +165,7 @@ export class AnnualPlanGridComponent {
     const plan = this.plan();
     const values: AnnualPlanEntryFormValue[] = plan.entries.map((entry, index) => ({
       id: entry.id,
-      ...(this.rowGroup(index).getRawValue() as Record<CellField, string>),
+      ...(this.rowGroup(index).getRawValue() as Record<CellField, string> & { modalidad: string }),
       marks: this.marks()[index] ?? {},
     }));
 

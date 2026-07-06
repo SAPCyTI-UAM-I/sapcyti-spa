@@ -21,8 +21,8 @@ export type ProgramCode =
   | 'PEMA'
   | 'EFMC';
 
-/** Program mark for an entry; an absent key means an empty cell. */
-export type AnnualPlanMark = 'X' | 'O' | 'X/O';
+/** Program mark for an entry; an absent key means an empty cell (no combined X/O). */
+export type AnnualPlanMark = 'X' | 'O';
 
 export type AnnualPlanMarks = Partial<Record<ProgramCode, AnnualPlanMark>>;
 
@@ -35,13 +35,13 @@ export interface AnnualPlanSummary {
   status: AnnualPlanStatus;
 }
 
-/** A single UEA row of a plan. Snapshot fields are read-only (never sent on write). */
+/** A single UEA row of a plan. `clave`/`nombre` are read-only snapshots; the rest is editable. */
 export interface AnnualPlanEntry {
   id: number;
   ueaId: number;
   clave: string; // snapshot, read-only
   nombre: string; // snapshot, read-only
-  modalidad: string; // snapshot, read-only
+  modalidad: string; // editable per plan (HU-51)
   gruposI: AnnualPlanCell;
   cupoI: AnnualPlanCell;
   gruposP: AnnualPlanCell;
@@ -73,9 +73,10 @@ export interface CreateAnnualPlanRequest {
   year: number;
 }
 
-/** A single entry payload for the full-replacement save (HU-51). No snapshot fields. */
+/** A single entry payload for the full-replacement save (HU-51). `clave`/`nombre` stay read-only. */
 export interface SaveEntryRequest {
   id: number;
+  modalidad: string;
   gruposI: AnnualPlanCell;
   cupoI: AnnualPlanCell;
   gruposP: AnnualPlanCell;

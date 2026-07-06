@@ -3,7 +3,6 @@
   <div class="text-caption text-text-secondary gap-md flex flex-wrap">
     <span><strong>X</strong> = {{ 'ANNUAL_PLANNING.LEGEND.X' | translate }}</span>
     <span><strong>O</strong> = {{ 'ANNUAL_PLANNING.LEGEND.O' | translate }}</span>
-    <span><strong>X/O</strong> = {{ 'ANNUAL_PLANNING.LEGEND.X_O' | translate }}</span>
     <span><strong>*</strong> = {{ 'ANNUAL_PLANNING.LEGEND.STAR' | translate }}</span>
   </div>
 
@@ -117,7 +116,15 @@
               </td>
             }
 
-            <td class="border-outline p-sm border text-center">{{ entry.modalidad }}</td>
+            <td class="border-outline p-xs w-40 border">
+              @if (editable()) {
+                <app-i18n-select controlName="modalidad" [options]="modalidadOptions" />
+              } @else {
+                <span class="p-sm block text-center">
+                  {{ 'ANNUAL_PLANNING.MODALITY.' + entry.modalidad | translate }}
+                </span>
+              }
+            </td>
           </tr>
         }
       </tbody>
