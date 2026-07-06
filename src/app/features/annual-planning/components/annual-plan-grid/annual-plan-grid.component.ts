@@ -77,6 +77,21 @@ export class AnnualPlanGridComponent {
   readonly programCodes = PROGRAM_CODES;
   readonly cellFields = CELL_FIELDS;
   readonly errorScope = ANNUAL_PLAN_ERROR_I18N_SCOPE;
+
+  /** Group/quota fields paired per trimester — lets the mobile card label each with its term. */
+  private static readonly TERM_CELL_FIELDS = [
+    { grupos: 'gruposI', cupo: 'cupoI' },
+    { grupos: 'gruposP', cupo: 'cupoP' },
+    { grupos: 'gruposO', cupo: 'cupoO' },
+  ] as const satisfies readonly { grupos: CellField; cupo: CellField }[];
+
+  readonly termColumns = computed(() =>
+    AnnualPlanGridComponent.TERM_CELL_FIELDS.map((cells, index) => ({
+      ...cells,
+      label: this.plan().terms[index] ?? '',
+    })),
+  );
+
   /** PCyTI's obligatoria/optativa mark comes from the UEA catalog — read-only here. */
   readonly readonlyMark = (code: ProgramCode): boolean => code === 'PCYTI';
 
