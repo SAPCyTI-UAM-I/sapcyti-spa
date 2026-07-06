@@ -106,7 +106,9 @@
                 <td class="md:px-md md:py-smd col-span-2 md:table-cell">
                   <a
                     appCatalogRowLink
+                    class="md:block md:w-full md:truncate"
                     [routerLink]="[uea.id, 'edit']"
+                    [title]="uea.nombre"
                     [attr.data-testid]="'edit-uea-' + uea.id"
                   >
                     {{ uea.nombre }}
