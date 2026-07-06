@@ -109,10 +109,10 @@ describe('AnnualPlanGridComponent', () => {
 
     fixture.componentInstance.save();
 
+    // PCyTI is catalog-derived (read-only) so it's dropped from the payload; only the
+    // editable cells/marks are sent.
     expect(saveEntries).toHaveBeenCalledWith(2027, {
-      entries: [
-        expect.objectContaining({ id: 1, gruposI: '1', cupoI: '15', marks: { PCYTI: 'X' } }),
-      ],
+      entries: [expect.objectContaining({ id: 1, gruposI: '1', cupoI: '15', marks: {} })],
     });
     expect(emitted).toEqual(plan);
   });

@@ -20,6 +20,15 @@ export const PROGRAM_CODES: readonly ProgramCode[] = [
 ];
 
 /**
+ * Program marks the coordinator can edit. `PCYTI` is excluded: its obligatoria/optativa
+ * mark is derived from the UEA catalog `tipo` and re-derived server-side, so it is never
+ * part of the save payload (like clave/nombre/modalidad snapshots).
+ */
+export const EDITABLE_PROGRAM_CODES: readonly ProgramCode[] = PROGRAM_CODES.filter(
+  (code) => code !== 'PCYTI',
+);
+
+/**
  * A group/quota cell is valid when empty (`null`/`""`), `"*"`, or a positive
  * integer written as digits. Mirrors the DB `CHECK` so inline validation matches
  * what the backend re-validates on save.
@@ -62,10 +71,14 @@ function normalizeCell(value: string): AnnualPlanCell {
   return v === '' ? null : v;
 }
 
-/** Drops empty/absent marks so the payload only carries set program codes. */
+/**
+ * Keeps only the editable program marks that are set. Empty/absent marks and the
+ * catalog-derived `PCYTI` are dropped, so the payload carries just what the coordinator
+ * can actually change.
+ */
 function cleanMarks(marks: AnnualPlanMarks): AnnualPlanMarks {
   const out: AnnualPlanMarks = {};
-  for (const code of PROGRAM_CODES) {
+  for (const code of EDITABLE_PROGRAM_CODES) {
     const mark = marks[code];
     if (mark) {
       out[code] = mark;

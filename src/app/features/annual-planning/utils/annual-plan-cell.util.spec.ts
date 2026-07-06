@@ -44,7 +44,8 @@ describe('buildSaveEntriesRequest', () => {
         cupoP: '  ',
         gruposO: '2',
         cupoO: '15',
-        marks: { P_FIS: 'X', PEMA: undefined },
+        // PCYTI is catalog-derived and must be dropped; PEMA absent; P_FIS kept.
+        marks: { P_FIS: 'X', PCYTI: 'X', PEMA: undefined },
       },
     ];
 
@@ -66,6 +67,7 @@ describe('buildSaveEntriesRequest', () => {
     });
     expect(request.entries[0]).not.toHaveProperty('clave');
     expect(request.entries[0]).not.toHaveProperty('modalidad');
+    expect(request.entries[0]!.marks).not.toHaveProperty('PCYTI');
   });
 
   it('exposes the 9 program codes in format order', () => {

@@ -176,6 +176,9 @@ export class AnnualPlanMockStore {
     for (const update of request.entries) {
       const entry = plan.entries.find((e) => e.id === update.id)!;
       // modalidad/clave/nombre are catalog snapshots — never overwritten on save.
+      // PCyTI is derived from the catalog `tipo`, so it's kept (not sent in the request);
+      // only the 8 editable program marks come from the client.
+      const pcyti = entry.marks.PCYTI;
       Object.assign(entry, {
         gruposI: update.gruposI,
         cupoI: update.cupoI,
@@ -183,7 +186,7 @@ export class AnnualPlanMockStore {
         cupoP: update.cupoP,
         gruposO: update.gruposO,
         cupoO: update.cupoO,
-        marks: { ...update.marks },
+        marks: { ...(pcyti ? { PCYTI: pcyti } : {}), ...update.marks },
       });
     }
     return clone(plan);
