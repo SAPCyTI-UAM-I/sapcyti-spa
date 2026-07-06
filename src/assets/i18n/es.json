@@ -462,7 +462,7 @@
       "CONFIRM_MESSAGE": "¿Confirmas el cambio de estado de la planeación?",
       "CONFIRM_TITLE": "Confirmar cambio de estado",
       "DOWNLOAD": "Descargar Excel",
-      "REOPEN_WARNING": "El plan se sincronizará con el catálogo actual: los nombres se actualizarán y las UEAs desactivadas desaparecerán con sus valores capturados.",
+      "REOPEN_WARNING": "Acción destructiva: al reabrir, el plan deja de estar congelado y se sincroniza con el catálogo actual. Esto puede alterar datos históricos: los nombres se actualizarán y las UEAs desactivadas desaparecerán junto con sus valores capturados, sin posibilidad de recuperarlos.",
       "RUN_COMPARE": "Comparar",
       "TITLE": "Planeación"
     },

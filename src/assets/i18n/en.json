@@ -462,7 +462,7 @@
       "CONFIRM_MESSAGE": "Do you confirm the plan status change?",
       "CONFIRM_TITLE": "Confirm status change",
       "DOWNLOAD": "Download Excel",
-      "REOPEN_WARNING": "The plan will sync with the current catalog: names will update and deactivated UEAs will disappear along with their captured values.",
+      "REOPEN_WARNING": "Destructive action: reopening un-freezes the plan and syncs it with the current catalog. This may alter historical data: names will be updated and deactivated UEAs will disappear along with their captured values, which cannot be recovered.",
       "RUN_COMPARE": "Compare",
       "TITLE": "Plan"
     },
