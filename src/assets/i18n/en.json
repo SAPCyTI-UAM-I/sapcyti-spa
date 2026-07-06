@@ -456,10 +456,14 @@
     "DETAIL": {
       "BACK": "Back to plans",
       "BREADCRUMB": "Plan",
+      "COMPARE": "Compare with Excel",
+      "COMPARE_HINT": "Upload the offering .xlsx to review differences against the active catalog. It is optional and does not change the plan.",
+      "COMPARE_TITLE": "Compare against the catalog",
       "CONFIRM_MESSAGE": "Do you confirm the plan status change?",
       "CONFIRM_TITLE": "Confirm status change",
       "DOWNLOAD": "Download Excel",
       "REOPEN_WARNING": "The plan will sync with the current catalog: names will update and deactivated UEAs will disappear along with their captured values.",
+      "RUN_COMPARE": "Compare",
       "TITLE": "Plan"
     },
     "ERRORS": {
@@ -484,17 +488,20 @@
     "LEGEND": {
       "O": "Elective",
       "STAR": "Opens on demand",
-      "X": "Compulsory for this program",
-      "X_O": "Compulsory or elective"
+      "X": "Compulsory for this program"
     },
     "LIST": {
       "EMPTY": "No plans yet.",
       "NEW": "New plan",
-      "OPEN": "Open",
       "STATUS": "Status",
       "SUBTITLE": "Review and edit the annual UEA offering by year.",
       "TITLE": "Annual planning",
       "YEAR": "Year"
+    },
+    "MODALITY": {
+      "MIXTA": "Mixed",
+      "PRESENCIAL": "In-person",
+      "VIRTUAL": "Online"
     },
     "STATES": {
       "LOAD_ERROR": "Could not load the plans."
@@ -509,6 +516,7 @@
       "CLEAN": "The file matches the catalog. You can create the plan.",
       "CREATE": "Create plan",
       "DIFFERENCES_HINT": "Differences were found. You can fix them in the catalog and re-check, or continue anyway.",
+      "INTRO": "Created from the active UEA catalog. If the previous year's plan exists its values are copied; otherwise it starts blank.",
       "MISSING_IN_CATALOG": "Keys in the file not in the active catalog",
       "MISSING_IN_FILE": "Active UEAs missing from the file",
       "MISSING_PROGRAM": "Missing column",

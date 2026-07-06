@@ -456,10 +456,14 @@
     "DETAIL": {
       "BACK": "Volver a planeaciones",
       "BREADCRUMB": "Planeación",
+      "COMPARE": "Comparar con Excel",
+      "COMPARE_HINT": "Sube el .xlsx de la oferta para revisar diferencias contra el catálogo activo. Es opcional y no modifica la planeación.",
+      "COMPARE_TITLE": "Comparar contra el catálogo",
       "CONFIRM_MESSAGE": "¿Confirmas el cambio de estado de la planeación?",
       "CONFIRM_TITLE": "Confirmar cambio de estado",
       "DOWNLOAD": "Descargar Excel",
       "REOPEN_WARNING": "El plan se sincronizará con el catálogo actual: los nombres se actualizarán y las UEAs desactivadas desaparecerán con sus valores capturados.",
+      "RUN_COMPARE": "Comparar",
       "TITLE": "Planeación"
     },
     "ERRORS": {
@@ -484,17 +488,20 @@
     "LEGEND": {
       "O": "Optativa",
       "STAR": "Se abrirá conforme a demanda",
-      "X": "Obligatoria para este posgrado",
-      "X_O": "Obligatoria u optativa"
+      "X": "Obligatoria para este posgrado"
     },
     "LIST": {
       "EMPTY": "Aún no hay planeaciones registradas.",
       "NEW": "Nueva planeación",
-      "OPEN": "Abrir",
       "STATUS": "Estado",
       "SUBTITLE": "Consulta y edita la oferta anual de UEAs por año.",
       "TITLE": "Planeación anual",
       "YEAR": "Año"
+    },
+    "MODALITY": {
+      "MIXTA": "Mixta",
+      "PRESENCIAL": "Presencial",
+      "VIRTUAL": "Virtual"
     },
     "STATES": {
       "LOAD_ERROR": "No se pudieron cargar las planeaciones."
@@ -509,6 +516,7 @@
       "CLEAN": "El archivo coincide con el catálogo. Puedes crear la planeación.",
       "CREATE": "Crear planeación",
       "DIFFERENCES_HINT": "Se encontraron diferencias. Puedes corregirlas en el catálogo y volver a revisar, o continuar de todos modos.",
+      "INTRO": "Se crea con las UEAs activas del catálogo. Si existe la planeación del año anterior, se copian sus valores; si no, queda en blanco.",
       "MISSING_IN_CATALOG": "Claves en el archivo que no están en el catálogo activo",
       "MISSING_IN_FILE": "UEAs activas que faltan en el archivo",
       "MISSING_PROGRAM": "Columna faltante",
