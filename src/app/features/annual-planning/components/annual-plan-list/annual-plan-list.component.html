@@ -23,24 +23,25 @@
           <tr class="border-outline text-text-secondary text-label-md border-b text-left">
             <th class="p-md">{{ 'ANNUAL_PLANNING.LIST.YEAR' | translate }}</th>
             <th class="p-md">{{ 'ANNUAL_PLANNING.LIST.STATUS' | translate }}</th>
-            <th class="p-md"></th>
           </tr>
         </thead>
         <tbody>
           @for (plan of plans(); track plan.year) {
             <tr class="border-outline hover:bg-surface-subtle border-b last:border-0">
-              <td class="p-md text-body-md font-medium">{{ plan.year }}</td>
+              <td class="p-md">
+                <a
+                  [routerLink]="[plan.year]"
+                  class="text-primary text-body-md font-medium hover:underline"
+                  [attr.data-testid]="'open-plan-' + plan.year"
+                >
+                  {{ plan.year }}
+                </a>
+              </td>
               <td class="p-md">
                 <app-catalog-tag
                   [value]="'ANNUAL_PLANNING.STATUS.' + plan.status | translate"
                   [severity]="statusTagSeverity(plan.status)"
                 />
-              </td>
-              <td class="p-md text-right">
-                <a [routerLink]="[plan.year]" class="text-primary text-body-md hover:underline">
-                  {{ 'ANNUAL_PLANNING.LIST.OPEN' | translate }}
-                  <i class="pi pi-arrow-right ml-xs text-[12px]"></i>
-                </a>
               </td>
             </tr>
           }
