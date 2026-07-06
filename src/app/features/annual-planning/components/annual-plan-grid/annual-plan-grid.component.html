@@ -13,19 +13,17 @@
     <p-message severity="error" [text]="error() | domainError: errorScope" />
   }
 
-  <!--
-    Responsive: on md+ this is a spreadsheet with a two-level sticky header and two
-    sticky-left columns inside a scroll box. Below md the table collapses to one stacked
-    card per UEA (label/value pairs) — no frozen rows/columns to cover the small screen.
-  -->
-  <div
-    class="annual-grid-scroll border-outline bg-surface rounded-xl border md:max-h-[70vh] md:overflow-auto"
-  >
-    <table class="annual-grid text-body-md block w-full border-collapse md:table md:w-max">
-      <thead class="hidden md:table-header-group">
+  <div class="annual-grid-scroll border-outline max-h-[70vh] overflow-auto rounded-xl border">
+    <table class="annual-grid text-body-md w-max border-collapse">
+      <!--
+        Two-level sticky header. Row 1 is pinned to a fixed height (h-9 = 2.25rem) and
+        every cell is whitespace-nowrap, so the row-2 offset (top-9) is deterministic
+        regardless of font/zoom (rem-based) — no fragile measured value.
+      -->
+      <thead>
         <tr class="text-label-md h-9">
           <th
-            class="bg-surface-subtle border-outline p-sm sticky top-0 left-0 z-30 w-24 border text-left whitespace-nowrap"
+            class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-24 border text-left whitespace-nowrap md:left-0"
             rowspan="2"
             [attr.aria-sort]="ariaSort('clave')"
           >
@@ -35,7 +33,7 @@
             </button>
           </th>
           <th
-            class="bg-surface-subtle border-outline p-sm sticky top-0 left-24 z-30 w-56 border text-left whitespace-nowrap"
+            class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-56 border text-left whitespace-nowrap md:left-24"
             rowspan="2"
             [attr.aria-sort]="ariaSort('nombre')"
           >
@@ -86,71 +84,39 @@
           }
         </tr>
       </thead>
-      <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+      <tbody>
         @for (row of orderedRows(); track row.entry.id) {
           @let i = row.index;
           @let entry = row.entry;
-          <tr
-            class="p-md gap-x-md gap-y-sm grid grid-cols-2 md:table-row md:p-0"
-            [formGroup]="rowGroup(i)"
-          >
-            <td
-              class="md:bg-surface md:border-outline md:p-sm md:sticky md:left-0 md:z-10 md:border md:font-medium"
-            >
-              <span class="text-caption text-text-secondary block md:hidden">
-                {{ 'ANNUAL_PLANNING.GRID.CLAVE' | translate }}
-              </span>
+          <tr [formGroup]="rowGroup(i)">
+            <td class="bg-surface border-outline p-sm z-10 border font-medium md:sticky md:left-0">
               {{ entry.clave }}
             </td>
-            <td
-              class="md:bg-surface md:border-outline md:p-sm col-span-2 md:sticky md:left-24 md:z-10 md:border"
-            >
-              <span class="text-caption text-text-secondary block md:hidden">
-                {{ 'ANNUAL_PLANNING.GRID.NAME' | translate }}
-              </span>
+            <td class="bg-surface border-outline p-sm z-10 border md:sticky md:left-24">
               {{ entry.nombre }}
             </td>
 
-            @for (tc of termColumns(); track tc.label) {
-              <td class="md:border-outline md:p-xs md:border md:text-center">
-                <span class="text-caption text-text-secondary block md:hidden">
-                  {{ tc.label }} · {{ 'ANNUAL_PLANNING.GRID.GROUPS' | translate }}
-                </span>
+            @for (cell of cellFields; track cell) {
+              <td class="border-outline p-xs border text-center">
                 @if (editable()) {
                   <input
                     type="text"
                     class="border-outline focus:border-primary px-xs w-14 rounded border bg-transparent py-[2px] text-center outline-none"
-                    [class.border-error]="cellInvalid(i, tc.grupos)"
-                    [formControlName]="tc.grupos"
+                    [class.border-error]="cellInvalid(i, cell)"
+                    [formControlName]="cell"
                   />
                 } @else {
-                  <span>{{ rowGroup(i).get(tc.grupos)?.value }}</span>
-                }
-              </td>
-              <td class="md:border-outline md:p-xs md:border md:text-center">
-                <span class="text-caption text-text-secondary block md:hidden">
-                  {{ tc.label }} · {{ 'ANNUAL_PLANNING.GRID.QUOTA' | translate }}
-                </span>
-                @if (editable()) {
-                  <input
-                    type="text"
-                    class="border-outline focus:border-primary px-xs w-14 rounded border bg-transparent py-[2px] text-center outline-none"
-                    [class.border-error]="cellInvalid(i, tc.cupo)"
-                    [formControlName]="tc.cupo"
-                  />
-                } @else {
-                  <span>{{ rowGroup(i).get(tc.cupo)?.value }}</span>
+                  <span>{{ rowGroup(i).get(cell)?.value }}</span>
                 }
               </td>
             }
 
             @for (code of programCodes; track code) {
-              <td class="md:border-outline md:border md:p-0 md:text-center">
-                <span class="text-caption text-text-secondary block md:hidden">{{ code }}</span>
+              <td class="border-outline border p-0 text-center">
                 @if (editable() && !readonlyMark(code)) {
                   <button
                     type="button"
-                    class="hover:bg-surface-subtle focus:bg-surface-subtle border-outline p-sm w-full rounded border outline-none md:h-full md:rounded-none md:border-0"
+                    class="hover:bg-surface-subtle focus:bg-surface-subtle p-sm h-full w-full outline-none"
                     [attr.aria-label]="
                       code + ': ' + (markAt(i, code) ?? ('ANNUAL_PLANNING.GRID.EMPTY' | translate))
                     "
@@ -164,10 +130,7 @@
               </td>
             }
 
-            <td class="md:border-outline md:p-sm md:w-40 md:border md:text-center">
-              <span class="text-caption text-text-secondary block md:hidden">
-                {{ 'ANNUAL_PLANNING.GRID.MODALITY' | translate }}
-              </span>
+            <td class="border-outline p-sm w-40 border text-center">
               {{ 'ANNUAL_PLANNING.MODALITY.' + entry.modalidad | translate }}
             </td>
           </tr>
