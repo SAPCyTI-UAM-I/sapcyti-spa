@@ -30,6 +30,16 @@
           </div>
 
           <div class="gap-sm flex flex-wrap">
+            @if (plan.status === 'BORRADOR') {
+              <p-button
+                severity="secondary"
+                variant="outlined"
+                icon="pi pi-upload"
+                data-testid="compare-excel"
+                [label]="'ANNUAL_PLANNING.DETAIL.COMPARE' | translate"
+                (onClick)="openCheckDialog()"
+              />
+            }
             <p-button
               severity="secondary"
               icon="pi pi-file-excel"
@@ -77,6 +87,106 @@
       [label]="'COMMON.ACTIONS.CONFIRM' | translate"
       [loading]="changingStatus()"
       (onClick)="confirmStatusChange()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- HU-49 — optional Excel comparison against the active catalog. -->
+<p-dialog
+  [header]="'ANNUAL_PLANNING.DETAIL.COMPARE_TITLE' | translate"
+  [visible]="showCheckDialog()"
+  [modal]="true"
+  [style]="{ width: '34rem' }"
+  (onHide)="closeCheckDialog()"
+>
+  <div class="gap-md flex flex-col">
+    <p class="text-body-md text-text-secondary">
+      {{ 'ANNUAL_PLANNING.DETAIL.COMPARE_HINT' | translate }}
+    </p>
+
+    <div class="gap-sm flex items-center">
+      <label
+        for="compare-file"
+        class="bg-primary hover:bg-primary-hover text-on-primary px-md py-sm text-label-md cursor-pointer rounded-lg font-medium transition-colors"
+      >
+        <i class="pi pi-folder-open mr-xs"></i>{{ 'ANNUAL_PLANNING.WIZARD.BROWSE' | translate }}
+      </label>
+      <span class="text-text-secondary text-body-md truncate">
+        {{ checkFile() ? checkFile()!.name : ('ANNUAL_PLANNING.WIZARD.NO_FILE' | translate) }}
+      </span>
+      <input
+        id="compare-file"
+        type="file"
+        accept=".xlsx"
+        class="sr-only"
+        (change)="onCheckFileChange($event)"
+      />
+    </div>
+
+    @if (checkError()) {
+      @if (checkFileMessage()) {
+        <p-message severity="error" [text]="checkFileMessage()!" />
+      } @else {
+        <p-message severity="error" [text]="errorScope + '.' + checkError() | translate" />
+      }
+    }
+
+    @if (checkReport(); as report) {
+      @if (reportIsClean()) {
+        <p-message severity="success" [text]="'ANNUAL_PLANNING.WIZARD.CLEAN' | translate" />
+      } @else {
+        @if (report.missingInCatalog.length) {
+          <div class="gap-xs flex flex-col">
+            <h3 class="text-label-md">
+              {{ 'ANNUAL_PLANNING.WIZARD.MISSING_IN_CATALOG' | translate }}
+            </h3>
+            <ul class="text-body-md ml-md list-disc">
+              @for (row of report.missingInCatalog; track row.clave) {
+                <li>{{ row.clave }} — {{ row.nombre }}</li>
+              }
+            </ul>
+          </div>
+        }
+        @if (report.missingInFile.length) {
+          <div class="gap-xs flex flex-col">
+            <h3 class="text-label-md">
+              {{ 'ANNUAL_PLANNING.WIZARD.MISSING_IN_FILE' | translate }}
+            </h3>
+            <ul class="text-body-md ml-md list-disc">
+              @for (row of report.missingInFile; track row.clave) {
+                <li>{{ row.clave }} — {{ row.nombre }}</li>
+              }
+            </ul>
+          </div>
+        }
+        @if (report.nameMismatches.length) {
+          <div class="gap-xs flex flex-col">
+            <h3 class="text-label-md">
+              {{ 'ANNUAL_PLANNING.WIZARD.NAME_MISMATCHES' | translate }}
+            </h3>
+            <ul class="text-body-md ml-md list-disc">
+              @for (row of report.nameMismatches; track row.clave) {
+                <li>{{ row.clave }}: «{{ row.nombreCatalogo }}» ≠ «{{ row.nombreArchivo }}»</li>
+              }
+            </ul>
+          </div>
+        }
+      }
+    }
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      [label]="'COMMON.ACTIONS.CLOSE' | translate"
+      (onClick)="closeCheckDialog()"
+    />
+    <p-button
+      data-testid="run-compare"
+      [label]="'ANNUAL_PLANNING.DETAIL.RUN_COMPARE' | translate"
+      [loading]="checking()"
+      [disabled]="!checkFile()"
+      (onClick)="runCheck()"
     />
   </ng-template>
 </p-dialog>

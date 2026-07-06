@@ -101,4 +101,24 @@ describe('AnnualPlanDetailComponent', () => {
 
     expect(exportFn).toHaveBeenCalledWith(2027);
   });
+
+  it('runs the optional Excel comparison and stores the report', async () => {
+    const report = {
+      missingInCatalog: [{ clave: '2156099', nombre: 'X' }],
+      missingInFile: [],
+      nameMismatches: [],
+      unknownPrograms: [],
+      missingPrograms: [],
+    };
+    const check = vi.fn(() => of(report));
+    const fixture = await setup({ get: vi.fn(() => of(plan)), check });
+
+    fixture.componentInstance.openCheckDialog();
+    fixture.componentInstance.checkFile.set(new File(['x'], 'plan.xlsx'));
+    fixture.componentInstance.runCheck();
+
+    expect(check).toHaveBeenCalled();
+    expect(fixture.componentInstance.checkReport()).toEqual(report);
+    expect(fixture.componentInstance.reportIsClean()).toBe(false);
+  });
 });

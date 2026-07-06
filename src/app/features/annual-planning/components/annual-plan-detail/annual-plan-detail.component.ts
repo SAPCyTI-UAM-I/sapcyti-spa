@@ -16,7 +16,8 @@ import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { AnnualPlanDetail, AnnualPlanStatus } from '../../../../models';
+import { getApiErrorMessage } from '../../../../core/errors/utils/parse-api-error.util';
+import { AnnualPlanDetail, AnnualPlanStatus, FormatCheckReport } from '../../../../models';
 import { CatalogTagComponent, LoadStateComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { AnnualPlanService } from '../../services/annual-plan.service';
@@ -71,6 +72,26 @@ export class AnnualPlanDetailComponent implements OnInit {
   readonly pendingStatus = signal<AnnualPlanStatus | null>(null);
   readonly changingStatus = signal(false);
   readonly exporting = signal(false);
+
+  // HU-49 — optional Excel comparison against the active catalog (draft only).
+  readonly showCheckDialog = signal(false);
+  readonly checking = signal(false);
+  readonly checkFile = signal<File | null>(null);
+  readonly checkReport = signal<FormatCheckReport | null>(null);
+  readonly checkError = signal<AnnualPlanError | null>(null);
+  readonly checkFileMessage = signal<string | null>(null);
+
+  readonly reportIsClean = computed(() => {
+    const report = this.checkReport();
+    return (
+      !!report &&
+      report.missingInCatalog.length === 0 &&
+      report.missingInFile.length === 0 &&
+      report.nameMismatches.length === 0 &&
+      report.unknownPrograms.length === 0 &&
+      report.missingPrograms.length === 0
+    );
+  });
 
   readonly statusTagSeverity = statusTagSeverity;
 
@@ -157,6 +178,55 @@ export class AnnualPlanDetailComponent implements OnInit {
       .subscribe({
         next: (blob) => this.triggerDownload(blob),
         error: (error) => this.actionError.set(mapAnnualPlanError(error)),
+      });
+  }
+
+  openCheckDialog(): void {
+    this.checkFile.set(null);
+    this.checkReport.set(null);
+    this.checkError.set(null);
+    this.checkFileMessage.set(null);
+    this.showCheckDialog.set(true);
+  }
+
+  closeCheckDialog(): void {
+    if (this.checking()) {
+      return;
+    }
+    this.showCheckDialog.set(false);
+  }
+
+  onCheckFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.checkFile.set(input.files?.[0] ?? null);
+    this.checkReport.set(null);
+    this.checkError.set(null);
+    this.checkFileMessage.set(null);
+  }
+
+  runCheck(): void {
+    const file = this.checkFile();
+    if (!file) {
+      return;
+    }
+    this.checking.set(true);
+    this.checkError.set(null);
+    this.checkFileMessage.set(null);
+    this.service
+      .check(file)
+      .pipe(
+        finalize(() => this.checking.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (report) => this.checkReport.set(report),
+        error: (error) => {
+          const mapped = mapAnnualPlanError(error);
+          this.checkError.set(mapped);
+          if (mapped === 'file_format_invalid') {
+            this.checkFileMessage.set(getApiErrorMessage(error) ?? null);
+          }
+        },
       });
   }
 

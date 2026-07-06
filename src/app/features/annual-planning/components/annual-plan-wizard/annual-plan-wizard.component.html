@@ -1,181 +1,41 @@
-<section class="gap-lg mx-auto flex w-full max-w-2xl flex-col">
+<section class="gap-lg mx-auto flex w-full max-w-md flex-col">
   <h1 class="text-h2">{{ 'ANNUAL_PLANNING.WIZARD.TITLE' | translate }}</h1>
-
-  <!-- Step indicator -->
-  <ol class="text-label-md text-text-secondary gap-md flex">
-    <li [class.text-primary]="step() === 1">
-      1. {{ 'ANNUAL_PLANNING.WIZARD.STEP_YEAR' | translate }}
-    </li>
-    <li [class.text-primary]="step() === 2">
-      2. {{ 'ANNUAL_PLANNING.WIZARD.STEP_CHECK' | translate }}
-    </li>
-    <li [class.text-primary]="step() === 3">
-      3. {{ 'ANNUAL_PLANNING.WIZARD.STEP_REVIEW' | translate }}
-    </li>
-  </ol>
+  <p class="text-body-md text-text-secondary">{{ 'ANNUAL_PLANNING.WIZARD.INTRO' | translate }}</p>
 
   <div class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
     @if (error()) {
-      @if (fileFormatMessage()) {
-        <p-message severity="error" [text]="fileFormatMessage()!" />
-      } @else {
-        <p-message severity="error" [text]="errorScope + '.' + error() | translate" />
-        @if (error() === 'already_exists') {
-          <a
-            [routerLink]="['/annual-planning', form.controls.year.value]"
-            class="text-primary text-body-md underline"
-          >
-            {{ 'ANNUAL_PLANNING.WIZARD.OPEN_EXISTING' | translate }}
-          </a>
-        }
+      <p-message severity="error" [text]="errorScope + '.' + error() | translate" />
+      @if (error() === 'already_exists') {
+        <a
+          [routerLink]="['/annual-planning', form.controls.year.value]"
+          class="text-primary text-body-md underline"
+        >
+          {{ 'ANNUAL_PLANNING.WIZARD.OPEN_EXISTING' | translate }}
+        </a>
       }
     }
 
-    <!-- Step 1: year -->
-    @if (step() === 1) {
-      <form class="gap-md flex flex-col" [formGroup]="form" (ngSubmit)="toStep2()">
-        <div class="gap-xs flex flex-col">
-          <label for="year" class="text-label-md">
-            {{ 'ANNUAL_PLANNING.WIZARD.YEAR_LABEL' | translate }}
-          </label>
-          <input id="year" pInputText type="number" formControlName="year" class="w-40" />
-          <app-field-error [control]="form.controls.year" [submitted]="submitted()" />
-        </div>
-        <div class="gap-sm flex justify-end">
-          <p-button
-            type="button"
-            severity="secondary"
-            [label]="'COMMON.ACTIONS.CANCEL' | translate"
-            (onClick)="cancel()"
-          />
-          <p-button type="submit" [label]="'COMMON.ACTIONS.NEXT' | translate" />
-        </div>
-      </form>
-    }
-
-    <!-- Step 2: upload -->
-    @if (step() === 2) {
-      <div class="gap-md flex flex-col">
-        <p class="text-body-md text-text-secondary">
-          {{ 'ANNUAL_PLANNING.WIZARD.UPLOAD_HINT' | translate }}
-        </p>
-        <div class="gap-sm flex items-center">
-          <label
-            for="check-file"
-            class="bg-primary hover:bg-primary-hover text-on-primary px-md py-sm text-label-md cursor-pointer rounded-lg font-medium transition-colors"
-          >
-            <i class="pi pi-folder-open mr-xs"></i>
-            {{ 'ANNUAL_PLANNING.WIZARD.BROWSE' | translate }}
-          </label>
-          <span class="text-text-secondary text-body-md truncate">
-            {{
-              selectedFile() ? selectedFile()!.name : ('ANNUAL_PLANNING.WIZARD.NO_FILE' | translate)
-            }}
-          </span>
-          <input
-            id="check-file"
-            type="file"
-            accept=".xlsx"
-            class="sr-only"
-            (change)="onFileChange($event)"
-          />
-        </div>
-        <div class="gap-sm flex justify-between">
-          <p-button
-            type="button"
-            severity="secondary"
-            [label]="'COMMON.ACTIONS.BACK' | translate"
-            (onClick)="backToStep1()"
-          />
-          <p-button
-            type="button"
-            [label]="'ANNUAL_PLANNING.WIZARD.RUN_CHECK' | translate"
-            [loading]="checking()"
-            [disabled]="!selectedFile()"
-            (onClick)="runCheck()"
-          />
-        </div>
+    <form class="gap-md flex flex-col" [formGroup]="form" (ngSubmit)="create()">
+      <div class="gap-xs flex flex-col">
+        <label for="year" class="text-label-md">
+          {{ 'ANNUAL_PLANNING.WIZARD.YEAR_LABEL' | translate }}
+        </label>
+        <input id="year" pInputText type="number" formControlName="year" class="w-40" />
+        <app-field-error [control]="form.controls.year" [submitted]="submitted()" />
       </div>
-    }
-
-    <!-- Step 3: report -->
-    @if (step() === 3) {
-      <div class="gap-md flex flex-col">
-        @if (reportIsClean()) {
-          <p-message severity="success" [text]="'ANNUAL_PLANNING.WIZARD.CLEAN' | translate" />
-        } @else {
-          <p class="text-body-md text-text-secondary">
-            {{ 'ANNUAL_PLANNING.WIZARD.DIFFERENCES_HINT' | translate }}
-          </p>
-
-          @if (report()!.missingInCatalog.length) {
-            <div class="gap-xs flex flex-col">
-              <h3 class="text-label-md">
-                {{ 'ANNUAL_PLANNING.WIZARD.MISSING_IN_CATALOG' | translate }}
-              </h3>
-              <ul class="text-body-md ml-md list-disc">
-                @for (row of report()!.missingInCatalog; track row.clave) {
-                  <li>{{ row.clave }} — {{ row.nombre }}</li>
-                }
-              </ul>
-            </div>
-          }
-          @if (report()!.missingInFile.length) {
-            <div class="gap-xs flex flex-col">
-              <h3 class="text-label-md">
-                {{ 'ANNUAL_PLANNING.WIZARD.MISSING_IN_FILE' | translate }}
-              </h3>
-              <ul class="text-body-md ml-md list-disc">
-                @for (row of report()!.missingInFile; track row.clave) {
-                  <li>{{ row.clave }} — {{ row.nombre }}</li>
-                }
-              </ul>
-            </div>
-          }
-          @if (report()!.nameMismatches.length) {
-            <div class="gap-xs flex flex-col">
-              <h3 class="text-label-md">
-                {{ 'ANNUAL_PLANNING.WIZARD.NAME_MISMATCHES' | translate }}
-              </h3>
-              <ul class="text-body-md ml-md list-disc">
-                @for (row of report()!.nameMismatches; track row.clave) {
-                  <li>{{ row.clave }}: «{{ row.nombreCatalogo }}» ≠ «{{ row.nombreArchivo }}»</li>
-                }
-              </ul>
-            </div>
-          }
-          @if (report()!.unknownPrograms.length || report()!.missingPrograms.length) {
-            <div class="gap-xs flex flex-col">
-              <h3 class="text-label-md">
-                {{ 'ANNUAL_PLANNING.WIZARD.PROGRAM_NOTICE' | translate }}
-              </h3>
-              <ul class="text-body-md ml-md list-disc">
-                @for (program of report()!.unknownPrograms; track program) {
-                  <li>{{ 'ANNUAL_PLANNING.WIZARD.UNKNOWN_PROGRAM' | translate }}: {{ program }}</li>
-                }
-                @for (program of report()!.missingPrograms; track program) {
-                  <li>{{ 'ANNUAL_PLANNING.WIZARD.MISSING_PROGRAM' | translate }}: {{ program }}</li>
-                }
-              </ul>
-            </div>
-          }
-        }
-
-        <div class="gap-sm flex justify-between">
-          <p-button
-            type="button"
-            severity="secondary"
-            [label]="'COMMON.ACTIONS.BACK' | translate"
-            (onClick)="step.set(2)"
-          />
-          <p-button
-            type="button"
-            [label]="'ANNUAL_PLANNING.WIZARD.CREATE' | translate"
-            [loading]="creating()"
-            (onClick)="create()"
-          />
-        </div>
+      <div class="gap-sm flex justify-end">
+        <p-button
+          type="button"
+          severity="secondary"
+          [label]="'COMMON.ACTIONS.CANCEL' | translate"
+          (onClick)="cancel()"
+        />
+        <p-button
+          type="submit"
+          [label]="'ANNUAL_PLANNING.WIZARD.CREATE' | translate"
+          [loading]="creating()"
+        />
       </div>
-    }
+    </form>
   </div>
 </section>
