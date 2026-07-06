@@ -1,9 +1,18 @@
 <section class="gap-lg mx-auto flex max-w-3xl flex-col" data-testid="uea-edit">
-  <header>
-    <h1 class="text-h2 text-primary font-bold">
-      {{ 'ACADEMIC_CATALOG.UEAS.EDIT.TITLE' | translate }}
-    </h1>
-    <p class="text-text-secondary">{{ 'ACADEMIC_CATALOG.UEAS.EDIT.SUBTITLE' | translate }}</p>
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-h2 text-primary font-bold">
+        {{ 'ACADEMIC_CATALOG.UEAS.EDIT.TITLE' | translate }}
+      </h1>
+      <p class="text-text-secondary">{{ 'ACADEMIC_CATALOG.UEAS.EDIT.SUBTITLE' | translate }}</p>
+    </div>
+    <p-button
+      severity="secondary"
+      variant="outlined"
+      icon="pi pi-arrow-left"
+      [label]="'COMMON.ACTIONS.BACK' | translate"
+      (onClick)="cancel()"
+    />
   </header>
 
   @if (loading()) {

@@ -7,8 +7,8 @@ import {
   UeaCatalogQuery,
   UpdateUeaRequest,
 } from '../../../models';
+import { UEA_CATALOG_SEED } from '../../../shared/mocks/uea-catalog.mock-data';
 import { mockConflict, mockNotFound, nextId, normalizeSearch, page } from './catalog-mock.util';
-import { UEA_CATALOG_SEED } from './uea-mock.seed';
 
 @Injectable({ providedIn: 'root' })
 export class UeaMockStore {

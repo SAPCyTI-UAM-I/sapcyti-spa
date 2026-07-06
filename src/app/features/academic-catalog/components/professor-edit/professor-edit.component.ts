@@ -71,9 +71,11 @@ export class ProfessorEditComponent implements OnInit {
   readonly loading = signal(true);
   readonly submitting = signal(false);
   readonly deactivating = signal(false);
+  readonly restoring = signal(false);
   readonly submitted = signal(false);
   readonly error = signal<CatalogError | null>(null);
   readonly deactivateError = signal<CatalogError | null>(null);
+  readonly restoreError = signal<CatalogError | null>(null);
   readonly professor = signal<ProfessorDetailResponse | null>(null);
   readonly showDeactivateDialog = signal(false);
   /** HU-24: NEMP already assigned → shown read-only with a hint. */
@@ -175,6 +177,29 @@ export class ProfessorEditComponent implements OnInit {
           });
         },
         error: (err) => this.deactivateError.set(mapProfessorError(err)),
+      });
+  }
+
+  /** HU-54 — reactivate an inactive professor in place (same screen as deactivate). */
+  restore(): void {
+    this.restoring.set(true);
+    this.restoreError.set(null);
+    this.service
+      .restoreProfessor(this.professorId)
+      .pipe(
+        finalize(() => this.restoring.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (professor) => {
+          this.professor.set(professor);
+          this.messages.add({
+            severity: 'success',
+            summary: this.translate.instant('ACADEMIC_CATALOG.PROFESSORS.RESTORE.SUCCESS'),
+            life: TOAST_LIFE.DEFAULT,
+          });
+        },
+        error: (err) => this.restoreError.set(mapProfessorError(err)),
       });
   }
 

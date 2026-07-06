@@ -138,8 +138,25 @@
             [label]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.ACTION' | translate"
             (onClick)="openDeactivateDialog()"
           />
+        } @else {
+          <p-button
+            data-testid="restore-professor"
+            severity="success"
+            variant="outlined"
+            icon="pi pi-user-plus"
+            [label]="'ACADEMIC_CATALOG.PROFESSORS.RESTORE.ACTION' | translate"
+            [loading]="restoring()"
+            (onClick)="restore()"
+          />
         }
       </div>
+      @if (restoreError()) {
+        <p-message
+          class="mt-md block"
+          severity="error"
+          [text]="restoreError() | domainError: catalogErrorScope"
+        />
+      }
     }
   }
 </section>

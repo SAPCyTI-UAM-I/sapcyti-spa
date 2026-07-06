@@ -1,6 +1,11 @@
-import { UeaCatalogItem } from '../../../models';
+import { UeaCatalogItem } from '../../models';
 
-/** Seed: catálogo completo PCyTI (UEA_PCyTI_formacion.xlsx). Last 3 inactive for demo. */
+/**
+ * Single source of truth for the mock UEA catalog (UEA_PCyTI_formacion.xlsx).
+ * Last 3 are inactive for demo. Lives in `shared/` so both the academic-catalog
+ * mock store and the annual-planning mock store read the same data — mirroring how
+ * the real backend derives a plan's modalidad/tipo from the actual catalog.
+ */
 export const UEA_CATALOG_SEED: UeaCatalogItem[] = [
   {
     id: 1,
