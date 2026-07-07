@@ -488,7 +488,8 @@
     "LEGEND": {
       "O": "Elective",
       "STAR": "Opens on demand",
-      "X": "Compulsory"
+      "X": "Compulsory",
+      "X_O": "Compulsory or elective"
     },
     "LIST": {
       "EMPTY": "No plans yet.",

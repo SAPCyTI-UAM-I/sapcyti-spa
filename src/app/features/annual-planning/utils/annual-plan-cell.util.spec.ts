@@ -26,10 +26,11 @@ describe('isValidCell', () => {
 });
 
 describe('cycleMark', () => {
-  it('cycles empty → X → O → empty (no combined X/O)', () => {
+  it('cycles empty → X → O → X/O → empty', () => {
     expect(cycleMark(undefined)).toBe('X');
     expect(cycleMark('X')).toBe('O');
-    expect(cycleMark('O')).toBeUndefined();
+    expect(cycleMark('O')).toBe('X/O');
+    expect(cycleMark('X/O')).toBeUndefined();
   });
 });
 

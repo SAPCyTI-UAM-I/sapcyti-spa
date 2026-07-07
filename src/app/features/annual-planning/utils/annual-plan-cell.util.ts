@@ -44,7 +44,7 @@ export function isValidCell(value: string | null | undefined): boolean {
   return /^[0-9]+$/.test(v) && Number(v) > 0;
 }
 
-/** Click cycle for a program mark cell: empty → X → O → empty. */
+/** Click cycle for an editable program mark cell: empty → X → O → X/O → empty. */
 export function cycleMark(current: AnnualPlanMark | undefined): AnnualPlanMark | undefined {
   switch (current) {
     case undefined:
@@ -52,6 +52,8 @@ export function cycleMark(current: AnnualPlanMark | undefined): AnnualPlanMark |
     case 'X':
       return 'O';
     case 'O':
+      return 'X/O';
+    case 'X/O':
       return undefined;
   }
 }

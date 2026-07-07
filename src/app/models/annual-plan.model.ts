@@ -21,8 +21,11 @@ export type ProgramCode =
   | 'PEMA'
   | 'EFMC';
 
-/** Program mark for an entry; an absent key means an empty cell (no combined X/O). */
-export type AnnualPlanMark = 'X' | 'O';
+/**
+ * Program mark for an entry; an absent key means an empty cell. `X/O` (obligatoria u optativa)
+ * applies to the 8 editable posgrado columns; `PCYTI` is only `X`/`O` (derived from the catalog).
+ */
+export type AnnualPlanMark = 'X' | 'O' | 'X/O';
 
 export type AnnualPlanMarks = Partial<Record<ProgramCode, AnnualPlanMark>>;
 

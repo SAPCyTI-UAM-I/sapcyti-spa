@@ -488,7 +488,8 @@
     "LEGEND": {
       "O": "Optativa",
       "STAR": "Se abrirá conforme a demanda",
-      "X": "Obligatoria"
+      "X": "Obligatoria",
+      "X_O": "Obligatoria u optativa"
     },
     "LIST": {
       "EMPTY": "Aún no hay planeaciones registradas.",
