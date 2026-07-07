@@ -464,6 +464,10 @@
       "DOWNLOAD": "Download Excel",
       "REOPEN_WARNING": "Destructive action: reopening un-freezes the plan and syncs it with the current catalog. This may alter historical data: names will be updated and deactivated UEAs will disappear along with their captured values, which cannot be recovered.",
       "RUN_COMPARE": "Compare",
+      "SAVE_PANEL_HINT": "Save = draft. Completed = snapshot.",
+      "STATUS_ACTIONS_HINT": "Once you finish reviewing the plan, change its status here.",
+      "TOOLS_PANEL_HINT": "Download the current file or compare it against another Excel file to review catalog differences.",
+      "TOOLS_PANEL_TITLE": "Excel",
       "TITLE": "Plan"
     },
     "ERRORS": {

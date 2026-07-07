@@ -1,9 +1,4 @@
 <section class="gap-lg flex flex-col">
-  <a routerLink="/annual-planning" class="text-primary text-body-md hover:underline">
-    <i class="pi pi-arrow-left mr-xs text-[12px]"></i
-    >{{ 'ANNUAL_PLANNING.DETAIL.BACK' | translate }}
-  </a>
-
   @if (actionError()) {
     <p-message severity="error" [text]="actionError() | domainError: errorScope" />
   }
@@ -18,9 +13,9 @@
   >
     @if (plan(); as plan) {
       <div class="gap-lg flex flex-col">
-        <div class="gap-md flex flex-wrap items-center justify-between">
-          <div class="gap-sm flex items-center">
-            <h1 class="text-h2">
+        <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+          <div class="gap-sm flex flex-wrap items-center">
+            <h1 class="text-h2 text-primary font-bold">
               {{ 'ANNUAL_PLANNING.DETAIL.TITLE' | translate }} {{ plan.year }}
             </h1>
             <app-catalog-tag
@@ -30,41 +25,90 @@
           </div>
 
           <div class="gap-sm flex flex-wrap">
-            @if (plan.status === 'BORRADOR') {
-              <p-button
-                severity="secondary"
-                variant="outlined"
-                icon="pi pi-upload"
-                data-testid="compare-excel"
-                [label]="'ANNUAL_PLANNING.DETAIL.COMPARE' | translate"
-                (onClick)="openCheckDialog()"
-              />
-            }
             <p-button
               severity="secondary"
-              icon="pi pi-file-excel"
-              [label]="'ANNUAL_PLANNING.DETAIL.DOWNLOAD' | translate"
-              [loading]="exporting()"
-              (onClick)="downloadExcel()"
+              variant="outlined"
+              icon="pi pi-arrow-left"
+              [label]="'COMMON.ACTIONS.BACK' | translate"
+              routerLink="/annual-planning"
             />
-            @if (plan.status === 'BORRADOR') {
-              <p-button
-                icon="pi pi-save"
-                severity="secondary"
-                [label]="'COMMON.ACTIONS.SAVE' | translate"
-                [loading]="grid.saving()"
-                (onClick)="grid.save()"
-              />
-            }
-            @for (action of statusActions(); track action.target) {
-              <p-button
-                [label]="action.labelKey | translate"
-                [outlined]="true"
-                (onClick)="askStatusChange(action.target)"
-              />
-            }
           </div>
+        </header>
+
+        <div class="gap-sm grid xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+          @if (plan.status === 'BORRADOR') {
+            <section class="border-outline bg-primary-container/35 p-md gap-sm flex flex-col rounded-xl border">
+              <p class="text-caption text-text-secondary">
+                {{ 'ANNUAL_PLANNING.DETAIL.SAVE_PANEL_HINT' | translate }}
+              </p>
+
+              <div class="gap-sm flex flex-wrap">
+                <p-button
+                  icon="pi pi-save"
+                  [label]="'COMMON.ACTIONS.SAVE' | translate"
+                  [loading]="grid.saving()"
+                  (onClick)="grid.save()"
+                />
+                <p-button
+                  severity="secondary"
+                  variant="outlined"
+                  [label]="'ANNUAL_PLANNING.ACTIONS.FINISH' | translate"
+                  (onClick)="askStatusChange('TERMINADA')"
+                />
+              </div>
+            </section>
+          }
+
+          <section class="border-outline bg-surface p-md gap-sm flex flex-col rounded-xl border">
+            <div class="gap-sm flex items-center">
+              <div
+                class="bg-success/10 text-success flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                aria-hidden="true"
+              >
+                <i class="pi pi-file-excel"></i>
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-label-md text-primary font-semibold">
+                  {{ 'ANNUAL_PLANNING.DETAIL.TOOLS_PANEL_TITLE' | translate }}
+                </h2>
+              </div>
+            </div>
+
+            <div class="gap-sm flex flex-wrap">
+              <p-button
+                severity="success"
+                icon="pi pi-file-excel"
+                [label]="'ANNUAL_PLANNING.DETAIL.DOWNLOAD' | translate"
+                [loading]="exporting()"
+                (onClick)="downloadExcel()"
+              />
+              @if (plan.status === 'BORRADOR') {
+                <p-button
+                  severity="secondary"
+                  variant="outlined"
+                  icon="pi pi-upload"
+                  data-testid="compare-excel"
+                  [label]="'ANNUAL_PLANNING.DETAIL.COMPARE' | translate"
+                  (onClick)="openCheckDialog()"
+                />
+              }
+            </div>
+          </section>
         </div>
+
+        @if (plan.status !== 'BORRADOR' && statusActions().length > 0) {
+          <section class="border-outline bg-surface p-md gap-sm flex flex-col rounded-xl border">
+            <div class="gap-sm flex flex-wrap">
+              @for (action of statusActions(); track action.target) {
+                <p-button
+                  [label]="action.labelKey | translate"
+                  [outlined]="true"
+                  (onClick)="askStatusChange(action.target)"
+                />
+              }
+            </div>
+          </section>
+        }
 
         <app-annual-plan-grid #grid [plan]="plan" (saved)="onSaved($event)" />
       </div>

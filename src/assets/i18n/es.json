@@ -464,6 +464,10 @@
       "DOWNLOAD": "Descargar Excel",
       "REOPEN_WARNING": "Acción destructiva: al reabrir, el plan deja de estar congelado y se sincroniza con el catálogo actual. Esto puede alterar datos históricos: los nombres se actualizarán y las UEAs desactivadas desaparecerán junto con sus valores capturados, sin posibilidad de recuperarlos.",
       "RUN_COMPARE": "Comparar",
+      "SAVE_PANEL_HINT": "Guardar = borrador. Terminada = snapshot.",
+      "STATUS_ACTIONS_HINT": "Cuando termines de revisar la planeación, cambia aquí su estado.",
+      "TOOLS_PANEL_HINT": "Descarga el archivo actual o compáralo contra otro Excel para revisar diferencias con el catálogo.",
+      "TOOLS_PANEL_TITLE": "Excel",
       "TITLE": "Planeación"
     },
     "ERRORS": {
