@@ -57,9 +57,11 @@ describe('ProfessorService', () => {
       expect(professor.active).toBe(true);
     });
 
+    // HU-24: type is one-way and NEMP is immutable — a valid edit keeps both.
     service
       .updateProfessor(11, {
-        professorType: 'EXTERNO',
+        professorType: 'INTERNO',
+        employeeNumber: '30910',
         email: 'laura.martinez@uam.mx',
         firstName: 'Laura',
         firstLastName: 'Martínez',
@@ -67,13 +69,48 @@ describe('ProfessorService', () => {
         commissionMember: false,
       })
       .subscribe((professor) => {
-        expect(professor.professorType).toBe('EXTERNO');
-        expect(professor.employeeNumber).toBeNull();
+        expect(professor.professorType).toBe('INTERNO');
+        expect(professor.employeeNumber).toBe('30910');
+        expect(professor.email).toBe('laura.martinez@uam.mx');
       });
 
     service.deactivateProfessor(11).subscribe((professor) => {
       expect(professor.active).toBe(false);
     });
+  });
+
+  it('enforces HU-24 one-way type and immutable NEMP, and HU-54 restore (mock)', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideAppMockConfig({ professors: true }),
+        ...DATA_LAYER_PROVIDERS,
+        ProfessorService,
+      ],
+    });
+    const service = TestBed.inject(ProfessorService);
+    const base = {
+      email: 'laura.martinez@uam.mx',
+      firstName: 'Laura',
+      firstLastName: 'Martínez',
+      phone: '5544455566',
+      commissionMember: false,
+    };
+
+    // INTERNO → EXTERNO rejected.
+    service
+      .updateProfessor(11, { professorType: 'EXTERNO', ...base })
+      .subscribe({ error: (err) => expect(err.status).toBe(409) });
+
+    // Changing an assigned NEMP rejected.
+    service
+      .updateProfessor(11, { professorType: 'INTERNO', employeeNumber: '99999', ...base })
+      .subscribe({ error: (err) => expect(err.status).toBe(409) });
+
+    // HU-54: restore an inactive professor, then re-restore is rejected.
+    service.deactivateProfessor(11).subscribe();
+    service.restoreProfessor(11).subscribe((professor) => expect(professor.active).toBe(true));
+    service.restoreProfessor(11).subscribe({ error: (err) => expect(err.status).toBe(409) });
   });
 
   it('blocks deactivation when professor has active assignments', async () => {

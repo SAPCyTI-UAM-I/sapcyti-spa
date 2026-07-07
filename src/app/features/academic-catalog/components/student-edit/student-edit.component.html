@@ -13,7 +13,7 @@
       <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
     </div>
   } @else if (displayError(); as errKey) {
-    <p-message severity="error" [text]="translateError(errKey)" />
+    <p-message severity="error" [text]="errorI18nKey(errKey) | translate" />
   }
 
   @if (!loading() && student()) {
@@ -167,11 +167,10 @@
             <label for="lastDegreeObtained" class="text-body font-medium">
               {{ 'ACADEMIC_CATALOG.FIELDS.LAST_DEGREE_OBTAINED' | translate }} *
             </label>
-            <input
-              id="lastDegreeObtained"
-              pInputText
-              formControlName="lastDegreeObtained"
-              [invalid]="isFieldInvalid(form.controls.lastDegreeObtained, submitted())"
+            <app-i18n-select
+              inputId="lastDegreeObtained"
+              controlName="lastDegreeObtained"
+              [options]="degreeOptions"
             />
             <app-field-error
               [control]="form.controls.lastDegreeObtained"
@@ -203,14 +202,6 @@
               [invalid]="isFieldInvalid(form.controls.admissionDate, submitted())"
             />
             <app-field-error [control]="form.controls.admissionDate" [submitted]="submitted()" />
-          </div>
-
-          <div class="gap-xs flex flex-col">
-            <label for="active" class="text-body font-medium">
-              {{ 'ACADEMIC_CATALOG.FIELDS.ACTIVE' | translate }} *
-            </label>
-            <app-i18n-select inputId="active" controlName="active" [options]="activeOptions" />
-            <app-field-error [control]="form.controls.active" [submitted]="submitted()" />
           </div>
 
           <div class="gap-xs flex flex-col">

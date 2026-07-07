@@ -1,0 +1,52 @@
+<section class="gap-lg flex flex-col">
+  <div class="gap-md flex flex-wrap items-center justify-between">
+    <div class="gap-xs flex flex-col">
+      <h1 class="text-h2">{{ 'ANNUAL_PLANNING.LIST.TITLE' | translate }}</h1>
+      <p class="text-body-md text-text-secondary">
+        {{ 'ANNUAL_PLANNING.LIST.SUBTITLE' | translate }}
+      </p>
+    </div>
+    <p-button [label]="'ANNUAL_PLANNING.LIST.NEW' | translate" icon="pi pi-plus" routerLink="new" />
+  </div>
+
+  <div class="border-outline bg-surface rounded-xl border">
+    <app-load-state
+      [loading]="loading()"
+      [error]="loadError()"
+      [empty]="plans().length === 0"
+      emptyMessage="ANNUAL_PLANNING.LIST.EMPTY"
+      errorMessage="ANNUAL_PLANNING.STATES.LOAD_ERROR"
+      (retry)="load()"
+    >
+      <table class="w-full">
+        <thead>
+          <tr class="border-outline text-text-secondary text-label-md border-b text-left">
+            <th class="p-md">{{ 'ANNUAL_PLANNING.LIST.YEAR' | translate }}</th>
+            <th class="p-md">{{ 'ANNUAL_PLANNING.LIST.STATUS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (plan of plans(); track plan.year) {
+            <tr class="border-outline hover:bg-surface-subtle border-b last:border-0">
+              <td class="p-md">
+                <a
+                  [routerLink]="[plan.year]"
+                  class="text-primary text-body-md font-medium hover:underline"
+                  [attr.data-testid]="'open-plan-' + plan.year"
+                >
+                  {{ plan.year }}
+                </a>
+              </td>
+              <td class="p-md">
+                <app-catalog-tag
+                  [value]="'ANNUAL_PLANNING.STATUS.' + plan.status | translate"
+                  [severity]="statusTagSeverity(plan.status)"
+                />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </app-load-state>
+  </div>
+</section>

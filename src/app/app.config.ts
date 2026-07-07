@@ -25,6 +25,9 @@ import { tenantInterceptor } from './core/http/tenant.interceptor';
 import { provideAppMockConfig } from './core/mocks/mock.config';
 import { DATA_LAYER_PROVIDERS } from './core/api/data-layer.providers';
 
+/** Per-load cache-bust token for the i18n JSON (its URL is not content-hashed by the build). */
+const I18N_CACHE_BUST = Date.now();
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -51,7 +54,9 @@ export const appConfig: ApplicationConfig = {
     }),
     ...provideTranslateHttpLoader({
       prefix: '/assets/i18n/',
-      suffix: '.json',
+      // Cache-bust: the i18n JSON URL isn't content-hashed, so browsers/CDNs keep serving the
+      // old file after a deploy. A per-load version forces a fresh fetch (files are tiny).
+      suffix: `.json?v=${I18N_CACHE_BUST}`,
       useHttpBackend: true,
     }),
   ],

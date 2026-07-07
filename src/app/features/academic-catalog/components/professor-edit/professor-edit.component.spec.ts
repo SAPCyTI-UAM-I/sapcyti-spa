@@ -149,4 +149,35 @@ describe('ProfessorEditComponent', () => {
 
     expect(fixture.componentInstance.deactivateError()).toBe('professor_has_active_assignments');
   });
+
+  it('reactivates an inactive professor from the edit actions', async () => {
+    const getProfessor = vi.fn(() => of({ ...professor, active: false }));
+    const restoreProfessor = vi.fn(() => of({ ...professor, active: true }));
+
+    await TestBed.configureTestingModule({
+      imports: [ProfessorEditComponent, TranslateModule.forRoot(), NoopAnimationsModule],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { paramMap: { get: (key: string) => (key === 'professorId' ? '11' : null) } },
+          },
+        },
+        MessageService,
+        { provide: ProfessorService, useValue: { getProfessor, restoreProfessor } },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(ProfessorEditComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fixture.componentInstance.restore();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(restoreProfessor).toHaveBeenCalledWith(11);
+    expect(fixture.componentInstance.professor()?.active).toBe(true);
+  });
 });

@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
+import { fromMockStore } from '../../../core/mocks/from-mock-store.util';
 import { PageResponse } from '../../../models';
 import {
   ProfessorCatalogItem,
@@ -22,37 +23,25 @@ export class ProfessorMockRepository implements ProfessorRepository {
   }
 
   registerProfessor(request: RegisterProfessorRequest): Observable<RegisterProfessorResponse> {
-    try {
-      return of(this.mockStore.createProfessor(request));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromMockStore(() => this.mockStore.createProfessor(request));
   }
 
   getProfessor(professorId: number): Observable<ProfessorDetailResponse> {
-    try {
-      return of(this.mockStore.getProfessor(professorId));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromMockStore(() => this.mockStore.getProfessor(professorId));
   }
 
   updateProfessor(
     professorId: number,
     request: UpdateProfessorRequest,
   ): Observable<ProfessorDetailResponse> {
-    try {
-      return of(this.mockStore.updateProfessor(professorId, request));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromMockStore(() => this.mockStore.updateProfessor(professorId, request));
   }
 
   deactivateProfessor(professorId: number): Observable<ProfessorDetailResponse> {
-    try {
-      return of(this.mockStore.deactivateProfessor(professorId));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromMockStore(() => this.mockStore.deactivateProfessor(professorId));
+  }
+
+  restoreProfessor(professorId: number): Observable<ProfessorDetailResponse> {
+    return fromMockStore(() => this.mockStore.restoreProfessor(professorId));
   }
 }

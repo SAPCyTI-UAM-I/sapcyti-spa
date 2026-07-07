@@ -1,6 +1,7 @@
 import { FormControl, Validators } from '@angular/forms';
 
 import {
+  applyProfessorEditLockRules,
   applyProfessorTypeEmployeeRules,
   buildRegisterProfessorRequest,
   buildUpdateProfessorRequest,
@@ -19,6 +20,32 @@ describe('professor-form.util', () => {
     applyProfessorTypeEmployeeRules('INTERNO', control);
     expect(control.enabled).toBe(true);
     expect(control.hasValidator(Validators.required)).toBe(true);
+  });
+
+  describe('applyProfessorEditLockRules (HU-24)', () => {
+    it('locks type and NEMP for an interno with an assigned number', () => {
+      const type = new FormControl('INTERNO', { nonNullable: true });
+      const nemp = new FormControl('30910', { nonNullable: true });
+
+      applyProfessorEditLockRules(
+        { professorType: 'INTERNO', employeeNumber: '30910' },
+        type,
+        nemp,
+      );
+
+      expect(type.disabled).toBe(true);
+      expect(nemp.disabled).toBe(true);
+    });
+
+    it('keeps type editable for an externo (can become interno)', () => {
+      const type = new FormControl('EXTERNO', { nonNullable: true });
+      const nemp = new FormControl('', { nonNullable: true });
+
+      applyProfessorEditLockRules({ professorType: 'EXTERNO', employeeNumber: null }, type, nemp);
+
+      expect(type.enabled).toBe(true);
+      expect(nemp.enabled).toBe(true);
+    });
   });
 
   it('builds register and update payloads with normalized employee number', () => {

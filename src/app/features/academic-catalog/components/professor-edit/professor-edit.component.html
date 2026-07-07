@@ -63,6 +63,11 @@
         <label class="gap-xs flex flex-col md:col-span-2">
           <span>{{ 'ACADEMIC_CATALOG.FIELDS.EMPLOYEE_NUMBER' | translate }} *</span>
           <input pInputText formControlName="employeeNumber" />
+          @if (nempLocked()) {
+            <small class="text-caption text-text-secondary">
+              {{ 'ACADEMIC_CATALOG.PROFESSORS.EDIT.NEMP_LOCKED' | translate }}
+            </small>
+          }
           <app-field-error [control]="form.controls.employeeNumber" [submitted]="submitted()" />
         </label>
         <div class="gap-md grid grid-cols-[1fr_8rem] md:col-span-2">
@@ -133,8 +138,25 @@
             [label]="'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.ACTION' | translate"
             (onClick)="openDeactivateDialog()"
           />
+        } @else {
+          <p-button
+            data-testid="restore-professor"
+            severity="success"
+            variant="outlined"
+            icon="pi pi-user-plus"
+            [label]="'ACADEMIC_CATALOG.PROFESSORS.RESTORE.ACTION' | translate"
+            [loading]="restoring()"
+            (onClick)="restore()"
+          />
         }
       </div>
+      @if (restoreError()) {
+        <p-message
+          class="mt-md block"
+          severity="error"
+          [text]="restoreError() | domainError: catalogErrorScope"
+        />
+      }
     }
   }
 </section>

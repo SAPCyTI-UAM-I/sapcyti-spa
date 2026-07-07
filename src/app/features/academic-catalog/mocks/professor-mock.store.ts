@@ -151,6 +151,12 @@ export class ProfessorMockStore {
     this.validateRequest(request);
 
     const current = this.professors[index]!;
+
+    // HU-24: type change is one-way (EXTERNO → INTERNO only).
+    if (current.professorType === 'INTERNO' && request.professorType === 'EXTERNO') {
+      throw mockConflict('INVALID_TYPE_CHANGE');
+    }
+
     if (
       this.professors.some(
         (professor) =>
@@ -162,6 +168,11 @@ export class ProfessorMockStore {
     }
 
     const employeeNumber = this.normalizeEmployeeNumber(request);
+
+    // HU-24: NEMP is immutable once assigned (same value or omitted is accepted).
+    if (current.employeeNumber && employeeNumber && employeeNumber !== current.employeeNumber) {
+      throw mockConflict('NEMP_IMMUTABLE');
+    }
     if (
       request.professorType === 'INTERNO' &&
       this.professors.some(
@@ -205,6 +216,41 @@ export class ProfessorMockStore {
     }
 
     const updated: ProfessorCatalogItem = { ...current, active: false };
+    this.professors = [
+      ...this.professors.slice(0, index),
+      updated,
+      ...this.professors.slice(index + 1),
+    ];
+    return { ...updated };
+  }
+
+  restoreProfessor(professorId: number): ProfessorDetailResponse {
+    const index = this.professors.findIndex((professor) => professor.id === professorId);
+    if (index < 0) {
+      throw mockNotFound('PROFESSOR_NOT_FOUND');
+    }
+
+    const current = this.professors[index]!;
+    if (current.active) {
+      throw mockConflict('PROFESSOR_ALREADY_ACTIVE');
+    }
+
+    // HU-54 edge: restoring an interno whose (immutable) NEMP is now held by an active interno.
+    if (
+      current.professorType === 'INTERNO' &&
+      current.employeeNumber &&
+      this.professors.some(
+        (professor) =>
+          professor.id !== professorId &&
+          professor.professorType === 'INTERNO' &&
+          professor.employeeNumber === current.employeeNumber &&
+          professor.active,
+      )
+    ) {
+      throw mockConflict('DUPLICATE_EMPLOYEE_NUMBER');
+    }
+
+    const updated: ProfessorCatalogItem = { ...current, active: true };
     this.professors = [
       ...this.professors.slice(0, index),
       updated,

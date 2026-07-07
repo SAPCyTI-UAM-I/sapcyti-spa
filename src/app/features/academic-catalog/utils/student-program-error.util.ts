@@ -8,6 +8,7 @@ import {
   matchStatus,
   matchValidation,
 } from '../../../core/errors/utils/create-domain-error-mapper.util';
+import { CATALOG_ERROR_I18N_SCOPE } from './catalog-error.util';
 
 export const STUDENT_PROGRAM_ERROR_I18N_SCOPE = 'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS' as const;
 
@@ -74,4 +75,27 @@ export function mapStudentProgramFormError(form: FormGroup): StudentProgramError
 export function mapStudentProgramListError(error: unknown): StudentProgramError {
   const mapped = mapStudentProgramError(error);
   return mapped === 'program_not_found' ? 'no_program' : 'load_failed';
+}
+
+/** Error keys that belong to the program scope in the student edit screen. */
+const STUDENT_EDIT_PROGRAM_SCOPED_KEYS: ReadonlySet<string> = new Set([
+  'date_order',
+  'withdrawal_reason_required',
+  'duplicate_advisor_ids',
+  'validation',
+  'program_not_found',
+  'professor_not_found',
+  'student_not_found',
+]);
+
+/**
+ * i18n key for a student-edit error message. That screen merges two error domains
+ * (student + program), so it picks the program scope for program-originated keys
+ * and the catalog scope otherwise.
+ */
+export function studentEditErrorI18nKey(key: string): string {
+  const scope = STUDENT_EDIT_PROGRAM_SCOPED_KEYS.has(key)
+    ? STUDENT_PROGRAM_ERROR_I18N_SCOPE
+    : CATALOG_ERROR_I18N_SCOPE;
+  return `${scope}.${key}`;
 }

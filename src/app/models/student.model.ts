@@ -2,6 +2,9 @@ import type { StudentProgramResponse } from './student-program.model';
 
 export type ProgramType = 'MAESTRIA' | 'DOCTORADO';
 
+/** HU-18: «último grado de estudios» is a catalog, not free text. */
+export type DegreeLevel = 'LICENCIATURA' | 'MAESTRIA' | 'DOCTORADO';
+
 export interface RegisterStudentRequest {
   enrollmentId: string;
   email: string;
@@ -15,7 +18,7 @@ export interface RegisterStudentRequest {
   phone: string;
   phoneExtension?: string;
   undergraduateDegree: string;
-  lastDegreeObtained: string;
+  lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
   lineOfKnowledge?: string;
@@ -52,7 +55,7 @@ export interface UpdateStudentRequest {
   phone: string;
   phoneExtension?: string;
   undergraduateDegree: string;
-  lastDegreeObtained: string;
+  lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
   active: boolean;

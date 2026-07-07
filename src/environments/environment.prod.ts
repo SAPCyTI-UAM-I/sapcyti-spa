@@ -10,5 +10,6 @@ export const environment = {
     passwordChange: false,
     researchCatalog: false,
     ueas: false,
+    annualPlanning: false,
   },
 };

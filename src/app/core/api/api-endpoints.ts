@@ -18,8 +18,22 @@ export const API_ENDPOINTS = {
   professor: (professorId: number): string => `${environment.apiBaseUrl}/professors/${professorId}`,
   professorDeactivate: (professorId: number): string =>
     `${environment.apiBaseUrl}/professors/${professorId}/deactivate`,
+  professorRestore: (professorId: number): string =>
+    `${environment.apiBaseUrl}/professors/${professorId}/restore`,
   researchCatalog: `${environment.apiBaseUrl}/research-catalog`,
   ueas: `${environment.apiBaseUrl}/ueas`,
   ueasBulk: `${environment.apiBaseUrl}/ueas/bulk`,
+  uea: (ueaId: number): string => `${environment.apiBaseUrl}/ueas/${ueaId}`,
+  ueaDeactivate: (ueaId: number): string => `${environment.apiBaseUrl}/ueas/${ueaId}/deactivate`,
+  ueaRestore: (ueaId: number): string => `${environment.apiBaseUrl}/ueas/${ueaId}/restore`,
+  annualPlans: `${environment.apiBaseUrl}/annual-plans`,
+  annualPlansCheck: `${environment.apiBaseUrl}/annual-plans/check`,
+  annualPlan: (year: number): string => `${environment.apiBaseUrl}/annual-plans/${year}`,
+  annualPlanEntries: (year: number): string =>
+    `${environment.apiBaseUrl}/annual-plans/${year}/entries`,
+  annualPlanStatus: (year: number): string =>
+    `${environment.apiBaseUrl}/annual-plans/${year}/status`,
+  annualPlanExport: (year: number): string =>
+    `${environment.apiBaseUrl}/annual-plans/${year}/export`,
   userPassword: (userId: number): string => `${environment.apiBaseUrl}/users/${userId}/password`,
 } as const;

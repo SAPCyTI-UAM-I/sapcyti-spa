@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
+import { fromMockStore } from '../../../core/mocks/from-mock-store.util';
 import {
   StudentProgramResponse,
   StudentProgramSummary,
@@ -18,11 +19,7 @@ export class StudentProgramMockRepository implements StudentProgramRepository {
   }
 
   getProgram(studentId: number, programId: number): Observable<StudentProgramResponse> {
-    try {
-      return of(this.mockStore.getProgram(studentId, programId));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromMockStore(() => this.mockStore.getProgram(studentId, programId));
   }
 
   updateProgram(
@@ -30,10 +27,6 @@ export class StudentProgramMockRepository implements StudentProgramRepository {
     programId: number,
     body: UpdateStudentProgramRequest,
   ): Observable<StudentProgramResponse> {
-    try {
-      return of(this.mockStore.updateProgram(studentId, programId, body));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromMockStore(() => this.mockStore.updateProgram(studentId, programId, body));
   }
 }

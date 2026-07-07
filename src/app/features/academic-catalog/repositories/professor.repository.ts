@@ -20,6 +20,7 @@ export interface ProfessorRepository {
     request: UpdateProfessorRequest,
   ): Observable<ProfessorDetailResponse>;
   deactivateProfessor(professorId: number): Observable<ProfessorDetailResponse>;
+  restoreProfessor(professorId: number): Observable<ProfessorDetailResponse>;
 }
 
 export const PROFESSOR_REPOSITORY = new InjectionToken<ProfessorRepository>('ProfessorRepository');

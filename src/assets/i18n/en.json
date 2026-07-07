@@ -10,22 +10,32 @@
       "PROGRAM": "Program",
       "STATUS": "Status"
     },
+    "DEGREE_LEVELS": {
+      "DOCTORADO": "Doctorate",
+      "LICENCIATURA": "Bachelor's degree",
+      "MAESTRIA": "Master's degree"
+    },
     "ERRORS": {
       "clave_invalid_format": "The course code must contain digits only.",
+      "duplicate_advisor_ids": "You cannot repeat the same advisor more than once.",
       "duplicate_email": "The email address is already registered.",
       "duplicate_employee": "The employee number is already registered.",
       "duplicate_enrollment": "The enrollment ID is already registered.",
-      "duplicate_advisor_ids": "You cannot repeat the same advisor more than once.",
       "employee_required_for_interno": "Employee number is required for internal professors.",
       "file_format_invalid": "Invalid file format, please use the provided template.",
       "graduate_program_not_found": "The requested graduate program was not found.",
+      "invalid_type_change": "An internal professor cannot become external.",
+      "nemp_immutable": "The employee number cannot be changed.",
+      "professor_already_active": "The professor is already active.",
       "professor_already_inactive": "The professor is already inactive.",
       "professor_has_active_assignments": "Reassign tutor or advisors before deactivating this professor.",
       "professor_not_found": "The requested professor was not found.",
       "reference_not_found": "The requested graduate program was not found.",
       "sabbatical_date_order": "The sabbatical end date must be on or after the start date.",
       "server": "An error occurred while saving the information.",
+      "uea_already_active": "The UEA is already active.",
       "uea_already_exists": "This UEA has already been registered.",
+      "uea_already_inactive": "The UEA is already inactive.",
       "validation": "Please review the form data."
     },
     "FIELDS": {
@@ -46,7 +56,7 @@
       "PHONE_EXTENSION": "Extension",
       "PROGRAM_TYPE": "Program type",
       "SECOND_LAST_NAME": "Second last name",
-      "UNDERGRADUATE_DEGREE": "Undergraduate degree"
+      "UNDERGRADUATE_DEGREE": "University of origin"
     },
     "FILTERS": {
       "ALL": "All",
@@ -80,6 +90,7 @@
         "TITLE": "Professor detail"
       },
       "EDIT": {
+        "NEMP_LOCKED": "The employee number cannot be changed once assigned.",
         "SAVED": "Professor updated successfully.",
         "SUBTITLE": "Update the professor data and save your changes.",
         "TITLE": "Edit professor"
@@ -93,6 +104,12 @@
         "SEARCH": "Search by name, email or employee number",
         "SUBTITLE": "Browse and manage graduate professors.",
         "TITLE": "Professors"
+      },
+      "RESTORE": {
+        "ACTION": "Restore",
+        "MESSAGE": "Restore {{name}}? They will be available for assignments again.",
+        "SUCCESS": "Professor restored successfully.",
+        "TITLE": "Confirm restore"
       },
       "TYPES": {
         "EXTERNO": "External",
@@ -227,6 +244,10 @@
       "WARNING": "For security, the password will not be shown again."
     },
     "UEAS": {
+      "ACTIONS": {
+        "EDIT": "Edit",
+        "REACTIVATE": "Reactivate"
+      },
       "BULK": {
         "BROWSE": "Select file",
         "ERRORS": {
@@ -249,6 +270,20 @@
         "SAVED": "UEA registered successfully.",
         "SUBTITLE": "Fill in the details for the new course.",
         "TITLE": "Register UEA"
+      },
+      "DEACTIVATE": {
+        "ACTION": "Deactivate",
+        "SUCCESS": "UEA deactivated successfully.",
+        "TITLE": "Confirm deactivation",
+        "WARNING": "The UEA will no longer appear in Draft annual plans. This action keeps the history."
+      },
+      "EDIT": {
+        "BACK": "Back to list",
+        "BREADCRUMB": "Edit",
+        "CLAVE_READONLY": "The key cannot be changed.",
+        "SAVED": "UEA updated successfully.",
+        "SUBTITLE": "Update the course details.",
+        "TITLE": "Edit UEA"
       },
       "FIELDS": {
         "CLAVE": "Code",
@@ -275,6 +310,11 @@
       },
       "MODALITY": {
         "MIXTA": "Mixed"
+      },
+      "RESTORE": {
+        "MESSAGE": "Reactivate UEA {{clave}}? It will be available for planning again.",
+        "SUCCESS": "UEA reactivated successfully.",
+        "TITLE": "Confirm reactivation"
       },
       "TYPES": {
         "OBLIGATORIA": "Mandatory",
@@ -406,6 +446,100 @@
       "TARGET_USER": "Target user"
     }
   },
+  "ANNUAL_PLANNING": {
+    "ACTIONS": {
+      "ARCHIVE": "Archive",
+      "FINISH": "Mark as completed",
+      "REOPEN": "Reopen",
+      "UNARCHIVE": "Unarchive"
+    },
+    "DETAIL": {
+      "BACK": "Back to plans",
+      "BREADCRUMB": "Plan",
+      "COMPARE": "Compare with Excel",
+      "COMPARE_HINT": "Upload the offering .xlsx to review differences against the active catalog. It is optional and does not change the plan.",
+      "COMPARE_TITLE": "Compare against the catalog",
+      "CONFIRM_MESSAGE": "Do you confirm the plan status change?",
+      "CONFIRM_TITLE": "Confirm status change",
+      "DOWNLOAD": "Download Excel",
+      "REOPEN_WARNING": "Destructive action: reopening un-freezes the plan and syncs it with the current catalog. This may alter historical data: names will be updated and deactivated UEAs will disappear along with their captured values, which cannot be recovered.",
+      "RUN_COMPARE": "Compare",
+      "SAVE_PANEL_HINT": "Save = draft. Completed = snapshot.",
+      "SAVE_PANEL_TITLE": "Editing",
+      "STATUS_ACTIONS_HINT": "Once you finish reviewing the plan, change its status here.",
+      "TOOLS_PANEL_HINT": "Export or compare.",
+      "TOOLS_PANEL_TITLE": "Excel",
+      "TITLE": "Plan"
+    },
+    "ERRORS": {
+      "already_exists": "An annual plan for this year already exists.",
+      "file_format_invalid": "The file does not have the expected format.",
+      "invalid_transition": "Status transition not allowed.",
+      "not_editable": "Only a Draft plan can be edited.",
+      "not_found": "The plan was not found.",
+      "server": "An unexpected error occurred. Please try again.",
+      "validation": "An error occurred while saving."
+    },
+    "GRID": {
+      "CLAVE": "Key",
+      "EMPTY": "empty",
+      "GROUPS": "Groups",
+      "INVALID_CELLS": "Some cells have invalid values. Fix them before saving.",
+      "MODALITY": "Modality",
+      "NAME": "UEA name",
+      "QUOTA": "Quota",
+      "SAVED": "Plan saved."
+    },
+    "LEGEND": {
+      "O": "Elective",
+      "STAR": "Opens on demand",
+      "X": "Compulsory",
+      "X_O": "Compulsory or elective"
+    },
+    "LIST": {
+      "EMPTY": "No plans yet.",
+      "NEW": "New plan",
+      "STATUS": "Status",
+      "SUBTITLE": "Review and edit the annual UEA offering by year.",
+      "TITLE": "Annual planning",
+      "YEAR": "Year"
+    },
+    "MODALITY": {
+      "MIXTA": "Mixed",
+      "PRESENCIAL": "In-person",
+      "VIRTUAL": "Online"
+    },
+    "STATES": {
+      "LOAD_ERROR": "Could not load the plans."
+    },
+    "STATUS": {
+      "ARCHIVADA": "Archived",
+      "BORRADOR": "Draft",
+      "TERMINADA": "Completed"
+    },
+    "WIZARD": {
+      "BROWSE": "Choose file",
+      "CLEAN": "The file matches the catalog. You can create the plan.",
+      "CREATE": "Create plan",
+      "DIFFERENCES_HINT": "Differences were found. You can fix them in the catalog and re-check, or continue anyway.",
+      "INTRO": "Created from the active UEA catalog. If the previous year's plan exists its values are copied; otherwise it starts blank.",
+      "MISSING_IN_CATALOG": "Keys in the file not in the active catalog",
+      "MISSING_IN_FILE": "Active UEAs missing from the file",
+      "MISSING_PROGRAM": "Missing column",
+      "NAME_MISMATCHES": "Names differing between catalog and file",
+      "NO_FILE": "No file selected",
+      "OPEN_EXISTING": "Open the existing plan",
+      "PROGRAM_NOTICE": "Program column notices",
+      "RUN_CHECK": "Check file",
+      "STEP_CHECK": "Check",
+      "STEP_REVIEW": "Review",
+      "STEP_YEAR": "Year",
+      "TITLE": "New annual plan",
+      "UNKNOWN_PROGRAM": "Unrecognized column",
+      "UPLOAD_HINT": "Upload the offering .xlsx to check its UEAs against the catalog.",
+      "YEAR_LABEL": "Plan year"
+    }
+  },
   "AUTH": {
     "FORGOT_PASSWORD": {
       "BACK_TO_LOGIN": "Back to sign in",
@@ -509,6 +643,7 @@
     "VALIDATION": {
       "EMAIL": "Enter a valid email address.",
       "INTEGER": "Enter a positive integer.",
+      "MAX": "The value exceeds the maximum allowed.",
       "MAXLENGTH": "The value is too long.",
       "MIN": "The value must be 0 or greater.",
       "MINLENGTH": "The value is too short.",

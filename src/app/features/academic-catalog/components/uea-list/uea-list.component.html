@@ -26,10 +26,9 @@
     </div>
   </header>
 
-  <form
+  <div
     class="border-outline bg-surface p-md gap-md grid rounded-xl border md:grid-cols-[1fr_11rem_auto]"
     [formGroup]="filters"
-    (ngSubmit)="applyFilters()"
   >
     <input
       pInputText
@@ -38,16 +37,16 @@
     />
     <app-i18n-select controlName="active" [options]="statuses" />
     <div class="gap-sm flex">
-      <p-button type="submit" icon="pi pi-search" [label]="'COMMON.ACTIONS.SEARCH' | translate" />
       <p-button
         type="button"
         icon="pi pi-filter-slash"
         severity="secondary"
         variant="outlined"
+        [attr.aria-label]="'COMMON.ACTIONS.CLEAR' | translate"
         (onClick)="clearFilters()"
       />
     </div>
-  </form>
+  </div>
 
   <div class="border-outline bg-surface rounded-xl border">
     <app-load-state
@@ -58,13 +57,21 @@
       (retry)="load()"
     >
       <div class="md:overflow-x-auto">
-        <table class="block w-full border-collapse md:table md:min-w-[78rem] md:table-fixed">
+        <table class="block w-full border-collapse md:table md:min-w-[72rem] md:table-fixed">
           <thead class="bg-table-header hidden text-left md:table-header-group">
             <tr>
-              <th class="px-md py-smd w-28">
-                {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CLAVE' | translate }}
+              <th class="px-md py-smd w-28" [attr.aria-sort]="ariaSort('clave')">
+                <button type="button" class="gap-xs flex items-center" (click)="sortBy('clave')">
+                  {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CLAVE' | translate }}
+                  <i class="pi {{ sortIcon('clave') }} text-[10px]"></i>
+                </button>
               </th>
-              <th class="px-md py-smd">{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.NOMBRE' | translate }}</th>
+              <th class="px-md py-smd" [attr.aria-sort]="ariaSort('nombre')">
+                <button type="button" class="gap-xs flex items-center" (click)="sortBy('nombre')">
+                  {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.NOMBRE' | translate }}
+                  <i class="pi {{ sortIcon('nombre') }} text-[10px]"></i>
+                </button>
+              </th>
               <th class="px-md py-smd w-28">
                 {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO' | translate }}
               </th>
@@ -96,15 +103,16 @@
                     <span class="text-body-md font-mono">{{ uea.clave }}</span>
                   </app-copyable-text>
                 </td>
-                <td
-                  class="md:px-md md:py-smd col-span-2 md:table-cell md:cursor-pointer"
-                  [class.md:truncate]="expandedNameId() !== uea.id"
-                  [title]="uea.nombre"
-                  (click)="toggleName(uea.id)"
-                >
-                  <span class="text-h3 text-primary font-bold md:font-normal md:text-inherit">
+                <td class="md:px-md md:py-smd col-span-2 md:table-cell">
+                  <a
+                    appCatalogRowLink
+                    class="md:block md:w-full md:truncate"
+                    [routerLink]="[uea.id, 'edit']"
+                    [title]="uea.nombre"
+                    [attr.data-testid]="'edit-uea-' + uea.id"
+                  >
                     {{ uea.nombre }}
-                  </span>
+                  </a>
                 </td>
                 <td class="md:px-md md:py-smd md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">

@@ -1,14 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Paginator } from 'primeng/paginator';
-import { Observable } from 'rxjs';
+import { debounceTime, merge, Observable } from 'rxjs';
 
 import { PageResponse, UeaCatalogItem } from '../../../../models';
 import {
+  CatalogRowLinkDirective,
   CatalogTagComponent,
   CopyableTextComponent,
   I18nSelectComponent,
@@ -39,21 +41,16 @@ import { UeaBulkUploadDialogComponent } from '../uea-bulk-upload-dialog/uea-bulk
     LoadStateComponent,
     CatalogTagComponent,
     CopyableTextComponent,
+    CatalogRowLinkDirective,
     UeaBulkUploadDialogComponent,
   ],
   templateUrl: './uea-list.component.html',
 })
-export class UeaListComponent extends CatalogListBase<UeaCatalogItem> {
+export class UeaListComponent extends CatalogListBase<UeaCatalogItem> implements OnInit {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly service = inject(UeaService);
 
   override readonly pageSize = 8;
-
-  readonly expandedNameId = signal<number | null>(null);
-
-  toggleName(id: number): void {
-    this.expandedNameId.update((current) => (current === id ? null : id));
-  }
 
   protected override readonly filters = this.fb.group({
     search: [''],
@@ -65,6 +62,22 @@ export class UeaListComponent extends CatalogListBase<UeaCatalogItem> {
 
   private readonly bulkDialog = viewChild.required(UeaBulkUploadDialogComponent);
 
+  override ngOnInit(): void {
+    super.ngOnInit();
+
+    merge(
+      this.filters.controls.search.valueChanges.pipe(debounceTime(300)),
+      this.filters.controls.active.valueChanges,
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.applyFilters());
+  }
+
+  override clearFilters(): void {
+    this.filters.reset({ search: '', active: '' }, { emitEvent: false });
+    this.applyFilters();
+  }
+
   protected override fetchItems(): Observable<PageResponse<UeaCatalogItem>> {
     const filters = this.filters.getRawValue();
     return this.service.listUeas({
@@ -72,6 +85,7 @@ export class UeaListComponent extends CatalogListBase<UeaCatalogItem> {
       size: this.pageSize,
       search: filters.search.trim() || undefined,
       active: parseActiveFilter(filters.active),
+      sort: this.sortParam(),
     });
   }
 

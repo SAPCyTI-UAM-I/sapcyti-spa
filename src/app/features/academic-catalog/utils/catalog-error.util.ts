@@ -20,8 +20,11 @@ export type CatalogError =
   | 'reference_not_found'
   | 'professor_not_found'
   | 'professor_already_inactive'
+  | 'professor_already_active'
   | 'professor_has_active_assignments'
   | 'employee_required_for_interno'
+  | 'nemp_immutable'
+  | 'invalid_type_change'
   | 'sabbatical_date_order'
   | 'validation'
   | 'server';
@@ -31,7 +34,11 @@ export const mapCatalogError = createDomainErrorMapper<CatalogError>({
     { match: matchCode('EMAIL_ALREADY_EXISTS'), key: 'duplicate_email' },
     { match: matchCode('ENROLLMENT_ALREADY_EXISTS'), key: 'duplicate_enrollment' },
     { match: matchCode('EMPLOYEE_NUMBER_ALREADY_EXISTS'), key: 'duplicate_employee' },
+    { match: matchCode('DUPLICATE_EMPLOYEE_NUMBER'), key: 'duplicate_employee' },
     { match: matchCode('PROFESSOR_ALREADY_INACTIVE'), key: 'professor_already_inactive' },
+    { match: matchCode('PROFESSOR_ALREADY_ACTIVE'), key: 'professor_already_active' },
+    { match: matchCode('NEMP_IMMUTABLE'), key: 'nemp_immutable' },
+    { match: matchCode('INVALID_TYPE_CHANGE'), key: 'invalid_type_change' },
     {
       match: matchCode('PROFESSOR_HAS_ACTIVE_ASSIGNMENTS'),
       key: 'professor_has_active_assignments',

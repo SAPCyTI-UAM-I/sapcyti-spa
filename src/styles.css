@@ -240,6 +240,17 @@ body {
   background: var(--color-primary-hover);
 }
 
+.p-button.p-button-success:not(.p-button-outlined):not(.p-button-text) {
+  border-color: var(--color-success);
+  color: var(--color-on-primary);
+  background: var(--color-success);
+}
+
+.p-button.p-button-success:not(.p-button-outlined):not(.p-button-text):enabled:hover {
+  border-color: var(--color-success-strong);
+  background: var(--color-success-strong);
+}
+
 .p-button:enabled:active {
   transform: scale(0.98);
 }

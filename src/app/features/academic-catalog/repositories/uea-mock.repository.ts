@@ -8,7 +8,9 @@ import {
   UeaBulkUploadResult,
   UeaCatalogItem,
   UeaCatalogQuery,
+  UpdateUeaRequest,
 } from '../../../models';
+import { fromMockStore } from '../../../core/mocks/from-mock-store.util';
 import { mockApiError } from '../../../core/errors/testing/mock-api-error.util';
 import { UeaMockStore } from '../mocks/uea-mock.store';
 import { normalizeUeaRows, parseUeaCsv, validateUeaRows } from '../utils/uea-bulk.util';
@@ -23,11 +25,7 @@ export class UeaMockRepository implements UeaRepository {
   }
 
   registerUea(request: RegisterUeaRequest): Observable<UeaCatalogItem> {
-    try {
-      return of(this.mockStore.createUea(request));
-    } catch (error) {
-      return throwError(() => error);
-    }
+    return fromMockStore(() => this.mockStore.createUea(request));
   }
 
   bulkUploadUeas(file: File): Observable<UeaBulkUploadResult> {
@@ -56,5 +54,21 @@ export class UeaMockRepository implements UeaRepository {
         return result;
       }),
     );
+  }
+
+  getUea(ueaId: number): Observable<UeaCatalogItem> {
+    return fromMockStore(() => this.mockStore.getUea(ueaId));
+  }
+
+  updateUea(ueaId: number, request: UpdateUeaRequest): Observable<UeaCatalogItem> {
+    return fromMockStore(() => this.mockStore.updateUea(ueaId, request));
+  }
+
+  deactivateUea(ueaId: number): Observable<UeaCatalogItem> {
+    return fromMockStore(() => this.mockStore.deactivateUea(ueaId));
+  }
+
+  restoreUea(ueaId: number): Observable<UeaCatalogItem> {
+    return fromMockStore(() => this.mockStore.restoreUea(ueaId));
   }
 }

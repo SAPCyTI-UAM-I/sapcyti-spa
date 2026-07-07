@@ -16,15 +16,14 @@ import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
 import { InputText } from 'primeng/inputtext';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, merge } from 'rxjs';
 
 import {
+  DegreeLevel,
   ProgramStatus,
   ProgramType,
-  ProfessorCatalogItem,
   ResearchCatalogOption,
   StudentDetailResponse,
-  StudentProgramResponse,
   ResearchAreaCatalogItem,
   toLineOfKnowledgeOptions,
   toResearchAreaOptions,
@@ -33,7 +32,7 @@ import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { StudentService } from '../../services/student.service';
 import { StudentProgramService } from '../../services/student-program.service';
-import { ProfessorService } from '../../services/professor.service';
+import { ProfessorOptionsController } from '../../services/professor-options.controller';
 import { ResearchCatalogService } from '../../services/research-catalog.service';
 import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error.component';
 import { I18nSelectComponent } from '../../../../shared/components';
@@ -47,19 +46,17 @@ import {
   uniqueAdvisorIdsValidator,
   withdrawalReasonWhenBajaValidator,
 } from '../../utils/student-program-form.util';
-import { professorReferenceToOption, professorToOption } from '../../utils/professor-display.util';
 import { STUDENT_PROGRAM_STATUS_OPTIONS } from '../../utils/student-program-filter.options';
-import { CATALOG_PROGRAM_TYPE_OPTIONS } from '../../utils/catalog-filter.options';
-import { CATALOG_ERROR_I18N_SCOPE, mapCatalogError } from '../../utils/catalog-error.util';
+import {
+  CATALOG_PROGRAM_TYPE_OPTIONS,
+  DEGREE_LEVEL_OPTIONS,
+} from '../../utils/catalog-filter.options';
+import { mapCatalogError } from '../../utils/catalog-error.util';
 import {
   mapStudentProgramError,
   mapStudentProgramFormError,
+  studentEditErrorI18nKey,
 } from '../../utils/student-program-error.util';
-
-interface ProfessorOption {
-  label: string;
-  value: number;
-}
 
 @Component({
   selector: 'app-student-edit',
@@ -77,6 +74,7 @@ interface ProfessorOption {
     I18nSelectComponent,
     FieldErrorComponent,
   ],
+  providers: [ProfessorOptionsController],
   templateUrl: './student-edit.component.html',
 })
 export class StudentEditComponent {
@@ -85,7 +83,7 @@ export class StudentEditComponent {
   private readonly router = inject(Router);
   private readonly service = inject(StudentService);
   private readonly programService = inject(StudentProgramService);
-  private readonly professorService = inject(ProfessorService);
+  private readonly professorPicker = inject(ProfessorOptionsController);
   private readonly researchCatalogService = inject(ResearchCatalogService);
   private readonly messages = inject(MessageService);
   private readonly translate = inject(TranslateService);
@@ -99,27 +97,19 @@ export class StudentEditComponent {
   readonly error = signal<string | null>(null);
   readonly student = signal<StudentDetailResponse | null>(null);
 
-  readonly professorOptions = signal<ProfessorOption[]>([]);
-  readonly professorsLoading = signal(false);
+  readonly professorOptions = this.professorPicker.options;
+  readonly professorsLoading = this.professorPicker.loading;
 
   readonly isFieldInvalid = isFieldInvalid;
   readonly formatPersonName = formatPersonName;
   readonly programTypeOptions = CATALOG_PROGRAM_TYPE_OPTIONS;
+  readonly degreeOptions = DEGREE_LEVEL_OPTIONS;
   readonly statusOptions = STUDENT_PROGRAM_STATUS_OPTIONS;
 
   readonly researchCatalog = signal<ResearchAreaCatalogItem[]>([]);
   readonly lineOfKnowledgeOptions = computed<ResearchCatalogOption[]>(() =>
     toLineOfKnowledgeOptions(this.researchCatalog()),
   );
-
-  // Active status options mapped to es/en keys
-  readonly activeOptions = [
-    { labelKey: 'ACADEMIC_CATALOG.STATUS.ACTIVE', value: true },
-    { labelKey: 'ACADEMIC_CATALOG.STATUS.INACTIVE', value: false },
-  ];
-
-  private readonly assignedProfessorOptions = signal<ProfessorOption[]>([]);
-  private professorSearchTimeout: ReturnType<typeof setTimeout> | undefined;
 
   // cascades
   readonly lineOfKnowledgeControlValue = signal<string>('');
@@ -145,9 +135,10 @@ export class StudentEditComponent {
 
       // Academic data
       undergraduateDegree: ['', [Validators.required, Validators.maxLength(200)]],
-      lastDegreeObtained: ['', [Validators.required, Validators.maxLength(200)]],
+      lastDegreeObtained: ['' as DegreeLevel, Validators.required],
       programType: ['MAESTRIA' as ProgramType, Validators.required],
       admissionDate: ['', Validators.required],
+      // active se conserva y se envía tal como está en BD; la baja lógica no se edita desde este formulario
       active: [true, Validators.required],
 
       // Program academic data
@@ -165,14 +156,12 @@ export class StudentEditComponent {
   );
 
   constructor() {
-    // Cross validators setup
-    this.form.controls.status.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.form.updateValueAndValidity({ emitEvent: false }));
-    this.form.controls.admissionDate.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.form.updateValueAndValidity({ emitEvent: false }));
-    this.form.controls.graduationDate.valueChanges
+    // Cross validators: any of these fields re-runs the form-level validators.
+    merge(
+      this.form.controls.status.valueChanges,
+      this.form.controls.admissionDate.valueChanges,
+      this.form.controls.graduationDate.valueChanges,
+    )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.form.updateValueAndValidity({ emitEvent: false }));
 
@@ -197,29 +186,10 @@ export class StudentEditComponent {
     return null;
   }
 
-  translateError(key: string): string {
-    const programErrors = [
-      'date_order',
-      'withdrawal_reason_required',
-      'duplicate_advisor_ids',
-      'validation',
-      'program_not_found',
-      'professor_not_found',
-      'student_not_found',
-    ];
-    const scope = programErrors.includes(key)
-      ? 'ACADEMIC_CATALOG.STUDENT_PROGRAM.ERRORS'
-      : CATALOG_ERROR_I18N_SCOPE;
-    return this.translate.instant(`${scope}.${key}`);
-  }
+  readonly errorI18nKey = studentEditErrorI18nKey;
 
   onProfessorFilter(event: { filter?: string | null }): void {
-    clearTimeout(this.professorSearchTimeout);
-    const term = event.filter ?? '';
-
-    this.professorSearchTimeout = setTimeout(() => {
-      this.loadProfessors(term);
-    }, 300);
+    this.professorPicker.onFilter(event.filter);
   }
 
   cancel(): void {
@@ -279,9 +249,9 @@ export class StudentEditComponent {
 
     this.loading.set(true);
     this.error.set(null);
+    this.professorPicker.load();
     forkJoin({
       student: this.service.getStudent(this.studentId),
-      professors: this.professorService.listProfessors({ page: 0, size: 30, active: true }),
       catalog: this.researchCatalogService.getResearchCatalog(),
     })
       .pipe(
@@ -289,11 +259,10 @@ export class StudentEditComponent {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: ({ student, professors, catalog }) => {
+        next: ({ student, catalog }) => {
           this.researchCatalog.set(catalog);
           this.student.set(student);
-          this.assignedProfessorOptions.set(this.collectAssignedProfessorOptions(student.program));
-          this.mergeProfessorOptions(professors.content);
+          this.professorPicker.pinFromProgram(student.program);
 
           const prog = student.program;
           const { line: initialLine, area: initialArea } = reconcileProgramCatalogSelection(
@@ -329,56 +298,5 @@ export class StudentEditComponent {
         },
         error: (err) => this.error.set(mapCatalogError(err)),
       });
-  }
-
-  private collectAssignedProfessorOptions(program: StudentProgramResponse): ProfessorOption[] {
-    const options = new Map<number, ProfessorOption>();
-
-    if (program.tutor) {
-      const option = professorReferenceToOption(program.tutor);
-      options.set(option.value, option);
-    }
-
-    for (const advisor of program.advisors) {
-      const option = professorReferenceToOption(advisor);
-      options.set(option.value, option);
-    }
-
-    return [...options.values()];
-  }
-
-  private loadProfessors(search = ''): void {
-    this.professorsLoading.set(true);
-    this.professorService
-      .listProfessors({
-        page: 0,
-        size: 30,
-        active: true,
-        search: search.trim() || undefined,
-      })
-      .pipe(
-        finalize(() => this.professorsLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (page) => this.mergeProfessorOptions(page.content),
-      });
-  }
-
-  private mergeProfessorOptions(professors: ProfessorCatalogItem[]): void {
-    const options = new Map<number, ProfessorOption>();
-
-    for (const option of this.assignedProfessorOptions()) {
-      options.set(option.value, option);
-    }
-
-    for (const professor of professors) {
-      const option = professorToOption(professor);
-      options.set(option.value, option);
-    }
-
-    this.professorOptions.set(
-      [...options.values()].sort((left, right) => left.label.localeCompare(right.label, 'es')),
-    );
   }
 }

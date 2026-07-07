@@ -38,4 +38,8 @@ export class ProfessorService {
   deactivateProfessor(professorId: number): Observable<ProfessorDetailResponse> {
     return this.repository.deactivateProfessor(professorId);
   }
+
+  restoreProfessor(professorId: number): Observable<ProfessorDetailResponse> {
+    return this.repository.restoreProfessor(professorId);
+  }
 }

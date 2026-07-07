@@ -1,0 +1,235 @@
+<section class="gap-lg flex flex-col">
+  @if (actionError()) {
+    <p-message severity="error" [text]="actionError() | domainError: errorScope" />
+  }
+
+  <app-load-state
+    [loading]="loading()"
+    [error]="loadError()"
+    [empty]="false"
+    emptyMessage="ANNUAL_PLANNING.STATES.LOAD_ERROR"
+    errorMessage="ANNUAL_PLANNING.STATES.LOAD_ERROR"
+    (retry)="load()"
+  >
+    @if (plan(); as plan) {
+      <div class="gap-lg flex flex-col">
+        <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+          <div class="gap-sm flex flex-wrap items-center">
+            <h1 class="text-h2 text-primary font-bold">
+              {{ 'ANNUAL_PLANNING.DETAIL.TITLE' | translate }} {{ plan.year }}
+            </h1>
+            <app-catalog-tag
+              [value]="'ANNUAL_PLANNING.STATUS.' + plan.status | translate"
+              [severity]="statusTagSeverity(plan.status)"
+            />
+          </div>
+
+          <div class="gap-sm flex flex-wrap">
+            <p-button
+              severity="secondary"
+              variant="outlined"
+              icon="pi pi-arrow-left"
+              [label]="'COMMON.ACTIONS.BACK' | translate"
+              routerLink="/annual-planning"
+            />
+          </div>
+        </header>
+
+        <div class="gap-sm items-stretch grid xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+          @if (plan.status === 'BORRADOR') {
+            <section class="border-outline bg-surface p-md gap-sm flex h-full flex-col rounded-xl border">
+              <p class="text-caption text-text-secondary min-h-[1.05rem]">
+                {{ 'ANNUAL_PLANNING.DETAIL.SAVE_PANEL_HINT' | translate }}
+              </p>
+
+              <div class="gap-sm mt-auto flex flex-wrap items-stretch">
+                <p-button
+                  icon="pi pi-save"
+                  [label]="'COMMON.ACTIONS.SAVE' | translate"
+                  [loading]="grid.saving()"
+                  (onClick)="grid.save()"
+                />
+                <p-button
+                  severity="secondary"
+                  variant="outlined"
+                  [label]="'ANNUAL_PLANNING.ACTIONS.FINISH' | translate"
+                  (onClick)="askStatusChange('TERMINADA')"
+                />
+              </div>
+            </section>
+          }
+
+          <section class="border-outline bg-surface p-md gap-sm flex h-full flex-col rounded-xl border">
+            <p class="text-caption text-text-secondary min-h-[1.05rem]">
+              {{ 'ANNUAL_PLANNING.DETAIL.TOOLS_PANEL_HINT' | translate }}
+            </p>
+
+            <div class="gap-sm mt-auto flex flex-wrap items-stretch">
+              <p-button
+                severity="success"
+                icon="pi pi-file-excel"
+                [label]="'ANNUAL_PLANNING.DETAIL.DOWNLOAD' | translate"
+                [loading]="exporting()"
+                (onClick)="downloadExcel()"
+              />
+              @if (plan.status === 'BORRADOR') {
+                <p-button
+                  severity="secondary"
+                  variant="outlined"
+                  icon="pi pi-upload"
+                  data-testid="compare-excel"
+                  [label]="'ANNUAL_PLANNING.DETAIL.COMPARE' | translate"
+                  (onClick)="openCheckDialog()"
+                />
+              }
+            </div>
+          </section>
+        </div>
+
+        @if (plan.status !== 'BORRADOR' && statusActions().length > 0) {
+          <section class="border-outline bg-surface p-md gap-sm flex flex-col rounded-xl border">
+            <div class="gap-sm flex flex-wrap">
+              @for (action of statusActions(); track action.target) {
+                <p-button
+                  [label]="action.labelKey | translate"
+                  [outlined]="true"
+                  (onClick)="askStatusChange(action.target)"
+                />
+              }
+            </div>
+          </section>
+        }
+
+        <app-annual-plan-grid #grid [plan]="plan" (saved)="onSaved($event)" />
+      </div>
+    }
+  </app-load-state>
+</section>
+
+<!-- HU-53 — status change confirmation. Reopening shows a mandatory warning. -->
+<p-dialog
+  [header]="'ANNUAL_PLANNING.DETAIL.CONFIRM_TITLE' | translate"
+  [visible]="pendingStatus() !== null"
+  [modal]="true"
+  [style]="{ width: '30rem' }"
+  (onHide)="cancelStatusChange()"
+>
+  @if (isReopenPending()) {
+    <p-message severity="warn" [text]="'ANNUAL_PLANNING.DETAIL.REOPEN_WARNING' | translate" />
+  } @else {
+    <p class="text-body-md">{{ 'ANNUAL_PLANNING.DETAIL.CONFIRM_MESSAGE' | translate }}</p>
+  }
+
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="cancelStatusChange()"
+    />
+    <p-button
+      [label]="'COMMON.ACTIONS.CONFIRM' | translate"
+      [loading]="changingStatus()"
+      (onClick)="confirmStatusChange()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- HU-49 — optional Excel comparison against the active catalog. -->
+<p-dialog
+  [header]="'ANNUAL_PLANNING.DETAIL.COMPARE_TITLE' | translate"
+  [visible]="showCheckDialog()"
+  [modal]="true"
+  [style]="{ width: '34rem' }"
+  (onHide)="closeCheckDialog()"
+>
+  <div class="gap-md flex flex-col">
+    <p class="text-body-md text-text-secondary">
+      {{ 'ANNUAL_PLANNING.DETAIL.COMPARE_HINT' | translate }}
+    </p>
+
+    <div class="gap-sm flex items-center">
+      <label
+        for="compare-file"
+        class="bg-primary hover:bg-primary-hover text-on-primary px-md py-sm text-label-md cursor-pointer rounded-lg font-medium transition-colors"
+      >
+        <i class="pi pi-folder-open mr-xs"></i>{{ 'ANNUAL_PLANNING.WIZARD.BROWSE' | translate }}
+      </label>
+      <span class="text-text-secondary text-body-md truncate">
+        {{ checkFile() ? checkFile()!.name : ('ANNUAL_PLANNING.WIZARD.NO_FILE' | translate) }}
+      </span>
+      <input
+        id="compare-file"
+        type="file"
+        accept=".xlsx"
+        class="sr-only"
+        (change)="onCheckFileChange($event)"
+      />
+    </div>
+
+    @if (checkError()) {
+      @if (checkFileMessage()) {
+        <p-message severity="error" [text]="checkFileMessage()!" />
+      } @else {
+        <p-message severity="error" [text]="errorScope + '.' + checkError() | translate" />
+      }
+    }
+
+    @if (checkReport(); as report) {
+      @if (reportIsClean()) {
+        <p-message severity="success" [text]="'ANNUAL_PLANNING.WIZARD.CLEAN' | translate" />
+      } @else {
+        @if (report.missingInCatalog.length) {
+          <div class="gap-xs flex flex-col">
+            <h3 class="text-label-md">
+              {{ 'ANNUAL_PLANNING.WIZARD.MISSING_IN_CATALOG' | translate }}
+            </h3>
+            <ul class="text-body-md ml-md list-disc">
+              @for (row of report.missingInCatalog; track row.clave) {
+                <li>{{ row.clave }} — {{ row.nombre }}</li>
+              }
+            </ul>
+          </div>
+        }
+        @if (report.missingInFile.length) {
+          <div class="gap-xs flex flex-col">
+            <h3 class="text-label-md">
+              {{ 'ANNUAL_PLANNING.WIZARD.MISSING_IN_FILE' | translate }}
+            </h3>
+            <ul class="text-body-md ml-md list-disc">
+              @for (row of report.missingInFile; track row.clave) {
+                <li>{{ row.clave }} — {{ row.nombre }}</li>
+              }
+            </ul>
+          </div>
+        }
+        @if (report.nameMismatches.length) {
+          <div class="gap-xs flex flex-col">
+            <h3 class="text-label-md">
+              {{ 'ANNUAL_PLANNING.WIZARD.NAME_MISMATCHES' | translate }}
+            </h3>
+            <ul class="text-body-md ml-md list-disc">
+              @for (row of report.nameMismatches; track row.clave) {
+                <li>{{ row.clave }}: «{{ row.nombreCatalogo }}» ≠ «{{ row.nombreArchivo }}»</li>
+              }
+            </ul>
+          </div>
+        }
+      }
+    }
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      [label]="'COMMON.ACTIONS.CLOSE' | translate"
+      (onClick)="closeCheckDialog()"
+    />
+    <p-button
+      data-testid="run-compare"
+      [label]="'ANNUAL_PLANNING.DETAIL.RUN_COMPARE' | translate"
+      [loading]="checking()"
+      [disabled]="!checkFile()"
+      (onClick)="runCheck()"
+    />
+  </ng-template>
+</p-dialog>

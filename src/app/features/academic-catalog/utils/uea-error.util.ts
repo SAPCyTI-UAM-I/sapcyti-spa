@@ -7,6 +7,8 @@ import {
 
 export type UeaError =
   | 'uea_already_exists'
+  | 'uea_already_inactive'
+  | 'uea_already_active'
   | 'file_format_invalid'
   | 'clave_invalid_format'
   | 'reference_not_found'
@@ -15,6 +17,8 @@ export type UeaError =
 export const mapUeaError = createDomainErrorMapper<UeaError>({
   rules: [
     { match: matchCode('UEA_ALREADY_EXISTS'), key: 'uea_already_exists' },
+    { match: matchCode('UEA_ALREADY_INACTIVE'), key: 'uea_already_inactive' },
+    { match: matchCode('UEA_ALREADY_ACTIVE'), key: 'uea_already_active' },
     { match: matchCode('FILE_FORMAT_INVALID'), key: 'file_format_invalid' },
     { match: matchCode('CLAVE_INVALID_FORMAT'), key: 'clave_invalid_format' },
     { match: matchSpringBootNotFound, key: 'reference_not_found' },

@@ -102,7 +102,7 @@ const COORDINATOR_NAV: ShellNavigation = {
         {
           id: 'plan-annual',
           labelKey: 'SHELL.MENU.PLAN_ANNUAL',
-          route: '/academic-offering/plan-annual',
+          route: '/annual-planning',
           icon: 'pi pi-calendar-plus',
         },
         {

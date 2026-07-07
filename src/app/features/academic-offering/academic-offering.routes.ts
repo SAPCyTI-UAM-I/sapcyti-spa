@@ -13,14 +13,6 @@ export const ACADEMIC_OFFERING_ROUTES: Routes = [
     pathMatch: 'full',
   },
   {
-    // HU-04 — Planeación anual (módulo único: listar, consultar y editar).
-    path: 'plan-annual',
-    loadComponent: () =>
-      import('./components/plan-annual/plan-annual.component').then((m) => m.PlanAnnualComponent),
-    canActivate: [authGuard],
-    data: { ...offeringData, breadcrumb: 'SHELL.MENU.PLAN_ANNUAL' },
-  },
-  {
     // HU-05 — Editar plan trimestral.
     path: 'plan-quarterly',
     loadComponent: () =>

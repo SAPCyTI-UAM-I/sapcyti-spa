@@ -56,4 +56,12 @@ export class ProfessorHttpRepository implements ProfessorRepository {
       { withCredentials: true },
     );
   }
+
+  restoreProfessor(professorId: number): Observable<ProfessorDetailResponse> {
+    return this.http.put<ProfessorDetailResponse>(
+      API_ENDPOINTS.professorRestore(professorId),
+      null,
+      { withCredentials: true },
+    );
+  }
 }
