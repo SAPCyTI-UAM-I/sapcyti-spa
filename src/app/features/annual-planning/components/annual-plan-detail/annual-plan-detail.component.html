@@ -35,9 +35,11 @@
           </div>
         </header>
 
-        <div class="gap-sm items-stretch grid xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+        <div class="gap-sm grid items-stretch xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
           @if (plan.status === 'BORRADOR') {
-            <section class="border-outline bg-surface p-md gap-sm flex h-full flex-col rounded-xl border">
+            <section
+              class="border-outline bg-surface p-md gap-sm flex h-full flex-col rounded-xl border"
+            >
               <p class="text-caption text-text-secondary min-h-[1.05rem]">
                 {{ 'ANNUAL_PLANNING.DETAIL.SAVE_PANEL_HINT' | translate }}
               </p>
@@ -59,7 +61,9 @@
             </section>
           }
 
-          <section class="border-outline bg-surface p-md gap-sm flex h-full flex-col rounded-xl border">
+          <section
+            class="border-outline bg-surface p-md gap-sm flex h-full flex-col rounded-xl border"
+          >
             <p class="text-caption text-text-secondary min-h-[1.05rem]">
               {{ 'ANNUAL_PLANNING.DETAIL.TOOLS_PANEL_HINT' | translate }}
             </p>
