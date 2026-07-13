@@ -755,6 +755,7 @@
   "ENROLLMENT_SURVEY": {
     "ACTIONS": {
       "CLOSE": "Cerrar ahora",
+      "DELETE": "Eliminar",
       "EDIT": "Editar",
       "REOPEN": "Reabrir"
     },
@@ -783,6 +784,9 @@
     "FORM": {
       "CLOSES_AT": "Fecha y hora de cierre",
       "CLOSES_BEFORE_OPENS": "La fecha de cierre debe ser posterior a la de apertura.",
+      "DELETE_MESSAGE": "¿Deseas eliminar este sondeo? Esta acción no se puede deshacer.",
+      "DELETE_TITLE": "Eliminar sondeo",
+      "DELETED": "Sondeo eliminado.",
       "INTRO_MESSAGE": "Mensaje introductorio (opcional)",
       "OPENS_AT": "Fecha y hora de apertura",
       "REOPEN_HINT": "Al reabrir con nuevas fechas se conservan las respuestas registradas.",

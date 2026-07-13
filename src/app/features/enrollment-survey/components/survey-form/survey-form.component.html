@@ -105,6 +105,16 @@
             [loading]="submitting()"
             (onClick)="reopen()"
           />
+        } @else if (canDelete()) {
+          <p-button
+            type="button"
+            severity="danger"
+            variant="outlined"
+            icon="pi pi-trash"
+            data-testid="delete-survey"
+            [label]="'ENROLLMENT_SURVEY.ACTIONS.DELETE' | translate"
+            (onClick)="openDeleteDialog()"
+          />
         } @else {
           <span></span>
         }
@@ -150,6 +160,31 @@
       [label]="'ENROLLMENT_SURVEY.ACTIONS.CLOSE' | translate"
       [loading]="closing()"
       (onClick)="confirmClose()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- HU-40 — delete a scheduled survey from the edit screen. -->
+<p-dialog
+  [header]="'ENROLLMENT_SURVEY.FORM.DELETE_TITLE' | translate"
+  [visible]="showDeleteDialog()"
+  [modal]="true"
+  [style]="{ width: '30rem' }"
+  (onHide)="cancelDelete()"
+>
+  <p class="text-body-md">{{ 'ENROLLMENT_SURVEY.FORM.DELETE_MESSAGE' | translate }}</p>
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="cancelDelete()"
+    />
+    <p-button
+      severity="danger"
+      data-testid="confirm-delete-survey"
+      [label]="'ENROLLMENT_SURVEY.ACTIONS.DELETE' | translate"
+      [loading]="deleting()"
+      (onClick)="confirmDelete()"
     />
   </ng-template>
 </p-dialog>

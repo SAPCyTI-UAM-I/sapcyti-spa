@@ -755,6 +755,7 @@
   "ENROLLMENT_SURVEY": {
     "ACTIONS": {
       "CLOSE": "Close now",
+      "DELETE": "Delete",
       "EDIT": "Edit",
       "REOPEN": "Reopen"
     },
@@ -783,6 +784,9 @@
     "FORM": {
       "CLOSES_AT": "Closing date and time",
       "CLOSES_BEFORE_OPENS": "The closing date must be after the opening date.",
+      "DELETE_MESSAGE": "Delete this survey? This action cannot be undone.",
+      "DELETE_TITLE": "Delete survey",
+      "DELETED": "Survey deleted.",
       "INTRO_MESSAGE": "Introductory message (optional)",
       "OPENS_AT": "Opening date and time",
       "REOPEN_HINT": "Reopening with new dates keeps the existing responses.",

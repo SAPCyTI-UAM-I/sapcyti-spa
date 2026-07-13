@@ -79,14 +79,19 @@ export class SurveyFormComponent implements OnInit {
   readonly submitted = signal(false);
   readonly error = signal<EnrollmentSurveyError | null>(null);
   readonly status = signal<SurveyStatus | null>(null);
+  private readonly responseCount = signal(0);
 
-  // HU-40 — close/reopen live on this edit screen.
+  // HU-40 — the lifecycle action (close / reopen / delete) lives on this edit screen.
   readonly isReopen = computed(() => this.status() === 'CERRADO');
   readonly isActive = computed(() => this.status() === 'ACTIVO');
+  /** A PROGRAMADO survey without responses can be deleted. */
+  readonly canDelete = computed(() => this.status() === 'PROGRAMADO' && this.responseCount() === 0);
   readonly showCloseDialog = signal(false);
   readonly closing = signal(false);
   /** Shown when a reopen is attempted with a closing date under a day from now. */
   readonly showReopenError = signal(false);
+  readonly showDeleteDialog = signal(false);
+  readonly deleting = signal(false);
 
   /** The duplicate-term error renders inline under the term field, not as a banner. */
   readonly termError = computed(() =>
@@ -202,6 +207,47 @@ export class SurveyFormComponent implements OnInit {
       });
   }
 
+  openDeleteDialog(): void {
+    this.error.set(null);
+    this.showDeleteDialog.set(true);
+  }
+
+  cancelDelete(): void {
+    if (this.deleting()) {
+      return;
+    }
+    this.showDeleteDialog.set(false);
+  }
+
+  confirmDelete(): void {
+    if (this.surveyId === null) {
+      return;
+    }
+    this.deleting.set(true);
+    this.error.set(null);
+    this.service
+      .deleteSurvey(this.surveyId)
+      .pipe(
+        finalize(() => this.deleting.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: () => {
+          this.showDeleteDialog.set(false);
+          this.messages.add({
+            severity: 'success',
+            summary: this.translate.instant('ENROLLMENT_SURVEY.FORM.DELETED'),
+            life: TOAST_LIFE.DEFAULT,
+          });
+          void this.router.navigate([SURVEY_LIST_ROUTE]);
+        },
+        error: (err) => {
+          this.showDeleteDialog.set(false);
+          this.error.set(mapEnrollmentSurveyError(err));
+        },
+      });
+  }
+
   private loadSurvey(id: number): void {
     this.service
       .getSurvey(id)
@@ -217,6 +263,7 @@ export class SurveyFormComponent implements OnInit {
 
   private patchForm(survey: SurveyResponse): void {
     this.status.set(survey.status);
+    this.responseCount.set(survey.responseCount);
     this.form.patchValue({
       term: survey.term,
       opensAt: isoToLocal(survey.opensAt),

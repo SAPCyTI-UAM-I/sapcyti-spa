@@ -48,8 +48,25 @@ describe('SurveyFormComponent (edit)', () => {
 
   it('exposes the close action only for an active survey', async () => {
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('ACTIVO'))) });
-    expect(fixture.componentInstance.isActive()).toBe(true);
-    expect(fixture.componentInstance.isReopen()).toBe(false);
+    const c = fixture.componentInstance;
+    expect(c.isActive()).toBe(true);
+    expect(c.isReopen()).toBe(false);
+    expect(c.canDelete()).toBe(false);
+  });
+
+  it('exposes delete only for a scheduled survey without responses', async () => {
+    const fixture = await setup({ getSurvey: vi.fn(() => of(survey('PROGRAMADO'))) });
+    expect(fixture.componentInstance.canDelete()).toBe(true);
+  });
+
+  it('deletes a scheduled survey from the edit screen after confirming', async () => {
+    const deleteSurvey = vi.fn(() => of(void 0));
+    const fixture = await setup({ getSurvey: vi.fn(() => of(survey('PROGRAMADO'))), deleteSurvey });
+    const c = fixture.componentInstance;
+    c.openDeleteDialog();
+    expect(c.showDeleteDialog()).toBe(true);
+    c.confirmDelete();
+    expect(deleteSurvey).toHaveBeenCalledWith(2);
   });
 
   it('exposes reopen for a closed survey', async () => {
