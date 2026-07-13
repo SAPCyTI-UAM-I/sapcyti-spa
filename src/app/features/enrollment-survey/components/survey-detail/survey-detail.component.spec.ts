@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
 import { SurveyResponse, UeaDemandRow } from '../../../../models';
@@ -32,7 +31,6 @@ describe('SurveyDetailComponent', () => {
       imports: [SurveyDetailComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
         provideRouter([]),
-        MessageService,
         { provide: EnrollmentSurveyService, useValue: service },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '2' } } } },
       ],
@@ -51,18 +49,14 @@ describe('SurveyDetailComponent', () => {
     };
   }
 
-  it('offers edit + delete for a scheduled survey without responses', async () => {
-    const fixture = await setup(serviceWith(survey(), 0));
-    expect(fixture.componentInstance.actions().map((a) => a.action)).toEqual(['edit', 'delete']);
+  it('loads the survey and its inline results', async () => {
+    const fixture = await setup(serviceWith(survey({ status: 'ACTIVO' })));
+    expect(fixture.componentInstance.survey()?.term).toBe('26O');
+    expect(fixture.componentInstance.summary()?.respondedCount).toBe(3);
   });
 
-  it('hides delete once the scheduled survey has responses', async () => {
-    const fixture = await setup(serviceWith(survey({ responseCount: 4 })));
-    expect(fixture.componentInstance.actions().map((a) => a.action)).toEqual(['edit']);
-  });
-
-  it('loads and sorts inline results by demand descending', async () => {
-    const fixture = await setup(serviceWith(survey({ status: 'ACTIVO', responseCount: 3 })));
+  it('sorts inline results by demand descending', async () => {
+    const fixture = await setup(serviceWith(survey({ status: 'ACTIVO' })));
     expect(fixture.componentInstance.orderedRows().map((r) => r.totalResponses)).toEqual([5, 1]);
     expect(fixture.componentInstance.hasResponses()).toBe(true);
   });
@@ -72,18 +66,9 @@ describe('SurveyDetailComponent', () => {
     expect(fixture.componentInstance.hasResponses()).toBe(false);
   });
 
-  it('offers only edit for an active survey (close moved to the edit screen)', async () => {
+  it('loads interested students for a UEA row', async () => {
     const fixture = await setup(serviceWith(survey({ status: 'ACTIVO' })));
-    expect(fixture.componentInstance.actions().map((a) => a.action)).toEqual(['edit']);
-  });
-
-  it('deletes the survey after confirming', async () => {
-    const deleteSurvey = vi.fn(() => of(void 0));
-    const fixture = await setup({ ...serviceWith(survey(), 0), deleteSurvey });
-    const c = fixture.componentInstance;
-    c.onAction('delete');
-    expect(c.pendingDelete()).toBe(true);
-    c.confirmDelete();
-    expect(deleteSurvey).toHaveBeenCalledWith(2);
+    fixture.componentInstance.openStudents(rows[1]!);
+    expect(fixture.componentInstance.selectedUea()?.ueaId).toBe(11);
   });
 });

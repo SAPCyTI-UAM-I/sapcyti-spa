@@ -1,8 +1,4 @@
 <section class="gap-lg flex flex-col">
-  @if (actionError()) {
-    <p-message severity="error" [text]="actionError() | domainError: errorScope" />
-  }
-
   <app-load-state
     [loading]="loading()"
     [error]="loadError()"
@@ -24,21 +20,11 @@
             />
           </div>
           <div class="gap-sm flex flex-wrap">
-            @if (canDelete()) {
-              <p-button
-                severity="danger"
-                variant="outlined"
-                icon="pi pi-trash"
-                data-testid="survey-action-delete"
-                [label]="'ENROLLMENT_SURVEY.ACTIONS.DELETE' | translate"
-                (onClick)="onAction('delete')"
-              />
-            }
             <p-button
               icon="pi pi-pencil"
               data-testid="survey-action-edit"
               [label]="'ENROLLMENT_SURVEY.ACTIONS.EDIT' | translate"
-              (onClick)="onAction('edit')"
+              [routerLink]="['/enrollment-survey', surveyId, 'edit']"
             />
             <p-button
               severity="secondary"
@@ -187,32 +173,6 @@
     }
   </app-load-state>
 </section>
-
-<p-dialog
-  [header]="'ENROLLMENT_SURVEY.DETAIL.CONFIRM_DELETE_TITLE' | translate"
-  [visible]="pendingDelete()"
-  [modal]="true"
-  [style]="{ width: '30rem' }"
-  (onHide)="cancelDelete()"
->
-  <p class="text-body-md">
-    {{ 'ENROLLMENT_SURVEY.DETAIL.CONFIRM_DELETE_MESSAGE' | translate }}
-  </p>
-  <ng-template #footer>
-    <p-button
-      severity="secondary"
-      [label]="'COMMON.ACTIONS.CANCEL' | translate"
-      (onClick)="cancelDelete()"
-    />
-    <p-button
-      severity="danger"
-      data-testid="confirm-survey-delete"
-      [label]="'COMMON.ACTIONS.CONFIRM' | translate"
-      [loading]="processing()"
-      (onClick)="confirmDelete()"
-    />
-  </ng-template>
-</p-dialog>
 
 <!-- HU-42 — interested students per UEA. -->
 <p-dialog

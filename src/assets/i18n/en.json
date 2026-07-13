@@ -755,7 +755,6 @@
   "ENROLLMENT_SURVEY": {
     "ACTIONS": {
       "CLOSE": "Close now",
-      "DELETE": "Delete",
       "EDIT": "Edit",
       "REOPEN": "Reopen"
     },
@@ -769,9 +768,6 @@
       "CLOSED": "Survey closed.",
       "CONFIRM_CLOSE_MESSAGE": "Close the survey now? Students will no longer be able to respond.",
       "CONFIRM_CLOSE_TITLE": "Close survey",
-      "CONFIRM_DELETE_MESSAGE": "Delete this survey? This action cannot be undone.",
-      "CONFIRM_DELETE_TITLE": "Delete survey",
-      "DELETED": "Survey deleted.",
       "TITLE": "Survey"
     },
     "ERRORS": {

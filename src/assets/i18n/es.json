@@ -755,7 +755,6 @@
   "ENROLLMENT_SURVEY": {
     "ACTIONS": {
       "CLOSE": "Cerrar ahora",
-      "DELETE": "Eliminar",
       "EDIT": "Editar",
       "REOPEN": "Reabrir"
     },
@@ -769,9 +768,6 @@
       "CLOSED": "Sondeo cerrado.",
       "CONFIRM_CLOSE_MESSAGE": "¿Deseas cerrar el sondeo ahora? Los alumnos ya no podrán responder.",
       "CONFIRM_CLOSE_TITLE": "Cerrar sondeo",
-      "CONFIRM_DELETE_MESSAGE": "¿Deseas eliminar este sondeo? Esta acción no se puede deshacer.",
-      "CONFIRM_DELETE_TITLE": "Eliminar sondeo",
-      "DELETED": "Sondeo eliminado.",
       "TITLE": "Sondeo"
     },
     "ERRORS": {
