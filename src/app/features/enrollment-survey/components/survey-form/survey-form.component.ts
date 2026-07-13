@@ -125,6 +125,11 @@ export class SurveyFormComponent implements OnInit {
   }
 
   submit(): void {
+    // A CERRADO survey can only be saved as a reopen — route through its date validation.
+    if (this.isReopen()) {
+      this.reopen();
+      return;
+    }
     this.submitted.set(true);
     this.error.set(null);
     if (this.form.invalid) {

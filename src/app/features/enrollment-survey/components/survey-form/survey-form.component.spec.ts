@@ -144,6 +144,17 @@ describe('SurveyFormComponent (edit)', () => {
     expect(updateSurvey).not.toHaveBeenCalled();
   });
 
+  it('routes Save through the reopen validation for a closed survey', async () => {
+    const updateSurvey = vi.fn();
+    const fixture = await setup({ getSurvey: vi.fn(() => of(survey('CERRADO'))), updateSurvey });
+    const c = fixture.componentInstance;
+    setDateTime(c, 'opens', new Date(Date.now()));
+    setDateTime(c, 'closes', new Date(Date.now() + 3_600_000)); // 1h < 1 day
+    c.submit();
+    expect(c.showReopenError()).toBe(true);
+    expect(updateSurvey).not.toHaveBeenCalled();
+  });
+
   it('reopens when the closing date is at least a day away', async () => {
     const updateSurvey = vi.fn(() => of(survey('PROGRAMADO')));
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('CERRADO'))), updateSurvey });

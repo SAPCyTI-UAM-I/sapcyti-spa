@@ -779,6 +779,7 @@
       "survey_not_active": "El sondeo no está activo.",
       "survey_not_deletable": "Solo puede eliminarse un sondeo programado sin respuestas.",
       "survey_not_found": "No existe un sondeo para ese trimestre.",
+      "survey_reopen_dates_invalid": "Para reabrir el sondeo, la fecha de apertura y la de cierre deben ser futuras.",
       "survey_window_overlaps": "Ya existe un sondeo activo o programado en ese periodo.",
       "uea_not_available": "Una o más UEA seleccionadas ya no están disponibles. Actualiza tu selección.",
       "validation": "Revisa los datos capturados."

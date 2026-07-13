@@ -551,6 +551,7 @@ export const I18N_KEYS = [
   'ENROLLMENT_SURVEY.ERRORS.survey_not_active',
   'ENROLLMENT_SURVEY.ERRORS.survey_not_deletable',
   'ENROLLMENT_SURVEY.ERRORS.survey_not_found',
+  'ENROLLMENT_SURVEY.ERRORS.survey_reopen_dates_invalid',
   'ENROLLMENT_SURVEY.ERRORS.survey_window_overlaps',
   'ENROLLMENT_SURVEY.ERRORS.uea_not_available',
   'ENROLLMENT_SURVEY.ERRORS.validation',
