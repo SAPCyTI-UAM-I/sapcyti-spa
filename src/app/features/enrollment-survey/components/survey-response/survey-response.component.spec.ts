@@ -49,13 +49,25 @@ describe('SurveyResponseComponent', () => {
     expect(fixture.componentInstance.data()?.removedUeaClaves).toEqual(['UEA-301']);
   });
 
-  it('toggles UEA selection', async () => {
+  it('moves a UEA between the available and selected lists (mutually exclusive)', async () => {
     const fixture = await setup({ getActiveSurvey: vi.fn(() => of(activeForm)) });
     const c = fixture.componentInstance;
-    c.toggleUea(10);
-    expect(c.isSelected(10)).toBe(true);
-    c.toggleUea(10);
-    expect(c.isSelected(10)).toBe(false);
+    const uea = activeForm.availableUeas[0]!;
+
+    c.addUea(uea);
+    expect(c.selectedUeas().map((u) => u.id)).toEqual([10]);
+    expect(c.availableUeas().map((u) => u.id)).toEqual([11]); // no longer in the general list
+
+    c.removeUea(uea);
+    expect(c.selectedUeas()).toEqual([]);
+    expect(c.availableUeas().map((u) => u.id)).toEqual([10, 11]);
+  });
+
+  it('filters the available list by clave or nombre', async () => {
+    const fixture = await setup({ getActiveSurvey: vi.fn(() => of(activeForm)) });
+    const c = fixture.componentInstance;
+    c.search.set('estad');
+    expect(c.availableUeas().map((u) => u.id)).toEqual([11]);
   });
 
   it('disables the UEA control when the blank mode is chosen', async () => {
@@ -97,7 +109,7 @@ describe('SurveyResponseComponent', () => {
     const c = fixture.componentInstance;
     c.form.controls.academicTerm.setValue('III');
     c.form.controls.mode.setValue('ENROLL_UEAS');
-    c.toggleUea(10);
+    c.addUea(activeForm.availableUeas[0]!);
     c.submit();
     expect(submitResponse).toHaveBeenCalledWith(2, {
       academicTerm: 'III',

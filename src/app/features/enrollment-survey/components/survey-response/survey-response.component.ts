@@ -19,14 +19,21 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
-import { Checkbox } from 'primeng/checkbox';
+import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { ACADEMIC_TERMS, AcademicTerm, StudentSurveyForm, SurveyMode } from '../../../../models';
 import {
+  ACADEMIC_TERMS,
+  AcademicTerm,
+  StudentSurveyForm,
+  SurveyAvailableUea,
+  SurveyMode,
+} from '../../../../models';
+import {
+  CatalogTagComponent,
   FieldErrorComponent,
   I18nSelectComponent,
   I18nSelectOption,
@@ -59,13 +66,14 @@ function ueaSelectionValidator(group: AbstractControl): ValidationErrors | null 
     FormsModule,
     TranslatePipe,
     Button,
-    Checkbox,
+    InputText,
     Message,
     Select,
     I18nSelectComponent,
     FieldErrorComponent,
     LoadStateComponent,
     ProfileFieldComponent,
+    CatalogTagComponent,
     DomainErrorMessagePipe,
   ],
   templateUrl: './survey-response.component.html',
@@ -105,10 +113,57 @@ export class SurveyResponseComponent implements OnInit {
     initialValue: this.form.getRawValue(),
   });
 
+  /** Two-letter avatar initials from the student's full name. */
+  readonly initials = computed(() =>
+    (this.data()?.student.fullName ?? '')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join('')
+      .toUpperCase(),
+  );
+
   readonly isBlank = computed(() => this.value().mode === 'BLANK');
   readonly selectedIds = computed(() => this.value().ueaIds ?? []);
   /** Read-only once the survey is no longer accepting responses. */
   readonly readonlyView = computed(() => this.data()?.survey.status !== 'ACTIVO');
+
+  // UEA picker: search + sort over the available list, mutually exclusive with the selected list.
+  readonly search = signal('');
+  readonly sortField = signal<'clave' | 'nombre'>('clave');
+  readonly sortDir = signal<'asc' | 'desc'>('asc');
+
+  private readonly allUeas = computed(() => this.data()?.availableUeas ?? []);
+
+  /** UEAs the student picked, sorted by clave (shown in the "selected" table). */
+  readonly selectedUeas = computed(() => {
+    const ids = new Set(this.selectedIds());
+    return this.allUeas()
+      .filter((uea) => ids.has(uea.id))
+      .sort((a, b) => a.clave.localeCompare(b.clave));
+  });
+
+  /** UEAs not yet picked, after search + sort (shown in the "available" table). */
+  readonly availableUeas = computed(() => {
+    const ids = new Set(this.selectedIds());
+    const query = this.search().trim().toLowerCase();
+    const field = this.sortField();
+    const sign = this.sortDir() === 'asc' ? 1 : -1;
+    return this.allUeas()
+      .filter((uea) => !ids.has(uea.id))
+      .filter(
+        (uea) =>
+          !query ||
+          uea.clave.toLowerCase().includes(query) ||
+          uea.nombre.toLowerCase().includes(query),
+      )
+      .sort((a, b) => a[field].localeCompare(b[field]) * sign);
+  });
+
+  readonly selectedCredits = computed(() =>
+    this.selectedUeas().reduce((total, uea) => total + uea.creditos, 0),
+  );
 
   constructor() {
     this.form.controls.mode.valueChanges
@@ -120,16 +175,36 @@ export class SurveyResponseComponent implements OnInit {
     this.load();
   }
 
-  isSelected(ueaId: number): boolean {
-    return this.selectedIds().includes(ueaId);
+  addUea(uea: SurveyAvailableUea): void {
+    const current = this.form.controls.ueaIds.value;
+    if (!current.includes(uea.id)) {
+      this.form.controls.ueaIds.setValue([...current, uea.id]);
+    }
   }
 
-  toggleUea(ueaId: number): void {
-    const current = this.form.controls.ueaIds.value;
-    const next = current.includes(ueaId)
-      ? current.filter((id) => id !== ueaId)
-      : [...current, ueaId];
-    this.form.controls.ueaIds.setValue(next);
+  removeUea(uea: SurveyAvailableUea): void {
+    this.form.controls.ueaIds.setValue(
+      this.form.controls.ueaIds.value.filter((id) => id !== uea.id),
+    );
+  }
+
+  sortBy(field: 'clave' | 'nombre'): void {
+    if (this.sortField() === field) {
+      this.sortDir.update((dir) => (dir === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortField.set(field);
+      this.sortDir.set('asc');
+    }
+  }
+
+  ariaSort(field: 'clave' | 'nombre'): 'ascending' | 'descending' | 'none' {
+    if (this.sortField() !== field) return 'none';
+    return this.sortDir() === 'asc' ? 'ascending' : 'descending';
+  }
+
+  sortIcon(field: 'clave' | 'nombre'): string {
+    if (this.sortField() !== field) return 'pi-sort-alt';
+    return this.sortDir() === 'asc' ? 'pi-sort-amount-up-alt' : 'pi-sort-amount-down';
   }
 
   submit(): void {
