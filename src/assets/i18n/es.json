@@ -818,7 +818,7 @@
       "ACADEMIC_TERM": "Trimestre académico",
       "ACADEMIC_TERM_PLACEHOLDER": "Selecciona tu trimestre",
       "ADD": "Agregar UEA",
-      "BLANK_NOTE": "Elegiste inscripción en blanco; no necesitas seleccionar UEAs.",
+      "BLANK_NOTE": "No es posible seleccionar UEAs cuando se elige \"inscripción en blanco\".",
       "CLOSED_NO_RESPONSE": "No registraste una respuesta para este sondeo.",
       "CREDITS": "créditos",
       "EMPTY_AVAILABLE": "No hay UEAs que coincidan con tu búsqueda.",

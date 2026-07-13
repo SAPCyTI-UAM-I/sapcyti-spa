@@ -818,7 +818,7 @@
       "ACADEMIC_TERM": "Academic term",
       "ACADEMIC_TERM_PLACEHOLDER": "Select your term",
       "ADD": "Add UEA",
-      "BLANK_NOTE": "You chose a blank enrollment; you don't need to select UEAs.",
+      "BLANK_NOTE": "You cannot select UEAs when \"blank enrollment\" is chosen.",
       "CLOSED_NO_RESPONSE": "You did not submit a response for this survey.",
       "CREDITS": "credits",
       "EMPTY_AVAILABLE": "No UEAs match your search.",

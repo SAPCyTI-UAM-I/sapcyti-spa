@@ -70,6 +70,12 @@ describe('SurveyResponseComponent', () => {
     expect(c.availableUeas().map((u) => u.id)).toEqual([11]);
   });
 
+  it('defaults the mode to ENROLL_UEAS', async () => {
+    const fixture = await setup({ getActiveSurvey: vi.fn(() => of(activeForm)) });
+    expect(fixture.componentInstance.form.controls.mode.value).toBe('ENROLL_UEAS');
+    expect(fixture.componentInstance.isBlank()).toBe(false);
+  });
+
   it('disables the UEA control when the blank mode is chosen', async () => {
     const fixture = await setup({ getActiveSurvey: vi.fn(() => of(activeForm)) });
     const c = fixture.componentInstance;

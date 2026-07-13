@@ -96,7 +96,7 @@ export class SurveyResponseComponent implements OnInit {
   readonly form = this.fb.group(
     {
       academicTerm: this.fb.control<AcademicTerm | null>(null, Validators.required),
-      mode: this.fb.control<SurveyMode | null>(null, Validators.required),
+      mode: this.fb.control<SurveyMode | null>('ENROLL_UEAS', Validators.required),
       ueaIds: this.fb.control<number[]>([]),
     },
     { validators: ueaSelectionValidator },
@@ -277,7 +277,7 @@ export class SurveyResponseComponent implements OnInit {
         ueaIds: [...response.ueaIds],
       });
     } else {
-      this.form.reset({ academicTerm: null, mode: null, ueaIds: [] });
+      this.form.reset({ academicTerm: null, mode: 'ENROLL_UEAS', ueaIds: [] });
     }
   }
 
