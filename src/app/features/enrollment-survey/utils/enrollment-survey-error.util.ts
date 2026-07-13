@@ -7,6 +7,8 @@ export const ENROLLMENT_SURVEY_ERROR_I18N_SCOPE = 'ENROLLMENT_SURVEY.ERRORS' as 
 
 export type EnrollmentSurveyError =
   | 'survey_already_exists_for_term'
+  | 'survey_window_overlaps'
+  | 'survey_no_active_ueas'
   | 'survey_not_deletable'
   | 'survey_not_active'
   | 'survey_not_found'
@@ -18,6 +20,8 @@ export type EnrollmentSurveyError =
 export const mapEnrollmentSurveyError = createDomainErrorMapper<EnrollmentSurveyError>({
   rules: [
     { match: matchCode('SURVEY_ALREADY_EXISTS_FOR_TERM'), key: 'survey_already_exists_for_term' },
+    { match: matchCode('SURVEY_WINDOW_OVERLAPS'), key: 'survey_window_overlaps' },
+    { match: matchCode('SURVEY_NO_ACTIVE_UEAS'), key: 'survey_no_active_ueas' },
     { match: matchCode('SURVEY_NOT_DELETABLE'), key: 'survey_not_deletable' },
     { match: matchCode('SURVEY_NOT_ACTIVE'), key: 'survey_not_active' },
     { match: matchCode('SURVEY_NOT_FOUND'), key: 'survey_not_found' },

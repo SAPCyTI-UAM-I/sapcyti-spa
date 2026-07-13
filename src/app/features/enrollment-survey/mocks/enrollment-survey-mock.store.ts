@@ -173,6 +173,7 @@ export class EnrollmentSurveyMockStore {
         message: 'Ya existe un sondeo para ese trimestre.',
       });
     }
+    this.requireActiveUeas();
     const record: SurveyRecord = {
       id: this.nextId(),
       term: request.term,
@@ -197,6 +198,7 @@ export class EnrollmentSurveyMockStore {
     record.introMessage = request.introMessage ?? null;
     if (wasClosed) {
       // Reopen: clear the manual close and recompute the UEA snapshot (spec HU-40 note 2).
+      this.requireActiveUeas();
       record.closedManually = false;
       record.snapshotUeaIds = this.activeCatalogIds();
     }
@@ -363,6 +365,21 @@ export class EnrollmentSurveyMockStore {
       .map((ueaId) => this.catalog.find((u) => u.id === ueaId))
       .filter((u): u is CatalogUea => u !== undefined && !u.active)
       .map((u) => u.clave);
+  }
+
+  hasActiveUeas(): boolean {
+    return this.activeCatalogIds().length > 0;
+  }
+
+  /** Mirrors the backend guard: a survey cannot publish with an empty UEA snapshot. */
+  private requireActiveUeas(): void {
+    if (!this.hasActiveUeas()) {
+      throw mockApiError({
+        status: 409,
+        error: 'SURVEY_NO_ACTIVE_UEAS',
+        message: 'No hay UEAs activas en el catálogo; no se puede publicar el sondeo.',
+      });
+    }
   }
 
   private activeCatalogIds(): number[] {
