@@ -94,9 +94,7 @@ describe('SurveyFormComponent (edit)', () => {
     }).compileComponents();
     const fixture = TestBed.createComponent(SurveyFormComponent);
     fixture.detectChanges();
-    expect(
-      fixture.nativeElement.querySelector('[data-testid="no-ueas-warning"]'),
-    ).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="no-ueas-warning"]')).not.toBeNull();
   });
 
   it('keeps the term read-only on edit', async () => {
@@ -104,12 +102,12 @@ describe('SurveyFormComponent (edit)', () => {
     expect(fixture.componentInstance.form.controls.term.disabled).toBe(true);
   });
 
-  it('exposes the close action only for an active survey', async () => {
+  it('shows the status as a passive tag with no close/reopen buttons', async () => {
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('ACTIVO'))) });
-    const c = fixture.componentInstance;
-    expect(c.isActive()).toBe(true);
-    expect(c.isReopen()).toBe(false);
-    expect(c.canDelete()).toBe(false);
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('[data-testid="survey-status-tag"]')).not.toBeNull();
+    expect(el.querySelector('[data-testid="close-survey"]')).toBeNull();
+    expect(el.querySelector('[data-testid="reopen-survey"]')).toBeNull();
   });
 
   it('exposes delete only for a scheduled survey without responses', async () => {
@@ -125,12 +123,6 @@ describe('SurveyFormComponent (edit)', () => {
     expect(c.showDeleteDialog()).toBe(true);
     c.confirmDelete();
     expect(deleteSurvey).toHaveBeenCalledWith(2);
-  });
-
-  it('exposes reopen for a closed survey', async () => {
-    const fixture = await setup({ getSurvey: vi.fn(() => of(survey('CERRADO'))) });
-    expect(fixture.componentInstance.isReopen()).toBe(true);
-    expect(fixture.componentInstance.isActive()).toBe(false);
   });
 
   it('blocks reopen with an error modal when the closing date is not in the future', async () => {
@@ -164,15 +156,5 @@ describe('SurveyFormComponent (edit)', () => {
     c.reopen();
     expect(c.showReopenError()).toBe(false);
     expect(updateSurvey).toHaveBeenCalledWith(2, expect.anything());
-  });
-
-  it('closes the survey from the edit screen after confirming', async () => {
-    const closeSurvey = vi.fn(() => of(survey('CERRADO')));
-    const fixture = await setup({ getSurvey: vi.fn(() => of(survey('ACTIVO'))), closeSurvey });
-    const c = fixture.componentInstance;
-    c.openCloseDialog();
-    expect(c.showCloseDialog()).toBe(true);
-    c.confirmClose();
-    expect(closeSurvey).toHaveBeenCalledWith(2);
   });
 });

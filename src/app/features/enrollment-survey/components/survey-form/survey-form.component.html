@@ -1,12 +1,21 @@
 <section class="gap-lg mx-auto flex max-w-2xl flex-col" data-testid="survey-form">
   <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
     <div>
-      <h1 class="text-h2 text-primary font-bold">
-        {{
-          (isEdit ? 'ENROLLMENT_SURVEY.FORM.TITLE_EDIT' : 'ENROLLMENT_SURVEY.FORM.TITLE_NEW')
-            | translate
-        }}
-      </h1>
+      <div class="gap-sm flex flex-wrap items-center">
+        <h1 class="text-h2 text-primary font-bold">
+          {{
+            (isEdit ? 'ENROLLMENT_SURVEY.FORM.TITLE_EDIT' : 'ENROLLMENT_SURVEY.FORM.TITLE_NEW')
+              | translate
+          }}
+        </h1>
+        @if (status(); as surveyStatus) {
+          <app-catalog-tag
+            data-testid="survey-status-tag"
+            [value]="'ENROLLMENT_SURVEY.STATUS.' + surveyStatus | translate"
+            [severity]="statusTagSeverity(surveyStatus)"
+          />
+        }
+      </div>
       <p class="text-text-secondary">{{ 'ENROLLMENT_SURVEY.FORM.SUBTITLE' | translate }}</p>
     </div>
     <p-button
@@ -126,29 +135,8 @@
       </label>
 
       <footer class="border-outline pt-md gap-sm flex flex-wrap justify-between border-t">
-        <!-- Status-specific secondary action; Cancel/Save always stay on the right. -->
-        @if (isActive()) {
-          <p-button
-            type="button"
-            severity="danger"
-            variant="outlined"
-            icon="pi pi-lock"
-            data-testid="close-survey"
-            [label]="'ENROLLMENT_SURVEY.ACTIONS.CLOSE' | translate"
-            (onClick)="openCloseDialog()"
-          />
-        } @else if (isReopen()) {
-          <p-button
-            type="button"
-            severity="success"
-            variant="outlined"
-            icon="pi pi-lock-open"
-            data-testid="reopen-survey"
-            [label]="'ENROLLMENT_SURVEY.ACTIONS.REOPEN' | translate"
-            [loading]="submitting()"
-            (onClick)="reopen()"
-          />
-        } @else if (canDelete()) {
+        <!-- Save is the single lifecycle action; delete only for a fresh PROGRAMADO survey. -->
+        @if (canDelete()) {
           <p-button
             type="button"
             severity="danger"
@@ -181,31 +169,6 @@
     </form>
   }
 </section>
-
-<!-- HU-40 — close an active survey from the edit screen. -->
-<p-dialog
-  [header]="'ENROLLMENT_SURVEY.DETAIL.CONFIRM_CLOSE_TITLE' | translate"
-  [visible]="showCloseDialog()"
-  [modal]="true"
-  [style]="{ width: '30rem' }"
-  (onHide)="cancelClose()"
->
-  <p class="text-body-md">{{ 'ENROLLMENT_SURVEY.DETAIL.CONFIRM_CLOSE_MESSAGE' | translate }}</p>
-  <ng-template #footer>
-    <p-button
-      severity="secondary"
-      [label]="'COMMON.ACTIONS.CANCEL' | translate"
-      (onClick)="cancelClose()"
-    />
-    <p-button
-      severity="danger"
-      data-testid="confirm-close-survey"
-      [label]="'ENROLLMENT_SURVEY.ACTIONS.CLOSE' | translate"
-      [loading]="closing()"
-      (onClick)="confirmClose()"
-    />
-  </ng-template>
-</p-dialog>
 
 <!-- HU-40 — delete a scheduled survey from the edit screen. -->
 <p-dialog

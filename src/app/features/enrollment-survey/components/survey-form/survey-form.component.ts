@@ -20,11 +20,12 @@ import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { SurveyResponse, SurveyStatus } from '../../../../models';
-import { FieldErrorComponent } from '../../../../shared/components';
+import { CatalogTagComponent, FieldErrorComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { EnrollmentSurveyService } from '../../services/enrollment-survey.service';
 import { combineToDate, isoToDate, isoToTime } from '../../utils/datetime-fields.util';
+import { statusTagSeverity } from '../../utils/enrollment-survey-status.util';
 import {
   ENROLLMENT_SURVEY_ERROR_I18N_SCOPE,
   EnrollmentSurveyError,
@@ -52,6 +53,7 @@ const SURVEY_LIST_ROUTE = '/enrollment-survey';
     Dialog,
     InputText,
     Message,
+    CatalogTagComponent,
     FieldErrorComponent,
     DomainErrorMessagePipe,
   ],
@@ -71,6 +73,7 @@ export class SurveyFormComponent implements OnInit {
   readonly isEdit = this.surveyId !== null;
 
   readonly errorScope = ENROLLMENT_SURVEY_ERROR_I18N_SCOPE;
+  readonly statusTagSeverity = statusTagSeverity;
   readonly form = buildSurveyFormGroup(this.fb);
 
   readonly loading = signal(this.isEdit);
@@ -80,13 +83,11 @@ export class SurveyFormComponent implements OnInit {
   readonly status = signal<SurveyStatus | null>(null);
   private readonly responseCount = signal(0);
 
-  // HU-40 — the lifecycle action (close / reopen / delete) lives on this edit screen.
+  // HU-40 — the status is display-only here; Save is the single action and drives
+  // the date validations (a CERRADO survey is saved as a reopen).
   readonly isReopen = computed(() => this.status() === 'CERRADO');
-  readonly isActive = computed(() => this.status() === 'ACTIVO');
   /** A PROGRAMADO survey without responses can be deleted. */
   readonly canDelete = computed(() => this.status() === 'PROGRAMADO' && this.responseCount() === 0);
-  readonly showCloseDialog = signal(false);
-  readonly closing = signal(false);
   /** Shown when a reopen is attempted with a closing date that is not in the future. */
   readonly showReopenError = signal(false);
   readonly showDeleteDialog = signal(false);
@@ -187,44 +188,6 @@ export class SurveyFormComponent implements OnInit {
     } else {
       void this.router.navigate([SURVEY_LIST_ROUTE]);
     }
-  }
-
-  openCloseDialog(): void {
-    this.error.set(null);
-    this.showCloseDialog.set(true);
-  }
-
-  cancelClose(): void {
-    if (this.closing()) {
-      return;
-    }
-    this.showCloseDialog.set(false);
-  }
-
-  confirmClose(): void {
-    if (this.surveyId === null) {
-      return;
-    }
-    this.closing.set(true);
-    this.error.set(null);
-    this.service
-      .closeSurvey(this.surveyId)
-      .pipe(
-        finalize(() => this.closing.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (survey) => {
-          this.showCloseDialog.set(false);
-          this.messages.add({
-            severity: 'success',
-            summary: this.translate.instant('ENROLLMENT_SURVEY.DETAIL.CLOSED'),
-            life: TOAST_LIFE.DEFAULT,
-          });
-          void this.router.navigate([SURVEY_LIST_ROUTE, survey.id]);
-        },
-        error: (err) => this.error.set(mapEnrollmentSurveyError(err)),
-      });
   }
 
   openDeleteDialog(): void {
