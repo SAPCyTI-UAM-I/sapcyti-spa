@@ -219,15 +219,13 @@
     <ul class="gap-xs flex flex-col">
       @for (student of students(); track student.enrollmentId) {
         <li
-          class="border-outline py-sm gap-sm flex items-center justify-between border-b last:border-b-0"
+          class="border-outline py-sm gap-sm grid grid-cols-3 items-center border-b last:border-b-0"
         >
           <span class="font-medium">{{ student.fullName }}</span>
-          <span class="gap-md flex items-center">
-            <span class="text-text-secondary">
-              {{ 'ENROLLMENT_SURVEY.RESULTS.TRIMESTER' | translate }} {{ student.academicTerm }}
-            </span>
-            <span class="text-text-secondary">{{ student.enrollmentId }}</span>
+          <span class="text-text-secondary text-center">
+            {{ 'ENROLLMENT_SURVEY.RESULTS.TRIMESTER' | translate }} {{ student.academicTerm }}
           </span>
+          <span class="text-text-secondary text-right">{{ student.enrollmentId }}</span>
         </li>
       }
     </ul>
