@@ -788,6 +788,7 @@
       "DELETE_MESSAGE": "Delete this survey? This action cannot be undone.",
       "DELETE_TITLE": "Delete survey",
       "DELETED": "Survey deleted.",
+      "INTRO_DEFAULT": "Remember that this survey is not an official enrollment.",
       "INTRO_MESSAGE": "Introductory message (optional)",
       "OPENS_AT": "Opening date and time",
       "OPENS_TIME": "Opening time",

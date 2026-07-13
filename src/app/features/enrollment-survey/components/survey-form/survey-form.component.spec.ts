@@ -49,6 +49,24 @@ describe('SurveyFormComponent (edit)', () => {
     return fixture;
   }
 
+  it('prefills the default intro message when creating a new survey', async () => {
+    await TestBed.configureTestingModule({
+      imports: [SurveyFormComponent, TranslateModule.forRoot(), NoopAnimationsModule],
+      providers: [
+        provideRouter([]),
+        MessageService,
+        { provide: EnrollmentSurveyService, useValue: { listSurveys: vi.fn(() => of([])) } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => null } } } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(SurveyFormComponent);
+    fixture.detectChanges();
+    // No translations registered → instant() echoes the key, proving the prefill ran.
+    expect(fixture.componentInstance.form.controls.introMessage.value).toBe(
+      'ENROLLMENT_SURVEY.FORM.INTRO_DEFAULT',
+    );
+  });
+
   it('keeps the term read-only on edit', async () => {
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('ACTIVO'))) });
     expect(fixture.componentInstance.form.controls.term.disabled).toBe(true);

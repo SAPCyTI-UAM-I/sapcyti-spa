@@ -107,6 +107,9 @@ export class SurveyFormComponent implements OnInit {
       this.form.controls.term.disable();
       this.loadSurvey(this.surveyId);
     } else {
+      this.form.controls.introMessage.setValue(
+        this.translate.instant('ENROLLMENT_SURVEY.FORM.INTRO_DEFAULT'),
+      );
       this.prefillSuggestedTerm();
     }
   }

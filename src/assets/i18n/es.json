@@ -788,6 +788,7 @@
       "DELETE_MESSAGE": "¿Deseas eliminar este sondeo? Esta acción no se puede deshacer.",
       "DELETE_TITLE": "Eliminar sondeo",
       "DELETED": "Sondeo eliminado.",
+      "INTRO_DEFAULT": "Recuerda que este sondeo no equivale a una inscripción oficial.",
       "INTRO_MESSAGE": "Mensaje introductorio (opcional)",
       "OPENS_AT": "Fecha y hora de apertura",
       "OPENS_TIME": "Hora de apertura",
