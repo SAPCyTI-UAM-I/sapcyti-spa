@@ -30,8 +30,10 @@ describe('enrollment-survey-form.util', () => {
     const form = buildSurveyFormGroup(fb);
     form.patchValue({
       term: '26O',
-      opensAt: new Date('2026-10-05T10:00'),
-      closesAt: new Date('2026-10-01T10:00'),
+      opensDate: '2026-10-05',
+      opensTime: '10:00',
+      closesDate: '2026-10-01',
+      closesTime: '10:00',
     });
     expect(form.hasError('closesBeforeOpens')).toBe(true);
   });
@@ -40,23 +42,26 @@ describe('enrollment-survey-form.util', () => {
     const form = buildSurveyFormGroup(fb);
     form.patchValue({
       term: '26O',
-      opensAt: new Date('2026-10-01T10:00'),
-      closesAt: new Date('2026-10-05T10:00'),
+      opensDate: '2026-10-01',
+      opensTime: '10:00',
+      closesDate: '2026-10-05',
+      closesTime: '10:00',
     });
     expect(form.hasError('closesBeforeOpens')).toBe(false);
     expect(form.valid).toBe(true);
   });
 
   it('builds a request with ISO dates and null empty message', () => {
-    const opensAt = new Date('2026-10-01T10:00');
     const request = toCreateRequest({
       term: '26o',
-      opensAt,
-      closesAt: new Date('2026-10-05T10:00'),
+      opensDate: '2026-10-01',
+      opensTime: '10:00',
+      closesDate: '2026-10-05',
+      closesTime: '10:00',
       introMessage: '   ',
     });
     expect(request.term).toBe('26O');
-    expect(request.opensAt).toBe(opensAt.toISOString());
+    expect(request.opensAt).toBe(new Date('2026-10-01T10:00').toISOString());
     expect(request.introMessage).toBeNull();
   });
 

@@ -52,39 +52,51 @@
 
       <div class="gap-md grid md:grid-cols-2">
         <div class="gap-xs flex flex-col">
-          <label for="survey-opens-at">
+          <label for="survey-opens-date">
             {{ 'ENROLLMENT_SURVEY.FORM.OPENS_AT' | translate }} *
           </label>
-          <p-datepicker
-            inputId="survey-opens-at"
-            formControlName="opensAt"
-            [showTime]="true"
-            [showIcon]="true"
-            [stepMinute]="5"
-            hourFormat="24"
-            dateFormat="dd/mm/yy"
-            appendTo="body"
-            fluid
-          />
-          <app-field-error [control]="form.controls.opensAt" [submitted]="submitted()" />
+          <div class="gap-sm flex">
+            <input
+              pInputText
+              id="survey-opens-date"
+              type="date"
+              class="flex-1"
+              formControlName="opensDate"
+            />
+            <input
+              pInputText
+              type="time"
+              class="w-32"
+              formControlName="opensTime"
+              [attr.aria-label]="'ENROLLMENT_SURVEY.FORM.OPENS_TIME' | translate"
+            />
+          </div>
+          <app-field-error [control]="form.controls.opensDate" [submitted]="submitted()" />
+          <app-field-error [control]="form.controls.opensTime" [submitted]="submitted()" />
         </div>
 
         <div class="gap-xs flex flex-col">
-          <label for="survey-closes-at">
+          <label for="survey-closes-date">
             {{ 'ENROLLMENT_SURVEY.FORM.CLOSES_AT' | translate }} *
           </label>
-          <p-datepicker
-            inputId="survey-closes-at"
-            formControlName="closesAt"
-            [showTime]="true"
-            [showIcon]="true"
-            [stepMinute]="5"
-            hourFormat="24"
-            dateFormat="dd/mm/yy"
-            appendTo="body"
-            fluid
-          />
-          <app-field-error [control]="form.controls.closesAt" [submitted]="submitted()" />
+          <div class="gap-sm flex">
+            <input
+              pInputText
+              id="survey-closes-date"
+              type="date"
+              class="flex-1"
+              formControlName="closesDate"
+            />
+            <input
+              pInputText
+              type="time"
+              class="w-32"
+              formControlName="closesTime"
+              [attr.aria-label]="'ENROLLMENT_SURVEY.FORM.CLOSES_TIME' | translate"
+            />
+          </div>
+          <app-field-error [control]="form.controls.closesDate" [submitted]="submitted()" />
+          <app-field-error [control]="form.controls.closesTime" [submitted]="submitted()" />
         </div>
       </div>
 

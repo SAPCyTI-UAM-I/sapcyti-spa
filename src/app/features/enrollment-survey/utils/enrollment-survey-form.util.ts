@@ -8,38 +8,45 @@ import {
 } from '@angular/forms';
 
 import { CreateSurveyRequest } from '../../../models';
+import { combineToDate, combineToIso } from './datetime-fields.util';
 
 /** Term format: two year digits + period letter, e.g. `26O`, `27I`, `27P`. */
 export const TERM_PATTERN = /^\d{2}[OIP]$/i;
 
 export interface SurveyFormValue {
   term: string;
-  opensAt: Date | null;
-  closesAt: Date | null;
+  opensDate: string;
+  opensTime: string;
+  closesDate: string;
+  closesTime: string;
   introMessage: string;
 }
 
 export type SurveyFormGroup = FormGroup<{
   term: FormControl<string>;
-  opensAt: FormControl<Date | null>;
-  closesAt: FormControl<Date | null>;
+  opensDate: FormControl<string>;
+  opensTime: FormControl<string>;
+  closesDate: FormControl<string>;
+  closesTime: FormControl<string>;
   introMessage: FormControl<string>;
 }>;
 
-/** Group validator: `closesAt` must be strictly after `opensAt`. */
+/** Group validator: the closing instant must be strictly after the opening instant. */
 export function closesAfterOpensValidator(group: AbstractControl): ValidationErrors | null {
-  const opensAt = group.get('opensAt')?.value as Date | null;
-  const closesAt = group.get('closesAt')?.value as Date | null;
-  if (!opensAt || !closesAt) return null;
-  return closesAt.getTime() > opensAt.getTime() ? null : { closesBeforeOpens: true };
+  const opens = combineToDate(group.get('opensDate')?.value, group.get('opensTime')?.value);
+  const closes = combineToDate(group.get('closesDate')?.value, group.get('closesTime')?.value);
+  if (!opens || !closes) return null;
+  return closes.getTime() > opens.getTime() ? null : { closesBeforeOpens: true };
 }
 
 export function buildSurveyFormGroup(fb: NonNullableFormBuilder): SurveyFormGroup {
   return fb.group(
     {
       term: fb.control('', [Validators.required, Validators.pattern(TERM_PATTERN)]),
-      opensAt: fb.control<Date | null>(null, [Validators.required]),
-      closesAt: fb.control<Date | null>(null, [Validators.required]),
+      opensDate: fb.control('', [Validators.required]),
+      opensTime: fb.control('', [Validators.required]),
+      closesDate: fb.control('', [Validators.required]),
+      closesTime: fb.control('', [Validators.required]),
       introMessage: fb.control('', [Validators.maxLength(500)]),
     },
     { validators: closesAfterOpensValidator },
@@ -50,8 +57,8 @@ export function toCreateRequest(value: SurveyFormValue): CreateSurveyRequest {
   const introMessage = value.introMessage.trim();
   return {
     term: value.term.trim().toUpperCase(),
-    opensAt: value.opensAt ? value.opensAt.toISOString() : '',
-    closesAt: value.closesAt ? value.closesAt.toISOString() : '',
+    opensAt: combineToIso(value.opensDate, value.opensTime),
+    closesAt: combineToIso(value.closesDate, value.closesTime),
     introMessage: introMessage.length > 0 ? introMessage : null,
   };
 }

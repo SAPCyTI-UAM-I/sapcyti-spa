@@ -784,11 +784,13 @@
     "FORM": {
       "CLOSES_AT": "Fecha y hora de cierre",
       "CLOSES_BEFORE_OPENS": "La fecha de cierre debe ser posterior a la de apertura.",
+      "CLOSES_TIME": "Hora de cierre",
       "DELETE_MESSAGE": "¿Deseas eliminar este sondeo? Esta acción no se puede deshacer.",
       "DELETE_TITLE": "Eliminar sondeo",
       "DELETED": "Sondeo eliminado.",
       "INTRO_MESSAGE": "Mensaje introductorio (opcional)",
       "OPENS_AT": "Fecha y hora de apertura",
+      "OPENS_TIME": "Hora de apertura",
       "REOPEN_HINT": "Al reabrir con nuevas fechas se conservan las respuestas registradas.",
       "REOPEN_INVALID_MESSAGE": "La fecha de cierre debe ser al menos un día posterior a la fecha actual.",
       "REOPEN_INVALID_TITLE": "No se puede reabrir",
