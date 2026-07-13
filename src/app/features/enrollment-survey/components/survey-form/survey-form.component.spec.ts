@@ -102,12 +102,22 @@ describe('SurveyFormComponent (edit)', () => {
     expect(fixture.componentInstance.form.controls.term.disabled).toBe(true);
   });
 
-  it('shows the status as a passive tag with no close/reopen buttons', async () => {
+  it('shows the status tag and the close button, but no reopen button', async () => {
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('ACTIVO'))) });
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('[data-testid="survey-status-tag"]')).not.toBeNull();
-    expect(el.querySelector('[data-testid="close-survey"]')).toBeNull();
+    expect(el.querySelector('[data-testid="close-survey"]')).not.toBeNull();
     expect(el.querySelector('[data-testid="reopen-survey"]')).toBeNull();
+  });
+
+  it('closes the survey from the edit screen after confirming', async () => {
+    const closeSurvey = vi.fn(() => of(survey('CERRADO')));
+    const fixture = await setup({ getSurvey: vi.fn(() => of(survey('ACTIVO'))), closeSurvey });
+    const c = fixture.componentInstance;
+    c.openCloseDialog();
+    expect(c.showCloseDialog()).toBe(true);
+    c.confirmClose();
+    expect(closeSurvey).toHaveBeenCalledWith(2);
   });
 
   it('exposes delete only for a scheduled survey without responses', async () => {
@@ -125,12 +135,14 @@ describe('SurveyFormComponent (edit)', () => {
     expect(deleteSurvey).toHaveBeenCalledWith(2);
   });
 
-  it('blocks reopen with an error modal when the closing date is not in the future', async () => {
+  it('blocks reopen when the closing date is today, even with a future time', async () => {
     const updateSurvey = vi.fn();
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('CERRADO'))), updateSurvey });
     const c = fixture.componentInstance;
+    const todayLate = new Date();
+    todayLate.setHours(23, 59, 0, 0);
     setDateTime(c, 'opens', new Date(Date.now() - 7 * 86_400_000));
-    setDateTime(c, 'closes', new Date(Date.now() - 3_600_000)); // 1h in the past
+    setDateTime(c, 'closes', todayLate); // same calendar day → invalid regardless of time
     c.reopen();
     expect(c.showReopenError()).toBe(true);
     expect(updateSurvey).not.toHaveBeenCalled();
