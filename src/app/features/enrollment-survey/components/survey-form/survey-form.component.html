@@ -83,6 +83,7 @@
       </label>
 
       <footer class="border-outline pt-md gap-sm flex flex-wrap justify-between border-t">
+        <!-- Status-specific secondary action; Cancel/Save always stay on the right. -->
         @if (isActive()) {
           <p-button
             type="button"
@@ -97,6 +98,7 @@
           <p-button
             type="button"
             severity="success"
+            variant="outlined"
             icon="pi pi-lock-open"
             data-testid="reopen-survey"
             [label]="'ENROLLMENT_SURVEY.ACTIONS.REOPEN' | translate"
@@ -114,15 +116,13 @@
             [label]="'COMMON.ACTIONS.CANCEL' | translate"
             (onClick)="cancel()"
           />
-          @if (!isReopen()) {
-            <p-button
-              type="submit"
-              data-testid="save-survey"
-              [label]="'COMMON.ACTIONS.SAVE' | translate"
-              [loading]="submitting()"
-              [disabled]="submitting()"
-            />
-          }
+          <p-button
+            type="submit"
+            data-testid="save-survey"
+            [label]="'COMMON.ACTIONS.SAVE' | translate"
+            [loading]="submitting()"
+            [disabled]="submitting()"
+          />
         </div>
       </footer>
     </form>
