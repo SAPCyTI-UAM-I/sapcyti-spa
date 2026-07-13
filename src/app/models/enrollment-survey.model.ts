@@ -107,4 +107,6 @@ export interface UeaDemandRow {
 export interface InterestedStudent {
   fullName: string;
   enrollmentId: string;
+  /** Trimester (I–XII) the student declared in their survey response. */
+  academicTerm: string;
 }

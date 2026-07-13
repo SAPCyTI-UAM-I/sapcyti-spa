@@ -857,7 +857,8 @@
       "NO_STUDENTS": "Ningún alumno seleccionó esta UEA.",
       "RESPONDED": "Respondieron",
       "SUBTITLE": "Consulta la demanda por UEA para la planeación trimestral.",
-      "TITLE": "Resultados del sondeo"
+      "TITLE": "Resultados del sondeo",
+      "TRIMESTER": "Trimestre"
     },
     "STATES": {
       "LOAD_ERROR": "No se pudieron cargar los datos."

@@ -857,7 +857,8 @@
       "NO_STUDENTS": "No student selected this UEA.",
       "RESPONDED": "Responded",
       "SUBTITLE": "Review demand per UEA for quarterly planning.",
-      "TITLE": "Survey results"
+      "TITLE": "Survey results",
+      "TRIMESTER": "Trimester"
     },
     "STATES": {
       "LOAD_ERROR": "The data could not be loaded."

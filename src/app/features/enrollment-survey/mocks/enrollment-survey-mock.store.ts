@@ -341,9 +341,18 @@ export class EnrollmentSurveyMockStore {
     const record = this.requireSurvey(id);
     return record.responses
       .filter((r) => r.ueaIds.includes(ueaId))
-      .map((r) => this.students.find((s) => s.id === r.studentId))
-      .filter((s): s is EligibleStudent => s !== undefined)
-      .map((s) => ({ fullName: s.fullName, enrollmentId: s.enrollmentId }));
+      .flatMap((r) => {
+        const student = this.students.find((s) => s.id === r.studentId);
+        return student
+          ? [
+              {
+                fullName: student.fullName,
+                enrollmentId: student.enrollmentId,
+                academicTerm: r.academicTerm,
+              },
+            ]
+          : [];
+      });
   }
 
   // ---- helpers ----
