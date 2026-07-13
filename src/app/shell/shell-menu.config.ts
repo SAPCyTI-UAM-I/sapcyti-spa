@@ -1,6 +1,23 @@
 import { RoleType } from '../models';
 
-import { ShellMenuRole, ShellNavigation } from './shell-menu.model';
+import { ShellMenuRole, ShellNavigation, ShellNavSection } from './shell-menu.model';
+
+/**
+ * HU-41 — student survey entry. Merged into the student navigation by
+ * `shell.component.ts` only while an active survey exists (dynamic, API-driven).
+ */
+export const STUDENT_SURVEY_SECTION: ShellNavSection = {
+  id: 'student-survey',
+  labelKey: 'SHELL.SECTIONS.ENROLLMENT',
+  items: [
+    {
+      id: 'survey-respond',
+      labelKey: 'SHELL.MENU.SURVEY',
+      route: '/enrollment-survey/respond',
+      icon: 'pi pi-list-check',
+    },
+  ],
+};
 
 const HOME_LINK = {
   id: 'home',
@@ -110,6 +127,12 @@ const COORDINATOR_NAV: ShellNavigation = {
           labelKey: 'SHELL.MENU.PLAN_QUARTERLY',
           route: '/academic-offering/plan-quarterly',
           icon: 'pi pi-table',
+        },
+        {
+          id: 'enrollment-survey',
+          labelKey: 'SHELL.MENU.SURVEY_CONFIG',
+          route: '/enrollment-survey',
+          icon: 'pi pi-chart-bar',
         },
         {
           id: 'enrollment-start',

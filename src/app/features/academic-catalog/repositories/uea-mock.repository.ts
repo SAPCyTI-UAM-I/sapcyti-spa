@@ -64,8 +64,8 @@ export class UeaMockRepository implements UeaRepository {
     return fromMockStore(() => this.mockStore.updateUea(ueaId, request));
   }
 
-  deactivateUea(ueaId: number): Observable<UeaCatalogItem> {
-    return fromMockStore(() => this.mockStore.deactivateUea(ueaId));
+  deactivateUea(ueaId: number, confirm = false): Observable<UeaCatalogItem> {
+    return fromMockStore(() => this.mockStore.deactivateUea(ueaId, confirm));
   }
 
   restoreUea(ueaId: number): Observable<UeaCatalogItem> {

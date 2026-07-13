@@ -273,6 +273,8 @@
       },
       "DEACTIVATE": {
         "ACTION": "Deactivate",
+        "CONTINUE_QUESTION": "Do you want to continue?",
+        "IN_ACTIVE_SURVEY": "The UEA is included in an active survey.",
         "SUCCESS": "UEA deactivated successfully.",
         "TITLE": "Confirm deactivation",
         "WARNING": "The UEA will no longer appear in Draft annual plans. This action keeps the history."
@@ -467,9 +469,9 @@
       "SAVE_PANEL_HINT": "Save = draft. Completed = snapshot.",
       "SAVE_PANEL_TITLE": "Editing",
       "STATUS_ACTIONS_HINT": "Once you finish reviewing the plan, change its status here.",
+      "TITLE": "Plan",
       "TOOLS_PANEL_HINT": "Export or compare.",
-      "TOOLS_PANEL_TITLE": "Excel",
-      "TITLE": "Plan"
+      "TOOLS_PANEL_TITLE": "Excel"
     },
     "ERRORS": {
       "already_exists": "An annual plan for this year already exists.",
@@ -616,12 +618,14 @@
       "CLEAR": "Clear",
       "CLOSE": "Close",
       "CONFIRM": "Confirm",
+      "CONTINUE": "Continue",
       "DELETE": "Delete",
       "EDIT": "Edit",
       "NEXT": "Next",
       "RETRY": "Retry",
       "SAVE": "Save",
       "SEARCH": "Search",
+      "UNDERSTOOD": "Got it",
       "VIEW": "View"
     },
     "CLIPBOARD": {
@@ -748,6 +752,111 @@
       "TITLE": "Terms and academic offer"
     }
   },
+  "ENROLLMENT_SURVEY": {
+    "ACTIONS": {
+      "CLOSE": "Close now",
+      "DELETE": "Delete",
+      "EDIT": "Edit",
+      "REOPEN": "Reopen"
+    },
+    "BREADCRUMB": {
+      "DETAIL": "Detail",
+      "EDIT": "Edit",
+      "NEW": "New survey",
+      "RESPOND": "Respond"
+    },
+    "DETAIL": {
+      "CLOSED": "Survey closed.",
+      "CONFIRM_CLOSE_MESSAGE": "Close the survey now? Students will no longer be able to respond.",
+      "CONFIRM_CLOSE_TITLE": "Close survey",
+      "CONFIRM_DELETE_MESSAGE": "Delete this survey? This action cannot be undone.",
+      "CONFIRM_DELETE_TITLE": "Delete survey",
+      "DELETED": "Survey deleted.",
+      "TITLE": "Survey"
+    },
+    "ERRORS": {
+      "blank_with_ueas_conflict": "You cannot select UEAs together with a blank enrollment.",
+      "server": "An error occurred. Please try again.",
+      "survey_already_exists_for_term": "A survey already exists for that term.",
+      "survey_not_active": "The survey is not active.",
+      "survey_not_deletable": "Only a scheduled survey with no responses can be deleted.",
+      "survey_not_found": "There is no survey for that term.",
+      "uea_not_available": "One or more selected UEAs are no longer available. Update your selection.",
+      "validation": "Check the captured data."
+    },
+    "FORM": {
+      "CLOSES_AT": "Closing date and time",
+      "CLOSES_BEFORE_OPENS": "The closing date must be after the opening date.",
+      "INTRO_MESSAGE": "Introductory message (optional)",
+      "OPENS_AT": "Opening date and time",
+      "REOPEN_HINT": "Reopening with new dates keeps the existing responses.",
+      "REOPEN_INVALID_MESSAGE": "The closing date must be at least one day after the current date.",
+      "REOPEN_INVALID_TITLE": "Cannot reopen",
+      "SAVED": "Survey saved.",
+      "SUBTITLE": "Define the survey response window.",
+      "TERM": "Term",
+      "TERM_HINT": "Format: two year digits + O, I or P (e.g. 26O).",
+      "TERM_READONLY": "The term cannot be changed when editing a survey.",
+      "TITLE_EDIT": "Edit survey",
+      "TITLE_NEW": "New survey"
+    },
+    "LIST": {
+      "COL_CLOSES": "Closes",
+      "COL_OPENS": "Opens",
+      "COL_RESPONSES": "Responses",
+      "COL_STATUS": "Status",
+      "COL_TERM": "Term",
+      "EMPTY": "No surveys registered yet.",
+      "NEW": "New survey",
+      "SUBTITLE": "Configure and publish the quarterly UEA surveys.",
+      "TITLE": "Enrollment survey"
+    },
+    "RESPONSE": {
+      "ACADEMIC_TERM": "Academic term",
+      "ACADEMIC_TERM_PLACEHOLDER": "Select your term",
+      "CLOSED_NO_RESPONSE": "You did not submit a response for this survey.",
+      "CREDITS": "credits",
+      "ENROLLMENT_ID": "Student ID",
+      "FULL_NAME": "Full name",
+      "MODE": "Response",
+      "MODE_BLANK": "Make a blank enrollment",
+      "MODE_ENROLL": "Enroll one or more UEA",
+      "MODE_PLACEHOLDER": "Select an option",
+      "MODE_QUESTION": "Do you want to enroll one or more UEA or make a blank enrollment?",
+      "NO_ACTIVE": "There is no active survey right now.",
+      "NOT_OFFICIAL": "This survey is not an official enrollment.",
+      "PROGRAM": "Program",
+      "PROGRAM_DOCTORADO": "Doctorate",
+      "PROGRAM_MAESTRIA": "Master's",
+      "REMOVED_BANNER": "The following UEAs were removed from the catalog and are no longer available:",
+      "SAVED": "Response saved.",
+      "SUBMIT": "Submit response",
+      "TITLE": "Enrollment survey",
+      "TOTAL_UEAS": "Selected UEAs",
+      "UEA_REQUIRED": "Select at least one UEA.",
+      "UEAS_TITLE": "Available UEAs"
+    },
+    "RESULTS": {
+      "COL_CLAVE": "Code",
+      "COL_CREDITOS": "Credits",
+      "COL_DEMAND": "Responses",
+      "COL_FORMACION": "Training type",
+      "COL_NOMBRE": "Name",
+      "EMPTY_NO_RESPONSES": "This survey has no responses yet.",
+      "NO_STUDENTS": "No student selected this UEA.",
+      "RESPONDED": "Responded",
+      "SUBTITLE": "Review demand per UEA for quarterly planning.",
+      "TITLE": "Survey results"
+    },
+    "STATES": {
+      "LOAD_ERROR": "The data could not be loaded."
+    },
+    "STATUS": {
+      "ACTIVO": "Active",
+      "CERRADO": "Closed",
+      "PROGRAMADO": "Scheduled"
+    }
+  },
   "PRESENTATIONS": {
     "PLACEHOLDER": {
       "MESSAGE": "Presentations module — coming soon",
@@ -771,6 +880,8 @@
       "PRESENTATIONS": "Presentations",
       "PROFESSORS": "Professors",
       "STUDENTS": "Students",
+      "SURVEY": "Survey",
+      "SURVEY_CONFIG": "Enrollment survey",
       "TERMS_OFFER": "Terms and academic offer",
       "UEAS": "Course Catalog (UEAs)"
     },

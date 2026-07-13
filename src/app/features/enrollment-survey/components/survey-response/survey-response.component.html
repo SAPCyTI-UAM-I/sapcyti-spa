@@ -1,0 +1,163 @@
+<section class="gap-lg mx-auto flex max-w-3xl flex-col" data-testid="survey-response">
+  <app-load-state
+    [loading]="loading()"
+    [error]="loadError()"
+    [empty]="false"
+    emptyMessage="ENROLLMENT_SURVEY.STATES.LOAD_ERROR"
+    errorMessage="ENROLLMENT_SURVEY.STATES.LOAD_ERROR"
+    (retry)="load()"
+  >
+    @if (data(); as data) {
+      <div class="gap-lg flex flex-col">
+        <header>
+          <h1 class="text-h2 text-primary font-bold">
+            {{ 'ENROLLMENT_SURVEY.RESPONSE.TITLE' | translate }} {{ data.survey.term }}
+          </h1>
+          <p class="text-text-secondary">
+            {{ 'ENROLLMENT_SURVEY.RESPONSE.NOT_OFFICIAL' | translate }}
+          </p>
+        </header>
+
+        @if (data.survey.introMessage) {
+          <p-message severity="info" [text]="data.survey.introMessage" />
+        }
+
+        @if (data.removedUeaClaves.length > 0) {
+          <p-message severity="warn" data-testid="removed-ueas-banner">
+            <span>
+              {{ 'ENROLLMENT_SURVEY.RESPONSE.REMOVED_BANNER' | translate }}
+              {{ data.removedUeaClaves.join(', ') }}
+            </span>
+          </p-message>
+        }
+
+        <div class="border-outline bg-surface p-lg rounded-xl border">
+          <dl class="gap-x-lg grid sm:grid-cols-2">
+            <app-profile-field [label]="'ENROLLMENT_SURVEY.RESPONSE.FULL_NAME' | translate">
+              {{ data.student.fullName }}
+            </app-profile-field>
+            <app-profile-field [label]="'ENROLLMENT_SURVEY.RESPONSE.ENROLLMENT_ID' | translate">
+              {{ data.student.enrollmentId }}
+            </app-profile-field>
+            <app-profile-field [label]="'ENROLLMENT_SURVEY.RESPONSE.PROGRAM' | translate">
+              {{ 'ENROLLMENT_SURVEY.RESPONSE.PROGRAM_' + data.student.programType | translate }}
+            </app-profile-field>
+          </dl>
+        </div>
+
+        @if (readonlyView()) {
+          <!-- Closed survey: read-only view of the submitted response. -->
+          <div class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+            @if (data.myResponse; as response) {
+              <app-profile-field [label]="'ENROLLMENT_SURVEY.RESPONSE.ACADEMIC_TERM' | translate">
+                {{ response.academicTerm }}
+              </app-profile-field>
+              <app-profile-field [label]="'ENROLLMENT_SURVEY.RESPONSE.MODE' | translate">
+                {{
+                  (response.mode === 'BLANK'
+                    ? 'ENROLLMENT_SURVEY.RESPONSE.MODE_BLANK'
+                    : 'ENROLLMENT_SURVEY.RESPONSE.MODE_ENROLL'
+                  ) | translate
+                }}
+              </app-profile-field>
+              <app-profile-field [label]="'ENROLLMENT_SURVEY.RESPONSE.TOTAL_UEAS' | translate">
+                {{ response.totalUeas }}
+              </app-profile-field>
+            } @else {
+              <p class="text-text-secondary text-center">
+                {{ 'ENROLLMENT_SURVEY.RESPONSE.CLOSED_NO_RESPONSE' | translate }}
+              </p>
+            }
+          </div>
+        } @else {
+          <form class="gap-lg flex flex-col" [formGroup]="form" (ngSubmit)="submit()">
+            @if (error()) {
+              <p-message severity="error" [text]="error() | domainError: errorScope" />
+            }
+
+            <div
+              class="border-outline bg-surface p-lg gap-md grid rounded-xl border md:grid-cols-2"
+            >
+              <div class="gap-xs flex flex-col">
+                <label for="academic-term">
+                  {{ 'ENROLLMENT_SURVEY.RESPONSE.ACADEMIC_TERM' | translate }} *
+                </label>
+                <p-select
+                  inputId="academic-term"
+                  data-testid="academic-term"
+                  formControlName="academicTerm"
+                  [options]="termOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  [placeholder]="'ENROLLMENT_SURVEY.RESPONSE.ACADEMIC_TERM_PLACEHOLDER' | translate"
+                  fluid
+                />
+                <app-field-error [control]="form.controls.academicTerm" [submitted]="submitted()" />
+              </div>
+
+              <div class="gap-xs flex flex-col">
+                <label for="response-mode">
+                  {{ 'ENROLLMENT_SURVEY.RESPONSE.MODE_QUESTION' | translate }} *
+                </label>
+                <app-i18n-select
+                  inputId="response-mode"
+                  controlName="mode"
+                  [options]="modeOptions"
+                  [placeholder]="'ENROLLMENT_SURVEY.RESPONSE.MODE_PLACEHOLDER' | translate"
+                />
+                <app-field-error [control]="form.controls.mode" [submitted]="submitted()" />
+              </div>
+            </div>
+
+            <div class="border-outline bg-surface p-lg gap-sm flex flex-col rounded-xl border">
+              <h2 class="text-h3 font-semibold">
+                {{ 'ENROLLMENT_SURVEY.RESPONSE.UEAS_TITLE' | translate }}
+              </h2>
+              @if (submitted() && form.hasError('ueaRequired')) {
+                <p-message
+                  severity="error"
+                  [text]="'ENROLLMENT_SURVEY.RESPONSE.UEA_REQUIRED' | translate"
+                />
+              }
+              @for (uea of data.availableUeas; track uea.id) {
+                <label
+                  [attr.for]="'uea-' + uea.id"
+                  class="border-outline gap-sm hover:bg-surface-subtle py-sm flex items-center border-b last:border-b-0"
+                  [class.opacity-50]="isBlank()"
+                >
+                  <p-checkbox
+                    [inputId]="'uea-' + uea.id"
+                    [binary]="true"
+                    [ngModel]="isSelected(uea.id)"
+                    [ngModelOptions]="{ standalone: true }"
+                    [disabled]="isBlank()"
+                    (onChange)="toggleUea(uea.id)"
+                  />
+                  <span class="font-medium">{{ uea.clave }}</span>
+                  <span class="flex-1">{{ uea.nombre }}</span>
+                  <span class="text-text-secondary text-caption">
+                    {{ uea.creditos }} {{ 'ENROLLMENT_SURVEY.RESPONSE.CREDITS' | translate }}
+                  </span>
+                </label>
+              }
+            </div>
+
+            <footer class="gap-sm flex justify-end">
+              <p-button
+                type="submit"
+                data-testid="submit-response"
+                [label]="'ENROLLMENT_SURVEY.RESPONSE.SUBMIT' | translate"
+                [loading]="submitting()"
+                [disabled]="submitting()"
+              />
+            </footer>
+          </form>
+        }
+      </div>
+    } @else {
+      <p class="text-text-secondary p-xl text-center">
+        {{ 'ENROLLMENT_SURVEY.RESPONSE.NO_ACTIVE' | translate }}
+      </p>
+    }
+  </app-load-state>
+</section>

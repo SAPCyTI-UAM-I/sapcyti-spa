@@ -1,0 +1,71 @@
+<section class="gap-lg flex flex-col">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-h2 text-primary font-bold">
+        {{ 'ENROLLMENT_SURVEY.LIST.TITLE' | translate }}
+      </h1>
+      <p class="text-text-secondary">{{ 'ENROLLMENT_SURVEY.LIST.SUBTITLE' | translate }}</p>
+    </div>
+    <p-button
+      icon="pi pi-plus"
+      data-testid="new-survey"
+      [label]="'ENROLLMENT_SURVEY.LIST.NEW' | translate"
+      routerLink="new"
+    />
+  </header>
+
+  <app-load-state
+    [loading]="loading()"
+    [error]="loadError()"
+    [empty]="surveys().length === 0"
+    emptyMessage="ENROLLMENT_SURVEY.LIST.EMPTY"
+    errorMessage="ENROLLMENT_SURVEY.STATES.LOAD_ERROR"
+    (retry)="load()"
+  >
+    <div class="border-outline overflow-x-auto rounded-xl border">
+      <table class="text-body-md w-full border-collapse">
+        <thead>
+          <tr class="bg-surface-subtle text-label-md text-left">
+            <th class="border-outline p-sm border-b">
+              {{ 'ENROLLMENT_SURVEY.LIST.COL_TERM' | translate }}
+            </th>
+            <th class="border-outline p-sm border-b">
+              {{ 'ENROLLMENT_SURVEY.LIST.COL_STATUS' | translate }}
+            </th>
+            <th class="border-outline p-sm border-b">
+              {{ 'ENROLLMENT_SURVEY.LIST.COL_OPENS' | translate }}
+            </th>
+            <th class="border-outline p-sm border-b">
+              {{ 'ENROLLMENT_SURVEY.LIST.COL_CLOSES' | translate }}
+            </th>
+            <th class="border-outline p-sm border-b text-right">
+              {{ 'ENROLLMENT_SURVEY.LIST.COL_RESPONSES' | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (survey of surveys(); track survey.id) {
+            <tr class="bg-surface hover:bg-surface-subtle transition-colors">
+              <td class="border-outline p-sm border-b font-medium">
+                <a appCatalogRowLink [routerLink]="[survey.id]">{{ survey.term }}</a>
+              </td>
+              <td class="border-outline p-sm border-b">
+                <app-catalog-tag
+                  [value]="'ENROLLMENT_SURVEY.STATUS.' + survey.status | translate"
+                  [severity]="statusTagSeverity(survey.status)"
+                />
+              </td>
+              <td class="border-outline p-sm border-b">
+                {{ survey.opensAt | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+              <td class="border-outline p-sm border-b">
+                {{ survey.closesAt | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+              <td class="border-outline p-sm border-b text-right">{{ survey.responseCount }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-load-state>
+</section>

@@ -13,5 +13,6 @@ export const environment = {
     researchCatalog: true,
     ueas: true,
     annualPlanning: true,
+    enrollmentSurvey: true,
   },
 };

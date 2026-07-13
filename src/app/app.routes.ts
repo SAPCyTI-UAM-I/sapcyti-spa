@@ -62,6 +62,17 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'enrollment-survey',
+        loadChildren: () =>
+          import('./features/enrollment-survey/enrollment-survey.routes').then(
+            (m) => m.ENROLLMENT_SURVEY_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          breadcrumb: 'SHELL.MENU.SURVEY_CONFIG',
+        },
+      },
+      {
         path: 'account',
         loadChildren: () =>
           import('./features/account/account.routes').then((m) => m.ACCOUNT_ROUTES),

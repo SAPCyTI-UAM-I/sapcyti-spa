@@ -273,6 +273,8 @@
       },
       "DEACTIVATE": {
         "ACTION": "Desactivar",
+        "CONTINUE_QUESTION": "¿Deseas continuar?",
+        "IN_ACTIVE_SURVEY": "La UEA está incluida en un sondeo activo.",
         "SUCCESS": "UEA desactivada correctamente.",
         "TITLE": "Confirmar desactivación",
         "WARNING": "La UEA dejará de aparecer en las planeaciones anuales en Borrador. Esta acción conserva el histórico."
@@ -467,9 +469,9 @@
       "SAVE_PANEL_HINT": "Guardar = borrador. Terminada = snapshot.",
       "SAVE_PANEL_TITLE": "Edición",
       "STATUS_ACTIONS_HINT": "Cuando termines de revisar la planeación, cambia aquí su estado.",
+      "TITLE": "Planeación",
       "TOOLS_PANEL_HINT": "Exporta o compara.",
-      "TOOLS_PANEL_TITLE": "Excel",
-      "TITLE": "Planeación"
+      "TOOLS_PANEL_TITLE": "Excel"
     },
     "ERRORS": {
       "already_exists": "Ya existe una planeación para este año.",
@@ -616,12 +618,14 @@
       "CLEAR": "Limpiar",
       "CLOSE": "Cerrar",
       "CONFIRM": "Confirmar",
+      "CONTINUE": "Continuar",
       "DELETE": "Eliminar",
       "EDIT": "Editar",
       "NEXT": "Siguiente",
       "RETRY": "Reintentar",
       "SAVE": "Guardar",
       "SEARCH": "Buscar",
+      "UNDERSTOOD": "Entendido",
       "VIEW": "Ver"
     },
     "CLIPBOARD": {
@@ -748,6 +752,111 @@
       "TITLE": "Trimestres y oferta académica"
     }
   },
+  "ENROLLMENT_SURVEY": {
+    "ACTIONS": {
+      "CLOSE": "Cerrar ahora",
+      "DELETE": "Eliminar",
+      "EDIT": "Editar",
+      "REOPEN": "Reabrir"
+    },
+    "BREADCRUMB": {
+      "DETAIL": "Detalle",
+      "EDIT": "Editar",
+      "NEW": "Nuevo sondeo",
+      "RESPOND": "Responder"
+    },
+    "DETAIL": {
+      "CLOSED": "Sondeo cerrado.",
+      "CONFIRM_CLOSE_MESSAGE": "¿Deseas cerrar el sondeo ahora? Los alumnos ya no podrán responder.",
+      "CONFIRM_CLOSE_TITLE": "Cerrar sondeo",
+      "CONFIRM_DELETE_MESSAGE": "¿Deseas eliminar este sondeo? Esta acción no se puede deshacer.",
+      "CONFIRM_DELETE_TITLE": "Eliminar sondeo",
+      "DELETED": "Sondeo eliminado.",
+      "TITLE": "Sondeo"
+    },
+    "ERRORS": {
+      "blank_with_ueas_conflict": "No puedes seleccionar UEAs junto con una inscripción en blanco.",
+      "server": "Ocurrió un error. Inténtalo de nuevo.",
+      "survey_already_exists_for_term": "Ya existe un sondeo para ese trimestre.",
+      "survey_not_active": "El sondeo no está activo.",
+      "survey_not_deletable": "Solo puede eliminarse un sondeo programado sin respuestas.",
+      "survey_not_found": "No existe un sondeo para ese trimestre.",
+      "uea_not_available": "Una o más UEA seleccionadas ya no están disponibles. Actualiza tu selección.",
+      "validation": "Revisa los datos capturados."
+    },
+    "FORM": {
+      "CLOSES_AT": "Fecha y hora de cierre",
+      "CLOSES_BEFORE_OPENS": "La fecha de cierre debe ser posterior a la de apertura.",
+      "INTRO_MESSAGE": "Mensaje introductorio (opcional)",
+      "OPENS_AT": "Fecha y hora de apertura",
+      "REOPEN_HINT": "Al reabrir con nuevas fechas se conservan las respuestas registradas.",
+      "REOPEN_INVALID_MESSAGE": "La fecha de cierre debe ser al menos un día posterior a la fecha actual.",
+      "REOPEN_INVALID_TITLE": "No se puede reabrir",
+      "SAVED": "Sondeo guardado.",
+      "SUBTITLE": "Define la ventana de respuesta del sondeo.",
+      "TERM": "Trimestre",
+      "TERM_HINT": "Formato: dos dígitos de año + O, I o P (por ejemplo 26O).",
+      "TERM_READONLY": "El trimestre no puede cambiarse al editar un sondeo.",
+      "TITLE_EDIT": "Editar sondeo",
+      "TITLE_NEW": "Nuevo sondeo"
+    },
+    "LIST": {
+      "COL_CLOSES": "Cierre",
+      "COL_OPENS": "Apertura",
+      "COL_RESPONSES": "Respuestas",
+      "COL_STATUS": "Estado",
+      "COL_TERM": "Trimestre",
+      "EMPTY": "Aún no hay sondeos registrados.",
+      "NEW": "Nuevo sondeo",
+      "SUBTITLE": "Configura y publica los sondeos trimestrales de UEAs.",
+      "TITLE": "Encuesta de inscripción"
+    },
+    "RESPONSE": {
+      "ACADEMIC_TERM": "Trimestre académico",
+      "ACADEMIC_TERM_PLACEHOLDER": "Selecciona tu trimestre",
+      "CLOSED_NO_RESPONSE": "No registraste una respuesta para este sondeo.",
+      "CREDITS": "créditos",
+      "ENROLLMENT_ID": "Matrícula",
+      "FULL_NAME": "Nombre completo",
+      "MODE": "Respuesta",
+      "MODE_BLANK": "Realizar inscripción en blanco",
+      "MODE_ENROLL": "Inscribir una o más UEA",
+      "MODE_PLACEHOLDER": "Selecciona una opción",
+      "MODE_QUESTION": "¿Deseas inscribir una o más UEA o realizar una inscripción en blanco?",
+      "NO_ACTIVE": "No hay un sondeo activo en este momento.",
+      "NOT_OFFICIAL": "Esta encuesta no equivale a una inscripción oficial.",
+      "PROGRAM": "Programa",
+      "PROGRAM_DOCTORADO": "Doctorado",
+      "PROGRAM_MAESTRIA": "Maestría",
+      "REMOVED_BANNER": "Las siguientes UEAs fueron retiradas del catálogo y ya no están disponibles:",
+      "SAVED": "Respuesta registrada.",
+      "SUBMIT": "Enviar respuesta",
+      "TITLE": "Encuesta de inscripción",
+      "TOTAL_UEAS": "UEAs seleccionadas",
+      "UEA_REQUIRED": "Selecciona al menos una UEA.",
+      "UEAS_TITLE": "UEAs disponibles"
+    },
+    "RESULTS": {
+      "COL_CLAVE": "Clave",
+      "COL_CREDITOS": "Créditos",
+      "COL_DEMAND": "Respuestas",
+      "COL_FORMACION": "Tipo de formación",
+      "COL_NOMBRE": "Nombre",
+      "EMPTY_NO_RESPONSES": "Este sondeo aún no tiene respuestas.",
+      "NO_STUDENTS": "Ningún alumno seleccionó esta UEA.",
+      "RESPONDED": "Respondieron",
+      "SUBTITLE": "Consulta la demanda por UEA para la planeación trimestral.",
+      "TITLE": "Resultados del sondeo"
+    },
+    "STATES": {
+      "LOAD_ERROR": "No se pudieron cargar los datos."
+    },
+    "STATUS": {
+      "ACTIVO": "Activo",
+      "CERRADO": "Cerrado",
+      "PROGRAMADO": "Programado"
+    }
+  },
   "PRESENTATIONS": {
     "PLACEHOLDER": {
       "MESSAGE": "Módulo de ponencias — próximamente",
@@ -771,6 +880,8 @@
       "PRESENTATIONS": "Ponencias",
       "PROFESSORS": "Profesores",
       "STUDENTS": "Alumnos",
+      "SURVEY": "Encuesta",
+      "SURVEY_CONFIG": "Encuesta de inscripción",
       "TERMS_OFFER": "Trimestres y oferta académica",
       "UEAS": "Catálogo de UEAs"
     },

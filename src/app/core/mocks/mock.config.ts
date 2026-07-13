@@ -10,6 +10,7 @@ export interface AppMockConfig {
   readonly researchCatalog: boolean;
   readonly ueas: boolean;
   readonly annualPlanning: boolean;
+  readonly enrollmentSurvey: boolean;
 }
 
 export type MockFeature = keyof AppMockConfig;
@@ -24,6 +25,7 @@ export const DEFAULT_APP_MOCK_CONFIG: AppMockConfig = {
   researchCatalog: false,
   ueas: false,
   annualPlanning: false,
+  enrollmentSurvey: false,
 };
 
 export const APP_MOCK_CONFIG = new InjectionToken<AppMockConfig>('APP_MOCK_CONFIG', {

@@ -159,6 +159,13 @@
   (onHide)="closeDeactivateDialog()"
 >
   <p class="text-body-md">{{ 'ACADEMIC_CATALOG.UEAS.DEACTIVATE.WARNING' | translate }}</p>
+  @if (surveyConflictMessage(); as conflict) {
+    <p-message severity="warn" class="mt-md block" data-testid="survey-conflict-warning">
+      <span
+        >{{ conflict }} {{ 'ACADEMIC_CATALOG.UEAS.DEACTIVATE.CONTINUE_QUESTION' | translate }}</span
+      >
+    </p-message>
+  }
   @if (deactivateError()) {
     <p-message
       severity="error"
@@ -175,7 +182,12 @@
     <p-button
       severity="danger"
       data-testid="confirm-deactivate-uea"
-      [label]="'ACADEMIC_CATALOG.UEAS.DEACTIVATE.ACTION' | translate"
+      [label]="
+        (surveyConflictMessage()
+          ? 'COMMON.ACTIONS.CONTINUE'
+          : 'ACADEMIC_CATALOG.UEAS.DEACTIVATE.ACTION'
+        ) | translate
+      "
       [loading]="deactivating()"
       (onClick)="confirmDeactivate()"
     />

@@ -52,11 +52,12 @@ export class UeaHttpRepository implements UeaRepository {
     });
   }
 
-  deactivateUea(ueaId: number): Observable<UeaCatalogItem> {
+  deactivateUea(ueaId: number, confirm = false): Observable<UeaCatalogItem> {
+    const params = confirm ? new HttpParams().set('confirm', true) : undefined;
     return this.http.put<UeaCatalogItem>(
       API_ENDPOINTS.ueaDeactivate(ueaId),
       {},
-      { withCredentials: true },
+      { params, withCredentials: true },
     );
   }
 

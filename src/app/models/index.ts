@@ -3,6 +3,7 @@ export * from './annual-plan.model';
 export * from './api-error.model';
 export * from './auth-response.model';
 export * from './current-user.model';
+export * from './enrollment-survey.model';
 export * from './jwt-claims.model';
 export * from './page-response.model';
 export * from './professor.model';
