@@ -779,7 +779,7 @@
       "survey_not_active": "The survey is not active.",
       "survey_not_deletable": "Only a scheduled survey with no responses can be deleted.",
       "survey_not_found": "There is no survey for that term.",
-      "survey_reopen_dates_invalid": "To reopen the survey, both the opening and closing dates must be in the future.",
+      "survey_reopen_dates_invalid": "To reopen the survey, the closing date must be in the future.",
       "survey_window_overlaps": "Another survey is already active or scheduled in that period.",
       "uea_not_available": "One or more selected UEAs are no longer available. Update your selection.",
       "validation": "Check the captured data."
@@ -797,7 +797,7 @@
       "OPENS_AT": "Opening date and time",
       "OPENS_TIME": "Opening time",
       "REOPEN_HINT": "Reopening with new dates keeps the existing responses.",
-      "REOPEN_INVALID_MESSAGE": "The closing date must be at least one day after the current date.",
+      "REOPEN_INVALID_MESSAGE": "To reopen, the closing date must be in the future. The opening date may stay unchanged.",
       "REOPEN_INVALID_TITLE": "Cannot reopen",
       "SAVED": "Survey saved.",
       "SUBTITLE": "Define the survey response window.",

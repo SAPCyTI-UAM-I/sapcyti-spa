@@ -133,12 +133,12 @@ describe('SurveyFormComponent (edit)', () => {
     expect(fixture.componentInstance.isActive()).toBe(false);
   });
 
-  it('blocks reopen with an error modal when the closing date is under a day away', async () => {
+  it('blocks reopen with an error modal when the closing date is not in the future', async () => {
     const updateSurvey = vi.fn();
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('CERRADO'))), updateSurvey });
     const c = fixture.componentInstance;
-    setDateTime(c, 'opens', new Date(Date.now()));
-    setDateTime(c, 'closes', new Date(Date.now() + 3_600_000)); // 1h < 1 day
+    setDateTime(c, 'opens', new Date(Date.now() - 7 * 86_400_000));
+    setDateTime(c, 'closes', new Date(Date.now() - 3_600_000)); // 1h in the past
     c.reopen();
     expect(c.showReopenError()).toBe(true);
     expect(updateSurvey).not.toHaveBeenCalled();
@@ -148,19 +148,19 @@ describe('SurveyFormComponent (edit)', () => {
     const updateSurvey = vi.fn();
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('CERRADO'))), updateSurvey });
     const c = fixture.componentInstance;
-    setDateTime(c, 'opens', new Date(Date.now()));
-    setDateTime(c, 'closes', new Date(Date.now() + 3_600_000)); // 1h < 1 day
+    setDateTime(c, 'opens', new Date(Date.now() - 7 * 86_400_000));
+    setDateTime(c, 'closes', new Date(Date.now() - 3_600_000)); // 1h in the past
     c.submit();
     expect(c.showReopenError()).toBe(true);
     expect(updateSurvey).not.toHaveBeenCalled();
   });
 
-  it('reopens when the closing date is at least a day away', async () => {
+  it('reopens keeping the past opening date when only the closing date moves forward', async () => {
     const updateSurvey = vi.fn(() => of(survey('PROGRAMADO')));
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('CERRADO'))), updateSurvey });
     const c = fixture.componentInstance;
-    setDateTime(c, 'opens', new Date(Date.now() + 24 * 3_600_000));
-    setDateTime(c, 'closes', new Date(Date.now() + 3 * 24 * 3_600_000));
+    setDateTime(c, 'opens', new Date(Date.now() - 7 * 86_400_000));
+    setDateTime(c, 'closes', new Date(Date.now() + 24 * 3_600_000));
     c.reopen();
     expect(c.showReopenError()).toBe(false);
     expect(updateSurvey).toHaveBeenCalledWith(2, expect.anything());

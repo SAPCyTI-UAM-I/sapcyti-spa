@@ -232,7 +232,7 @@
   </ng-template>
 </p-dialog>
 
-<!-- HU-40 — reopen requires a closing date at least a day from now. -->
+<!-- HU-40 — reopen requires a closing date in the future (opening date may stay in the past). -->
 <p-dialog
   [header]="'ENROLLMENT_SURVEY.FORM.REOPEN_INVALID_TITLE' | translate"
   [visible]="showReopenError()"

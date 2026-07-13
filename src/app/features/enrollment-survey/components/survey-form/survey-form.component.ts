@@ -39,7 +39,6 @@ import {
 } from '../../utils/enrollment-survey-form.util';
 
 const SURVEY_LIST_ROUTE = '/enrollment-survey';
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** HU-40 — create, edit or reopen a survey (same form). */
 @Component({
@@ -88,7 +87,7 @@ export class SurveyFormComponent implements OnInit {
   readonly canDelete = computed(() => this.status() === 'PROGRAMADO' && this.responseCount() === 0);
   readonly showCloseDialog = signal(false);
   readonly closing = signal(false);
-  /** Shown when a reopen is attempted with a closing date under a day from now. */
+  /** Shown when a reopen is attempted with a closing date that is not in the future. */
   readonly showReopenError = signal(false);
   readonly showDeleteDialog = signal(false);
   readonly deleting = signal(false);
@@ -138,7 +137,7 @@ export class SurveyFormComponent implements OnInit {
     this.persist();
   }
 
-  /** Reopen a CERRADO survey — requires a closing date at least a day from now. */
+  /** Reopen a CERRADO survey — only the closing date must be in the future. */
   reopen(): void {
     this.submitted.set(true);
     this.error.set(null);
@@ -149,7 +148,7 @@ export class SurveyFormComponent implements OnInit {
       this.form.controls.closesDate.value,
       this.form.controls.closesTime.value,
     );
-    if (!closesAt || closesAt.getTime() < Date.now() + DAY_MS) {
+    if (!closesAt || closesAt.getTime() <= Date.now()) {
       this.showReopenError.set(true);
       return;
     }

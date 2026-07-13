@@ -779,7 +779,7 @@
       "survey_not_active": "El sondeo no está activo.",
       "survey_not_deletable": "Solo puede eliminarse un sondeo programado sin respuestas.",
       "survey_not_found": "No existe un sondeo para ese trimestre.",
-      "survey_reopen_dates_invalid": "Para reabrir el sondeo, la fecha de apertura y la de cierre deben ser futuras.",
+      "survey_reopen_dates_invalid": "Para reabrir el sondeo, la fecha de cierre debe ser futura.",
       "survey_window_overlaps": "Ya existe un sondeo activo o programado en ese periodo.",
       "uea_not_available": "Una o más UEA seleccionadas ya no están disponibles. Actualiza tu selección.",
       "validation": "Revisa los datos capturados."
@@ -797,7 +797,7 @@
       "OPENS_AT": "Fecha y hora de apertura",
       "OPENS_TIME": "Hora de apertura",
       "REOPEN_HINT": "Al reabrir con nuevas fechas se conservan las respuestas registradas.",
-      "REOPEN_INVALID_MESSAGE": "La fecha de cierre debe ser al menos un día posterior a la fecha actual.",
+      "REOPEN_INVALID_MESSAGE": "Para reabrir, la fecha de cierre debe ser futura. La fecha de apertura puede conservarse.",
       "REOPEN_INVALID_TITLE": "No se puede reabrir",
       "SAVED": "Sondeo guardado.",
       "SUBTITLE": "Define la ventana de respuesta del sondeo.",

@@ -192,14 +192,11 @@ export class EnrollmentSurveyMockStore {
     this.validateDates(request);
     const record = this.requireSurvey(id);
     const wasClosed = this.deriveStatus(record) === 'CERRADO';
-    if (
-      wasClosed &&
-      (Date.parse(request.opensAt) <= Date.now() || Date.parse(request.closesAt) <= Date.now())
-    ) {
+    if (wasClosed && Date.parse(request.closesAt) <= Date.now()) {
       throw mockApiError({
         status: 400,
         error: 'SURVEY_REOPEN_DATES_INVALID',
-        message: 'Para reabrir el sondeo, la fecha de apertura y la de cierre deben ser futuras.',
+        message: 'Para reabrir el sondeo, la fecha de cierre debe ser futura.',
       });
     }
     record.term = request.term;
