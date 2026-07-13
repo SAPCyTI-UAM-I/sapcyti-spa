@@ -93,6 +93,12 @@ export class SurveyFormComponent implements OnInit {
   readonly showDeleteDialog = signal(false);
   readonly deleting = signal(false);
 
+  /** Warns when the UEA catalog is empty — the survey would publish with no UEAs to choose. */
+  private readonly hasActiveUeas = signal(true);
+  readonly noUeasWarning = computed(
+    () => !this.hasActiveUeas() && (!this.isEdit || this.isReopen()),
+  );
+
   /** The duplicate-term error renders inline under the term field, not as a banner. */
   readonly termError = computed(() =>
     this.error() === 'survey_already_exists_for_term' ? this.error() : null,
@@ -102,6 +108,10 @@ export class SurveyFormComponent implements OnInit {
   );
 
   ngOnInit(): void {
+    this.service
+      .hasActiveUeas()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({ next: (hasUeas) => this.hasActiveUeas.set(hasUeas) });
     if (this.surveyId !== null) {
       // `term` is the survey's identity — read-only on edit/reopen (only dates/message change).
       this.form.controls.term.disable();

@@ -1,11 +1,12 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, Observable, of, throwError } from 'rxjs';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
 import {
   CreateSurveyRequest,
   InterestedStudent,
+  PageResponse,
   StudentSurveyForm,
   SubmitResponseRequest,
   SubmittedResponse,
@@ -54,6 +55,13 @@ export class EnrollmentSurveyHttpRepository implements EnrollmentSurveyRepositor
 
   deleteSurvey(id: number): Observable<void> {
     return this.http.delete<void>(API_ENDPOINTS.enrollmentSurvey(id), { withCredentials: true });
+  }
+
+  hasActiveUeas(): Observable<boolean> {
+    const params = new HttpParams().set('page', 0).set('size', 1).set('active', true);
+    return this.http
+      .get<PageResponse<unknown>>(API_ENDPOINTS.ueas, { params, withCredentials: true })
+      .pipe(map((page) => page.totalElements > 0));
   }
 
   getActiveSurvey(): Observable<StudentSurveyForm | null> {

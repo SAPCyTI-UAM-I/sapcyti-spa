@@ -40,7 +40,10 @@ describe('SurveyFormComponent (edit)', () => {
       providers: [
         provideRouter([]),
         MessageService,
-        { provide: EnrollmentSurveyService, useValue: service },
+        {
+          provide: EnrollmentSurveyService,
+          useValue: { hasActiveUeas: vi.fn(() => of(true)), ...service },
+        },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '2' } } } },
       ],
     }).compileComponents();
@@ -55,7 +58,13 @@ describe('SurveyFormComponent (edit)', () => {
       providers: [
         provideRouter([]),
         MessageService,
-        { provide: EnrollmentSurveyService, useValue: { listSurveys: vi.fn(() => of([])) } },
+        {
+          provide: EnrollmentSurveyService,
+          useValue: {
+            listSurveys: vi.fn(() => of([])),
+            hasActiveUeas: vi.fn(() => of(true)),
+          },
+        },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => null } } } },
       ],
     }).compileComponents();
@@ -65,6 +74,29 @@ describe('SurveyFormComponent (edit)', () => {
     expect(fixture.componentInstance.form.controls.introMessage.value).toBe(
       'ENROLLMENT_SURVEY.FORM.INTRO_DEFAULT',
     );
+  });
+
+  it('warns when the UEA catalog has no active UEAs while creating', async () => {
+    await TestBed.configureTestingModule({
+      imports: [SurveyFormComponent, TranslateModule.forRoot(), NoopAnimationsModule],
+      providers: [
+        provideRouter([]),
+        MessageService,
+        {
+          provide: EnrollmentSurveyService,
+          useValue: {
+            listSurveys: vi.fn(() => of([])),
+            hasActiveUeas: vi.fn(() => of(false)),
+          },
+        },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => null } } } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(SurveyFormComponent);
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="no-ueas-warning"]'),
+    ).not.toBeNull();
   });
 
   it('keeps the term read-only on edit', async () => {

@@ -23,6 +23,8 @@ export interface EnrollmentSurveyRepository {
   updateSurvey(id: number, request: UpdateSurveyRequest): Observable<SurveyResponse>;
   closeSurvey(id: number): Observable<SurveyResponse>;
   deleteSurvey(id: number): Observable<void>;
+  /** Whether the UEA catalog has at least one active UEA — a survey without UEAs is pointless. */
+  hasActiveUeas(): Observable<boolean>;
 
   // HU-41 — student. `getActiveSurvey` maps a 404 (no active survey) to `null`.
   getActiveSurvey(): Observable<StudentSurveyForm | null>;

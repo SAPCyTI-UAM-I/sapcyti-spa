@@ -45,6 +45,10 @@ export class EnrollmentSurveyService {
     return this.repository.deleteSurvey(id);
   }
 
+  hasActiveUeas(): Observable<boolean> {
+    return this.repository.hasActiveUeas();
+  }
+
   getActiveSurvey(): Observable<StudentSurveyForm | null> {
     return this.repository.getActiveSurvey();
   }

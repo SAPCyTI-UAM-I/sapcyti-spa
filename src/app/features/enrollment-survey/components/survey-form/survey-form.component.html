@@ -26,6 +26,13 @@
     @if (isReopen()) {
       <p-message severity="info" [text]="'ENROLLMENT_SURVEY.FORM.REOPEN_HINT' | translate" />
     }
+    @if (noUeasWarning()) {
+      <p-message
+        severity="warn"
+        data-testid="no-ueas-warning"
+        [text]="'ENROLLMENT_SURVEY.FORM.NO_UEAS_WARNING' | translate"
+      />
+    }
     @if (bannerError()) {
       <p-message severity="error" [text]="bannerError() | domainError: errorScope" />
     }

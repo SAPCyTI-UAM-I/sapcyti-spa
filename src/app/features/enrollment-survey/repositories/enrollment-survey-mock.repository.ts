@@ -44,6 +44,10 @@ export class EnrollmentSurveyMockRepository implements EnrollmentSurveyRepositor
     return fromMockStore(() => this.store.deleteSurvey(id));
   }
 
+  hasActiveUeas(): Observable<boolean> {
+    return of(this.store.hasActiveUeas());
+  }
+
   getActiveSurvey(): Observable<StudentSurveyForm | null> {
     return of(this.store.getActiveSurvey());
   }
