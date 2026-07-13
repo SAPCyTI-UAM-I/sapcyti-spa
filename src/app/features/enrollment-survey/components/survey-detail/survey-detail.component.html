@@ -119,19 +119,19 @@
                 <table class="block w-full border-collapse md:table md:min-w-[42rem]">
                   <thead class="bg-table-header hidden text-left md:table-header-group">
                     <tr>
-                      <th class="px-md py-smd">
+                      <th class="p-md">
                         {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CLAVE' | translate }}
                       </th>
-                      <th class="px-md py-smd">
+                      <th class="p-md">
                         {{ 'ENROLLMENT_SURVEY.RESULTS.COL_NOMBRE' | translate }}
                       </th>
-                      <th class="px-md py-smd">
+                      <th class="p-md">
                         {{ 'ENROLLMENT_SURVEY.RESULTS.COL_FORMACION' | translate }}
                       </th>
-                      <th class="px-md py-smd text-right">
+                      <th class="p-md text-right">
                         {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CREDITOS' | translate }}
                       </th>
-                      <th class="px-md py-smd text-right" [attr.aria-sort]="ariaSort()">
+                      <th class="p-md text-right" [attr.aria-sort]="ariaSort()">
                         <button
                           type="button"
                           class="gap-xs ml-auto flex items-center"
@@ -150,7 +150,7 @@
                         [attr.data-testid]="'demand-row-' + row.ueaId"
                         (click)="openStudents(row)"
                       >
-                        <td class="md:px-md md:py-smd text-primary font-semibold md:table-cell">
+                        <td class="md:p-md text-primary font-semibold md:table-cell">
                           <span
                             class="text-caption text-text-secondary block font-normal md:hidden"
                           >
@@ -158,29 +158,25 @@
                           </span>
                           {{ row.clave }}
                         </td>
-                        <td class="md:px-md md:py-smd col-span-2 md:table-cell">
+                        <td class="md:p-md col-span-2 md:table-cell">
                           <span class="text-caption text-text-secondary block md:hidden">
                             {{ 'ENROLLMENT_SURVEY.RESULTS.COL_NOMBRE' | translate }}
                           </span>
                           {{ row.nombre }}
                         </td>
-                        <td class="md:px-md md:py-smd md:table-cell">
+                        <td class="md:p-md md:table-cell">
                           <span class="text-caption text-text-secondary block md:hidden">
                             {{ 'ENROLLMENT_SURVEY.RESULTS.COL_FORMACION' | translate }}
                           </span>
-                          <span
-                            class="bg-surface-subtle text-text-secondary text-caption px-sm py-xs rounded-full"
-                          >
-                            {{ row.tipoFormacion }}
-                          </span>
+                          {{ row.tipoFormacion }}
                         </td>
-                        <td class="md:px-md md:py-smd md:table-cell md:text-right">
+                        <td class="md:p-md md:table-cell md:text-right">
                           <span class="text-caption text-text-secondary block md:hidden">
                             {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CREDITOS' | translate }}
                           </span>
                           {{ row.creditos }}
                         </td>
-                        <td class="md:px-md md:py-smd md:table-cell md:text-right">
+                        <td class="md:p-md md:table-cell md:text-right">
                           <span class="text-caption text-text-secondary block md:hidden">
                             {{ 'ENROLLMENT_SURVEY.RESULTS.COL_DEMAND' | translate }}
                           </span>
