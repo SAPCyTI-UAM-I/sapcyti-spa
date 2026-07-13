@@ -8,39 +8,38 @@ import {
 } from '@angular/forms';
 
 import { CreateSurveyRequest } from '../../../models';
-import { localToIso } from './datetime-local.util';
 
 /** Term format: two year digits + period letter, e.g. `26O`, `27I`, `27P`. */
 export const TERM_PATTERN = /^\d{2}[OIP]$/i;
 
 export interface SurveyFormValue {
   term: string;
-  opensAt: string;
-  closesAt: string;
+  opensAt: Date | null;
+  closesAt: Date | null;
   introMessage: string;
 }
 
 export type SurveyFormGroup = FormGroup<{
   term: FormControl<string>;
-  opensAt: FormControl<string>;
-  closesAt: FormControl<string>;
+  opensAt: FormControl<Date | null>;
+  closesAt: FormControl<Date | null>;
   introMessage: FormControl<string>;
 }>;
 
 /** Group validator: `closesAt` must be strictly after `opensAt`. */
 export function closesAfterOpensValidator(group: AbstractControl): ValidationErrors | null {
-  const opensAt = group.get('opensAt')?.value as string;
-  const closesAt = group.get('closesAt')?.value as string;
+  const opensAt = group.get('opensAt')?.value as Date | null;
+  const closesAt = group.get('closesAt')?.value as Date | null;
   if (!opensAt || !closesAt) return null;
-  return Date.parse(closesAt) > Date.parse(opensAt) ? null : { closesBeforeOpens: true };
+  return closesAt.getTime() > opensAt.getTime() ? null : { closesBeforeOpens: true };
 }
 
 export function buildSurveyFormGroup(fb: NonNullableFormBuilder): SurveyFormGroup {
   return fb.group(
     {
       term: fb.control('', [Validators.required, Validators.pattern(TERM_PATTERN)]),
-      opensAt: fb.control('', [Validators.required]),
-      closesAt: fb.control('', [Validators.required]),
+      opensAt: fb.control<Date | null>(null, [Validators.required]),
+      closesAt: fb.control<Date | null>(null, [Validators.required]),
       introMessage: fb.control('', [Validators.maxLength(500)]),
     },
     { validators: closesAfterOpensValidator },
@@ -51,8 +50,8 @@ export function toCreateRequest(value: SurveyFormValue): CreateSurveyRequest {
   const introMessage = value.introMessage.trim();
   return {
     term: value.term.trim().toUpperCase(),
-    opensAt: localToIso(value.opensAt),
-    closesAt: localToIso(value.closesAt),
+    opensAt: value.opensAt ? value.opensAt.toISOString() : '',
+    closesAt: value.closesAt ? value.closesAt.toISOString() : '',
     introMessage: introMessage.length > 0 ? introMessage : null,
   };
 }

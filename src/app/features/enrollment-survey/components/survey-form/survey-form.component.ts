@@ -13,6 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
+import { DatePicker } from 'primeng/datepicker';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
@@ -24,7 +25,6 @@ import { FieldErrorComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { EnrollmentSurveyService } from '../../services/enrollment-survey.service';
-import { isoToLocal } from '../../utils/datetime-local.util';
 import {
   ENROLLMENT_SURVEY_ERROR_I18N_SCOPE,
   EnrollmentSurveyError,
@@ -50,6 +50,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
     ReactiveFormsModule,
     TranslatePipe,
     Button,
+    DatePicker,
     Dialog,
     InputText,
     Message,
@@ -127,8 +128,8 @@ export class SurveyFormComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
-    const closesAt = Date.parse(this.form.controls.closesAt.value);
-    if (Number.isNaN(closesAt) || closesAt < Date.now() + DAY_MS) {
+    const closesAt = this.form.controls.closesAt.value;
+    if (!closesAt || closesAt.getTime() < Date.now() + DAY_MS) {
       this.showReopenError.set(true);
       return;
     }
@@ -266,8 +267,8 @@ export class SurveyFormComponent implements OnInit {
     this.responseCount.set(survey.responseCount);
     this.form.patchValue({
       term: survey.term,
-      opensAt: isoToLocal(survey.opensAt),
-      closesAt: isoToLocal(survey.closesAt),
+      opensAt: new Date(survey.opensAt),
+      closesAt: new Date(survey.closesAt),
       introMessage: survey.introMessage ?? '',
     });
   }

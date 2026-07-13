@@ -9,11 +9,6 @@ import { SurveyResponse } from '../../../../models';
 import { EnrollmentSurveyService } from '../../services/enrollment-survey.service';
 import { SurveyFormComponent } from './survey-form.component';
 
-function localStr(d: Date): string {
-  const p = (n: number): string => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
-}
-
 const survey = (status: SurveyResponse['status']): SurveyResponse => ({
   id: 2,
   term: '26O',
@@ -79,8 +74,8 @@ describe('SurveyFormComponent (edit)', () => {
     const updateSurvey = vi.fn();
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('CERRADO'))), updateSurvey });
     const c = fixture.componentInstance;
-    c.form.controls.opensAt.setValue(localStr(new Date(Date.now())));
-    c.form.controls.closesAt.setValue(localStr(new Date(Date.now() + 3_600_000))); // 1h < 1 day
+    c.form.controls.opensAt.setValue(new Date(Date.now()));
+    c.form.controls.closesAt.setValue(new Date(Date.now() + 3_600_000)); // 1h < 1 day
     c.reopen();
     expect(c.showReopenError()).toBe(true);
     expect(updateSurvey).not.toHaveBeenCalled();
@@ -90,8 +85,8 @@ describe('SurveyFormComponent (edit)', () => {
     const updateSurvey = vi.fn(() => of(survey('PROGRAMADO')));
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('CERRADO'))), updateSurvey });
     const c = fixture.componentInstance;
-    c.form.controls.opensAt.setValue(localStr(new Date(Date.now() + 24 * 3_600_000)));
-    c.form.controls.closesAt.setValue(localStr(new Date(Date.now() + 3 * 24 * 3_600_000)));
+    c.form.controls.opensAt.setValue(new Date(Date.now() + 24 * 3_600_000));
+    c.form.controls.closesAt.setValue(new Date(Date.now() + 3 * 24 * 3_600_000));
     c.reopen();
     expect(c.showReopenError()).toBe(false);
     expect(updateSurvey).toHaveBeenCalledWith(2, expect.anything());

@@ -51,17 +51,41 @@
       </label>
 
       <div class="gap-md grid md:grid-cols-2">
-        <label class="gap-xs flex flex-col">
-          <span>{{ 'ENROLLMENT_SURVEY.FORM.OPENS_AT' | translate }} *</span>
-          <input pInputText type="datetime-local" formControlName="opensAt" />
+        <div class="gap-xs flex flex-col">
+          <label for="survey-opens-at">
+            {{ 'ENROLLMENT_SURVEY.FORM.OPENS_AT' | translate }} *
+          </label>
+          <p-datepicker
+            inputId="survey-opens-at"
+            formControlName="opensAt"
+            [showTime]="true"
+            [showIcon]="true"
+            [stepMinute]="5"
+            hourFormat="24"
+            dateFormat="dd/mm/yy"
+            appendTo="body"
+            fluid
+          />
           <app-field-error [control]="form.controls.opensAt" [submitted]="submitted()" />
-        </label>
+        </div>
 
-        <label class="gap-xs flex flex-col">
-          <span>{{ 'ENROLLMENT_SURVEY.FORM.CLOSES_AT' | translate }} *</span>
-          <input pInputText type="datetime-local" formControlName="closesAt" />
+        <div class="gap-xs flex flex-col">
+          <label for="survey-closes-at">
+            {{ 'ENROLLMENT_SURVEY.FORM.CLOSES_AT' | translate }} *
+          </label>
+          <p-datepicker
+            inputId="survey-closes-at"
+            formControlName="closesAt"
+            [showTime]="true"
+            [showIcon]="true"
+            [stepMinute]="5"
+            hourFormat="24"
+            dateFormat="dd/mm/yy"
+            appendTo="body"
+            fluid
+          />
           <app-field-error [control]="form.controls.closesAt" [submitted]="submitted()" />
-        </label>
+        </div>
       </div>
 
       @if (submitted() && form.hasError('closesBeforeOpens')) {
