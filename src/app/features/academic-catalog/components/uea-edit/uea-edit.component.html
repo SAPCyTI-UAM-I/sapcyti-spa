@@ -39,9 +39,11 @@
         </label>
 
         <label class="gap-xs flex flex-col md:col-span-2">
-          <span>{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.NOMBRE' | translate }} *</span>
-          <input pInputText formControlName="nombre" [attr.maxlength]="200" />
-          <app-field-error [control]="form.controls.nombre" [submitted]="submitted()" />
+          <span>{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.NOMBRE' | translate }}</span>
+          <input pInputText formControlName="nombre" />
+          <small class="text-caption text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.UEAS.EDIT.NOMBRE_READONLY' | translate }}
+          </small>
         </label>
 
         <div class="gap-xs flex flex-col">

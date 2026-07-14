@@ -90,8 +90,9 @@ export class UeaEditComponent implements OnInit {
   readonly form = buildUeaFormGroup(this.fb);
 
   ngOnInit(): void {
-    // `clave` is immutable (HU-47) — read-only for the whole edit lifetime.
+    // `clave` and `nombre` are immutable — read-only for the whole edit lifetime.
     this.form.get('clave')?.disable();
+    this.form.get('nombre')?.disable();
     this.load();
   }
 

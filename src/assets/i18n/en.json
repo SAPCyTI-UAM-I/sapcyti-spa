@@ -283,6 +283,7 @@
         "BACK": "Back to list",
         "BREADCRUMB": "Edit",
         "CLAVE_READONLY": "The key cannot be changed.",
+        "NOMBRE_READONLY": "The course name cannot be changed.",
         "SAVED": "UEA updated successfully.",
         "SUBTITLE": "Update the course details.",
         "TITLE": "Edit UEA"

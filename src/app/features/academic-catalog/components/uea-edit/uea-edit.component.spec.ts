@@ -43,13 +43,14 @@ describe('UeaEditComponent', () => {
     return fixture;
   }
 
-  it('loads the UEA, prefills the form and keeps clave read-only', async () => {
+  it('loads the UEA, prefills the form and keeps clave and nombre read-only', async () => {
     const fixture = await setup({ getUea: vi.fn(() => of(uea)) });
     const form = fixture.componentInstance.form;
 
     expect(fixture.componentInstance.uea()).toEqual(uea);
     expect(form.get('nombre')?.value).toBe('Algoritmos distribuidos');
     expect(form.get('clave')?.disabled).toBe(true);
+    expect(form.get('nombre')?.disabled).toBe(true);
   });
 
   it('updates without clave and navigates back to the list', async () => {

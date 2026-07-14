@@ -283,6 +283,7 @@
         "BACK": "Volver al listado",
         "BREADCRUMB": "Editar",
         "CLAVE_READONLY": "La clave no se puede modificar.",
+        "NOMBRE_READONLY": "El nombre no se puede modificar.",
         "SAVED": "UEA actualizada correctamente.",
         "SUBTITLE": "Modifique los datos de la materia.",
         "TITLE": "Editar UEA"
