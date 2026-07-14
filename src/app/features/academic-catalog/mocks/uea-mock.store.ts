@@ -7,8 +7,13 @@ import {
   UeaCatalogQuery,
   UpdateUeaRequest,
 } from '../../../models';
+import { mockApiError } from '../../../core/errors/testing/mock-api-error.util';
 import { UEA_CATALOG_SEED } from '../../../shared/mocks/uea-catalog.mock-data';
 import { mockConflict, mockNotFound, nextId, normalizeSearch, page } from './catalog-mock.util';
+
+/** HU-48 demo: these seed UEAs are treated as included in the active survey (term 26O). */
+const IN_ACTIVE_SURVEY_UEA_IDS = new Set<number>([1]);
+const ACTIVE_SURVEY_TERM = '26O';
 
 @Injectable({ providedIn: 'root' })
 export class UeaMockStore {
@@ -54,10 +59,18 @@ export class UeaMockStore {
     return uea;
   }
 
-  deactivateUea(ueaId: number): UeaCatalogItem {
+  deactivateUea(ueaId: number, confirm = false): UeaCatalogItem {
     const uea = this.requireUea(ueaId);
     if (!uea.active) {
       throw mockConflict('UEA_ALREADY_INACTIVE');
+    }
+    // HU-48/HU-41: warn before removing a UEA included in an active survey.
+    if (!confirm && IN_ACTIVE_SURVEY_UEA_IDS.has(ueaId)) {
+      throw mockApiError({
+        status: 409,
+        error: 'UEA_IN_ACTIVE_SURVEY',
+        message: `La UEA está incluida en el sondeo activo del trimestre ${ACTIVE_SURVEY_TERM}.`,
+      });
     }
     uea.active = false;
     return uea;

@@ -23,9 +23,7 @@
         {{ crumb.labelKey | translate }}
       </span>
     } @else {
-      <a [routerLink]="crumb.url" class="hover:text-primary truncate">
-        {{ crumb.labelKey | translate }}
-      </a>
+      <span class="truncate">{{ crumb.labelKey | translate }}</span>
     }
   }
 </nav>

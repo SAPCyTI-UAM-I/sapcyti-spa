@@ -39,9 +39,11 @@
         </label>
 
         <label class="gap-xs flex flex-col md:col-span-2">
-          <span>{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.NOMBRE' | translate }} *</span>
-          <input pInputText formControlName="nombre" [attr.maxlength]="200" />
-          <app-field-error [control]="form.controls.nombre" [submitted]="submitted()" />
+          <span>{{ 'ACADEMIC_CATALOG.UEAS.FIELDS.NOMBRE' | translate }}</span>
+          <input pInputText formControlName="nombre" />
+          <small class="text-caption text-text-secondary">
+            {{ 'ACADEMIC_CATALOG.UEAS.EDIT.NOMBRE_READONLY' | translate }}
+          </small>
         </label>
 
         <div class="gap-xs flex flex-col">
@@ -159,6 +161,13 @@
   (onHide)="closeDeactivateDialog()"
 >
   <p class="text-body-md">{{ 'ACADEMIC_CATALOG.UEAS.DEACTIVATE.WARNING' | translate }}</p>
+  @if (surveyConflictMessage(); as conflict) {
+    <p-message severity="warn" class="mt-md block" data-testid="survey-conflict-warning">
+      <span
+        >{{ conflict }} {{ 'ACADEMIC_CATALOG.UEAS.DEACTIVATE.CONTINUE_QUESTION' | translate }}</span
+      >
+    </p-message>
+  }
   @if (deactivateError()) {
     <p-message
       severity="error"
@@ -175,7 +184,12 @@
     <p-button
       severity="danger"
       data-testid="confirm-deactivate-uea"
-      [label]="'ACADEMIC_CATALOG.UEAS.DEACTIVATE.ACTION' | translate"
+      [label]="
+        (surveyConflictMessage()
+          ? 'COMMON.ACTIONS.CONTINUE'
+          : 'ACADEMIC_CATALOG.UEAS.DEACTIVATE.ACTION'
+        ) | translate
+      "
       [loading]="deactivating()"
       (onClick)="confirmDeactivate()"
     />

@@ -60,34 +60,34 @@
         <table class="block w-full border-collapse md:table md:min-w-[72rem] md:table-fixed">
           <thead class="bg-table-header hidden text-left md:table-header-group">
             <tr>
-              <th class="px-md py-smd w-28" [attr.aria-sort]="ariaSort('clave')">
+              <th class="p-md w-28" [attr.aria-sort]="ariaSort('clave')">
                 <button type="button" class="gap-xs flex items-center" (click)="sortBy('clave')">
                   {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CLAVE' | translate }}
                   <i class="pi {{ sortIcon('clave') }} text-[10px]"></i>
                 </button>
               </th>
-              <th class="px-md py-smd" [attr.aria-sort]="ariaSort('nombre')">
+              <th class="p-md" [attr.aria-sort]="ariaSort('nombre')">
                 <button type="button" class="gap-xs flex items-center" (click)="sortBy('nombre')">
                   {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.NOMBRE' | translate }}
                   <i class="pi {{ sortIcon('nombre') }} text-[10px]"></i>
                 </button>
               </th>
-              <th class="px-md py-smd w-28">
+              <th class="p-md w-28">
                 {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO' | translate }}
               </th>
-              <th class="px-md py-smd w-36">
+              <th class="p-md w-36">
                 {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO_FORMACION' | translate }}
               </th>
-              <th class="px-md py-smd w-[5.5rem] text-right">
+              <th class="p-md w-[5.5rem] text-right">
                 {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.H_TEOR' | translate }}
               </th>
-              <th class="px-md py-smd w-[5.5rem] text-right">
+              <th class="p-md w-[5.5rem] text-right">
                 {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.H_PRAC' | translate }}
               </th>
-              <th class="px-md py-smd w-[5.5rem] text-right">
+              <th class="p-md w-[5.5rem] text-right">
                 {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CREDITOS' | translate }}
               </th>
-              <th class="px-md py-smd w-24">{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}</th>
+              <th class="p-md w-24">{{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}</th>
             </tr>
           </thead>
           <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
@@ -95,7 +95,7 @@
               <tr
                 class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
               >
-                <td class="md:px-md md:py-smd md:table-cell">
+                <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CLAVE' | translate }}
                   </span>
@@ -103,7 +103,7 @@
                     <span class="text-body-md font-mono">{{ uea.clave }}</span>
                   </app-copyable-text>
                 </td>
-                <td class="md:px-md md:py-smd col-span-2 md:table-cell">
+                <td class="md:p-md col-span-2 md:table-cell">
                   <a
                     appCatalogRowLink
                     class="md:block md:w-full md:truncate"
@@ -114,37 +114,37 @@
                     {{ uea.nombre }}
                   </a>
                 </td>
-                <td class="md:px-md md:py-smd md:table-cell">
+                <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO' | translate }}
                   </span>
                   {{ 'ACADEMIC_CATALOG.UEAS.TYPES.' + uea.tipo | translate }}
                 </td>
-                <td class="md:px-md md:py-smd md:table-cell">
+                <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.TIPO_FORMACION' | translate }}
                   </span>
                   {{ 'ACADEMIC_CATALOG.UEAS.FORMATION_TYPES.' + uea.tipoFormacion | translate }}
                 </td>
-                <td class="md:px-md md:py-smd md:table-cell md:text-right">
+                <td class="md:p-md md:table-cell md:text-right">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.H_TEOR' | translate }}
                   </span>
                   {{ uea.horasTeoria }}
                 </td>
-                <td class="md:px-md md:py-smd md:table-cell md:text-right">
+                <td class="md:p-md md:table-cell md:text-right">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.H_PRAC' | translate }}
                   </span>
                   {{ uea.horasPractica }}
                 </td>
-                <td class="md:px-md md:py-smd md:table-cell md:text-right">
+                <td class="md:p-md md:table-cell md:text-right">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.UEAS.FIELDS.CREDITOS' | translate }}
                   </span>
                   {{ uea.creditos }}
                 </td>
-                <td class="md:px-md md:py-smd md:table-cell">
+                <td class="md:p-md md:table-cell">
                   <span class="text-caption text-text-secondary block md:hidden">
                     {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }}
                   </span>

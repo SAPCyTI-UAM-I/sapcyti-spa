@@ -19,15 +19,15 @@
       (retry)="load()"
     >
       <table class="w-full">
-        <thead>
-          <tr class="border-outline text-text-secondary text-label-md border-b text-left">
+        <thead class="bg-table-header text-left">
+          <tr>
             <th class="p-md">{{ 'ANNUAL_PLANNING.LIST.YEAR' | translate }}</th>
             <th class="p-md">{{ 'ANNUAL_PLANNING.LIST.STATUS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
           @for (plan of plans(); track plan.year) {
-            <tr class="border-outline hover:bg-surface-subtle border-b last:border-0">
+            <tr class="border-outline hover:bg-table-row-hover border-b last:border-0">
               <td class="p-md">
                 <a
                   [routerLink]="[plan.year]"

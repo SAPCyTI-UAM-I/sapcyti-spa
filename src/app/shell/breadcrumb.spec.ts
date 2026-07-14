@@ -25,7 +25,7 @@ function trailOf(root: FakeNode) {
 }
 
 describe('buildBreadcrumbTrail', () => {
-  it('collects navigable crumbs with cumulative urls', () => {
+  it('collects crumbs with cumulative urls', () => {
     const root = node(
       '',
       null,

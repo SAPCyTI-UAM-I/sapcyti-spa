@@ -35,8 +35,8 @@ export class UeaService {
     return this.repository.updateUea(ueaId, request);
   }
 
-  deactivateUea(ueaId: number): Observable<UeaCatalogItem> {
-    return this.repository.deactivateUea(ueaId);
+  deactivateUea(ueaId: number, confirm = false): Observable<UeaCatalogItem> {
+    return this.repository.deactivateUea(ueaId, confirm);
   }
 
   restoreUea(ueaId: number): Observable<UeaCatalogItem> {

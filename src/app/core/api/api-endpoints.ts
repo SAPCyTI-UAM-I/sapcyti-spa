@@ -36,4 +36,19 @@ export const API_ENDPOINTS = {
   annualPlanExport: (year: number): string =>
     `${environment.apiBaseUrl}/annual-plans/${year}/export`,
   userPassword: (userId: number): string => `${environment.apiBaseUrl}/users/${userId}/password`,
+  enrollmentSurveys: `${environment.apiBaseUrl}/enrollment-surveys`,
+  enrollmentSurveyActive: `${environment.apiBaseUrl}/enrollment-surveys/active`,
+  enrollmentSurvey: (id: number): string => `${environment.apiBaseUrl}/enrollment-surveys/${id}`,
+  enrollmentSurveyClose: (id: number): string =>
+    `${environment.apiBaseUrl}/enrollment-surveys/${id}/close`,
+  enrollmentSurveyResponses: (id: number): string =>
+    `${environment.apiBaseUrl}/enrollment-surveys/${id}/responses`,
+  enrollmentSurveyMyResponse: (id: number): string =>
+    `${environment.apiBaseUrl}/enrollment-surveys/${id}/responses/me`,
+  enrollmentSurveyResultsSummary: (id: number): string =>
+    `${environment.apiBaseUrl}/enrollment-surveys/${id}/results/summary`,
+  enrollmentSurveyResultsUeas: (id: number): string =>
+    `${environment.apiBaseUrl}/enrollment-surveys/${id}/results/ueas`,
+  enrollmentSurveyResultsUeaStudents: (id: number, ueaId: number): string =>
+    `${environment.apiBaseUrl}/enrollment-surveys/${id}/results/ueas/${ueaId}/students`,
 } as const;

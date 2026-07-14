@@ -247,14 +247,43 @@ Extender bases abstractas con `@Directive()` cuando usen `inject()` (requisito d
 | Error de formulario | `p-message severity="error"` |
 | Éxito transitorio | `MessageService` + `<p-toast />` en root |
 | Diálogos modales | `p-dialog` |
-| Tablas de listado | `<table>` responsive (patrón actual del catálogo) |
+| Tablas de listado | `<table>` responsive — **receta única abajo** |
 | Estado carga/error/vacío | `app-load-state` (proyecta el contenido cargado vía `<ng-content>`) |
+
+### Tablas de listado (receta única)
+
+Todas las tablas usan **el mismo esqueleto responsive** (colapsa a tarjetas en móvil). No inventar variantes de padding/color: header `p-md`, celdas `md:p-md`, tokens `bg-table-header` / `bg-table-row-hover`. Referencia canónica: `professor-list`, `student-list`, `uea-list`.
+
+```html
+<div class="border-outline bg-surface rounded-xl border">
+  <app-load-state [loading]="loading()" [error]="loadError()" [empty]="items().length === 0" ...>
+    <div class="md:overflow-x-auto">
+      <table class="block w-full border-collapse md:table md:min-w-[48rem]">
+        <thead class="bg-table-header hidden text-left md:table-header-group">
+          <tr><th class="p-md">…</th></tr>
+        </thead>
+        <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+          <tr class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t">
+            <td class="md:p-md md:table-cell">
+              <span class="text-caption text-text-secondary block md:hidden">Etiqueta móvil</span>
+              …
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-load-state>
+</div>
+```
+
+- **Orden en cliente sin paginador:** signals `sortField`/`sortDir` + `computed orderedRows` + `ariaSort()`/`sortIcon()` en el header (`<th [attr.aria-sort]>` con `<button (click)="sortBy(...)">`). Para listados **paginados con filtros** usar `CatalogListBase` (§6).
 
 ### Tipografía y color (tokens)
 
 - Títulos: `text-h1`, `text-h2`, `text-h3`
 - Texto: `text-body-md`, `text-caption`, `text-text-secondary`
 - Superficies: `bg-surface`, `bg-surface-subtle`, `border-outline`
+- Tablas: `bg-table-header`, `bg-table-row-hover` (ver receta de tablas arriba)
 - Espaciado: `gap-md`, `p-lg`, `rounded-xl`
 
 Cambios de color: editar `core/theme/design-tokens.ts` **y** el bloque `@theme` en `styles.css`.

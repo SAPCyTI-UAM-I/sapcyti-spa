@@ -7,9 +7,10 @@ import { BreadcrumbItem } from '../../../shell/breadcrumb';
 
 /**
  * Top-bar breadcrumb: a home icon (link to dashboard) followed by the current
- * route trail. When the trail has more than two crumbs it collapses to
- * `home › … › current` to save space; the hidden labels are kept in the
- * ellipsis tooltip for context.
+ * route trail as read-only labels. Intermediate crumbs are not links — the shell
+ * menu is the primary navigation. When the trail has more than two crumbs it
+ * collapses to `home › … › current` to save space; the hidden labels are kept in
+ * the ellipsis tooltip for context.
  */
 @Component({
   selector: 'app-breadcrumb',

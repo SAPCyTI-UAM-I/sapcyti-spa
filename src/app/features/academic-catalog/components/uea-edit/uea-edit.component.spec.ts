@@ -23,8 +23,8 @@ const uea: UeaCatalogItem = {
   active: true,
 };
 
-function conflict(code: string): HttpErrorResponse {
-  return new HttpErrorResponse({ status: 409, error: { error: code } });
+function conflict(code: string, message?: string): HttpErrorResponse {
+  return new HttpErrorResponse({ status: 409, error: { error: code, message } });
 }
 
 describe('UeaEditComponent', () => {
@@ -43,13 +43,14 @@ describe('UeaEditComponent', () => {
     return fixture;
   }
 
-  it('loads the UEA, prefills the form and keeps clave read-only', async () => {
+  it('loads the UEA, prefills the form and keeps clave and nombre read-only', async () => {
     const fixture = await setup({ getUea: vi.fn(() => of(uea)) });
     const form = fixture.componentInstance.form;
 
     expect(fixture.componentInstance.uea()).toEqual(uea);
     expect(form.get('nombre')?.value).toBe('Algoritmos distribuidos');
     expect(form.get('clave')?.disabled).toBe(true);
+    expect(form.get('nombre')?.disabled).toBe(true);
   });
 
   it('updates without clave and navigates back to the list', async () => {
@@ -74,7 +75,37 @@ describe('UeaEditComponent', () => {
     fixture.componentInstance.openDeactivateDialog();
     fixture.componentInstance.confirmDeactivate();
 
-    expect(deactivateUea).toHaveBeenCalledWith(5);
+    expect(deactivateUea).toHaveBeenCalledWith(5, false);
+    expect(navigate).toHaveBeenCalledWith(['/academic-catalog/ueas']);
+  });
+
+  it('warns then force-deactivates when the UEA is in an active survey (HU-48)', async () => {
+    const deactivateUea = vi
+      .fn()
+      .mockReturnValueOnce(
+        throwError(() =>
+          conflict(
+            'UEA_IN_ACTIVE_SURVEY',
+            'La UEA está incluida en el sondeo activo del trimestre 26O.',
+          ),
+        ),
+      )
+      .mockReturnValueOnce(of({ ...uea, active: false }));
+    const fixture = await setup({ getUea: vi.fn(() => of(uea)), deactivateUea });
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const component = fixture.componentInstance;
+
+    component.openDeactivateDialog();
+    component.confirmDeactivate();
+
+    // First attempt: no force, surfaces the term-bearing warning, dialog stays open.
+    expect(deactivateUea).toHaveBeenNthCalledWith(1, 5, false);
+    expect(component.surveyConflictMessage()).toContain('26O');
+    expect(navigate).not.toHaveBeenCalled();
+
+    // Second attempt: confirmed, retries with force = true and navigates back.
+    component.confirmDeactivate();
+    expect(deactivateUea).toHaveBeenNthCalledWith(2, 5, true);
     expect(navigate).toHaveBeenCalledWith(['/academic-catalog/ueas']);
   });
 

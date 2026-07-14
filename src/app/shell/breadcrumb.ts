@@ -9,7 +9,8 @@ export interface BreadcrumbItem {
 /**
  * Walks the activated route tree from `root` downwards and collects one crumb per
  * route that declares a `breadcrumb` label key in its static `data`, building the
- * cumulative URL so every crumb is navigable. The home crumb is added by the view.
+ * cumulative URL for each segment (kept for potential future use; crumbs render
+ * as read-only labels in the shell). The home crumb is added by the view.
  */
 export function buildBreadcrumbTrail(root: ActivatedRouteSnapshot): BreadcrumbItem[] {
   const trail: BreadcrumbItem[] = [];

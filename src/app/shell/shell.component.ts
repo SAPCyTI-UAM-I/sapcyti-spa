@@ -1,15 +1,16 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
-import { filter } from 'rxjs';
+import { catchError, filter, map, of, startWith, switchMap } from 'rxjs';
 
 import { AuthStateService } from '../core/auth/auth.service';
+import { EnrollmentSurveyService } from '../features/enrollment-survey/services/enrollment-survey.service';
 import {
   BreadcrumbComponent,
   LanguageSwitcherComponent,
@@ -18,7 +19,7 @@ import {
 import { ShellMobileDrawerComponent } from './shell-mobile-drawer.component';
 import { ShellSidebarNavComponent } from '../shared/components';
 import { buildBreadcrumbTrail } from './breadcrumb';
-import { getShellNavigation } from './shell-menu.config';
+import { getShellNavigation, STUDENT_SURVEY_SECTION } from './shell-menu.config';
 import { USER_MENU_ITEMS } from './user-menu.config';
 import { logoutAndNavigateToLogin } from '../core/auth/utils';
 import { readStoredBoolean, writeStoredBoolean } from '../shared/utils/local-storage.util';
@@ -49,6 +50,7 @@ export class ShellComponent {
   private readonly auth = inject(AuthStateService);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
+  private readonly surveys = inject(EnrollmentSurveyService);
 
   readonly currentUser = toSignal(this.auth.currentUser$, { initialValue: null });
   readonly mobileMenuOpen = signal(false);
@@ -66,9 +68,41 @@ export class ShellComponent {
     return buildBreadcrumbTrail(this.router.routerState.snapshot.root);
   });
 
+  /**
+   * HU-41 — re-queries GET /active on every navigation for a STUDENT. A 404 (no active
+   * survey) is swallowed to `false` in the service/here, so the menu entry just doesn't
+   * render — it never surfaces as an error.
+   */
+  private readonly studentSurveyActive = toSignal(
+    toObservable(this.currentUser).pipe(
+      switchMap((user) =>
+        user?.role === 'STUDENT'
+          ? this.router.events.pipe(
+              filter((event) => event instanceof NavigationEnd),
+              startWith(null),
+              switchMap(() =>
+                this.surveys.getActiveSurvey().pipe(
+                  map((form) => form !== null),
+                  catchError(() => of(false)),
+                ),
+              ),
+            )
+          : of(false),
+      ),
+    ),
+    { initialValue: false },
+  );
+
   readonly navigation = computed(() => {
     const user = this.currentUser();
-    return user ? getShellNavigation(user.role) : null;
+    if (!user) {
+      return null;
+    }
+    const base = getShellNavigation(user.role);
+    if (base && user.role === 'STUDENT' && this.studentSurveyActive()) {
+      return { ...base, sections: [...base.sections, STUDENT_SURVEY_SECTION] };
+    }
+    return base;
   });
 
   readonly userInitials = computed(() => {

@@ -34,6 +34,9 @@ import { UEA_REPOSITORY } from '../../features/academic-catalog/repositories/uea
 import { AnnualPlanHttpRepository } from '../../features/annual-planning/repositories/annual-plan-http.repository';
 import { AnnualPlanMockRepository } from '../../features/annual-planning/repositories/annual-plan-mock.repository';
 import { ANNUAL_PLAN_REPOSITORY } from '../../features/annual-planning/repositories/annual-plan.repository';
+import { EnrollmentSurveyHttpRepository } from '../../features/enrollment-survey/repositories/enrollment-survey-http.repository';
+import { EnrollmentSurveyMockRepository } from '../../features/enrollment-survey/repositories/enrollment-survey-mock.repository';
+import { ENROLLMENT_SURVEY_REPOSITORY } from '../../features/enrollment-survey/repositories/enrollment-survey.repository';
 
 export const DATA_LAYER_PROVIDERS: Provider[] = [
   { provide: MOCK_STUDENT_USER_REGISTRY, useExisting: StudentMockStore },
@@ -68,6 +71,12 @@ export const DATA_LAYER_PROVIDERS: Provider[] = [
     ANNUAL_PLAN_REPOSITORY,
     AnnualPlanHttpRepository,
     AnnualPlanMockRepository,
+  ),
+  ...provideMockOrHttpRepository(
+    'enrollmentSurvey',
+    ENROLLMENT_SURVEY_REPOSITORY,
+    EnrollmentSurveyHttpRepository,
+    EnrollmentSurveyMockRepository,
   ),
   ...provideMockOrHttpRepository(
     'passwordChange',

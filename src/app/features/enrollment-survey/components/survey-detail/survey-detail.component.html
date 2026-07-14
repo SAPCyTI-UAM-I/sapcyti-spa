@@ -1,0 +1,240 @@
+<section class="gap-lg flex flex-col">
+  <app-load-state
+    [loading]="loading()"
+    [error]="loadError()"
+    [empty]="false"
+    emptyMessage="ENROLLMENT_SURVEY.STATES.LOAD_ERROR"
+    errorMessage="ENROLLMENT_SURVEY.STATES.LOAD_ERROR"
+    (retry)="load()"
+  >
+    @if (survey(); as survey) {
+      <div class="gap-lg flex flex-col">
+        <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+          <div class="gap-sm flex flex-wrap items-center">
+            <h1 class="text-h2 text-primary font-bold">
+              {{ 'ENROLLMENT_SURVEY.DETAIL.TITLE' | translate }} {{ survey.term }}
+            </h1>
+            <app-catalog-tag
+              [value]="'ENROLLMENT_SURVEY.STATUS.' + survey.status | translate"
+              [severity]="statusTagSeverity(survey.status)"
+            />
+          </div>
+          <div class="gap-sm flex flex-wrap">
+            <p-button
+              icon="pi pi-pencil"
+              data-testid="survey-action-edit"
+              [label]="'ENROLLMENT_SURVEY.ACTIONS.EDIT' | translate"
+              [routerLink]="['/enrollment-survey', surveyId, 'edit']"
+            />
+            <p-button
+              severity="secondary"
+              variant="outlined"
+              icon="pi pi-arrow-left"
+              [label]="'COMMON.ACTIONS.BACK' | translate"
+              routerLink="/enrollment-survey"
+            />
+          </div>
+        </header>
+
+        <div
+          class="border-outline bg-surface p-lg gap-lg flex flex-col rounded-xl border shadow-sm"
+        >
+          <div class="gap-lg grid sm:grid-cols-2">
+            <div class="gap-sm flex items-start">
+              <span
+                class="bg-primary-container text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+              >
+                <i class="pi pi-calendar-plus"></i>
+              </span>
+              <div class="min-w-0">
+                <p class="text-caption text-text-secondary">
+                  {{ 'ENROLLMENT_SURVEY.FORM.OPENS_AT' | translate }}
+                </p>
+                <p class="text-body-md font-semibold">
+                  {{ survey.opensAt | date: 'dd/MM/yyyy HH:mm' }}
+                </p>
+              </div>
+            </div>
+            <div class="gap-sm flex items-start">
+              <span
+                class="bg-primary-container text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+              >
+                <i class="pi pi-calendar-times"></i>
+              </span>
+              <div class="min-w-0">
+                <p class="text-caption text-text-secondary">
+                  {{ 'ENROLLMENT_SURVEY.FORM.CLOSES_AT' | translate }}
+                </p>
+                <p class="text-body-md font-semibold">
+                  {{ survey.closesAt | date: 'dd/MM/yyyy HH:mm' }}
+                </p>
+              </div>
+            </div>
+          </div>
+          @if (survey.introMessage) {
+            <div
+              class="border-outline bg-surface-subtle p-md gap-xs flex flex-col rounded-lg border"
+            >
+              <span class="text-caption text-text-secondary">
+                {{ 'ENROLLMENT_SURVEY.FORM.INTRO_MESSAGE' | translate }}
+              </span>
+              <p class="text-body-md break-words whitespace-pre-line">{{ survey.introMessage }}</p>
+            </div>
+          }
+        </div>
+
+        <!-- HU-42 — results shown inline (no second step). -->
+        <div
+          class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border shadow-sm"
+        >
+          <div class="gap-md flex flex-wrap items-center justify-between">
+            <h2 class="text-h3 font-semibold">
+              {{ 'ENROLLMENT_SURVEY.RESULTS.TITLE' | translate }}
+            </h2>
+            @if (summary(); as summary) {
+              <div
+                class="bg-primary-container text-primary gap-sm px-md py-sm inline-flex items-center rounded-xl"
+                data-testid="responded-stat"
+              >
+                <i class="pi pi-check-circle text-lg"></i>
+                <span class="text-h1 leading-none font-bold">{{ summary.respondedCount }}</span>
+                <span class="text-body-md">
+                  {{ 'ENROLLMENT_SURVEY.RESULTS.RESPONDED' | translate }}
+                </span>
+              </div>
+            }
+          </div>
+
+          @if (!hasResponses()) {
+            <div
+              class="text-text-secondary gap-sm py-xl flex flex-col items-center"
+              data-testid="results-empty-no-responses"
+            >
+              <i class="pi pi-inbox text-3xl opacity-40"></i>
+              <p>{{ 'ENROLLMENT_SURVEY.RESULTS.EMPTY_NO_RESPONSES' | translate }}</p>
+            </div>
+          } @else {
+            <div class="border-outline overflow-hidden rounded-xl border">
+              <div class="md:overflow-x-auto">
+                <table class="block w-full border-collapse md:table md:min-w-[42rem]">
+                  <thead class="bg-table-header hidden text-left md:table-header-group">
+                    <tr>
+                      <th class="p-md">
+                        {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CLAVE' | translate }}
+                      </th>
+                      <th class="p-md">
+                        {{ 'ENROLLMENT_SURVEY.RESULTS.COL_NOMBRE' | translate }}
+                      </th>
+                      <th class="p-md">
+                        {{ 'ENROLLMENT_SURVEY.RESULTS.COL_FORMACION' | translate }}
+                      </th>
+                      <th class="p-md text-right">
+                        {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CREDITOS' | translate }}
+                      </th>
+                      <th class="p-md text-right" [attr.aria-sort]="ariaSort()">
+                        <button
+                          type="button"
+                          class="gap-xs ml-auto flex items-center"
+                          (click)="toggleSort()"
+                        >
+                          {{ 'ENROLLMENT_SURVEY.RESULTS.COL_DEMAND' | translate }}
+                          <i class="pi {{ sortIcon() }} text-[10px]"></i>
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+                    @for (row of orderedRows(); track row.ueaId) {
+                      <tr
+                        class="hover:bg-table-row-hover p-md gap-md md:border-outline grid cursor-pointer grid-cols-2 md:table-row md:border-t"
+                        [attr.data-testid]="'demand-row-' + row.ueaId"
+                        (click)="openStudents(row)"
+                      >
+                        <td class="md:p-md text-primary font-semibold md:table-cell">
+                          <span
+                            class="text-caption text-text-secondary block font-normal md:hidden"
+                          >
+                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CLAVE' | translate }}
+                          </span>
+                          {{ row.clave }}
+                        </td>
+                        <td class="md:p-md col-span-2 md:table-cell">
+                          <span class="text-caption text-text-secondary block md:hidden">
+                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_NOMBRE' | translate }}
+                          </span>
+                          {{ row.nombre }}
+                        </td>
+                        <td class="md:p-md md:table-cell">
+                          <span class="text-caption text-text-secondary block md:hidden">
+                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_FORMACION' | translate }}
+                          </span>
+                          {{ row.tipoFormacion }}
+                        </td>
+                        <td class="md:p-md md:table-cell md:text-right">
+                          <span class="text-caption text-text-secondary block md:hidden">
+                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CREDITOS' | translate }}
+                          </span>
+                          {{ row.creditos }}
+                        </td>
+                        <td class="md:p-md md:table-cell md:text-right">
+                          <span class="text-caption text-text-secondary block md:hidden">
+                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_DEMAND' | translate }}
+                          </span>
+                          <span
+                            class="bg-primary-container text-primary px-sm py-xs inline-block min-w-[2rem] rounded-full text-center font-semibold"
+                          >
+                            {{ row.totalResponses }}
+                          </span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </app-load-state>
+</section>
+
+<!-- HU-42 — interested students per UEA. -->
+<p-dialog
+  [header]="selectedUea()?.clave + ' — ' + selectedUea()?.nombre"
+  [visible]="selectedUea() !== null"
+  [modal]="true"
+  [style]="{ width: '32rem' }"
+  (onHide)="closeStudents()"
+>
+  @if (studentsLoading()) {
+    <div class="p-lg text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else if (students().length === 0) {
+    <p class="text-text-secondary p-md text-center">
+      {{ 'ENROLLMENT_SURVEY.RESULTS.NO_STUDENTS' | translate }}
+    </p>
+  } @else {
+    <ul class="gap-xs flex flex-col">
+      @for (student of students(); track student.enrollmentId) {
+        <li
+          class="border-outline py-sm gap-sm grid grid-cols-3 items-center border-b last:border-b-0"
+        >
+          <span class="font-medium">{{ student.fullName }}</span>
+          <span class="text-text-secondary text-center">
+            {{ 'ENROLLMENT_SURVEY.RESULTS.TRIMESTER' | translate }} {{ student.academicTerm }}
+          </span>
+          <span class="text-text-secondary text-right">{{ student.enrollmentId }}</span>
+        </li>
+      }
+    </ul>
+  }
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      [label]="'COMMON.ACTIONS.CLOSE' | translate"
+      (onClick)="closeStudents()"
+    />
+  </ng-template>
+</p-dialog>

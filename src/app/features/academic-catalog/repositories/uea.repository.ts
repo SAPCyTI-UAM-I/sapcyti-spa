@@ -16,7 +16,12 @@ export interface UeaRepository {
   bulkUploadUeas(file: File): Observable<UeaBulkUploadResult>;
   getUea(ueaId: number): Observable<UeaCatalogItem>;
   updateUea(ueaId: number, request: UpdateUeaRequest): Observable<UeaCatalogItem>;
-  deactivateUea(ueaId: number): Observable<UeaCatalogItem>;
+  /**
+   * HU-48. When the UEA is in an active survey and `confirm` is not true, the backend
+   * responds `409 UEA_IN_ACTIVE_SURVEY` (with the term in the message) instead of
+   * deactivating. The SPA confirms and retries with `confirm = true`.
+   */
+  deactivateUea(ueaId: number, confirm?: boolean): Observable<UeaCatalogItem>;
   restoreUea(ueaId: number): Observable<UeaCatalogItem>;
 }
 

@@ -18,6 +18,10 @@ import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
+import {
+  getApiErrorCode,
+  getApiErrorMessage,
+} from '../../../../core/errors/utils/parse-api-error.util';
 import { UeaCatalogItem } from '../../../../models';
 import { FieldErrorComponent, I18nSelectComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
@@ -75,6 +79,8 @@ export class UeaEditComponent implements OnInit {
   readonly reactivateError = signal<UeaError | null>(null);
   readonly uea = signal<UeaCatalogItem | null>(null);
   readonly showDeactivateDialog = signal(false);
+  /** HU-48: set with the API message (incl. the term) when the UEA is in an active survey. */
+  readonly surveyConflictMessage = signal<string | null>(null);
 
   readonly catalogErrorScope = CATALOG_ERROR_I18N_SCOPE;
   readonly tipoOptions = UEA_TIPO_OPTIONS;
@@ -84,8 +90,9 @@ export class UeaEditComponent implements OnInit {
   readonly form = buildUeaFormGroup(this.fb);
 
   ngOnInit(): void {
-    // `clave` is immutable (HU-47) — read-only for the whole edit lifetime.
+    // `clave` and `nombre` are immutable — read-only for the whole edit lifetime.
     this.form.get('clave')?.disable();
+    this.form.get('nombre')?.disable();
     this.load();
   }
 
@@ -120,6 +127,7 @@ export class UeaEditComponent implements OnInit {
 
   openDeactivateDialog(): void {
     this.deactivateError.set(null);
+    this.surveyConflictMessage.set(null);
     this.showDeactivateDialog.set(true);
   }
 
@@ -129,13 +137,16 @@ export class UeaEditComponent implements OnInit {
     }
     this.showDeactivateDialog.set(false);
     this.deactivateError.set(null);
+    this.surveyConflictMessage.set(null);
   }
 
   confirmDeactivate(): void {
+    // After acknowledging the active-survey warning, retry with confirm = true.
+    const confirm = this.surveyConflictMessage() !== null;
     this.deactivating.set(true);
     this.deactivateError.set(null);
     this.service
-      .deactivateUea(this.ueaId)
+      .deactivateUea(this.ueaId, confirm)
       .pipe(
         finalize(() => this.deactivating.set(false)),
         takeUntilDestroyed(this.destroyRef),
@@ -150,7 +161,17 @@ export class UeaEditComponent implements OnInit {
           });
           void this.router.navigate([UEAS_LIST_ROUTE]);
         },
-        error: (err) => this.deactivateError.set(mapUeaError(err)),
+        error: (err) => {
+          if (getApiErrorCode(err) === 'UEA_IN_ACTIVE_SURVEY') {
+            // Keep the dialog open and show the term-bearing warning; next confirm forces.
+            this.surveyConflictMessage.set(
+              getApiErrorMessage(err) ??
+                this.translate.instant('ACADEMIC_CATALOG.UEAS.DEACTIVATE.IN_ACTIVE_SURVEY'),
+            );
+          } else {
+            this.deactivateError.set(mapUeaError(err));
+          }
+        },
       });
   }
 

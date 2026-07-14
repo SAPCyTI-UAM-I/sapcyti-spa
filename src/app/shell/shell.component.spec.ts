@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, of } from 'rxjs';
 
 import { AuthStateService } from '../core/auth/auth.service';
+import { EnrollmentSurveyService } from '../features/enrollment-survey/services/enrollment-survey.service';
 import { ShellComponent } from './shell.component';
 
 function createShell() {
@@ -11,6 +12,7 @@ function createShell() {
     currentUser$: new BehaviorSubject(null),
     logout: vi.fn(() => of(void 0)),
   };
+  const surveyMock = { getActiveSurvey: vi.fn(() => of(null)) };
   const translateMock = {
     instant: vi.fn((key: string) => key),
     use: vi.fn(),
@@ -23,6 +25,7 @@ function createShell() {
       provideRouter([]),
       { provide: AuthStateService, useValue: authMock },
       { provide: TranslateService, useValue: translateMock },
+      { provide: EnrollmentSurveyService, useValue: surveyMock },
     ],
   });
 

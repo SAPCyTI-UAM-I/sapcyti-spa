@@ -1,0 +1,261 @@
+<section class="gap-lg mx-auto flex max-w-2xl flex-col" data-testid="survey-form">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div>
+      <div class="gap-sm flex flex-wrap items-center">
+        <h1 class="text-h2 text-primary font-bold">
+          {{
+            (isEdit ? 'ENROLLMENT_SURVEY.FORM.TITLE_EDIT' : 'ENROLLMENT_SURVEY.FORM.TITLE_NEW')
+              | translate
+          }}
+        </h1>
+        @if (status(); as surveyStatus) {
+          <app-catalog-tag
+            data-testid="survey-status-tag"
+            [value]="'ENROLLMENT_SURVEY.STATUS.' + surveyStatus | translate"
+            [severity]="statusTagSeverity(surveyStatus)"
+          />
+        }
+      </div>
+      <p class="text-text-secondary">{{ 'ENROLLMENT_SURVEY.FORM.SUBTITLE' | translate }}</p>
+    </div>
+    <p-button
+      severity="secondary"
+      variant="outlined"
+      icon="pi pi-arrow-left"
+      [label]="'COMMON.ACTIONS.BACK' | translate"
+      (onClick)="cancel()"
+    />
+  </header>
+
+  @if (loading()) {
+    <div class="p-xl text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else {
+    @if (isReopen()) {
+      <p-message severity="info" [text]="'ENROLLMENT_SURVEY.FORM.REOPEN_HINT' | translate" />
+    }
+    @if (noUeasWarning()) {
+      <p-message
+        severity="warn"
+        data-testid="no-ueas-warning"
+        [text]="'ENROLLMENT_SURVEY.FORM.NO_UEAS_WARNING' | translate"
+      />
+    }
+    @if (bannerError()) {
+      <p-message severity="error" [text]="bannerError() | domainError: errorScope" />
+    }
+
+    <form
+      class="border-outline bg-surface p-lg sm:p-xl gap-lg flex flex-col rounded-xl border"
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+    >
+      <label class="gap-xs flex flex-col">
+        <span>{{ 'ENROLLMENT_SURVEY.FORM.TERM' | translate }} *</span>
+        <input pInputText formControlName="term" [attr.maxlength]="3" class="uppercase" />
+        <small class="text-caption text-text-secondary">
+          {{
+            (isEdit ? 'ENROLLMENT_SURVEY.FORM.TERM_READONLY' : 'ENROLLMENT_SURVEY.FORM.TERM_HINT')
+              | translate
+          }}
+        </small>
+        <app-field-error [control]="form.controls.term" [submitted]="submitted()" />
+        @if (termError()) {
+          <p-message severity="error" [text]="termError() | domainError: errorScope" />
+        }
+      </label>
+
+      <div class="gap-md grid md:grid-cols-2">
+        <div class="gap-xs flex flex-col">
+          <label for="survey-opens-date">
+            {{ 'ENROLLMENT_SURVEY.FORM.OPENS_AT' | translate }} *
+          </label>
+          <div class="gap-sm flex">
+            <input
+              pInputText
+              id="survey-opens-date"
+              type="date"
+              class="flex-1"
+              formControlName="opensDate"
+            />
+            <input
+              pInputText
+              type="time"
+              class="w-32"
+              formControlName="opensTime"
+              [attr.aria-label]="'ENROLLMENT_SURVEY.FORM.OPENS_TIME' | translate"
+            />
+          </div>
+          <app-field-error [control]="form.controls.opensDate" [submitted]="submitted()" />
+          <app-field-error [control]="form.controls.opensTime" [submitted]="submitted()" />
+        </div>
+
+        <div class="gap-xs flex flex-col">
+          <label for="survey-closes-date">
+            {{ 'ENROLLMENT_SURVEY.FORM.CLOSES_AT' | translate }} *
+          </label>
+          <div class="gap-sm flex">
+            <input
+              pInputText
+              id="survey-closes-date"
+              type="date"
+              class="flex-1"
+              formControlName="closesDate"
+            />
+            <input
+              pInputText
+              type="time"
+              class="w-32"
+              formControlName="closesTime"
+              [attr.aria-label]="'ENROLLMENT_SURVEY.FORM.CLOSES_TIME' | translate"
+            />
+          </div>
+          <app-field-error [control]="form.controls.closesDate" [submitted]="submitted()" />
+          <app-field-error [control]="form.controls.closesTime" [submitted]="submitted()" />
+        </div>
+      </div>
+
+      @if (submitted() && form.hasError('closesBeforeOpens')) {
+        <p-message
+          severity="error"
+          [text]="'ENROLLMENT_SURVEY.FORM.CLOSES_BEFORE_OPENS' | translate"
+        />
+      }
+
+      <label class="gap-xs flex flex-col">
+        <span>{{ 'ENROLLMENT_SURVEY.FORM.INTRO_MESSAGE' | translate }}</span>
+        <textarea
+          formControlName="introMessage"
+          rows="3"
+          [attr.maxlength]="500"
+          class="border-outline focus:border-primary p-sm rounded-lg border bg-transparent outline-none"
+        ></textarea>
+        <app-field-error [control]="form.controls.introMessage" [submitted]="submitted()" />
+      </label>
+
+      <footer class="border-outline pt-md gap-sm flex flex-wrap justify-between border-t">
+        <!-- Closing has its explicit button; reopening = move the closing date forward and Save. -->
+        @if (isActive()) {
+          <p-button
+            type="button"
+            severity="danger"
+            variant="outlined"
+            icon="pi pi-lock"
+            data-testid="close-survey"
+            [label]="'ENROLLMENT_SURVEY.ACTIONS.CLOSE' | translate"
+            (onClick)="openCloseDialog()"
+          />
+        } @else if (canReactivate()) {
+          <p-button
+            type="button"
+            severity="success"
+            variant="outlined"
+            icon="pi pi-lock-open"
+            data-testid="reopen-survey"
+            [label]="'ENROLLMENT_SURVEY.ACTIONS.REOPEN' | translate"
+            [loading]="submitting()"
+            (onClick)="reactivate()"
+          />
+        } @else if (canDelete()) {
+          <p-button
+            type="button"
+            severity="danger"
+            variant="outlined"
+            icon="pi pi-trash"
+            data-testid="delete-survey"
+            [label]="'ENROLLMENT_SURVEY.ACTIONS.DELETE' | translate"
+            (onClick)="openDeleteDialog()"
+          />
+        } @else {
+          <span></span>
+        }
+        <div class="gap-sm flex">
+          <p-button
+            type="button"
+            severity="secondary"
+            variant="outlined"
+            [label]="'COMMON.ACTIONS.CANCEL' | translate"
+            (onClick)="cancel()"
+          />
+          <p-button
+            type="submit"
+            data-testid="save-survey"
+            [label]="'COMMON.ACTIONS.SAVE' | translate"
+            [loading]="submitting()"
+            [disabled]="submitting()"
+          />
+        </div>
+      </footer>
+    </form>
+  }
+</section>
+
+<!-- HU-40 — close an active survey from the edit screen. -->
+<p-dialog
+  [header]="'ENROLLMENT_SURVEY.DETAIL.CONFIRM_CLOSE_TITLE' | translate"
+  [visible]="showCloseDialog()"
+  [modal]="true"
+  [style]="{ width: '30rem' }"
+  (onHide)="cancelClose()"
+>
+  <p class="text-body-md">{{ 'ENROLLMENT_SURVEY.DETAIL.CONFIRM_CLOSE_MESSAGE' | translate }}</p>
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="cancelClose()"
+    />
+    <p-button
+      severity="danger"
+      data-testid="confirm-close-survey"
+      [label]="'ENROLLMENT_SURVEY.ACTIONS.CLOSE' | translate"
+      [loading]="closing()"
+      (onClick)="confirmClose()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- HU-40 — delete a scheduled survey from the edit screen. -->
+<p-dialog
+  [header]="'ENROLLMENT_SURVEY.FORM.DELETE_TITLE' | translate"
+  [visible]="showDeleteDialog()"
+  [modal]="true"
+  [style]="{ width: '30rem' }"
+  (onHide)="cancelDelete()"
+>
+  <p class="text-body-md">{{ 'ENROLLMENT_SURVEY.FORM.DELETE_MESSAGE' | translate }}</p>
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="cancelDelete()"
+    />
+    <p-button
+      severity="danger"
+      data-testid="confirm-delete-survey"
+      [label]="'ENROLLMENT_SURVEY.ACTIONS.DELETE' | translate"
+      [loading]="deleting()"
+      (onClick)="confirmDelete()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- HU-40 — reopen requires a closing date in the future (opening date may stay in the past). -->
+<p-dialog
+  [header]="'ENROLLMENT_SURVEY.FORM.REOPEN_INVALID_TITLE' | translate"
+  [visible]="showReopenError()"
+  [modal]="true"
+  [style]="{ width: '30rem' }"
+  (onHide)="showReopenError.set(false)"
+>
+  <p class="text-body-md" data-testid="reopen-invalid-message">
+    {{ 'ENROLLMENT_SURVEY.FORM.REOPEN_INVALID_MESSAGE' | translate }}
+  </p>
+  <ng-template #footer>
+    <p-button
+      [label]="'COMMON.ACTIONS.UNDERSTOOD' | translate"
+      (onClick)="showReopenError.set(false)"
+    />
+  </ng-template>
+</p-dialog>

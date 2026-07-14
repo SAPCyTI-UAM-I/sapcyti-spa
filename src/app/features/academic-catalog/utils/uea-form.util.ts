@@ -41,7 +41,7 @@ export function ueaIntegerValidator(control: AbstractControl): ValidationErrors 
   return Number.isInteger(value) && value > 0 ? null : { integer: true };
 }
 
-/** Raw value of the UEA form (register carries `clave`; edit keeps it read-only). */
+/** Raw value of the UEA form (register carries `clave`; edit keeps `clave` and `nombre` read-only). */
 export interface UeaFormValue {
   clave: string;
   nombre: string;

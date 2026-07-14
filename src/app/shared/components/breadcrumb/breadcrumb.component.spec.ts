@@ -37,4 +37,22 @@ describe('BreadcrumbComponent', () => {
     expect(component.collapsed()).toBe(true);
     expect(component.visible()).toEqual([{ labelKey: 'C', url: '/a/b/c' }]);
   });
+
+  it('renders intermediate crumbs as text, keeping only home navigable', async () => {
+    await TestBed.configureTestingModule({
+      imports: [BreadcrumbComponent, TranslateModule.forRoot()],
+      providers: [provideRouter([])],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(BreadcrumbComponent);
+    fixture.componentRef.setInput('items', [
+      { labelKey: 'A', url: '/a' },
+      { labelKey: 'B', url: '/a/b' },
+    ]);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('a[routerlink="/dashboard"]')).not.toBeNull();
+    expect(el.querySelectorAll('a').length).toBe(1);
+    expect(el.querySelector('span[aria-current="page"]')?.textContent?.trim()).toBe('B');
+  });
 });
