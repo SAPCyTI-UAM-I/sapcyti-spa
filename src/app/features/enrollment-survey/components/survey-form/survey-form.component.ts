@@ -82,11 +82,24 @@ export class SurveyFormComponent implements OnInit {
   readonly error = signal<EnrollmentSurveyError | null>(null);
   readonly status = signal<SurveyStatus | null>(null);
   private readonly responseCount = signal(0);
+  private readonly loadedSurvey = signal<SurveyResponse | null>(null);
 
   // HU-40 — closing has its explicit button; reopening happens by moving the closing
   // date forward and saving (Save routes a CERRADO survey through the reopen validation).
   readonly isReopen = computed(() => this.status() === 'CERRADO');
   readonly isActive = computed(() => this.status() === 'ACTIVO');
+  /**
+   * A manually closed survey whose window is still current can be reactivated
+   * with one click; once the window is over, reopening requires new dates + Save.
+   */
+  readonly canReactivate = computed(() => {
+    const survey = this.loadedSurvey();
+    if (!survey || this.status() !== 'CERRADO') {
+      return false;
+    }
+    const now = Date.now();
+    return Date.parse(survey.opensAt) <= now && now < Date.parse(survey.closesAt);
+  });
   /** A PROGRAMADO survey without responses can be deleted. */
   readonly canDelete = computed(() => this.status() === 'PROGRAMADO' && this.responseCount() === 0);
   readonly showCloseDialog = signal(false);
@@ -128,8 +141,9 @@ export class SurveyFormComponent implements OnInit {
   }
 
   submit(): void {
-    // A CERRADO survey can only be saved as a reopen — route through its date validation.
-    if (this.isReopen()) {
+    // A CERRADO survey can only be saved as a reopen. While its window is still
+    // current that is a plain reactivation; afterwards the next-day rule applies.
+    if (this.isReopen() && !this.canReactivate()) {
       this.reopen();
       return;
     }
@@ -193,6 +207,19 @@ export class SurveyFormComponent implements OnInit {
     } else {
       void this.router.navigate([SURVEY_LIST_ROUTE]);
     }
+  }
+
+  /**
+   * One-click reopen for a manually closed survey still inside its window —
+   * persists the form as-is, without the next-day closing-date rule.
+   */
+  reactivate(): void {
+    this.submitted.set(true);
+    this.error.set(null);
+    if (this.form.invalid) {
+      return;
+    }
+    this.persist();
   }
 
   openCloseDialog(): void {
@@ -288,6 +315,7 @@ export class SurveyFormComponent implements OnInit {
   }
 
   private patchForm(survey: SurveyResponse): void {
+    this.loadedSurvey.set(survey);
     this.status.set(survey.status);
     this.responseCount.set(survey.responseCount);
     this.form.patchValue({

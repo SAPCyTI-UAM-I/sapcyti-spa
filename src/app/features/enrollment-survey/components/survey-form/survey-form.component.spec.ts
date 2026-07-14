@@ -135,6 +135,31 @@ describe('SurveyFormComponent (edit)', () => {
     expect(deleteSurvey).toHaveBeenCalledWith(2);
   });
 
+  it('offers one-click reactivation while a closed survey is still inside its window', async () => {
+    const updateSurvey = vi.fn(() => of(survey('ACTIVO')));
+    const closedInWindow: SurveyResponse = {
+      ...survey('CERRADO'),
+      opensAt: new Date(Date.now() - 86_400_000).toISOString(),
+      closesAt: new Date(Date.now() + 86_400_000).toISOString(),
+    };
+    const fixture = await setup({ getSurvey: vi.fn(() => of(closedInWindow)), updateSurvey });
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('[data-testid="reopen-survey"]')).not.toBeNull();
+    fixture.componentInstance.reactivate();
+    expect(updateSurvey).toHaveBeenCalledWith(2, expect.anything());
+  });
+
+  it('hides the reactivate button once the closed survey window is over', async () => {
+    const closedExpired: SurveyResponse = {
+      ...survey('CERRADO'),
+      opensAt: new Date(Date.now() - 3 * 86_400_000).toISOString(),
+      closesAt: new Date(Date.now() - 86_400_000).toISOString(),
+    };
+    const fixture = await setup({ getSurvey: vi.fn(() => of(closedExpired)) });
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('[data-testid="reopen-survey"]')).toBeNull();
+  });
+
   it('blocks reopen when the closing date is today, even with a future time', async () => {
     const updateSurvey = vi.fn();
     const fixture = await setup({ getSurvey: vi.fn(() => of(survey('CERRADO'))), updateSurvey });

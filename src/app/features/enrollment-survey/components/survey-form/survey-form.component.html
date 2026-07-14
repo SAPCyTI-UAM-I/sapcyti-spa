@@ -146,6 +146,17 @@
             [label]="'ENROLLMENT_SURVEY.ACTIONS.CLOSE' | translate"
             (onClick)="openCloseDialog()"
           />
+        } @else if (canReactivate()) {
+          <p-button
+            type="button"
+            severity="success"
+            variant="outlined"
+            icon="pi pi-lock-open"
+            data-testid="reopen-survey"
+            [label]="'ENROLLMENT_SURVEY.ACTIONS.REOPEN' | translate"
+            [loading]="submitting()"
+            (onClick)="reactivate()"
+          />
         } @else if (canDelete()) {
           <p-button
             type="button"
