@@ -5,7 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
-import { StudentSurveyForm } from '../../../../models';
+import { StudentSurveyForm, SurveyResponse } from '../../../../models';
 import { EnrollmentSurveyService } from '../../services/enrollment-survey.service';
 import { SurveyResponseComponent } from './survey-response.component';
 
@@ -16,7 +16,7 @@ const activeForm: StudentSurveyForm = {
     status: 'ACTIVO',
     opensAt: '2026-10-01T10:00:00.000Z',
     closesAt: '2026-10-10T10:00:00.000Z',
-    introMessage: null,
+    introMessage: 'Recuerda que este sondeo no equivale a una inscripción oficial.',
     responseCount: 3,
     suggestedTerm: null,
   },
@@ -28,6 +28,23 @@ const activeForm: StudentSurveyForm = {
   removedUeaClaves: ['UEA-301'],
   myResponse: null,
 };
+
+function formWith(
+  overrides: {
+    survey?: Partial<SurveyResponse>;
+    student?: Partial<StudentSurveyForm['student']>;
+    availableUeas?: StudentSurveyForm['availableUeas'];
+    removedUeaClaves?: string[];
+    myResponse?: StudentSurveyForm['myResponse'];
+  } = {},
+): StudentSurveyForm {
+  return {
+    ...activeForm,
+    ...overrides,
+    survey: { ...activeForm.survey, ...overrides.survey },
+    student: { ...activeForm.student, ...overrides.student },
+  };
+}
 
 describe('SurveyResponseComponent', () => {
   async function setup(service: Partial<EnrollmentSurveyService>) {
@@ -47,6 +64,55 @@ describe('SurveyResponseComponent', () => {
   it('loads the active form and exposes removed UEA claves', async () => {
     const fixture = await setup({ getActiveSurvey: vi.fn(() => of(activeForm)) });
     expect(fixture.componentInstance.data()?.removedUeaClaves).toEqual(['UEA-301']);
+  });
+
+  it('renders the survey shell with intro banner, student card, and removed-UEA warning', async () => {
+    const fixture = await setup({ getActiveSurvey: vi.fn(() => of(activeForm)) });
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelector('[data-testid="survey-response"]')).not.toBeNull();
+    expect(el.querySelector('[data-testid="intro-message"]')?.textContent).toContain(
+      activeForm.survey.introMessage,
+    );
+    expect(el.querySelector('[data-testid="student-card"]')?.textContent).toContain('Ana López');
+    expect(el.querySelector('[data-testid="student-card"]')?.textContent).toContain('2024630001');
+    expect(el.querySelector('[data-testid="removed-ueas-banner"]')?.textContent).toContain(
+      'UEA-301',
+    );
+    expect(el.querySelector('[data-testid="submit-response"]')).not.toBeNull();
+  });
+
+  it('omits the intro banner when the survey has no intro message', async () => {
+    const fixture = await setup({
+      getActiveSurvey: vi.fn(() => of(formWith({ survey: { introMessage: null } }))),
+    });
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('[data-testid="intro-message"]')).toBeNull();
+    expect(el.querySelector('[data-testid="student-card"]')).not.toBeNull();
+  });
+
+  it('shows a read-only view without the submit form when the survey is closed', async () => {
+    const fixture = await setup({
+      getActiveSurvey: vi.fn(() =>
+        of(
+          formWith({
+            survey: { status: 'CERRADO' },
+            myResponse: {
+              academicTerm: 'III',
+              mode: 'ENROLL_UEAS',
+              ueaIds: [10],
+              totalUeas: 1,
+              submittedAt: '2026-10-05T10:00:00.000Z',
+            },
+          }),
+        ),
+      ),
+    });
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(fixture.componentInstance.readonlyView()).toBe(true);
+    expect(el.querySelector('[data-testid="submit-response"]')).toBeNull();
+    expect(el.textContent).toContain('III');
   });
 
   it('moves a UEA between the available and selected lists (mutually exclusive)', async () => {

@@ -13,13 +13,14 @@
           <h1 class="text-h2 text-primary font-bold">
             {{ 'ENROLLMENT_SURVEY.RESPONSE.TITLE' | translate }} {{ data.survey.term }}
           </h1>
-          <p class="text-text-secondary">
-            {{ 'ENROLLMENT_SURVEY.RESPONSE.NOT_OFFICIAL' | translate }}
-          </p>
         </header>
 
         @if (data.survey.introMessage) {
-          <p-message severity="info" [text]="data.survey.introMessage" />
+          <p-message
+            severity="info"
+            data-testid="intro-message"
+            [text]="data.survey.introMessage"
+          />
         }
 
         @if (data.removedUeaClaves.length > 0) {
