@@ -36,6 +36,7 @@ export interface StudentEditFormValue {
   lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
+  admissionTerm: string;
   active: boolean;
   graduationDate: string;
   status: ProgramStatus;
@@ -61,6 +62,7 @@ export function buildUpdateStudentRequest(value: StudentEditFormValue): UpdateSt
     lastDegreeObtained: value.lastDegreeObtained,
     programType: value.programType,
     admissionDate: value.admissionDate,
+    admissionTerm: value.admissionTerm.trim().toUpperCase(),
     active: value.active,
   };
 }

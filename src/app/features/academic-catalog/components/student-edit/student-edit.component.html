@@ -205,6 +205,21 @@
           </div>
 
           <div class="gap-xs flex flex-col">
+            <label for="admissionTerm" class="text-body font-medium">
+              {{ 'ACADEMIC_CATALOG.FIELDS.ADMISSION_TERM' | translate }} *
+            </label>
+            <input
+              id="admissionTerm"
+              pInputText
+              formControlName="admissionTerm"
+              placeholder="26O"
+              maxlength="3"
+              [invalid]="isFieldInvalid(form.controls.admissionTerm, submitted())"
+            />
+            <app-field-error [control]="form.controls.admissionTerm" [submitted]="submitted()" />
+          </div>
+
+          <div class="gap-xs flex flex-col">
             <label for="status" class="text-body font-medium">
               {{ 'ACADEMIC_CATALOG.COLUMNS.STATUS' | translate }} *
             </label>

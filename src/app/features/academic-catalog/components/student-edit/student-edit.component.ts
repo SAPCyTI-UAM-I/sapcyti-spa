@@ -38,6 +38,7 @@ import { FieldErrorComponent } from '../../../../shared/components/field-error/f
 import { I18nSelectComponent } from '../../../../shared/components';
 import { formatPersonName } from '../../../../shared/utils/person-name.util';
 import { isFieldInvalid } from '../../../../shared/utils/field-error.util';
+import { TERM_PATTERN } from '../../../../shared/utils/term.util';
 import {
   buildUpdateStudentProgramRequest,
   buildUpdateStudentRequest,
@@ -138,6 +139,7 @@ export class StudentEditComponent {
       lastDegreeObtained: ['' as DegreeLevel, Validators.required],
       programType: ['MAESTRIA' as ProgramType, Validators.required],
       admissionDate: ['', Validators.required],
+      admissionTerm: ['', [Validators.required, Validators.pattern(TERM_PATTERN)]],
       // active se conserva y se envía tal como está en BD; la baja lógica no se edita desde este formulario
       active: [true, Validators.required],
 
@@ -286,6 +288,7 @@ export class StudentEditComponent {
             lastDegreeObtained: student.lastDegreeObtained,
             programType: student.programType,
             admissionDate: student.admissionDate,
+            admissionTerm: student.admissionTerm,
             active: student.active,
             graduationDate: prog.graduationDate ?? '',
             status: prog.status,

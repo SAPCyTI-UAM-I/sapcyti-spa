@@ -21,6 +21,7 @@ const request: RegisterStudentRequest = {
   lastDegreeObtained: 'LICENCIATURA',
   programType: 'MAESTRIA',
   admissionDate: '2026-09-01',
+  admissionTerm: '26O',
 };
 
 const updateReq: UpdateStudentRequest = {
@@ -34,6 +35,7 @@ const updateReq: UpdateStudentRequest = {
   lastDegreeObtained: 'LICENCIATURA',
   programType: 'MAESTRIA',
   admissionDate: '2025-09-01',
+  admissionTerm: '25O',
   active: true,
 };
 

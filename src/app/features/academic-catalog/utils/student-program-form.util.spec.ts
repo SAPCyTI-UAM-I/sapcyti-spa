@@ -23,6 +23,7 @@ const baseFormValue: StudentEditFormValue = {
   lastDegreeObtained: 'MAESTRIA',
   programType: 'MAESTRIA',
   admissionDate: '2025-09-01',
+  admissionTerm: ' 25o ',
   active: true,
   graduationDate: '   ',
   status: 'ACTIVO',
@@ -92,6 +93,7 @@ describe('student update payload builders', () => {
     expect(body.secondLastName).toBeUndefined();
     expect(body.phoneExtension).toBeUndefined();
     expect(body.active).toBe(true);
+    expect(body.admissionTerm).toBe('25O');
   });
 
   it('only includes withdrawal reason when status is BAJA', () => {

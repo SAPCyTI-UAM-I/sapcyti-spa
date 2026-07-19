@@ -40,6 +40,7 @@ export class StudentMockStore {
       lastDegreeObtained: 'LICENCIATURA',
       programType: 'MAESTRIA',
       admissionDate: '2025-09-01',
+      admissionTerm: '25O',
       active: true,
     },
     {
@@ -57,6 +58,7 @@ export class StudentMockStore {
       lastDegreeObtained: 'LICENCIATURA',
       programType: 'DOCTORADO',
       admissionDate: '2024-09-01',
+      admissionTerm: '24O',
       active: false,
     },
     {
@@ -75,6 +77,7 @@ export class StudentMockStore {
       lastDegreeObtained: 'MAESTRIA',
       programType: 'MAESTRIA',
       admissionDate: '2023-09-01',
+      admissionTerm: '23O',
       active: true,
     },
   ];

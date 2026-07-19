@@ -41,6 +41,7 @@
     "FIELDS": {
       "ACTIVE": "Student status",
       "ADMISSION_DATE": "Admission date",
+      "ADMISSION_TERM": "Admission term",
       "BIRTH_DATE": "Birth date",
       "COMMISSION_MEMBER": "Commission member",
       "EMAIL": "Email",

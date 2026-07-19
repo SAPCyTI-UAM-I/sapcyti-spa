@@ -24,6 +24,7 @@ import {
 import { FieldErrorComponent, I18nSelectComponent } from '../../../../shared/components';
 import { TemporaryPasswordDialogComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
+import { TERM_PATTERN } from '../../../../shared/utils/term.util';
 import { ProfessorOptionsController } from '../../services/professor-options.controller';
 import { ResearchCatalogService } from '../../services/research-catalog.service';
 import { StudentService } from '../../services/student.service';
@@ -101,6 +102,7 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
     lastDegreeObtained: ['' as DegreeLevel, Validators.required],
     programType: ['', Validators.required],
     admissionDate: ['', Validators.required],
+    admissionTerm: ['', [Validators.required, Validators.pattern(TERM_PATTERN)]],
     lineOfKnowledge: [''],
     researchArea: [''],
     tutorId: [null as number | null],
@@ -160,6 +162,7 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
             'lastDegreeObtained',
             'programType',
             'admissionDate',
+            'admissionTerm',
             'advisorIds',
           ];
     return controls.every((name) => this.form.get(name)?.valid);
@@ -177,6 +180,7 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
       secondLastName: value.secondLastName.trim() || undefined,
       phoneExtension: value.phoneExtension.trim() || undefined,
       programType: value.programType as RegisterStudentRequest['programType'],
+      admissionTerm: value.admissionTerm.trim().toUpperCase(),
       graduateProgramId: this.auth.getCurrentUser()?.graduateProgramId ?? 1,
       lineOfKnowledge: value.lineOfKnowledge.trim() || undefined,
       researchArea: value.researchArea.trim() || undefined,

@@ -41,6 +41,7 @@
     "FIELDS": {
       "ACTIVE": "Estado del alumno",
       "ADMISSION_DATE": "Fecha de ingreso",
+      "ADMISSION_TERM": "Trimestre de ingreso",
       "BIRTH_DATE": "Fecha de nacimiento",
       "COMMISSION_MEMBER": "Miembro de comisión",
       "EMAIL": "Correo electrónico",

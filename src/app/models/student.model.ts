@@ -21,6 +21,8 @@ export interface RegisterStudentRequest {
   lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
+  /** HU-56: trimestre de ingreso, capturado a mano. Formato `AA[OIP]`, ej. `26O`. */
+  admissionTerm: string;
   lineOfKnowledge?: string;
   researchArea?: string;
   tutorId?: number | null;
@@ -58,6 +60,7 @@ export interface UpdateStudentRequest {
   lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
+  admissionTerm: string;
   active: boolean;
 }
 

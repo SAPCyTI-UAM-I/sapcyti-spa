@@ -104,9 +104,9 @@
         </h3>
 
         <dl class="gap-md flex min-w-0 flex-col">
-          <!-- Matrícula · ingreso · egreso -->
+          <!-- Matrícula · ingreso · trimestre de ingreso · egreso -->
           <div
-            class="bg-page border-outline/60 divide-outline grid divide-y rounded-xl border sm:grid-cols-3 sm:divide-x sm:divide-y-0"
+            class="bg-page border-outline/60 divide-outline grid divide-y rounded-xl border sm:grid-cols-4 sm:divide-x sm:divide-y-0"
           >
             <div class="px-md py-sm gap-xs flex min-w-0 flex-col">
               <dt class="text-caption text-text-secondary">
@@ -124,6 +124,14 @@
               </dt>
               <dd class="text-body-md text-on-surface font-semibold">
                 {{ current.admissionDate }}
+              </dd>
+            </div>
+            <div class="px-md py-sm gap-xs flex min-w-0 flex-col">
+              <dt class="text-caption text-text-secondary">
+                {{ 'ACADEMIC_CATALOG.FIELDS.ADMISSION_TERM' | translate }}
+              </dt>
+              <dd class="text-body-md text-on-surface font-semibold">
+                {{ current.admissionTerm }}
               </dd>
             </div>
             <div class="px-md py-sm gap-xs flex min-w-0 flex-col">
