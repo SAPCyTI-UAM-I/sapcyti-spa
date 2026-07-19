@@ -44,7 +44,11 @@ const mockResponse: StudentDetailResponse = {
 };
 
 describe('StudentDetailComponent', () => {
-  async function setup(studentId = '1', throwErr = false) {
+  async function setup(
+    studentId = '1',
+    throwErr = false,
+    getEnrollmentHistory?: ReturnType<typeof vi.fn>,
+  ) {
     const getStudent = vi.fn(() =>
       throwErr ? throwError(() => new HttpErrorResponse({ status: 404 })) : of(mockResponse),
     );
@@ -63,7 +67,13 @@ describe('StudentDetailComponent', () => {
             },
           },
         },
-        { provide: StudentService, useValue: { getStudent } },
+        {
+          provide: StudentService,
+          useValue: {
+            getStudent,
+            getEnrollmentHistory: getEnrollmentHistory ?? vi.fn(() => of([])),
+          },
+        },
         MessageService,
       ],
     }).compileComponents();
@@ -120,5 +130,43 @@ describe('StudentDetailComponent', () => {
 
     expect(getStudent).not.toHaveBeenCalled();
     expect(fixture.componentInstance.error()).toBe('reference_not_found');
+  });
+  it('shows the enrollment history, hiding letters while the plan is PENDING (HU-61)', async () => {
+    const history = vi.fn(() =>
+      of([
+        {
+          term: '26I',
+          academicTermSelected: 'III',
+          mode: 'ENROLL_UEAS' as const,
+          planStatus: 'PENDING' as const,
+          note: 'PENDING' as const,
+          ueas: [
+            {
+              clave: '2156024',
+              nombre: 'REDES',
+              grupo: null,
+              professorName: null,
+              schedule: null,
+            },
+          ],
+        },
+      ]),
+    );
+    const { fixture } = await setup('1', false, history);
+    fixture.detectChanges();
+
+    expect(history).toHaveBeenCalledWith(1);
+    expect(fixture.componentInstance.history()).toHaveLength(1);
+    // Sin plan TERMINADA no se pinta ninguna letra de grupo.
+    expect(fixture.nativeElement.textContent).not.toContain('CO43');
+  });
+
+  it('flags a history load error without breaking the rest of the detail', async () => {
+    const history = vi.fn(() => throwError(() => new HttpErrorResponse({ status: 500 })));
+    const { fixture } = await setup('1', false, history);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.historyError()).toBe(true);
+    expect(fixture.componentInstance.student()).toEqual(mockResponse);
   });
 });

@@ -271,5 +271,76 @@
         </dl>
       </div>
     </article>
+
+    <!-- HU-61 — histórico de UEAs y grupos por trimestre (solo lectura) -->
+    <article class="border-outline bg-surface gap-md p-lg flex flex-col rounded-xl border">
+      <h2 class="text-h3">{{ 'ACADEMIC_CATALOG.HISTORY.TITLE' | translate }}</h2>
+
+      <app-load-state
+        [loading]="historyLoading()"
+        [error]="historyError()"
+        [empty]="history().length === 0"
+        emptyMessage="ACADEMIC_CATALOG.HISTORY.EMPTY"
+        errorMessage="ACADEMIC_CATALOG.STATES.LOAD_ERROR"
+        (retry)="loadHistory()"
+      >
+        <ol class="gap-md flex flex-col">
+          @for (entry of history(); track entry.term) {
+            <li class="border-outline/60 bg-page p-md gap-sm flex flex-col rounded-xl border">
+              <div class="gap-sm flex flex-wrap items-center">
+                <span class="text-body-md font-semibold">{{ entry.term }}</span>
+                @if (entry.academicTermSelected) {
+                  <span class="text-caption text-text-secondary">
+                    {{
+                      'ACADEMIC_CATALOG.HISTORY.DECLARED_TERM'
+                        | translate: { term: entry.academicTermSelected }
+                    }}
+                  </span>
+                }
+                @if (entry.note) {
+                  <span class="text-caption text-text-secondary italic">
+                    {{ 'ACADEMIC_CATALOG.HISTORY.' + entry.note | translate }}
+                  </span>
+                }
+              </div>
+
+              @if (entry.ueas.length === 0) {
+                <p class="text-caption text-text-secondary">
+                  {{ 'ACADEMIC_CATALOG.HISTORY.BLANK' | translate }}
+                </p>
+              } @else {
+                <ul class="gap-xs flex flex-col">
+                  @for (uea of entry.ueas; track uea.clave) {
+                    <li class="gap-xs flex flex-wrap items-baseline">
+                      <span class="text-body-md">{{ uea.clave }}</span>
+                      <span class="text-caption text-text-secondary">{{ uea.nombre }}</span>
+                      <!-- Mientras el plan no esté TERMINADA no se enseñan letras provisionales. -->
+                      @if (uea.grupo) {
+                        <span class="text-body-md font-medium">{{ uea.grupo }}</span>
+                      }
+                      @if (uea.professorName) {
+                        <span class="text-caption text-text-secondary">
+                          · {{ uea.professorName }}
+                        </span>
+                      }
+                      @if (uea.schedule) {
+                        <span class="text-caption text-text-secondary">
+                          @for (day of uea.schedule; track day.day) {
+                            @if (day.start && day.end) {
+                              · {{ 'TRIMESTRAL_PLANNING.DAYS.' + day.day | translate }}
+                              {{ day.start }}–{{ day.end }}{{ day.lab ? ' (LAB)' : '' }}
+                            }
+                          }
+                        </span>
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            </li>
+          }
+        </ol>
+      </app-load-state>
+    </article>
   }
 </section>

@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
 import { PageResponse } from '../../../models';
 import {
+  EnrollmentHistoryEntry,
   RegisterStudentRequest,
   RegisterStudentResponse,
   StudentCatalogItem,
@@ -39,6 +40,13 @@ export class StudentHttpRepository implements StudentRepository {
     return this.http.get<StudentDetailResponse>(API_ENDPOINTS.student(studentId), {
       withCredentials: true,
     });
+  }
+
+  getEnrollmentHistory(studentId: number): Observable<EnrollmentHistoryEntry[]> {
+    return this.http.get<EnrollmentHistoryEntry[]>(
+      API_ENDPOINTS.studentEnrollmentHistory(studentId),
+      { withCredentials: true },
+    );
   }
 
   updateStudent(studentId: number, request: UpdateStudentRequest): Observable<StudentCatalogItem> {

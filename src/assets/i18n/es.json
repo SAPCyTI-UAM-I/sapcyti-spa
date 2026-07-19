@@ -64,6 +64,14 @@
       "PROGRAM_TYPE": "Tipo de programa",
       "STATUS": "Estado"
     },
+    "HISTORY": {
+      "BLANK": "Inscripción en blanco: sin UEAs ni grupo.",
+      "DECLARED_TERM": "Trimestre declarado: {{term}}",
+      "EMPTY": "El alumno aún no tiene historial de inscripción.",
+      "MANUAL_NOT_SURVEYED": "No respondió la encuesta; agregado en la planeación",
+      "PENDING": "Plan trimestral pendiente",
+      "TITLE": "Historial de inscripción"
+    },
     "PAGINATION": {
       "TOTAL": "Total"
     },
@@ -721,6 +729,7 @@
       "CLOSE": "Cerrar ahora",
       "DELETE": "Eliminar",
       "EDIT": "Editar",
+      "GENERATE_TRIMESTRAL": "Generar plan trimestral",
       "REOPEN": "Reabrir"
     },
     "BREADCRUMB": {

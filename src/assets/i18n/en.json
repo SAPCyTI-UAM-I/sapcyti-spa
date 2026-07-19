@@ -64,6 +64,14 @@
       "PROGRAM_TYPE": "Program type",
       "STATUS": "Status"
     },
+    "HISTORY": {
+      "BLANK": "Blank enrollment: no UEAs and no group.",
+      "DECLARED_TERM": "Declared term: {{term}}",
+      "EMPTY": "This student has no enrollment history yet.",
+      "MANUAL_NOT_SURVEYED": "Did not answer the survey; added during planning",
+      "PENDING": "Trimestral plan pending",
+      "TITLE": "Enrollment history"
+    },
     "PAGINATION": {
       "TOTAL": "Total"
     },
@@ -721,6 +729,7 @@
       "CLOSE": "Close now",
       "DELETE": "Delete",
       "EDIT": "Edit",
+      "GENERATE_TRIMESTRAL": "Generate trimestral plan",
       "REOPEN": "Reopen"
     },
     "BREADCRUMB": {

@@ -1,4 +1,6 @@
+import type { SurveyMode } from './enrollment-survey.model';
 import type { StudentProgramResponse } from './student-program.model';
+import type { DaySchedule } from './trimestral-plan.model';
 
 export type ProgramType = 'MAESTRIA' | 'DOCTORADO';
 
@@ -67,4 +69,33 @@ export interface UpdateStudentRequest {
 export interface StudentDetailResponse extends StudentCatalogItem {
   /** Programa académico único del alumno. */
   program: StudentProgramResponse;
+}
+
+/** HU-61: `PENDING` = todavía no hay planeación TERMINADA de ese trimestre. */
+export type EnrollmentHistoryPlanStatus = 'PENDING' | 'TERMINADA';
+
+/** Clave i18n de la nota de la entrada; null cuando no hay nada que aclarar. */
+export type EnrollmentHistoryNote = 'PENDING' | 'MANUAL_NOT_SURVEYED';
+
+export interface EnrollmentHistoryUea {
+  clave: string;
+  nombre: string;
+  /** Letra de grupo; null mientras `planStatus` es PENDING o en inscripción en blanco. */
+  grupo: string | null;
+  professorName: string | null;
+  schedule: DaySchedule[] | null;
+}
+
+/**
+ * HU-61 — una entrada por trimestre en que el alumno respondió la encuesta o fue
+ * agregado a una planeación TERMINADA. Solo lectura: nunca muestra letras provisionales.
+ */
+export interface EnrollmentHistoryEntry {
+  term: string;
+  /** I..XII declarado en la encuesta; null si lo agregaron a mano. */
+  academicTermSelected: string | null;
+  mode: SurveyMode | null;
+  planStatus: EnrollmentHistoryPlanStatus;
+  note: EnrollmentHistoryNote | null;
+  ueas: EnrollmentHistoryUea[];
 }

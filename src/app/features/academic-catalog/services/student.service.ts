@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 
 import { PageResponse } from '../../../models';
 import {
+  EnrollmentHistoryEntry,
   RegisterStudentRequest,
   RegisterStudentResponse,
   StudentCatalogItem,
@@ -26,6 +27,10 @@ export class StudentService {
 
   getStudent(studentId: number): Observable<StudentDetailResponse> {
     return this.repository.getStudent(studentId);
+  }
+
+  getEnrollmentHistory(studentId: number): Observable<EnrollmentHistoryEntry[]> {
+    return this.repository.getEnrollmentHistory(studentId);
   }
 
   updateStudent(studentId: number, request: UpdateStudentRequest): Observable<StudentCatalogItem> {

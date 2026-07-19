@@ -20,6 +20,16 @@
             />
           </div>
           <div class="gap-sm flex flex-wrap">
+            <!-- HU-58: solo preselecciona la encuesta en el módulo trimestral; no genera nada. -->
+            @if (survey.status === 'CERRADO') {
+              <p-button
+                icon="pi pi-cog"
+                data-testid="survey-action-generate-trimestral"
+                [label]="'ENROLLMENT_SURVEY.ACTIONS.GENERATE_TRIMESTRAL' | translate"
+                [routerLink]="['/trimestral-planning', 'new']"
+                [queryParams]="{ surveyId }"
+              />
+            }
             <p-button
               icon="pi pi-pencil"
               data-testid="survey-action-edit"
