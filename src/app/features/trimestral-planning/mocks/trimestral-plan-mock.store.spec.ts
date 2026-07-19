@@ -41,6 +41,24 @@ describe('TrimestralPlanMockStore', () => {
     expect(s.searchUeas('').content.every((u) => u.active)).toBe(true);
   });
 
+  it('warns STUDENT_INACTIVE for someone dropped after answering, without removing them', () => {
+    const plan = store().get(1);
+
+    // Elena (2024630005) está de baja en el padrón compartido pero respondió el sondeo.
+    expect(
+      plan.warnings.some((w) => w.code === 'STUDENT_INACTIVE' && w.enrollmentId === '2024630005'),
+    ).toBe(true);
+    expect(plan.groups.some((g) => g.students.some((s) => s.enrollmentId === '2024630005'))).toBe(
+      true,
+    );
+  });
+
+  it('offers only active students in the picker (HU-59)', () => {
+    const found = store().searchStudents('2024630005').content;
+
+    expect(found).toEqual([]);
+  });
+
   it('refuses to generate from a survey that is not CERRADO', () => {
     expect(() => store().generate({ surveyId: 2 })).toThrowError(
       expect.objectContaining({ status: 409 }),

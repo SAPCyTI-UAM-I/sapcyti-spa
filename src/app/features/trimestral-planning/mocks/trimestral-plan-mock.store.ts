@@ -26,6 +26,7 @@ import {
   ENROLLED_STUDENTS_SEED,
   EnrolledStudentSeed,
   seedFullName,
+  seedToCatalogItem,
 } from '../../../shared/mocks/enrolled-students.mock-data';
 import { UEA_CATALOG_SEED } from '../../../shared/mocks/uea-catalog.mock-data';
 import { baseGroupForTerm, compareByLastNames, groupWithSuffix } from '../utils/group-letter.util';
@@ -385,10 +386,11 @@ export class TrimestralPlanMockStore {
     const term = search.trim().toLowerCase();
     const matches = ENROLLED_STUDENTS_SEED.filter(
       (s) =>
-        !term ||
-        s.enrollmentId.toLowerCase().includes(term) ||
-        seedFullName(s).toLowerCase().includes(term),
-    ).map((s) => toCatalogItem(s));
+        s.active &&
+        (!term ||
+          s.enrollmentId.toLowerCase().includes(term) ||
+          seedFullName(s).toLowerCase().includes(term)),
+    ).map(seedToCatalogItem);
     return page(matches);
   }
 
@@ -516,6 +518,11 @@ function buildFromSurvey(
   for (const response of enrolled) {
     const student = findStudent(response.studentId);
     if (!student) continue;
+    // Dado de baja después de responder: se avisa pero se conserva en el grupo; el
+    // coordinador decide si lo quita en la edición (HU-58).
+    if (!student.active) {
+      warnings.push({ code: 'STUDENT_INACTIVE', enrollmentId: student.enrollmentId });
+    }
     const baseGroup = baseGroupForTerm(response.academicTerm);
 
     for (const ueaId of response.ueaIds) {
@@ -621,28 +628,6 @@ function hasRoom(group: TrimestralGroup, cupo: string | null, extra = 1): boolea
   if (cupo === null || cupo === '*') return true;
   const limit = Number(cupo);
   return Number.isNaN(limit) || group.students.length + extra <= limit;
-}
-
-function toCatalogItem(seed: EnrolledStudentSeed): StudentCatalogItem {
-  return {
-    id: seed.id,
-    userId: 900 + seed.id,
-    active: true,
-    enrollmentId: seed.enrollmentId,
-    email: `${seed.enrollmentId}@uam.mx`,
-    graduateProgramId: 1,
-    firstName: seed.firstName,
-    firstLastName: seed.firstLastName,
-    secondLastName: seed.secondLastName,
-    nationality: 'Mexicana',
-    birthDate: '1998-01-01',
-    phone: '5500000000',
-    undergraduateDegree: 'Computación',
-    lastDegreeObtained: 'LICENCIATURA',
-    programType: seed.programType,
-    admissionDate: '2024-09-01',
-    admissionTerm: seed.admissionTerm,
-  };
 }
 
 function page<T>(content: T[]): PageResponse<T> {

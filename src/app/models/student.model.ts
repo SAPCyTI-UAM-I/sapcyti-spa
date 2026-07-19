@@ -67,7 +67,12 @@ export interface UpdateStudentRequest {
   lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
-  admissionTerm: string;
+  /**
+   * HU-56: opcional en la edición para no obligar a inventar el dato de un alumno
+   * histórico al que solo se le corrige otro campo. La api-spec todavía lo declara
+   * obligatorio en `PUT /students/{id}`; ver la nota de diseño de 2026-07-19.
+   */
+  admissionTerm?: string;
   active: boolean;
 }
 

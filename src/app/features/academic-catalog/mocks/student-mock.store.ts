@@ -2,6 +2,10 @@ import { Injectable, inject } from '@angular/core';
 
 import { EnrollmentHistoryEntry, PageResponse } from '../../../models';
 import {
+  ENROLLED_STUDENTS_SEED,
+  seedToCatalogItem,
+} from '../../../shared/mocks/enrolled-students.mock-data';
+import {
   RegisterStudentRequest,
   RegisterStudentResponse,
   StudentCatalogItem,
@@ -22,65 +26,8 @@ import { StudentProgramMockStore } from './student-program-mock.store';
 export class StudentMockStore {
   private readonly programMockStore = inject(StudentProgramMockStore);
 
-  private students: StudentCatalogItem[] = [
-    {
-      id: 1,
-      userId: 101,
-      enrollmentId: '223300456',
-      email: 'ana.garcia@uam.mx',
-      graduateProgramId: 1,
-      firstName: 'Ana',
-      firstLastName: 'García',
-      secondLastName: 'López',
-      nationality: 'Mexicana',
-      birthDate: '1998-04-12',
-      phone: '5512345678',
-      phoneExtension: '101',
-      undergraduateDegree: 'Computación',
-      lastDegreeObtained: 'LICENCIATURA',
-      programType: 'MAESTRIA',
-      admissionDate: '2025-09-01',
-      admissionTerm: '25O',
-      active: true,
-    },
-    {
-      id: 2,
-      userId: 102,
-      enrollmentId: '223300457',
-      email: 'roberto.jimenez@uam.mx',
-      graduateProgramId: 1,
-      firstName: 'Roberto',
-      firstLastName: 'Jiménez',
-      nationality: 'Mexicana',
-      birthDate: '1996-07-22',
-      phone: '5587654321',
-      undergraduateDegree: 'Matemáticas',
-      lastDegreeObtained: 'LICENCIATURA',
-      programType: 'DOCTORADO',
-      admissionDate: '2024-09-01',
-      admissionTerm: '24O',
-      active: false,
-    },
-    {
-      id: 3,
-      userId: 103,
-      enrollmentId: '223300458',
-      email: 'maria.lopez@uam.mx',
-      graduateProgramId: 1,
-      firstName: 'María',
-      firstLastName: 'López',
-      secondLastName: 'Hernández',
-      nationality: 'Mexicana',
-      birthDate: '1997-03-08',
-      phone: '5599887766',
-      undergraduateDegree: 'Computación',
-      lastDegreeObtained: 'MAESTRIA',
-      programType: 'MAESTRIA',
-      admissionDate: '2023-09-01',
-      admissionTerm: '23O',
-      active: true,
-    },
-  ];
+  // Padrón compartido: el catálogo, el sondeo y la planeación describen a la misma gente.
+  private students: StudentCatalogItem[] = ENROLLED_STUDENTS_SEED.map(seedToCatalogItem);
 
   listStudents(query: StudentCatalogQuery): PageResponse<StudentCatalogItem> {
     const search = normalizeSearch(query.search ?? '');

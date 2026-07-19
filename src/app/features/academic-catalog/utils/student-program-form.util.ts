@@ -62,7 +62,7 @@ export function buildUpdateStudentRequest(value: StudentEditFormValue): UpdateSt
     lastDegreeObtained: value.lastDegreeObtained,
     programType: value.programType,
     admissionDate: value.admissionDate,
-    admissionTerm: value.admissionTerm.trim().toUpperCase(),
+    admissionTerm: value.admissionTerm.trim().toUpperCase() || undefined,
     active: value.active,
   };
 }

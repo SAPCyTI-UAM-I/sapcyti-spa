@@ -139,7 +139,9 @@ export class StudentEditComponent {
       lastDegreeObtained: ['' as DegreeLevel, Validators.required],
       programType: ['MAESTRIA' as ProgramType, Validators.required],
       admissionDate: ['', Validators.required],
-      admissionTerm: ['', [Validators.required, Validators.pattern(TERM_PATTERN)]],
+      // Opcional al editar: un alumno histórico puede no tenerlo y no se le inventa.
+      // Si se captura, el formato sí se valida.
+      admissionTerm: ['', [Validators.pattern(TERM_PATTERN)]],
       // active se conserva y se envía tal como está en BD; la baja lógica no se edita desde este formulario
       active: [true, Validators.required],
 
