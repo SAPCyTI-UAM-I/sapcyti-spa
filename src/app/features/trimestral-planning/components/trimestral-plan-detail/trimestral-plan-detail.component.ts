@@ -6,6 +6,7 @@ import {
   inject,
   OnInit,
   signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -63,6 +64,9 @@ export class TrimestralPlanDetailComponent implements OnInit {
 
   readonly showRegenerateDialog = signal(false);
   readonly showBackToDraftDialog = signal(false);
+  readonly showUnsavedDialog = signal(false);
+
+  private readonly editor = viewChild(TrimestralPlanEditorComponent);
 
   readonly editable = computed(() => {
     const current = this.plan();
@@ -107,7 +111,20 @@ export class TrimestralPlanDetailComponent implements OnInit {
     };
   }
 
+  /**
+   * Terminar recarga el plan y reconstruye el formulario, así que unas ediciones sin
+   * guardar se perderían en silencio. Se confirma antes en vez de bloquear.
+   */
   finish(): void {
+    if (this.editor()?.hasUnsavedChanges()) {
+      this.showUnsavedDialog.set(true);
+      return;
+    }
+    this.changeStatus('TERMINADA');
+  }
+
+  confirmFinishDiscardingChanges(): void {
+    this.showUnsavedDialog.set(false);
     this.changeStatus('TERMINADA');
   }
 

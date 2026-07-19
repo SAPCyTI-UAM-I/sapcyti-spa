@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -6,8 +7,9 @@ import { MessageService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 
 import { mockApiError } from '../../../../core/errors/testing/mock-api-error.util';
-import { TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
+import { SCHEDULE_DAYS, TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
+import { TrimestralPlanEditorComponent } from '../trimestral-plan-editor/trimestral-plan-editor.component';
 import { TrimestralPlanDetailComponent } from './trimestral-plan-detail.component';
 
 function plan(
@@ -87,6 +89,53 @@ describe('TrimestralPlanDetailComponent', () => {
 
     expect(stub.changeStatus).toHaveBeenCalledWith(1, { status: 'TERMINADA' });
     expect(component.editable()).toBe(false);
+  });
+
+  it('does not finish silently when the editor has unsaved group changes', async () => {
+    const { fixture, component, stub } = await setup({
+      get: vi.fn(() =>
+        of(
+          plan('BORRADOR', {
+            groups: [
+              {
+                id: 10,
+                ueaId: 1,
+                clave: '2156024',
+                nombre: 'REDES',
+                tipoUea: 'OBLIGATORIA',
+                grupo: 'CO43',
+                cupo: '15',
+                professorId: null,
+                employeeNumber: null,
+                professorName: null,
+                schedule: SCHEDULE_DAYS.map((day) => ({
+                  day,
+                  start: null,
+                  end: null,
+                  lab: false,
+                })),
+                obs: null,
+                students: [],
+              },
+            ],
+          }),
+        ),
+      ),
+    });
+
+    // El coordinador captura un horario y pulsa Terminar sin guardar.
+    const editor = fixture.debugElement.query(By.directive(TrimestralPlanEditorComponent))
+      .componentInstance as TrimestralPlanEditorComponent;
+    editor.groups.at(0).controls.grupo.setValue('CO43X');
+    expect(editor.hasUnsavedChanges()).toBe(true);
+
+    component.finish();
+
+    expect(stub.changeStatus).not.toHaveBeenCalled();
+    expect(component.showUnsavedDialog()).toBe(true);
+
+    component.confirmFinishDiscardingChanges();
+    expect(stub.changeStatus).toHaveBeenCalledWith(1, { status: 'TERMINADA' });
   });
 
   it('only regenerates after the confirmation dialog', async () => {

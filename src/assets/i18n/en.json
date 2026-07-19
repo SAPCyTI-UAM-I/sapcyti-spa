@@ -921,7 +921,8 @@
       "OUTDATED": "Outdated",
       "REGENERATE_WARNING": "Regenerating discards every manual edit and rebuilds the plan from the survey.",
       "SAVED": "Groups saved",
-      "TITLE": "Trimestral plan {{term}}"
+      "TITLE": "Trimestral plan {{term}}",
+      "UNSAVED_WARNING": "You have unsaved group changes. Finishing now will discard them. Continue?"
     },
     "ERRORS": {
       "already_exists": "A plan already exists for that term.",

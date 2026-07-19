@@ -921,7 +921,8 @@
       "OUTDATED": "Desactualizado",
       "REGENERATE_WARNING": "Regenerar descarta todas las ediciones manuales y reconstruye la planeación desde la encuesta.",
       "SAVED": "Grupos guardados",
-      "TITLE": "Planeación trimestral {{term}}"
+      "TITLE": "Planeación trimestral {{term}}",
+      "UNSAVED_WARNING": "Tienes cambios en los grupos sin guardar. Si terminas ahora se perderán. ¿Continuar?"
     },
     "ERRORS": {
       "already_exists": "Ya existe una planeación para ese trimestre.",

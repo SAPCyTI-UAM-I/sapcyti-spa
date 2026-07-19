@@ -145,6 +145,30 @@
 </p-dialog>
 
 <p-dialog
+  [visible]="showUnsavedDialog()"
+  (visibleChange)="showUnsavedDialog.set($event)"
+  [modal]="true"
+  [header]="'TRIMESTRAL_PLANNING.ACTIONS.FINISH' | translate"
+>
+  <p class="text-body-md pb-md">
+    {{ 'TRIMESTRAL_PLANNING.DETAIL.UNSAVED_WARNING' | translate }}
+  </p>
+  <div class="gap-sm flex justify-end">
+    <p-button
+      severity="secondary"
+      variant="outlined"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="showUnsavedDialog.set(false)"
+    />
+    <p-button
+      [label]="'TRIMESTRAL_PLANNING.ACTIONS.FINISH' | translate"
+      (onClick)="confirmFinishDiscardingChanges()"
+      data-testid="confirm-finish-unsaved"
+    />
+  </div>
+</p-dialog>
+
+<p-dialog
   [visible]="showBackToDraftDialog()"
   (visibleChange)="showBackToDraftDialog.set($event)"
   [modal]="true"

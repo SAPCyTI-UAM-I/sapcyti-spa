@@ -82,11 +82,21 @@ export class TrimestralPlanEditorComponent {
   readonly ueaOptions = this.people.ueas;
   readonly peopleLoading = this.people.loading;
 
+  /**
+   * Ediciones capturadas que aún no se guardan. El detalle lo consulta antes de
+   * Terminar: al cambiar de estado el plan se recarga y el formulario se reconstruye,
+   * así que sin esta guarda los cambios se perderían en silencio.
+   */
+  readonly hasUnsavedChanges = signal(false);
+
   readonly editable = computed(() => isEditable(this.plan().status));
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
 
   constructor() {
     effect(() => this.buildForm(this.plan()));
+    this.groups.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.hasUnsavedChanges.set(true));
     this.people.loadProfessors();
     this.people.loadStudents();
     this.people.loadUeas();
@@ -153,6 +163,7 @@ export class TrimestralPlanEditorComponent {
       )
       .subscribe({
         next: (detail) => {
+          this.hasUnsavedChanges.set(false);
           this.messages.add({
             severity: 'success',
             summary: this.translate.instant('TRIMESTRAL_PLANNING.DETAIL.SAVED'),
@@ -172,6 +183,8 @@ export class TrimestralPlanEditorComponent {
     this.studentsByIndex.set(plan.groups.map((group) => [...group.students]));
     this.submitted.set(false);
     this.error.set(null);
+    // Se limpia al final: clear()/push() emiten valueChanges de forma síncrona.
+    this.hasUnsavedChanges.set(false);
     if (!isEditable(plan.status)) {
       this.groups.disable({ emitEvent: false });
     }
