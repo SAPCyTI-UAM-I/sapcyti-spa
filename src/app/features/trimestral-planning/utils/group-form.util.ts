@@ -32,6 +32,7 @@ export type GroupFormGroup = FormGroup<{
   ueaId: FormControl<number>;
   clave: FormControl<string>;
   nombre: FormControl<string>;
+  tipoUea: FormControl<string>;
   grupo: FormControl<string>;
   cupo: FormControl<string>;
   professorId: FormControl<number | null>;
@@ -79,6 +80,7 @@ export function buildGroupFormGroup(
     // Catalog snapshots: kept in the form only to render them; never sent back.
     clave: fb.control(group.clave),
     nombre: fb.control(group.nombre),
+    tipoUea: fb.control(group.tipoUea),
     grupo: fb.control(group.grupo ?? '', [Validators.maxLength(10)]),
     cupo: fb.control(group.cupo ?? '', [Validators.pattern(CUPO_PATTERN)]),
     professorId: fb.control<number | null>(group.professorId),

@@ -937,6 +937,7 @@
     "GROUP": {
       "ADD_STUDENT": "Agregar alumno…",
       "CUPO": "Cupo",
+      "DECLARED_TERM": "trim. {{term}}",
       "END": "Fin",
       "GRUPO": "Grupo",
       "LAB": "LAB",
@@ -966,6 +967,8 @@
       "TITLE": "Planeación trimestral"
     },
     "NEW": {
+      "ALREADY_PLANNED": "ya tiene planeación",
+      "NEWER_PENDING": "Hay una encuesta cerrada más reciente ({{term}}) que todavía no tiene planeación. Verifica que sea esta la que quieres generar.",
       "NO_CLOSED_SURVEYS": "No hay encuestas cerradas de las cuales generar una planeación.",
       "PICK_SURVEY": "Elige la encuesta de la que se generará la planeación",
       "RESPONSES": "{{count}} respuestas",

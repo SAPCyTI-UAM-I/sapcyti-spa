@@ -29,15 +29,22 @@ const SURVEYS = [
 ];
 
 describe('TrimestralPlanNewComponent', () => {
-  async function setup(options: { surveyId?: string; generate?: ReturnType<typeof vi.fn> } = {}) {
+  async function setup(
+    options: {
+      surveyId?: string;
+      generate?: ReturnType<typeof vi.fn>;
+      plans?: { term: string }[];
+    } = {},
+  ) {
     const generate = options.generate ?? vi.fn(() => of({ id: 7 }));
+    const list = vi.fn(() => of(options.plans ?? []));
     await TestBed.configureTestingModule({
       imports: [TrimestralPlanNewComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
         provideRouter([]),
         {
           provide: TrimestralPlanService,
-          useValue: { listSurveys: vi.fn(() => of(SURVEYS)), generate },
+          useValue: { listSurveys: vi.fn(() => of(SURVEYS)), list, generate },
         },
         {
           provide: ActivatedRoute,
@@ -75,6 +82,30 @@ describe('TrimestralPlanNewComponent', () => {
 
     expect(generate).toHaveBeenCalledWith({ surveyId: 1 });
     expect(navigate).toHaveBeenCalledWith(['/trimestral-planning', 7]);
+  });
+
+  it('warns when a more recent closed survey still has no plan (HU-58)', async () => {
+    // 26I y 25O están cerradas y sin plan; elegir la vieja debe avisar.
+    const { fixture } = await setup();
+    fixture.componentInstance.select(3);
+
+    expect(fixture.componentInstance.staleSelection()).toBe('26I');
+  });
+
+  it('does not warn when the newest pending survey is the selected one', async () => {
+    const { fixture } = await setup();
+    fixture.componentInstance.select(1);
+
+    expect(fixture.componentInstance.staleSelection()).toBeNull();
+  });
+
+  it('ignores already-planned surveys when looking for a more recent one', async () => {
+    // 26I ya tiene planeación, así que 25O es la más reciente pendiente.
+    const { fixture } = await setup({ plans: [{ term: '26I' }] });
+    fixture.componentInstance.select(3);
+
+    expect(fixture.componentInstance.staleSelection()).toBeNull();
+    expect(fixture.componentInstance.hasPlan(SURVEYS[0]!)).toBe(true);
   });
 
   it('maps ANNUAL_PLAN_REQUIRED to an inline domain error', async () => {

@@ -12,10 +12,10 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { SurveyResponse } from '../../../../models';
+import { SurveyResponse, TrimestralPlanSummary } from '../../../../models';
 import { LoadStateComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
@@ -50,6 +50,7 @@ export class TrimestralPlanNewComponent implements OnInit {
   readonly selectedId = signal<number | null>(null);
 
   private readonly surveys = signal<SurveyResponse[]>([]);
+  private readonly plans = signal<TrimestralPlanSummary[]>([]);
 
   /** Closed surveys only, most recent term first. */
   readonly closedSurveys = computed(() =>
@@ -57,6 +58,27 @@ export class TrimestralPlanNewComponent implements OnInit {
       .filter((survey) => survey.status === 'CERRADO')
       .sort((a, b) => compareTermsDesc(a.term, b.term)),
   );
+
+  private readonly plannedTerms = computed(() => new Set(this.plans().map((plan) => plan.term)));
+
+  /** Generating from one of these would 409; the list shows them as already planned. */
+  hasPlan(survey: SurveyResponse): boolean {
+    return this.plannedTerms().has(survey.term);
+  }
+
+  /**
+   * HU-58 — al elegir una encuesta vieja teniendo una cerrada más reciente todavía sin
+   * planeación, se avisa para no generar la equivocada por descuido. No bloquea.
+   */
+  readonly staleSelection = computed(() => {
+    const selected = this.selectedId();
+    if (selected === null) return null;
+
+    const pending = this.closedSurveys().filter((survey) => !this.hasPlan(survey));
+    const chosen = pending.find((survey) => survey.id === selected);
+    const newest = pending[0];
+    return chosen && newest && newest.id !== chosen.id ? newest.term : null;
+  });
 
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
 
@@ -72,16 +94,20 @@ export class TrimestralPlanNewComponent implements OnInit {
   load(): void {
     this.loading.set(true);
     this.loadError.set(false);
-    this.service
-      .listSurveys()
+    // Los planes existentes marcan qué encuestas ya tienen planeación (HU-58).
+    forkJoin({ surveys: this.service.listSurveys(), plans: this.service.list() })
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (surveys) => this.surveys.set(surveys),
+        next: ({ surveys, plans }) => {
+          this.surveys.set(surveys);
+          this.plans.set(plans);
+        },
         error: () => {
           this.surveys.set([]);
+          this.plans.set([]);
           this.loadError.set(true);
         },
       });

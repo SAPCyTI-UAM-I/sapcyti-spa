@@ -42,6 +42,9 @@ export class GroupCardComponent {
   readonly removeStudent = output<number>();
   readonly addStudent = output<number>();
 
+  /** Snapshot del catálogo; es una de las columnas del formato oficial (HU-58). */
+  readonly tipoUea = computed(() => this.form().controls.tipoUea.value);
+
   readonly professorOptions = this.people.professors;
   readonly studentOptions = this.people.students;
   readonly peopleLoading = this.people.loading;

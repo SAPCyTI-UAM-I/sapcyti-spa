@@ -937,6 +937,7 @@
     "GROUP": {
       "ADD_STUDENT": "Add student…",
       "CUPO": "Quota",
+      "DECLARED_TERM": "term {{term}}",
       "END": "End",
       "GRUPO": "Group",
       "LAB": "LAB",
@@ -966,6 +967,8 @@
       "TITLE": "Trimestral planning"
     },
     "NEW": {
+      "ALREADY_PLANNED": "already planned",
+      "NEWER_PENDING": "There is a more recent closed survey ({{term}}) with no plan yet. Make sure this is the one you meant to generate.",
       "NO_CLOSED_SURVEYS": "There are no closed surveys to generate a plan from.",
       "PICK_SURVEY": "Choose the survey the plan will be generated from",
       "RESPONSES": "{{count}} responses",

@@ -36,10 +36,24 @@
             <span class="text-caption text-text-secondary">
               {{ 'TRIMESTRAL_PLANNING.NEW.RESPONSES' | translate: { count: survey.responseCount } }}
             </span>
+            @if (hasPlan(survey)) {
+              <span class="text-caption text-text-secondary italic">
+                {{ 'TRIMESTRAL_PLANNING.NEW.ALREADY_PLANNED' | translate }}
+              </span>
+            }
           </label>
         }
       </fieldset>
     </app-load-state>
+
+    <!-- HU-58: evitar generar la vieja por error -->
+    @if (staleSelection(); as newestTerm) {
+      <p-message
+        severity="warn"
+        data-testid="stale-selection-warning"
+        [text]="'TRIMESTRAL_PLANNING.NEW.NEWER_PENDING' | translate: { term: newestTerm }"
+      />
+    }
 
     @if (error(); as planError) {
       <p-message severity="error" [text]="planError | domainError: errorScope" />

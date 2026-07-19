@@ -2,6 +2,9 @@
   <summary class="p-md gap-sm flex cursor-pointer flex-wrap items-center">
     <span class="text-body-md font-medium">{{ form().controls.clave.value }}</span>
     <span class="text-caption text-text-secondary">{{ form().controls.nombre.value }}</span>
+    @if (tipoUea()) {
+      <span class="text-caption text-text-secondary">· {{ tipoUea() }}</span>
+    }
     <span class="text-body-md">
       {{ form().controls.grupo.value || ('TRIMESTRAL_PLANNING.GROUP.NO_LETTER' | translate) }}
     </span>
@@ -70,6 +73,15 @@
             <li class="gap-sm flex items-center">
               <span class="text-body-md">{{ student.fullName }}</span>
               <span class="text-caption text-text-secondary">{{ student.enrollmentId }}</span>
+              <!-- Trimestre que el alumno declaró inscribir; vacío si lo agregaron a mano. -->
+              @if (student.academicTerm) {
+                <span class="text-caption text-text-secondary">
+                  {{
+                    'TRIMESTRAL_PLANNING.GROUP.DECLARED_TERM'
+                      | translate: { term: student.academicTerm }
+                  }}
+                </span>
+              }
               @if (student.source === 'MANUAL') {
                 <span class="text-caption text-text-secondary italic">
                   {{ 'TRIMESTRAL_PLANNING.GROUP.MANUAL' | translate }}
