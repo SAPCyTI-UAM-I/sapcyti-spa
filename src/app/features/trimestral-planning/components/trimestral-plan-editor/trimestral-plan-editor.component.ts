@@ -21,7 +21,7 @@ import { finalize } from 'rxjs';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { GroupStudent, TrimestralPlanDetail } from '../../../../models';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
-import { PeopleSearchController } from '../../services/people-search.controller';
+import { PlanPickersController } from '../../services/plan-pickers.controller';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
 import {
   buildGroupFormGroup,
@@ -54,13 +54,13 @@ import { GroupCardComponent } from '../group-card/group-card.component';
     GroupCardComponent,
     DomainErrorMessagePipe,
   ],
-  providers: [PeopleSearchController],
+  providers: [PlanPickersController],
   templateUrl: './trimestral-plan-editor.component.html',
 })
 export class TrimestralPlanEditorComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly service = inject(TrimestralPlanService);
-  private readonly people = inject(PeopleSearchController);
+  private readonly people = inject(PlanPickersController);
   private readonly messages = inject(MessageService);
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
@@ -138,8 +138,10 @@ export class TrimestralPlanEditorComponent {
   addGroup(ueaId: number | null): void {
     if (ueaId === null) return;
 
-    const [clave, nombre] = this.people.ueaLabel(ueaId).split(' — ');
-    this.groups.push(buildGroupFormGroup(this.fb, emptyGroup(ueaId, clave ?? '', nombre ?? '')));
+    const uea = this.people.ueaById(ueaId);
+    if (!uea) return;
+
+    this.groups.push(buildGroupFormGroup(this.fb, emptyGroup(uea)));
     this.studentsByIndex.update((all) => [...all, []]);
   }
 

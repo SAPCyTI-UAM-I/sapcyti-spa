@@ -15,6 +15,7 @@ import {
   SCHEDULE_DAYS,
   ScheduleDay,
   TrimestralGroup,
+  UeaCatalogItem,
 } from '../../../models';
 
 /** Same pattern as `AnnualPlanEntry.GROUP_QUOTA_PATTERN`: a positive integer or `*`. */
@@ -98,14 +99,17 @@ export function buildGroupFormGroup(
   });
 }
 
-/** An empty group the coordinator fills in from scratch (`id: null` = new). */
-export function emptyGroup(ueaId: number, clave: string, nombre: string): TrimestralGroup {
+/**
+ * Grupo nuevo capturado desde cero. Nace con `id: 0`, que `buildSaveGroupsRequest`
+ * traduce al `id: null` que la API espera; los snapshots salen del catálogo.
+ */
+export function emptyGroup(uea: UeaCatalogItem): TrimestralGroup {
   return {
     id: 0,
-    ueaId,
-    clave,
-    nombre,
-    tipoUea: '',
+    ueaId: uea.id,
+    clave: uea.clave,
+    nombre: uea.nombre,
+    tipoUea: uea.tipo,
     grupo: null,
     cupo: null,
     professorId: null,

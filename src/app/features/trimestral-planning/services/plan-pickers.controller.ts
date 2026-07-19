@@ -17,10 +17,10 @@ const DEBOUNCE_MS = 300;
  * `ProfessorOptionsController` in academic-catalog, re-implemented here because features
  * must not import each other; it drops the student-program pinning that feature needs.
  *
- * Provided per component (`providers: [PeopleSearchController]`), never in root.
+ * Provided per component (`providers: [PlanPickersController]`), never in root.
  */
 @Injectable()
-export class PeopleSearchController {
+export class PlanPickersController {
   private readonly service = inject(TrimestralPlanService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -28,6 +28,7 @@ export class PeopleSearchController {
   readonly students = signal<PersonOption[]>([]);
   /** Catálogo activo para elegir la UEA de un grupo nuevo (HU-59). */
   readonly ueas = signal<PersonOption[]>([]);
+  private readonly ueaCatalog = signal<UeaCatalogItem[]>([]);
   readonly loading = signal(false);
 
   private timeout?: ReturnType<typeof setTimeout>;
@@ -82,14 +83,23 @@ export class PeopleSearchController {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (page) => this.ueas.set(page.content.map(ueaOption)),
-        error: () => this.ueas.set([]),
+        next: (page) => {
+          this.ueaCatalog.set(page.content);
+          this.ueas.set(page.content.map(ueaOption));
+        },
+        error: () => {
+          this.ueaCatalog.set([]);
+          this.ueas.set([]);
+        },
       });
   }
 
-  /** El label del catálogo se reusa como snapshot `clave — nombre` del grupo nuevo. */
-  ueaLabel(ueaId: number): string {
-    return this.ueas().find((option) => option.value === ueaId)?.label ?? '';
+  /**
+   * Datos crudos de la UEA elegida. Se guardan aparte de las opciones para no tener que
+   * reconstruirlos partiendo el label: el label es presentación, no una fuente de datos.
+   */
+  ueaById(ueaId: number): UeaCatalogItem | undefined {
+    return this.ueaCatalog().find((uea) => uea.id === ueaId);
   }
 
   private debounce(run: () => void): void {

@@ -1,5 +1,5 @@
 import { CatalogTagSeverity } from '../../../core/theme/design-tokens';
-import { ScheduleDay, TrimestralPlanStatus } from '../../../models';
+import { TrimestralPlanStatus } from '../../../models';
 
 const STATUS_SEVERITY: Record<TrimestralPlanStatus, CatalogTagSeverity> = {
   BORRADOR: 'warn',
@@ -15,15 +15,11 @@ export function isEditable(status: TrimestralPlanStatus): boolean {
   return status === 'BORRADOR';
 }
 
-export function dayLabelKey(day: ScheduleDay): string {
-  return `TRIMESTRAL_PLANNING.DAYS.${day}`;
-}
-
 /**
  * Chronological rank of a term, most recent first: within a year the order is
  * Invierno → Primavera → Otoño. Used to sort plans and surveys client-side.
  */
-export function termRank(term: string): number {
+function termRank(term: string): number {
   const year = Number(term.slice(0, 2));
   const period = term.charAt(2).toUpperCase();
   const withinYear = period === 'I' ? 0 : period === 'P' ? 1 : 2;

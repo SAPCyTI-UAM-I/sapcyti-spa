@@ -5,7 +5,7 @@
 
   @for (day of schedule().controls; track day.controls.day.value) {
     <div class="gap-sm flex flex-wrap items-end" [formGroup]="day">
-      <span class="text-body-md w-24">
+      <span class="text-body-md w-[6rem]">
         {{ 'TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate }}
       </span>
 
@@ -16,7 +16,7 @@
         <input
           type="time"
           formControlName="start"
-          class="border-outline p-xs rounded border"
+          class="border-outline p-xs rounded-md border"
           [attr.disabled]="editable() ? null : ''"
         />
       </label>
@@ -28,7 +28,7 @@
         <input
           type="time"
           formControlName="end"
-          class="border-outline p-xs rounded border"
+          class="border-outline p-xs rounded-md border"
           [attr.disabled]="editable() ? null : ''"
         />
       </label>
@@ -46,7 +46,7 @@
       </div>
 
       @if (day.errors?.['startAfterEnd']) {
-        <span class="text-caption text-danger pb-xs">
+        <span class="text-caption text-error pb-xs">
           {{ 'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END' | translate }}
         </span>
       }

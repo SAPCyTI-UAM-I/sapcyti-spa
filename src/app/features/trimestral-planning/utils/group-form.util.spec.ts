@@ -1,6 +1,6 @@
 import { FormBuilder, NonNullableFormBuilder } from '@angular/forms';
 
-import { SCHEDULE_DAYS, TrimestralGroup } from '../../../models';
+import { SCHEDULE_DAYS, TrimestralGroup, UeaCatalogItem } from '../../../models';
 import {
   buildGroupFormGroup,
   buildSaveGroupsRequest,
@@ -10,6 +10,19 @@ import {
 } from './group-form.util';
 
 const fb: NonNullableFormBuilder = new FormBuilder().nonNullable;
+
+const uea: UeaCatalogItem = {
+  id: 7,
+  clave: '2156027',
+  nombre: 'INTELIGENCIA ARTIFICIAL',
+  tipo: 'OPTATIVA',
+  modalidad: 'MIXTA',
+  horasTeoria: 3,
+  horasPractica: 3,
+  tipoFormacion: 'BASICA',
+  creditos: 9,
+  active: true,
+};
 
 const group: TrimestralGroup = {
   id: 12,
@@ -67,9 +80,12 @@ describe('group-form.util', () => {
   });
 
   it('sends id null for a group created in this session', () => {
-    const form = buildGroupFormGroup(fb, emptyGroup(7, '2156027', 'IA'));
+    const form = buildGroupFormGroup(fb, emptyGroup(uea));
 
     expect(buildSaveGroupsRequest([form]).groups[0]!.id).toBeNull();
+    // Los snapshots del catálogo se copian tal cual, no se parsean de una etiqueta.
+    expect(form.controls.clave.value).toBe('2156027');
+    expect(form.controls.tipoUea.value).toBe('OPTATIVA');
   });
 
   it('rejects an end time before the start time', () => {

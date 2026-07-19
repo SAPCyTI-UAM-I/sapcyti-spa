@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
@@ -7,7 +16,7 @@ import { Select } from 'primeng/select';
 
 import { GroupStudent } from '../../../../models';
 import { FieldErrorComponent } from '../../../../shared/components';
-import { PeopleSearchController } from '../../services/people-search.controller';
+import { PlanPickersController } from '../../services/plan-pickers.controller';
 import { GroupFormGroup } from '../../utils/group-form.util';
 import { ScheduleSubformComponent } from '../schedule-subform/schedule-subform.component';
 
@@ -30,7 +39,7 @@ import { ScheduleSubformComponent } from '../schedule-subform/schedule-subform.c
   templateUrl: './group-card.component.html',
 })
 export class GroupCardComponent {
-  private readonly people = inject(PeopleSearchController);
+  private readonly people = inject(PlanPickersController);
 
   readonly form = input.required<GroupFormGroup>();
   /** Snapshots of the students currently in the group, for names/matrículas. */
@@ -49,13 +58,31 @@ export class GroupCardComponent {
   readonly studentOptions = this.people.students;
   readonly peopleLoading = this.people.loading;
 
+  /**
+   * Los valores de un `FormControl` no son señales, así que un `computed` que los lee
+   * no se recalcula al teclear. Se bombea una revisión desde `valueChanges`, mismo
+   * patrón que `annual-plan-grid` y `field-error`.
+   */
+  private readonly cupoRevision = signal(0);
+
   /** Non-blocking notice: exceeding the cupo warns, it never blocks (HU-59). */
   readonly overCapacity = computed(() => {
+    this.cupoRevision();
     const cupo = this.form().controls.cupo.value.trim();
     if (!cupo || cupo === '*') return false;
     const limit = Number(cupo);
     return !Number.isNaN(limit) && this.students().length > limit;
   });
+
+  constructor() {
+    // El input `form` puede cambiar de instancia: se resuscribe con cada una.
+    effect((onCleanup) => {
+      const subscription = this.form().controls.cupo.valueChanges.subscribe(() =>
+        this.cupoRevision.update((value) => value + 1),
+      );
+      onCleanup(() => subscription.unsubscribe());
+    });
+  }
 
   onProfessorFilter(event: { filter?: string | null }): void {
     this.people.onProfessorFilter(event.filter);
