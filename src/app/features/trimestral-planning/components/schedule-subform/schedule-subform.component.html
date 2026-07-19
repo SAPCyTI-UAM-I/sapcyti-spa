@@ -1,0 +1,55 @@
+<fieldset class="gap-sm flex flex-col">
+  <legend class="text-body-md pb-xs font-medium">
+    {{ 'TRIMESTRAL_PLANNING.GROUP.SCHEDULE' | translate }}
+  </legend>
+
+  @for (day of schedule().controls; track day.controls.day.value) {
+    <div class="gap-sm flex flex-wrap items-end" [formGroup]="day">
+      <span class="text-body-md w-24">
+        {{ 'TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate }}
+      </span>
+
+      <label class="gap-xs flex flex-col">
+        <span class="text-caption text-text-secondary">
+          {{ 'TRIMESTRAL_PLANNING.GROUP.START' | translate }}
+        </span>
+        <input
+          type="time"
+          formControlName="start"
+          class="border-outline p-xs rounded border"
+          [attr.disabled]="editable() ? null : ''"
+        />
+      </label>
+
+      <label class="gap-xs flex flex-col">
+        <span class="text-caption text-text-secondary">
+          {{ 'TRIMESTRAL_PLANNING.GROUP.END' | translate }}
+        </span>
+        <input
+          type="time"
+          formControlName="end"
+          class="border-outline p-xs rounded border"
+          [attr.disabled]="editable() ? null : ''"
+        />
+      </label>
+
+      <div class="gap-xs pb-xs flex items-center">
+        <p-checkbox
+          [inputId]="'lab-' + day.controls.day.value"
+          formControlName="lab"
+          [binary]="true"
+          [disabled]="!editable()"
+        />
+        <label [for]="'lab-' + day.controls.day.value" class="text-body-md">
+          {{ 'TRIMESTRAL_PLANNING.GROUP.LAB' | translate }}
+        </label>
+      </div>
+
+      @if (day.errors?.['startAfterEnd']) {
+        <span class="text-caption text-danger pb-xs">
+          {{ 'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END' | translate }}
+        </span>
+      }
+    </div>
+  }
+</fieldset>

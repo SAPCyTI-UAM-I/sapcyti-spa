@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   inject,
   OnInit,
@@ -10,11 +11,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
 import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { PlanWarning, TrimestralPlanDetail } from '../../../../models';
+import { PlanWarning, TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
 import { CatalogTagComponent, LoadStateComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
@@ -23,9 +25,10 @@ import {
   TRIMESTRAL_PLAN_ERROR_I18N_SCOPE,
   TrimestralPlanError,
 } from '../../utils/trimestral-plan-error.util';
-import { statusTagSeverity } from '../../utils/trimestral-plan-status.util';
+import { isEditable, statusTagSeverity } from '../../utils/trimestral-plan-status.util';
+import { TrimestralPlanEditorComponent } from '../trimestral-plan-editor/trimestral-plan-editor.component';
 
-/** HU-58/59/60 — the generated plan: warnings, groups and blank students. */
+/** HU-58/59/60 — the generated plan: warnings, group editor, status actions and export. */
 @Component({
   selector: 'app-trimestral-plan-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,10 +37,12 @@ import { statusTagSeverity } from '../../utils/trimestral-plan-status.util';
     RouterLink,
     TranslatePipe,
     Button,
+    Dialog,
     Message,
     CatalogTagComponent,
     LoadStateComponent,
     DomainErrorMessagePipe,
+    TrimestralPlanEditorComponent,
   ],
   templateUrl: './trimestral-plan-detail.component.html',
 })
@@ -52,6 +57,17 @@ export class TrimestralPlanDetailComponent implements OnInit {
   readonly loading = signal(false);
   readonly loadError = signal(false);
   readonly actionError = signal<TrimestralPlanError | null>(null);
+  readonly changingStatus = signal(false);
+  readonly regenerating = signal(false);
+  readonly exporting = signal(false);
+
+  readonly showRegenerateDialog = signal(false);
+  readonly showBackToDraftDialog = signal(false);
+
+  readonly editable = computed(() => {
+    const current = this.plan();
+    return current !== null && isEditable(current.status);
+  });
 
   readonly statusTagSeverity = statusTagSeverity;
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
@@ -78,6 +94,10 @@ export class TrimestralPlanDetailComponent implements OnInit {
       });
   }
 
+  onSaved(plan: TrimestralPlanDetail): void {
+    this.plan.set(plan);
+  }
+
   /** Interpolation params for `TRIMESTRAL_PLANNING.WARNINGS.{code}`. */
   warningParams(warning: PlanWarning): Record<string, string> {
     return {
@@ -87,7 +107,78 @@ export class TrimestralPlanDetailComponent implements OnInit {
     };
   }
 
-  protected setActionError(error: unknown): void {
-    this.actionError.set(mapTrimestralPlanError(error));
+  finish(): void {
+    this.changeStatus('TERMINADA');
+  }
+
+  /**
+   * Back to BORRADOR is confirmed in the client: the backend does not block it, but an
+   * already delivered Excel stops matching the plan (HU-59).
+   */
+  confirmBackToDraft(): void {
+    this.showBackToDraftDialog.set(false);
+    this.changeStatus('BORRADOR');
+  }
+
+  confirmRegenerate(): void {
+    this.showRegenerateDialog.set(false);
+    if (this.regenerating()) return;
+
+    this.regenerating.set(true);
+    this.actionError.set(null);
+    this.service
+      .regenerate(this.id)
+      .pipe(
+        finalize(() => this.regenerating.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (plan) => this.plan.set(plan),
+        error: (err) => this.actionError.set(mapTrimestralPlanError(err)),
+      });
+  }
+
+  downloadExcel(): void {
+    if (this.exporting()) return;
+
+    this.exporting.set(true);
+    this.actionError.set(null);
+    this.service
+      .export(this.id)
+      .pipe(
+        finalize(() => this.exporting.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (blob) => this.triggerDownload(blob),
+        error: (err) => this.actionError.set(mapTrimestralPlanError(err)),
+      });
+  }
+
+  private changeStatus(status: TrimestralPlanStatus): void {
+    if (this.changingStatus()) return;
+
+    this.changingStatus.set(true);
+    this.actionError.set(null);
+    this.service
+      .changeStatus(this.id, { status })
+      .pipe(
+        finalize(() => this.changingStatus.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (plan) => this.plan.set(plan),
+        error: (err) => this.actionError.set(mapTrimestralPlanError(err)),
+      });
+  }
+
+  // ponytail: descarga única, sin util compartido (igual que annual-plan-detail).
+  private triggerDownload(blob: Blob): void {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `PCYTI ${this.plan()?.term ?? this.id}.xlsx`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 }

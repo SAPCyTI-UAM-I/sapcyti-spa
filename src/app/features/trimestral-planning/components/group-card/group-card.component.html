@@ -1,0 +1,125 @@
+<details class="border-outline bg-surface rounded-xl border" [formGroup]="form()">
+  <summary class="p-md gap-sm flex cursor-pointer flex-wrap items-center">
+    <span class="text-body-md font-medium">{{ form().controls.clave.value }}</span>
+    <span class="text-caption text-text-secondary">{{ form().controls.nombre.value }}</span>
+    <span class="text-body-md">
+      {{ form().controls.grupo.value || ('TRIMESTRAL_PLANNING.GROUP.NO_LETTER' | translate) }}
+    </span>
+    <span class="text-caption text-text-secondary">
+      {{ 'TRIMESTRAL_PLANNING.GROUP.STUDENT_COUNT' | translate: { count: students().length } }}
+    </span>
+    @if (overCapacity()) {
+      <span class="text-caption text-warning">
+        {{ 'TRIMESTRAL_PLANNING.GROUP.OVER_CAPACITY' | translate }}
+      </span>
+    }
+  </summary>
+
+  <div class="p-md gap-md border-outline flex flex-col border-t">
+    <div class="gap-md grid md:grid-cols-3">
+      <label class="gap-xs flex flex-col">
+        <span class="text-body-md font-medium">
+          {{ 'TRIMESTRAL_PLANNING.GROUP.GRUPO' | translate }}
+        </span>
+        <input pInputText formControlName="grupo" maxlength="10" placeholder="CO43" />
+        <app-field-error [control]="form().controls.grupo" [submitted]="submitted()" />
+      </label>
+
+      <label class="gap-xs flex flex-col">
+        <span class="text-body-md font-medium">
+          {{ 'TRIMESTRAL_PLANNING.GROUP.CUPO' | translate }}
+        </span>
+        <input pInputText formControlName="cupo" placeholder="15" />
+        <app-field-error [control]="form().controls.cupo" [submitted]="submitted()" />
+      </label>
+
+      <div class="gap-xs flex flex-col">
+        <label for="professor-{{ form().controls.ueaId.value }}" class="text-body-md font-medium">
+          {{ 'TRIMESTRAL_PLANNING.GROUP.PROFESSOR' | translate }}
+        </label>
+        <p-select
+          inputId="professor-{{ form().controls.ueaId.value }}"
+          formControlName="professorId"
+          [options]="professorOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [filter]="true"
+          [showClear]="true"
+          [loading]="peopleLoading()"
+          [placeholder]="'TRIMESTRAL_PLANNING.GROUP.SEARCH_PROFESSOR' | translate"
+          fluid
+          (onFilter)="onProfessorFilter($event)"
+        />
+      </div>
+    </div>
+
+    <app-schedule-subform [schedule]="form().controls.schedule" [editable]="editable()" />
+
+    <!-- Alumnos del grupo -->
+    <div class="gap-sm flex flex-col">
+      <h3 class="text-body-md font-medium">
+        {{ 'TRIMESTRAL_PLANNING.GROUP.STUDENTS' | translate }}
+      </h3>
+      @if (students().length === 0) {
+        <p class="text-caption text-text-secondary">
+          {{ 'TRIMESTRAL_PLANNING.GROUP.NO_STUDENTS' | translate }}
+        </p>
+      } @else {
+        <ul class="gap-xs flex flex-col">
+          @for (student of students(); track student.studentId) {
+            <li class="gap-sm flex items-center">
+              <span class="text-body-md">{{ student.fullName }}</span>
+              <span class="text-caption text-text-secondary">{{ student.enrollmentId }}</span>
+              @if (student.source === 'MANUAL') {
+                <span class="text-caption text-text-secondary italic">
+                  {{ 'TRIMESTRAL_PLANNING.GROUP.MANUAL' | translate }}
+                </span>
+              }
+              @if (editable()) {
+                <p-button
+                  severity="secondary"
+                  variant="text"
+                  icon="pi pi-times"
+                  [ariaLabel]="'COMMON.ACTIONS.DELETE' | translate"
+                  (onClick)="removeStudent.emit(student.studentId)"
+                />
+              }
+            </li>
+          }
+        </ul>
+      }
+
+      @if (editable()) {
+        <p-select
+          [options]="studentOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [filter]="true"
+          [loading]="peopleLoading()"
+          [placeholder]="'TRIMESTRAL_PLANNING.GROUP.ADD_STUDENT' | translate"
+          (onFilter)="onStudentFilter($event)"
+          (onChange)="onStudentPicked($event.value)"
+        />
+      }
+    </div>
+
+    <label class="gap-xs flex flex-col">
+      <span class="text-body-md font-medium">
+        {{ 'TRIMESTRAL_PLANNING.GROUP.OBS' | translate }}
+      </span>
+      <input pInputText formControlName="obs" />
+    </label>
+
+    @if (editable()) {
+      <div>
+        <p-button
+          severity="danger"
+          variant="outlined"
+          icon="pi pi-trash"
+          [label]="'TRIMESTRAL_PLANNING.ACTIONS.REMOVE_GROUP' | translate"
+          (onClick)="removeGroup.emit()"
+        />
+      </div>
+    }
+  </div>
+</details>

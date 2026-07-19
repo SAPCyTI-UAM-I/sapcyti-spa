@@ -1,0 +1,39 @@
+<div class="gap-md flex flex-col">
+  @if (groups.length === 0) {
+    <p class="text-body-md text-text-secondary">
+      {{ 'TRIMESTRAL_PLANNING.DETAIL.NO_GROUPS' | translate }}
+    </p>
+  }
+
+  @for (group of groups.controls; track group.controls.id.value ?? $index; let i = $index) {
+    <app-group-card
+      [form]="group"
+      [students]="studentsByIndex()[i] ?? []"
+      [editable]="editable()"
+      [submitted]="submitted()"
+      (removeGroup)="removeGroup(i)"
+      (removeStudent)="removeStudentFrom(i, $event)"
+      (addStudent)="addStudentTo(i, $event)"
+    />
+  }
+
+  @if (error(); as saveError) {
+    <p-message severity="error" [text]="saveError | domainError: errorScope" />
+  }
+
+  @if (submitted() && groups.invalid) {
+    <p-message severity="error" [text]="'TRIMESTRAL_PLANNING.DETAIL.INVALID_GROUPS' | translate" />
+  }
+
+  @if (editable()) {
+    <div class="gap-sm flex flex-wrap">
+      <p-button
+        [label]="'TRIMESTRAL_PLANNING.ACTIONS.SAVE' | translate"
+        icon="pi pi-save"
+        [loading]="saving()"
+        (onClick)="save()"
+        data-testid="save-groups"
+      />
+    </div>
+  }
+</div>

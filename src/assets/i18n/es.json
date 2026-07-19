@@ -887,7 +887,9 @@
       "DOWNLOAD": "Descargar Excel",
       "FINISH": "Terminar",
       "GENERATE": "Generar planeación",
-      "REGENERATE": "Regenerar"
+      "REGENERATE": "Regenerar",
+      "REMOVE_GROUP": "Quitar grupo",
+      "SAVE": "Guardar grupos"
     },
     "DAYS": {
       "JUE": "Jueves",
@@ -897,12 +899,16 @@
       "VIE": "Viernes"
     },
     "DETAIL": {
+      "BACK_TO_DRAFT_WARNING": "El Excel que ya entregaste dejará de coincidir con la planeación. ¿Regresar a borrador?",
       "BLANKS": "Inscripción en blanco",
       "BLANKS_HINT": "Estos alumnos no tienen grupo ni letra y no se incluyen en el Excel.",
       "BREADCRUMB": "Planeación",
       "GROUPS": "Grupos",
+      "INVALID_GROUPS": "Revisa los grupos marcados: hay valores inválidos.",
       "NO_GROUPS": "La planeación no tiene grupos.",
       "OUTDATED": "Desactualizado",
+      "REGENERATE_WARNING": "Regenerar descarta todas las ediciones manuales y reconstruye la planeación desde la encuesta.",
+      "SAVED": "Grupos guardados",
       "TITLE": "Planeación trimestral {{term}}"
     },
     "ERRORS": {
@@ -917,9 +923,22 @@
       "validation": "Revisa los datos capturados."
     },
     "GROUP": {
+      "ADD_STUDENT": "Agregar alumno…",
       "CUPO": "Cupo",
+      "END": "Fin",
       "GRUPO": "Grupo",
+      "LAB": "LAB",
+      "MANUAL": "agregado a mano",
+      "NO_LETTER": "Sin grupo",
+      "NO_STUDENTS": "El grupo no tiene alumnos.",
+      "OBS": "Observaciones",
+      "OVER_CAPACITY": "Rebasa el cupo",
       "PROFESSOR": "Profesor",
+      "SCHEDULE": "Horario",
+      "SEARCH_PROFESSOR": "Buscar por NEMP o nombre…",
+      "START": "Inicio",
+      "START_AFTER_END": "La hora de inicio debe ser anterior a la de fin.",
+      "STUDENT_COUNT": "{{count}} alumnos",
       "STUDENTS": "Alumnos",
       "UEA": "UEA"
     },
