@@ -11,6 +11,7 @@ import {
   SaveTrimestralPlanRequest,
   StudentCatalogItem,
   SurveyResponse,
+  UeaCatalogItem,
   TrimestralPlanDetail,
   TrimestralPlanSummary,
 } from '../../../models';
@@ -86,6 +87,13 @@ export class TrimestralPlanHttpRepository implements TrimestralPlanRepository {
 
   searchStudents(search: string): Observable<PageResponse<StudentCatalogItem>> {
     return this.http.get<PageResponse<StudentCatalogItem>>(API_ENDPOINTS.students, {
+      params: this.searchParams(search),
+      withCredentials: true,
+    });
+  }
+
+  searchUeas(search: string): Observable<PageResponse<UeaCatalogItem>> {
+    return this.http.get<PageResponse<UeaCatalogItem>>(API_ENDPOINTS.ueas, {
       params: this.searchParams(search),
       withCredentials: true,
     });

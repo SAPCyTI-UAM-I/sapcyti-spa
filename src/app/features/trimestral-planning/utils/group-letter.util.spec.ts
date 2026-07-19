@@ -42,4 +42,25 @@ describe('group-letter.util (HU-57)', () => {
       zamora,
     ]);
   });
+
+  it('sends a missing second last name to the end, not to the front (HU-57)', () => {
+    const sinSegundo = { firstLastName: 'Álvarez', firstName: 'Luis' };
+    const conSegundo = { firstLastName: 'Álvarez', secondLastName: 'Bravo', firstName: 'Ana' };
+
+    expect([sinSegundo, conSegundo].sort(compareByLastNames)).toEqual([conSegundo, sinSegundo]);
+    expect([conSegundo, sinSegundo].sort(compareByLastNames)).toEqual([conSegundo, sinSegundo]);
+  });
+
+  it('assigns CR43, CR43A, CR43B by last name for a cupo-1 UEA', () => {
+    const students = [
+      { firstLastName: 'Ramos', firstName: 'C' },
+      { firstLastName: 'Aguirre', firstName: 'A' },
+      { firstLastName: 'López', firstName: 'B' },
+    ].sort(compareByLastNames);
+
+    const groups = students.map((_, index) => groupWithSuffix(baseGroupForTerm('IV')!, index));
+
+    expect(students.map((s) => s.firstLastName)).toEqual(['Aguirre', 'López', 'Ramos']);
+    expect(groups).toEqual(['CR43', 'CR43A', 'CR43B']);
+  });
 });

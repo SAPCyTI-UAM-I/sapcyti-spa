@@ -131,7 +131,13 @@
                 {{ 'ACADEMIC_CATALOG.FIELDS.ADMISSION_TERM' | translate }}
               </dt>
               <dd class="text-body-md text-on-surface font-semibold">
-                {{ current.admissionTerm }}
+                @if (current.admissionTerm) {
+                  {{ current.admissionTerm }}
+                } @else {
+                  <span class="text-text-tertiary text-body-md italic">
+                    {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.NO_ADMISSION_TERM' | translate }}
+                  </span>
+                }
               </dd>
             </div>
             <div class="px-md py-sm gap-xs flex min-w-0 flex-col">

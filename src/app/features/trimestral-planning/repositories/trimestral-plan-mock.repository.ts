@@ -10,6 +10,7 @@ import {
   SaveTrimestralPlanRequest,
   StudentCatalogItem,
   SurveyResponse,
+  UeaCatalogItem,
   TrimestralPlanDetail,
   TrimestralPlanSummary,
 } from '../../../models';
@@ -61,5 +62,9 @@ export class TrimestralPlanMockRepository implements TrimestralPlanRepository {
 
   searchStudents(search: string): Observable<PageResponse<StudentCatalogItem>> {
     return fromMockStore(() => this.store.searchStudents(search));
+  }
+
+  searchUeas(search: string): Observable<PageResponse<UeaCatalogItem>> {
+    return fromMockStore(() => this.store.searchUeas(search));
   }
 }

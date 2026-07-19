@@ -26,6 +26,26 @@
   }
 
   @if (editable()) {
+    <!-- HU-59: agregar un grupo/UEA que la encuesta no generó -->
+    <div
+      class="border-outline bg-surface p-md gap-sm flex flex-wrap items-center rounded-xl border"
+    >
+      <span class="text-body-md font-medium">
+        {{ 'TRIMESTRAL_PLANNING.ACTIONS.ADD_GROUP' | translate }}
+      </span>
+      <p-select
+        [options]="ueaOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [filter]="true"
+        [loading]="peopleLoading()"
+        [placeholder]="'TRIMESTRAL_PLANNING.GROUP.SEARCH_UEA' | translate"
+        (onFilter)="onUeaFilter($event)"
+        (onChange)="addGroup($event.value)"
+        data-testid="add-group-uea"
+      />
+    </div>
+
     <div class="gap-sm flex flex-wrap">
       <p-button
         [label]="'TRIMESTRAL_PLANNING.ACTIONS.SAVE' | translate"

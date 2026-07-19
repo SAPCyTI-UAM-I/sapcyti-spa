@@ -222,6 +222,7 @@
         "CHANGE_PASSWORD": "Change password",
         "CONTACT_SECTION": "Contact information",
         "EDIT_ACTION": "Edit information",
+        "NO_ADMISSION_TERM": "No admission term",
         "NO_ADVISORS": "No advisors assigned",
         "NO_GRADUATION_DATE": "No graduation date",
         "NO_TUTOR": "No tutor assigned",
@@ -752,6 +753,7 @@
       "survey_not_active": "The survey is not active.",
       "survey_not_deletable": "Only a scheduled survey with no responses can be deleted.",
       "survey_not_found": "There is no survey for that term.",
+      "survey_reopen_blocked_terminated_plan": "This survey cannot be reopened: the trimestral plan for that term is already finished.",
       "survey_reopen_dates_invalid": "To reopen the survey, the closing date must be in the future.",
       "survey_window_overlaps": "Another survey is already active or scheduled in that period.",
       "uea_not_available": "One or more selected UEAs are no longer available. Update your selection.",
@@ -892,6 +894,7 @@
   },
   "TRIMESTRAL_PLANNING": {
     "ACTIONS": {
+      "ADD_GROUP": "Add group",
       "BACK_TO_DRAFT": "Back to draft",
       "DOWNLOAD": "Download Excel",
       "FINISH": "Finish",
@@ -945,6 +948,7 @@
       "PROFESSOR": "Professor",
       "SCHEDULE": "Schedule",
       "SEARCH_PROFESSOR": "Search by employee number or name…",
+      "SEARCH_UEA": "Search UEA by key or name…",
       "START": "Start",
       "START_AFTER_END": "The start time must be earlier than the end time.",
       "STUDENT_COUNT": "{{count}} students",

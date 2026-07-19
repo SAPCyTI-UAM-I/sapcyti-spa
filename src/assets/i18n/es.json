@@ -222,6 +222,7 @@
         "CHANGE_PASSWORD": "Cambiar contraseña",
         "CONTACT_SECTION": "Información de contacto",
         "EDIT_ACTION": "Editar información",
+        "NO_ADMISSION_TERM": "Sin trimestre de ingreso",
         "NO_ADVISORS": "Sin asesores asignados",
         "NO_GRADUATION_DATE": "Sin fecha de egreso",
         "NO_TUTOR": "Sin tutor asignado",
@@ -752,6 +753,7 @@
       "survey_not_active": "El sondeo no está activo.",
       "survey_not_deletable": "Solo puede eliminarse un sondeo programado sin respuestas.",
       "survey_not_found": "No existe un sondeo para ese trimestre.",
+      "survey_reopen_blocked_terminated_plan": "No puedes reabrir la encuesta: la planeación trimestral de ese trimestre ya está terminada.",
       "survey_reopen_dates_invalid": "Para reabrir el sondeo, la fecha de cierre debe ser futura.",
       "survey_window_overlaps": "Ya existe un sondeo activo o programado en ese periodo.",
       "uea_not_available": "Una o más UEA seleccionadas ya no están disponibles. Actualiza tu selección.",
@@ -892,6 +894,7 @@
   },
   "TRIMESTRAL_PLANNING": {
     "ACTIONS": {
+      "ADD_GROUP": "Agregar grupo",
       "BACK_TO_DRAFT": "Regresar a borrador",
       "DOWNLOAD": "Descargar Excel",
       "FINISH": "Terminar",
@@ -945,6 +948,7 @@
       "PROFESSOR": "Profesor",
       "SCHEDULE": "Horario",
       "SEARCH_PROFESSOR": "Buscar por NEMP o nombre…",
+      "SEARCH_UEA": "Buscar UEA por clave o nombre…",
       "START": "Inicio",
       "START_AFTER_END": "La hora de inicio debe ser anterior a la de fin.",
       "STUDENT_COUNT": "{{count}} alumnos",

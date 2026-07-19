@@ -288,7 +288,8 @@ export class StudentEditComponent {
             lastDegreeObtained: student.lastDegreeObtained,
             programType: student.programType,
             admissionDate: student.admissionDate,
-            admissionTerm: student.admissionTerm,
+            // Alumno histórico sin el dato: el campo queda vacío y el coordinador lo captura.
+            admissionTerm: student.admissionTerm ?? '',
             active: student.active,
             graduationDate: prog.graduationDate ?? '',
             status: prog.status,

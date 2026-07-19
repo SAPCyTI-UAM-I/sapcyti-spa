@@ -48,9 +48,12 @@ describe('StudentDetailComponent', () => {
     studentId = '1',
     throwErr = false,
     getEnrollmentHistory?: ReturnType<typeof vi.fn>,
+    overrides: Partial<StudentDetailResponse> = {},
   ) {
     const getStudent = vi.fn(() =>
-      throwErr ? throwError(() => new HttpErrorResponse({ status: 404 })) : of(mockResponse),
+      throwErr
+        ? throwError(() => new HttpErrorResponse({ status: 404 }))
+        : of({ ...mockResponse, ...overrides }),
     );
 
     await TestBed.configureTestingModule({
@@ -159,6 +162,14 @@ describe('StudentDetailComponent', () => {
     expect(fixture.componentInstance.history()).toHaveLength(1);
     // Sin plan TERMINADA no se pinta ninguna letra de grupo.
     expect(fixture.nativeElement.textContent).not.toContain('CO43');
+  });
+
+  it('shows a historical student without admission term, with no error (HU-56)', async () => {
+    const { fixture } = await setup('1', false, undefined, { admissionTerm: null });
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.error()).toBeNull();
+    expect(fixture.componentInstance.student()?.admissionTerm).toBeNull();
   });
 
   it('flags a history load error without breaking the rest of the detail', async () => {

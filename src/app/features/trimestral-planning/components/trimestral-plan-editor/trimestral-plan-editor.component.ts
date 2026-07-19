@@ -15,6 +15,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
+import { Select } from 'primeng/select';
 import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
@@ -25,6 +26,7 @@ import { TrimestralPlanService } from '../../services/trimestral-plan.service';
 import {
   buildGroupFormGroup,
   buildSaveGroupsRequest,
+  emptyGroup,
   GroupFormGroup,
 } from '../../utils/group-form.util';
 import {
@@ -48,6 +50,7 @@ import { GroupCardComponent } from '../group-card/group-card.component';
     TranslatePipe,
     Button,
     Message,
+    Select,
     GroupCardComponent,
     DomainErrorMessagePipe,
   ],
@@ -76,6 +79,9 @@ export class TrimestralPlanEditorComponent {
   readonly submitted = signal(false);
   readonly error = signal<TrimestralPlanError | null>(null);
 
+  readonly ueaOptions = this.people.ueas;
+  readonly peopleLoading = this.people.loading;
+
   readonly editable = computed(() => isEditable(this.plan().status));
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
 
@@ -83,6 +89,7 @@ export class TrimestralPlanEditorComponent {
     effect(() => this.buildForm(this.plan()));
     this.people.loadProfessors();
     this.people.loadStudents();
+    this.people.loadUeas();
   }
 
   addStudentTo(index: number, studentId: number): void {
@@ -112,6 +119,22 @@ export class TrimestralPlanEditorComponent {
   removeGroup(index: number): void {
     this.groups.removeAt(index);
     this.studentsByIndex.update((all) => all.filter((_, i) => i !== index));
+  }
+
+  /**
+   * HU-59 — agrega un grupo para una UEA del catálogo. Nace vacío (sin letra, cupo ni
+   * alumnos) y con `id: 0`, que `buildSaveGroupsRequest` traduce a `id: null` para la API.
+   */
+  addGroup(ueaId: number | null): void {
+    if (ueaId === null) return;
+
+    const [clave, nombre] = this.people.ueaLabel(ueaId).split(' — ');
+    this.groups.push(buildGroupFormGroup(this.fb, emptyGroup(ueaId, clave ?? '', nombre ?? '')));
+    this.studentsByIndex.update((all) => [...all, []]);
+  }
+
+  onUeaFilter(event: { filter?: string | null }): void {
+    this.people.onUeaFilter(event.filter);
   }
 
   save(): void {

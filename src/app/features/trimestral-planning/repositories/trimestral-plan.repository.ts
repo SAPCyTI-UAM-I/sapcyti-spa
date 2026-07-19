@@ -9,6 +9,7 @@ import {
   SaveTrimestralPlanRequest,
   StudentCatalogItem,
   SurveyResponse,
+  UeaCatalogItem,
   TrimestralPlanDetail,
   TrimestralPlanSummary,
 } from '../../../models';
@@ -35,6 +36,8 @@ export interface TrimestralPlanRepository {
   listSurveys(): Observable<SurveyResponse[]>;
   searchProfessors(search: string): Observable<PageResponse<ProfessorCatalogItem>>;
   searchStudents(search: string): Observable<PageResponse<StudentCatalogItem>>;
+  /** HU-59: catálogo activo para elegir la UEA de un grupo nuevo. */
+  searchUeas(search: string): Observable<PageResponse<UeaCatalogItem>>;
 }
 
 export const TRIMESTRAL_PLAN_REPOSITORY = new InjectionToken<TrimestralPlanRepository>(

@@ -20,6 +20,7 @@ import {
   TrimestralGroup,
   TrimestralPlanDetail,
   TrimestralPlanSummary,
+  UeaCatalogItem,
 } from '../../../models';
 import {
   ENROLLED_STUDENTS_SEED,
@@ -58,6 +59,15 @@ interface SeedSurvey {
 
 const SEED_SURVEYS: SeedSurvey[] = [
   { id: 3, term: '27I', status: 'PROGRAMADO', daysFromNow: [3, 10], responses: [] },
+  // Cerrada pero solo con inscripciones en blanco: generar de aquí produce un plan sin
+  // filas de UEA y el aviso NO_RESPONSES (HU-58).
+  {
+    id: 4,
+    term: '25O',
+    status: 'CERRADO',
+    daysFromNow: [-120, -100],
+    responses: [{ studentId: 4, academicTerm: 'II', mode: 'BLANK', ueaIds: [] }],
+  },
   {
     id: 2,
     term: '26O',
@@ -76,11 +86,26 @@ const SEED_SURVEYS: SeedSurvey[] = [
     daysFromNow: [-40, -20],
     responses: [
       { studentId: 1, academicTerm: 'II', mode: 'ENROLL_UEAS', ueaIds: [1] },
-      { studentId: 5, academicTerm: 'IV', mode: 'ENROLL_UEAS', ueaIds: [1, 2] },
+      // La UEA 36 está dada de baja en el catálogo: dispara UEA_DEACTIVATED (HU-58).
+      { studentId: 5, academicTerm: 'IV', mode: 'ENROLL_UEAS', ueaIds: [1, 2, 36] },
       { studentId: 3, academicTerm: 'VI', mode: 'BLANK', ueaIds: [] },
     ],
   },
+  // 2024 no tiene planeación anual: generar de aquí devuelve ANNUAL_PLAN_REQUIRED (HU-58).
+  {
+    id: 5,
+    term: '24O',
+    status: 'CERRADO',
+    daysFromNow: [-400, -380],
+    responses: [{ studentId: 1, academicTerm: 'I', mode: 'ENROLL_UEAS', ueaIds: [1] }],
+  },
 ];
+
+/**
+ * Años con planeación anual. El backend lo consulta al módulo `planning` por un puerto;
+ * el mock lo declara porque los features no se importan entre sí.
+ */
+const ANNUAL_PLAN_YEARS = new Set([2025, 2026, 2027]);
 
 interface PlanProfessor extends ProfessorCatalogItem {
   employeeNumber: string;
@@ -129,6 +154,21 @@ const PROFESSORS_SEED: PlanProfessor[] = [
     commissionMember: false,
     active: true,
   },
+  // De baja: asignarlo a un grupo y marcar TERMINADA dispara PROFESSOR_INACTIVE (HU-58).
+  {
+    id: 4,
+    userId: 204,
+    graduateProgramId: 1,
+    employeeNumber: '40004',
+    firstName: 'Ernesto',
+    firstLastName: 'Salas',
+    secondLastName: 'Mora',
+    email: 'esalas@uam.mx',
+    phone: '5500000004',
+    professorType: 'INTERNO',
+    commissionMember: false,
+    active: false,
+  },
 ];
 
 function emptySchedule(): DaySchedule[] {
@@ -162,6 +202,7 @@ export class TrimestralPlanMockStore {
       ...buildFromSurvey(SEED_SURVEYS.find((s) => s.id === 1)!, () => this.nextGroupId++),
     },
     seedFinished25P(),
+    seedOutdated25I(),
   ];
 
   // ---- HU-58 ----
@@ -197,6 +238,15 @@ export class TrimestralPlanMockStore {
         status: 409,
         error: 'TRIMESTRAL_PLAN_ALREADY_EXISTS',
         message: `Ya existe una planeación para ${survey.term}`,
+      });
+    }
+    // El año de 4 dígitos se deriva del AA del term: `26O` → 2026.
+    const year = 2000 + Number(survey.term.slice(0, 2));
+    if (!ANNUAL_PLAN_YEARS.has(year)) {
+      throw mockApiError({
+        status: 409,
+        error: 'ANNUAL_PLAN_REQUIRED',
+        message: `No hay planeación anual de ${year}; créala primero.`,
       });
     }
 
@@ -316,13 +366,17 @@ export class TrimestralPlanMockStore {
     }));
   }
 
+  /** Solo activos, igual que el endpoint real (`?active=true`); buscable por NEMP o nombre. */
   searchProfessors(search: string): PageResponse<ProfessorCatalogItem> {
     const term = search.trim().toLowerCase();
     const matches = PROFESSORS_SEED.filter(
       (p) =>
-        !term ||
-        p.employeeNumber.toLowerCase().includes(term) ||
-        `${p.firstName} ${p.firstLastName} ${p.secondLastName ?? ''}`.toLowerCase().includes(term),
+        p.active &&
+        (!term ||
+          p.employeeNumber.toLowerCase().includes(term) ||
+          `${p.firstName} ${p.firstLastName} ${p.secondLastName ?? ''}`
+            .toLowerCase()
+            .includes(term)),
     );
     return page(clone(matches));
   }
@@ -336,6 +390,19 @@ export class TrimestralPlanMockStore {
         seedFullName(s).toLowerCase().includes(term),
     ).map((s) => toCatalogItem(s));
     return page(matches);
+  }
+
+  /** Solo UEAs activas: un grupo nuevo no puede colgarse de una UEA dada de baja. */
+  searchUeas(search: string): PageResponse<UeaCatalogItem> {
+    const term = search.trim().toLowerCase();
+    const matches = UEA_CATALOG_SEED.filter(
+      (uea) =>
+        uea.active &&
+        (!term ||
+          uea.clave.toLowerCase().includes(term) ||
+          uea.nombre.toLowerCase().includes(term)),
+    );
+    return page(clone(matches));
   }
 
   // ---- internals ----
@@ -431,7 +498,9 @@ function buildFromSurvey(
   allocateGroupId: () => number,
 ): Pick<TrimestralPlanDetail, 'groups' | 'blankStudents' | 'warnings'> {
   const warnings: PlanWarning[] = [];
-  if (survey.responses.length === 0) {
+  // «Sin respuestas» incluye la encuesta que solo recibió inscripciones en blanco: en
+  // ambos casos el plan se crea sin filas de UEA (HU-58).
+  if (!survey.responses.some((r) => r.mode === 'ENROLL_UEAS')) {
     warnings.push({ code: 'NO_RESPONSES' });
   }
 
@@ -470,8 +539,12 @@ function buildFromSurvey(
         academicTerm: response.academicTerm,
       };
 
+      // Grupos ya creados para la misma UEA y la misma letra base. Sin letra (trimestres
+      // X–XII) comparten el grupo sin letra en vez de abrir uno por alumno.
       const siblings = groups.filter(
-        (g) => g.ueaId === uea.id && baseGroup !== null && (g.grupo ?? '').startsWith(baseGroup),
+        (g) =>
+          g.ueaId === uea.id &&
+          (baseGroup === null ? g.grupo === null : (g.grupo ?? '').startsWith(baseGroup)),
       );
       const open = siblings.find((g) => hasRoom(g, cupo));
       if (open) {
@@ -620,6 +693,50 @@ function seedFinished25P(): TrimestralPlanDetail {
             fullName: seedFullName(ana),
             source: 'SURVEY',
             academicTerm: 'I',
+          },
+        ],
+      },
+    ],
+  };
+}
+
+/**
+ * 25I en BORRADOR con la encuesta reabierta (`outdated`) y un profesor dado de baja ya
+ * asignado. Hace alcanzables dos reglas que si no quedarían muertas hasta que exista el
+ * backend: el badge «Desactualizado» y el aviso `PROFESSOR_INACTIVE` al Terminar.
+ */
+function seedOutdated25I(): TrimestralPlanDetail {
+  const bruno = ENROLLED_STUDENTS_SEED[1]!;
+  const uea = UEA_CATALOG_SEED[4]!;
+  return {
+    id: 3,
+    term: '25I',
+    status: 'BORRADOR',
+    surveyId: 0,
+    outdated: true,
+    warnings: [{ code: 'PROFESSOR_INACTIVE', employeeNumber: '40004', groupId: 300 }],
+    blankStudents: [],
+    groups: [
+      {
+        id: 300,
+        ueaId: uea.id,
+        clave: uea.clave,
+        nombre: uea.nombre,
+        tipoUea: uea.tipo,
+        grupo: 'CQ43',
+        cupo: '15',
+        professorId: 4,
+        employeeNumber: '40004',
+        professorName: 'Ernesto Salas',
+        schedule: emptySchedule(),
+        obs: null,
+        students: [
+          {
+            studentId: bruno.id,
+            enrollmentId: bruno.enrollmentId,
+            fullName: seedFullName(bruno),
+            source: 'SURVEY',
+            academicTerm: 'III',
           },
         ],
       },

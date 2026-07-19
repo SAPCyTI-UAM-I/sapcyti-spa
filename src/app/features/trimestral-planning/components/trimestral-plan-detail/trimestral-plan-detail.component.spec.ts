@@ -37,6 +37,7 @@ describe('TrimestralPlanDetailComponent', () => {
       saveGroups: vi.fn(() => of(plan())),
       searchProfessors: vi.fn(() => of({ content: [] })),
       searchStudents: vi.fn(() => of({ content: [] })),
+      searchUeas: vi.fn(() => of({ content: [] })),
       ...service,
     };
 

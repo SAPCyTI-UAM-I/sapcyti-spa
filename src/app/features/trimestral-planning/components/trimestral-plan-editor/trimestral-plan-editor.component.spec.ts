@@ -57,6 +57,9 @@ describe('TrimestralPlanEditorComponent', () => {
             saveGroups,
             searchProfessors: vi.fn(() => of({ content: [] })),
             searchStudents: vi.fn(() => of({ content: [] })),
+            searchUeas: vi.fn(() =>
+              of({ content: [{ id: 7, clave: '2156027', nombre: 'INTELIGENCIA ARTIFICIAL' }] }),
+            ),
           },
         },
       ],
@@ -81,6 +84,36 @@ describe('TrimestralPlanEditorComponent', () => {
 
     expect(component.editable()).toBe(false);
     expect(component.groups.disabled).toBe(true);
+  });
+
+  it('adds a group for a catalog UEA, sent to the API with id null (HU-59)', async () => {
+    const saveGroups = vi.fn(() => of(plan()));
+    const { component } = await setup(plan(), saveGroups);
+
+    component.addGroup(7);
+
+    expect(component.groups.length).toBe(2);
+    const added = component.groups.at(1);
+    expect(added.controls.ueaId.value).toBe(7);
+    expect(added.controls.clave.value).toBe('2156027');
+    expect(added.controls.grupo.value).toBe('');
+    expect(component.studentsByIndex()[1]).toEqual([]);
+
+    component.save();
+    expect(saveGroups).toHaveBeenCalledWith(1, {
+      groups: [
+        expect.objectContaining({ id: 10 }),
+        expect.objectContaining({ id: null, ueaId: 7, grupo: null, cupo: null, studentIds: [] }),
+      ],
+    });
+  });
+
+  it('ignores an empty pick in the add-group selector', async () => {
+    const { component } = await setup();
+
+    component.addGroup(null);
+
+    expect(component.groups.length).toBe(1);
   });
 
   it('removes a group from the FormArray', async () => {

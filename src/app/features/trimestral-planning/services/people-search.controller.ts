@@ -2,7 +2,7 @@ import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 
-import { ProfessorCatalogItem, StudentCatalogItem } from '../../../models';
+import { ProfessorCatalogItem, StudentCatalogItem, UeaCatalogItem } from '../../../models';
 import { TrimestralPlanService } from './trimestral-plan.service';
 
 export interface PersonOption {
@@ -26,6 +26,8 @@ export class PeopleSearchController {
 
   readonly professors = signal<PersonOption[]>([]);
   readonly students = signal<PersonOption[]>([]);
+  /** Catálogo activo para elegir la UEA de un grupo nuevo (HU-59). */
+  readonly ueas = signal<PersonOption[]>([]);
   readonly loading = signal(false);
 
   private timeout?: ReturnType<typeof setTimeout>;
@@ -67,6 +69,29 @@ export class PeopleSearchController {
       });
   }
 
+  onUeaFilter(term: string | null | undefined): void {
+    this.debounce(() => this.loadUeas(term ?? ''));
+  }
+
+  loadUeas(search = ''): void {
+    this.loading.set(true);
+    this.service
+      .searchUeas(search.trim())
+      .pipe(
+        finalize(() => this.loading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (page) => this.ueas.set(page.content.map(ueaOption)),
+        error: () => this.ueas.set([]),
+      });
+  }
+
+  /** El label del catálogo se reusa como snapshot `clave — nombre` del grupo nuevo. */
+  ueaLabel(ueaId: number): string {
+    return this.ueas().find((option) => option.value === ueaId)?.label ?? '';
+  }
+
   private debounce(run: () => void): void {
     clearTimeout(this.timeout);
     this.timeout = setTimeout(run, DEBOUNCE_MS);
@@ -82,6 +107,10 @@ function professorOption(professor: ProfessorCatalogItem): PersonOption {
     value: professor.id,
     label: professor.employeeNumber ? `${professor.employeeNumber} — ${name}` : name,
   };
+}
+
+function ueaOption(uea: UeaCatalogItem): PersonOption {
+  return { value: uea.id, label: `${uea.clave} — ${uea.nombre}` };
 }
 
 function studentOption(student: StudentCatalogItem): PersonOption {

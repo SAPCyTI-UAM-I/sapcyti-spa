@@ -30,6 +30,16 @@ export function groupWithSuffix(baseGroup: string, index: number): string {
   return `${baseGroup}${String.fromCharCode('A'.charCodeAt(0) + index - 1)}`;
 }
 
+/** A missing second last name sorts last, never first (HU-57). */
+function compareOptional(a: string | undefined, b: string | undefined): number {
+  const left = a?.trim() ?? '';
+  const right = b?.trim() ?? '';
+  if (!left && !right) return 0;
+  if (!left) return 1;
+  if (!right) return -1;
+  return left.localeCompare(right, 'es');
+}
+
 /** Alphabetical order used to decide which student keeps the unsuffixed group. */
 export function compareByLastNames(
   a: { firstLastName: string; secondLastName?: string; firstName: string },
@@ -37,7 +47,7 @@ export function compareByLastNames(
 ): number {
   return (
     a.firstLastName.localeCompare(b.firstLastName, 'es') ||
-    (a.secondLastName ?? '').localeCompare(b.secondLastName ?? '', 'es') ||
+    compareOptional(a.secondLastName, b.secondLastName) ||
     a.firstName.localeCompare(b.firstName, 'es')
   );
 }

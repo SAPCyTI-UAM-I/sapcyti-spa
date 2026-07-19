@@ -31,10 +31,15 @@ export interface RegisterStudentRequest {
   advisorIds?: number[];
 }
 
-export interface StudentCatalogItem extends RegisterStudentRequest {
+export interface StudentCatalogItem extends Omit<RegisterStudentRequest, 'admissionTerm'> {
   id: number;
   userId: number;
   active: boolean;
+  /**
+   * HU-56: obligatorio al capturar, pero **nullable de lectura**: los alumnos cargados
+   * antes de que existiera el campo no lo tienen y deben consultarse sin error.
+   */
+  admissionTerm: string | null;
 }
 
 export interface RegisterStudentResponse extends StudentCatalogItem {

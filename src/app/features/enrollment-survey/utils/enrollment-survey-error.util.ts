@@ -10,6 +10,7 @@ export type EnrollmentSurveyError =
   | 'survey_window_overlaps'
   | 'survey_no_active_ueas'
   | 'survey_reopen_dates_invalid'
+  | 'survey_reopen_blocked_terminated_plan'
   | 'survey_not_deletable'
   | 'survey_not_active'
   | 'survey_not_found'
@@ -24,6 +25,11 @@ export const mapEnrollmentSurveyError = createDomainErrorMapper<EnrollmentSurvey
     { match: matchCode('SURVEY_WINDOW_OVERLAPS'), key: 'survey_window_overlaps' },
     { match: matchCode('SURVEY_NO_ACTIVE_UEAS'), key: 'survey_no_active_ueas' },
     { match: matchCode('SURVEY_REOPEN_DATES_INVALID'), key: 'survey_reopen_dates_invalid' },
+    // HU-58: `trimestral` bloquea la reapertura si su plan ya está TERMINADA.
+    {
+      match: matchCode('SURVEY_REOPEN_BLOCKED_TERMINATED_PLAN'),
+      key: 'survey_reopen_blocked_terminated_plan',
+    },
     { match: matchCode('SURVEY_NOT_DELETABLE'), key: 'survey_not_deletable' },
     { match: matchCode('SURVEY_NOT_ACTIVE'), key: 'survey_not_active' },
     { match: matchCode('SURVEY_NOT_FOUND'), key: 'survey_not_found' },

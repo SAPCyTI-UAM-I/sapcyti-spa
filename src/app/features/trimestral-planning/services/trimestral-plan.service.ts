@@ -9,6 +9,7 @@ import {
   SaveTrimestralPlanRequest,
   StudentCatalogItem,
   SurveyResponse,
+  UeaCatalogItem,
   TrimestralPlanDetail,
   TrimestralPlanSummary,
 } from '../../../models';
@@ -59,5 +60,9 @@ export class TrimestralPlanService {
 
   searchStudents(search: string): Observable<PageResponse<StudentCatalogItem>> {
     return this.repository.searchStudents(search);
+  }
+
+  searchUeas(search: string): Observable<PageResponse<UeaCatalogItem>> {
+    return this.repository.searchUeas(search);
   }
 }

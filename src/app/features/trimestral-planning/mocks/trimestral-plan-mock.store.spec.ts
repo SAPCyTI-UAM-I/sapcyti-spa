@@ -26,6 +26,21 @@ describe('TrimestralPlanMockStore', () => {
     expect(elena?.grupo).toBe('CR43');
   });
 
+  it('seeds a plan with the outdated badge and an inactive professor already assigned', () => {
+    const plan = store().get(3);
+
+    expect(plan.outdated).toBe(true);
+    expect(plan.warnings.some((w) => w.code === 'PROFESSOR_INACTIVE')).toBe(true);
+  });
+
+  it('only offers active professors and active UEAs in the pickers', () => {
+    const s = store();
+
+    expect(s.searchProfessors('').content.every((p) => p.active)).toBe(true);
+    expect(s.searchProfessors('40004').content).toEqual([]);
+    expect(s.searchUeas('').content.every((u) => u.active)).toBe(true);
+  });
+
   it('refuses to generate from a survey that is not CERRADO', () => {
     expect(() => store().generate({ surveyId: 2 })).toThrowError(
       expect.objectContaining({ status: 409 }),
@@ -36,6 +51,28 @@ describe('TrimestralPlanMockStore', () => {
     expect(() => store().generate({ surveyId: 1 })).toThrowError(
       expect.objectContaining({ status: 409 }),
     );
+  });
+
+  it('warns NO_RESPONSES when the survey only got blank enrollments (HU-58)', () => {
+    const plan = store().generate({ surveyId: 4 });
+
+    expect(plan.groups).toEqual([]);
+    expect(plan.warnings.some((w) => w.code === 'NO_RESPONSES')).toBe(true);
+    expect(plan.blankStudents).toHaveLength(1);
+  });
+
+  it('refuses to generate when the term year has no annual plan (HU-58)', () => {
+    expect(() => store().generate({ surveyId: 5 })).toThrowError(
+      expect.objectContaining({ status: 409 }),
+    );
+  });
+
+  it('warns UEA_DEACTIVATED for a UEA chosen and later removed from the catalog', () => {
+    const plan = store().get(1);
+
+    expect(plan.warnings.some((w) => w.code === 'UEA_DEACTIVATED')).toBe(true);
+    // No se le arma grupo: la UEA ya no está en el catálogo activo.
+    expect(plan.groups.every((g) => g.ueaId !== 36)).toBe(true);
   });
 
   it('blocks edits once the plan is TERMINADA', () => {
