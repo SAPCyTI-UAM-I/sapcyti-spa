@@ -13,6 +13,10 @@ import {
   UeaDemandRow,
   UpdateSurveyRequest,
 } from '../../../models';
+import {
+  ENROLLED_STUDENTS_SEED,
+  seedFullName,
+} from '../../../shared/mocks/enrolled-students.mock-data';
 import { UEA_CATALOG_SEED } from '../../../shared/mocks/uea-catalog.mock-data';
 import { UeaDemandSort } from '../repositories/enrollment-survey.repository';
 
@@ -69,13 +73,12 @@ export class EnrollmentSurveyMockStore {
     active: uea.active,
   }));
 
-  private readonly students: EligibleStudent[] = [
-    { id: 1, fullName: 'Ana López Ramírez', enrollmentId: '2024630001', programType: 'MAESTRIA' },
-    { id: 2, fullName: 'Bruno Díaz Soto', enrollmentId: '2024630002', programType: 'MAESTRIA' },
-    { id: 3, fullName: 'Carla Núñez Vega', enrollmentId: '2024630003', programType: 'DOCTORADO' },
-    { id: 4, fullName: 'Diego Ruiz Mena', enrollmentId: '2024630004', programType: 'MAESTRIA' },
-    { id: 5, fullName: 'Elena Torres Gil', enrollmentId: '2024630005', programType: 'DOCTORADO' },
-  ];
+  private readonly students: EligibleStudent[] = ENROLLED_STUDENTS_SEED.map((student) => ({
+    id: student.id,
+    fullName: seedFullName(student),
+    enrollmentId: student.enrollmentId,
+    programType: student.programType,
+  }));
 
   private surveys: SurveyRecord[] = this.seedSurveys();
 
@@ -147,6 +150,15 @@ export class EnrollmentSurveyMockStore {
             academicTerm: 'IV',
             mode: 'ENROLL_UEAS',
             ueaIds: [1, 2],
+            submittedAt: iso(-30 * DAY),
+          },
+          // Inscripción en blanco: sin UEAs ni grupo; alimenta la tabla de blancos
+          // de la planeación trimestral 26I (HU-58).
+          {
+            studentId: 3,
+            academicTerm: 'VI',
+            mode: 'BLANK',
+            ueaIds: [],
             submittedAt: iso(-30 * DAY),
           },
         ],

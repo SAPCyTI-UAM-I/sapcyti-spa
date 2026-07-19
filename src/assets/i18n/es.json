@@ -378,44 +378,6 @@
         "TITLE": "Materias activadas"
       }
     },
-    "PLAN_QUARTERLY": {
-      "CHANGE_TERM": "Cambiar trimestre",
-      "COLUMNS": {
-        "ACTIONS": "Acciones",
-        "CAPACITY": "Cupo",
-        "EMPLOYEE_NUMBER": "Número de empleado",
-        "GROUP": "Grupo",
-        "KEY": "Clave",
-        "PROFESSOR": "Profesor",
-        "SUBJECT": "Materia"
-      },
-      "CONTINUE": "Continuar",
-      "CURRENT_TERM": "Trimestre actual es",
-      "EDIT_DIALOG": {
-        "CAPACITY": "Cupo",
-        "DAYS": "Días",
-        "END_TIME": "Hora de fin",
-        "GROUP": "Grupo",
-        "GROUP_PLACEHOLDER": "Escribe el grupo (ej. CO33)",
-        "PROFESSOR_PLACEHOLDER": "Selecciona profesor(es)",
-        "PROFESSORS": "Profesor(es)",
-        "RESELECT_NOTE": "Si vas a cambiar los profesores, selecciona de nuevo todos los que imparten la clase.",
-        "SINGLE_STUDENT": "¿Es para un solo alumno?",
-        "START_TIME": "Hora de inicio",
-        "STUDENT": "Alumno",
-        "STUDENT_PLACEHOLDER": "Selecciona un alumno",
-        "TITLE": "Editar materia"
-      },
-      "EMPTY": "No hay materias para el trimestre seleccionado.",
-      "MODIFY_SUBJECTS": "Modificar materias del plan",
-      "SEARCH_PROFESSOR": "Buscar por profesor, clave o materia",
-      "SUBTITLE": "Define horarios, profesores, grupos y cupos del trimestre.",
-      "TERM_HEADER": "Trimestre",
-      "TERM_LABEL": "Trimestre",
-      "TERM_PLACEHOLDER": "Selecciona un trimestre",
-      "TITLE": "Editar plan trimestral",
-      "VIEW_FULL_PLAN": "Ver plan completo"
-    },
     "TERM_STATUS": {
       "EDITED": "Editado",
       "IN_ENROLLMENT": "En inscripción",
@@ -890,7 +852,7 @@
       "ENROLLMENT_STATUS": "Estados del proceso",
       "HOME": "Inicio",
       "PLAN_ANNUAL": "Planeación anual",
-      "PLAN_QUARTERLY": "Editar plan trimestral",
+      "PLAN_TRIMESTRAL": "Planeación trimestral",
       "PRESENTATIONS": "Ponencias",
       "PROFESSORS": "Profesores",
       "STUDENTS": "Alumnos",
@@ -917,6 +879,81 @@
       "NOTIFICATIONS": "Notificaciones",
       "SEARCH_PLACEHOLDER": "Buscar alumnos, profesores, matrículas…",
       "TITLE": "SAPCyTI"
+    }
+  },
+  "TRIMESTRAL_PLANNING": {
+    "ACTIONS": {
+      "BACK_TO_DRAFT": "Regresar a borrador",
+      "DOWNLOAD": "Descargar Excel",
+      "FINISH": "Terminar",
+      "GENERATE": "Generar planeación",
+      "REGENERATE": "Regenerar"
+    },
+    "DAYS": {
+      "JUE": "Jueves",
+      "LUN": "Lunes",
+      "MAR": "Martes",
+      "MIE": "Miércoles",
+      "VIE": "Viernes"
+    },
+    "DETAIL": {
+      "BLANKS": "Inscripción en blanco",
+      "BLANKS_HINT": "Estos alumnos no tienen grupo ni letra y no se incluyen en el Excel.",
+      "BREADCRUMB": "Planeación",
+      "GROUPS": "Grupos",
+      "NO_GROUPS": "La planeación no tiene grupos.",
+      "OUTDATED": "Desactualizado",
+      "TITLE": "Planeación trimestral {{term}}"
+    },
+    "ERRORS": {
+      "already_exists": "Ya existe una planeación para ese trimestre.",
+      "annual_plan_required": "No hay planeación anual para el año de ese trimestre; créala primero.",
+      "invalid_transition": "Transición de estado no válida.",
+      "not_editable": "La planeación terminada no puede editarse; regrésala a borrador.",
+      "not_found": "No se encontró la planeación trimestral.",
+      "server": "Ocurrió un error inesperado. Intenta de nuevo.",
+      "survey_not_closed": "La planeación solo se genera desde una encuesta cerrada.",
+      "survey_not_found": "No existe la encuesta seleccionada.",
+      "validation": "Revisa los datos capturados."
+    },
+    "GROUP": {
+      "CUPO": "Cupo",
+      "GRUPO": "Grupo",
+      "PROFESSOR": "Profesor",
+      "STUDENTS": "Alumnos",
+      "UEA": "UEA"
+    },
+    "LIST": {
+      "BLANKS": "En blanco",
+      "EMPTY": "Aún no hay planeaciones trimestrales.",
+      "GROUPS": "Grupos",
+      "NEW": "Generar planeación",
+      "STATUS": "Estado",
+      "SUBTITLE": "Una planeación por trimestre, generada desde la encuesta cerrada.",
+      "TERM": "Trimestre",
+      "TITLE": "Planeación trimestral"
+    },
+    "NEW": {
+      "NO_CLOSED_SURVEYS": "No hay encuestas cerradas de las cuales generar una planeación.",
+      "PICK_SURVEY": "Elige la encuesta de la que se generará la planeación",
+      "RESPONSES": "{{count}} respuestas",
+      "SUBTITLE": "La planeación se genera a partir de las respuestas de una encuesta cerrada.",
+      "TITLE": "Generar planeación trimestral"
+    },
+    "STATES": {
+      "LOAD_ERROR": "No se pudo cargar la información."
+    },
+    "STATUS": {
+      "BORRADOR": "Borrador",
+      "TERMINADA": "Terminada"
+    },
+    "WARNINGS": {
+      "CUPO_EXCEEDED": "Un grupo rebasa el cupo definido.",
+      "NO_RESPONSES": "La encuesta no tiene respuestas; se generó un plan sin UEAs.",
+      "PROFESSOR_INACTIVE": "El profesor asignado ({{employeeNumber}}) está dado de baja.",
+      "STUDENT_INACTIVE": "El alumno {{enrollmentId}} fue dado de baja después de responder.",
+      "UEA_DEACTIVATED": "La UEA {{clave}} fue desactivada del catálogo después de elegirse.",
+      "UEA_NO_QUOTA": "La UEA {{clave}} no tiene cupo definido en la planeación anual."
     }
   }
 }

@@ -14,5 +14,6 @@ export const environment = {
     ueas: true,
     annualPlanning: true,
     enrollmentSurvey: true,
+    trimestralPlanning: true,
   },
 };

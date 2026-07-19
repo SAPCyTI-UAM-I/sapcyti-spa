@@ -1,0 +1,143 @@
+<section class="gap-lg flex flex-col">
+  <app-load-state
+    [loading]="loading()"
+    [error]="loadError()"
+    [empty]="false"
+    emptyMessage="TRIMESTRAL_PLANNING.LIST.EMPTY"
+    errorMessage="TRIMESTRAL_PLANNING.STATES.LOAD_ERROR"
+    (retry)="load()"
+  >
+    @if (plan(); as current) {
+      <div class="gap-lg flex flex-col">
+        <header class="gap-md flex flex-wrap items-center justify-between">
+          <div class="gap-xs flex flex-col">
+            <div class="gap-sm flex flex-wrap items-center">
+              <h1 class="text-h2">
+                {{ 'TRIMESTRAL_PLANNING.DETAIL.TITLE' | translate: { term: current.term } }}
+              </h1>
+              <app-catalog-tag
+                [value]="'TRIMESTRAL_PLANNING.STATUS.' + current.status | translate"
+                [severity]="statusTagSeverity(current.status)"
+              />
+              @if (current.outdated) {
+                <app-catalog-tag
+                  [value]="'TRIMESTRAL_PLANNING.DETAIL.OUTDATED' | translate"
+                  severity="warn"
+                />
+              }
+            </div>
+          </div>
+          <p-button
+            severity="secondary"
+            variant="outlined"
+            icon="pi pi-arrow-left"
+            [label]="'COMMON.ACTIONS.BACK' | translate"
+            routerLink="/trimestral-planning"
+          />
+        </header>
+
+        @if (actionError(); as planError) {
+          <p-message severity="error" [text]="planError | domainError: errorScope" />
+        }
+
+        @if (current.warnings.length > 0) {
+          <div class="gap-xs flex flex-col" data-testid="plan-warnings">
+            @for (warning of current.warnings; track $index) {
+              <p-message
+                severity="warn"
+                [text]="
+                  'TRIMESTRAL_PLANNING.WARNINGS.' + warning.code | translate: warningParams(warning)
+                "
+              />
+            }
+          </div>
+        }
+
+        <!-- Grupos generados -->
+        <div class="border-outline bg-surface rounded-xl border">
+          <h2 class="text-h3 p-md">{{ 'TRIMESTRAL_PLANNING.DETAIL.GROUPS' | translate }}</h2>
+          @if (current.groups.length === 0) {
+            <p class="p-md text-body-md text-text-secondary">
+              {{ 'TRIMESTRAL_PLANNING.DETAIL.NO_GROUPS' | translate }}
+            </p>
+          } @else {
+            <div class="md:overflow-x-auto">
+              <table class="block w-full border-collapse md:table md:min-w-[48rem]">
+                <thead class="bg-table-header hidden text-left md:table-header-group">
+                  <tr>
+                    <th class="p-md">{{ 'TRIMESTRAL_PLANNING.GROUP.UEA' | translate }}</th>
+                    <th class="p-md">{{ 'TRIMESTRAL_PLANNING.GROUP.GRUPO' | translate }}</th>
+                    <th class="p-md">{{ 'TRIMESTRAL_PLANNING.GROUP.CUPO' | translate }}</th>
+                    <th class="p-md">{{ 'TRIMESTRAL_PLANNING.GROUP.PROFESSOR' | translate }}</th>
+                    <th class="p-md">{{ 'TRIMESTRAL_PLANNING.GROUP.STUDENTS' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+                  @for (group of current.groups; track group.id) {
+                    <tr
+                      class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
+                    >
+                      <td class="md:p-md md:table-cell">
+                        <span class="text-caption text-text-secondary block md:hidden">
+                          {{ 'TRIMESTRAL_PLANNING.GROUP.UEA' | translate }}
+                        </span>
+                        <span class="text-body-md font-medium">{{ group.clave }}</span>
+                        <span class="text-caption text-text-secondary block">
+                          {{ group.nombre }}
+                        </span>
+                      </td>
+                      <td class="md:p-md md:table-cell">
+                        <span class="text-caption text-text-secondary block md:hidden">
+                          {{ 'TRIMESTRAL_PLANNING.GROUP.GRUPO' | translate }}
+                        </span>
+                        {{ group.grupo ?? '—' }}
+                      </td>
+                      <td class="md:p-md md:table-cell">
+                        <span class="text-caption text-text-secondary block md:hidden">
+                          {{ 'TRIMESTRAL_PLANNING.GROUP.CUPO' | translate }}
+                        </span>
+                        {{ group.cupo ?? '—' }}
+                      </td>
+                      <td class="md:p-md md:table-cell">
+                        <span class="text-caption text-text-secondary block md:hidden">
+                          {{ 'TRIMESTRAL_PLANNING.GROUP.PROFESSOR' | translate }}
+                        </span>
+                        {{ group.professorName ?? '—' }}
+                      </td>
+                      <td class="md:p-md md:table-cell">
+                        <span class="text-caption text-text-secondary block md:hidden">
+                          {{ 'TRIMESTRAL_PLANNING.GROUP.STUDENTS' | translate }}
+                        </span>
+                        {{ group.students.length }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+
+        <!-- Inscripción en blanco: solo lectura, no se exporta -->
+        @if (current.blankStudents.length > 0) {
+          <div class="border-outline bg-surface rounded-xl border">
+            <h2 class="text-h3 p-md">{{ 'TRIMESTRAL_PLANNING.DETAIL.BLANKS' | translate }}</h2>
+            <p class="px-md text-caption text-text-secondary">
+              {{ 'TRIMESTRAL_PLANNING.DETAIL.BLANKS_HINT' | translate }}
+            </p>
+            <ul class="p-md gap-xs flex flex-col">
+              @for (student of current.blankStudents; track student.studentId) {
+                <li class="text-body-md">
+                  {{ student.fullName }}
+                  <span class="text-caption text-text-secondary">
+                    · {{ student.enrollmentId }} · {{ student.academicTerm }}
+                  </span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    }
+  </app-load-state>
+</section>

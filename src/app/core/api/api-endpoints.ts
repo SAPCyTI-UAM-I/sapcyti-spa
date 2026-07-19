@@ -35,6 +35,18 @@ export const API_ENDPOINTS = {
     `${environment.apiBaseUrl}/annual-plans/${year}/status`,
   annualPlanExport: (year: number): string =>
     `${environment.apiBaseUrl}/annual-plans/${year}/export`,
+  trimestralPlans: `${environment.apiBaseUrl}/trimestral-plans`,
+  trimestralPlan: (id: number): string => `${environment.apiBaseUrl}/trimestral-plans/${id}`,
+  trimestralPlanGroups: (id: number): string =>
+    `${environment.apiBaseUrl}/trimestral-plans/${id}/groups`,
+  trimestralPlanRegenerate: (id: number): string =>
+    `${environment.apiBaseUrl}/trimestral-plans/${id}/regenerate`,
+  trimestralPlanStatus: (id: number): string =>
+    `${environment.apiBaseUrl}/trimestral-plans/${id}/status`,
+  trimestralPlanExport: (id: number): string =>
+    `${environment.apiBaseUrl}/trimestral-plans/${id}/export`,
+  studentEnrollmentHistory: (studentId: number): string =>
+    `${environment.apiBaseUrl}/students/${studentId}/enrollment-history`,
   userPassword: (userId: number): string => `${environment.apiBaseUrl}/users/${userId}/password`,
   enrollmentSurveys: `${environment.apiBaseUrl}/enrollment-surveys`,
   enrollmentSurveyActive: `${environment.apiBaseUrl}/enrollment-surveys/active`,

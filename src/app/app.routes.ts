@@ -62,6 +62,18 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'trimestral-planning',
+        loadChildren: () =>
+          import('./features/trimestral-planning/trimestral-planning.routes').then(
+            (m) => m.TRIMESTRAL_PLANNING_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.trimestralPlanning,
+          breadcrumb: 'SHELL.MENU.PLAN_TRIMESTRAL',
+        },
+      },
+      {
         path: 'enrollment-survey',
         loadChildren: () =>
           import('./features/enrollment-survey/enrollment-survey.routes').then(

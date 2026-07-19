@@ -37,6 +37,9 @@ import { ANNUAL_PLAN_REPOSITORY } from '../../features/annual-planning/repositor
 import { EnrollmentSurveyHttpRepository } from '../../features/enrollment-survey/repositories/enrollment-survey-http.repository';
 import { EnrollmentSurveyMockRepository } from '../../features/enrollment-survey/repositories/enrollment-survey-mock.repository';
 import { ENROLLMENT_SURVEY_REPOSITORY } from '../../features/enrollment-survey/repositories/enrollment-survey.repository';
+import { TrimestralPlanHttpRepository } from '../../features/trimestral-planning/repositories/trimestral-plan-http.repository';
+import { TrimestralPlanMockRepository } from '../../features/trimestral-planning/repositories/trimestral-plan-mock.repository';
+import { TRIMESTRAL_PLAN_REPOSITORY } from '../../features/trimestral-planning/repositories/trimestral-plan.repository';
 
 export const DATA_LAYER_PROVIDERS: Provider[] = [
   { provide: MOCK_STUDENT_USER_REGISTRY, useExisting: StudentMockStore },
@@ -71,6 +74,12 @@ export const DATA_LAYER_PROVIDERS: Provider[] = [
     ANNUAL_PLAN_REPOSITORY,
     AnnualPlanHttpRepository,
     AnnualPlanMockRepository,
+  ),
+  ...provideMockOrHttpRepository(
+    'trimestralPlanning',
+    TRIMESTRAL_PLAN_REPOSITORY,
+    TrimestralPlanHttpRepository,
+    TrimestralPlanMockRepository,
   ),
   ...provideMockOrHttpRepository(
     'enrollmentSurvey',

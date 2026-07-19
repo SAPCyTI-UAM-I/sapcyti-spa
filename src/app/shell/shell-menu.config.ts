@@ -123,9 +123,9 @@ const COORDINATOR_NAV: ShellNavigation = {
           icon: 'pi pi-calendar-plus',
         },
         {
-          id: 'plan-quarterly',
-          labelKey: 'SHELL.MENU.PLAN_QUARTERLY',
-          route: '/academic-offering/plan-quarterly',
+          id: 'plan-trimestral',
+          labelKey: 'SHELL.MENU.PLAN_TRIMESTRAL',
+          route: '/trimestral-planning',
           icon: 'pi pi-table',
         },
         {

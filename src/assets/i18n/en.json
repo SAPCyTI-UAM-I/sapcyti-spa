@@ -378,44 +378,6 @@
         "TITLE": "Activated subjects"
       }
     },
-    "PLAN_QUARTERLY": {
-      "CHANGE_TERM": "Change term",
-      "COLUMNS": {
-        "ACTIONS": "Actions",
-        "CAPACITY": "Capacity",
-        "EMPLOYEE_NUMBER": "Employee number",
-        "GROUP": "Group",
-        "KEY": "Key",
-        "PROFESSOR": "Professor",
-        "SUBJECT": "Subject"
-      },
-      "CONTINUE": "Continue",
-      "CURRENT_TERM": "Current term is",
-      "EDIT_DIALOG": {
-        "CAPACITY": "Capacity",
-        "DAYS": "Days",
-        "END_TIME": "End time",
-        "GROUP": "Group",
-        "GROUP_PLACEHOLDER": "Type the group (e.g. CO33)",
-        "PROFESSOR_PLACEHOLDER": "Select professor(s)",
-        "PROFESSORS": "Professor(s)",
-        "RESELECT_NOTE": "If you change professors, re-select all who teach the class.",
-        "SINGLE_STUDENT": "Is it for a single student?",
-        "START_TIME": "Start time",
-        "STUDENT": "Student",
-        "STUDENT_PLACEHOLDER": "Select a student",
-        "TITLE": "Edit subject"
-      },
-      "EMPTY": "There are no subjects for the selected term.",
-      "MODIFY_SUBJECTS": "Modify plan subjects",
-      "SEARCH_PROFESSOR": "Search by professor, key or subject",
-      "SUBTITLE": "Define schedules, professors, groups and capacities for the term.",
-      "TERM_HEADER": "Term",
-      "TERM_LABEL": "Term",
-      "TERM_PLACEHOLDER": "Select a term",
-      "TITLE": "Edit quarterly plan",
-      "VIEW_FULL_PLAN": "View full plan"
-    },
     "TERM_STATUS": {
       "EDITED": "Edited",
       "IN_ENROLLMENT": "In enrollment",
@@ -890,7 +852,7 @@
       "ENROLLMENT_STATUS": "Process status",
       "HOME": "Home",
       "PLAN_ANNUAL": "Annual planning",
-      "PLAN_QUARTERLY": "Edit quarterly plan",
+      "PLAN_TRIMESTRAL": "Trimestral planning",
       "PRESENTATIONS": "Presentations",
       "PROFESSORS": "Professors",
       "STUDENTS": "Students",
@@ -917,6 +879,81 @@
       "NOTIFICATIONS": "Notifications",
       "SEARCH_PLACEHOLDER": "Search students, professors, records…",
       "TITLE": "SAPCyTI"
+    }
+  },
+  "TRIMESTRAL_PLANNING": {
+    "ACTIONS": {
+      "BACK_TO_DRAFT": "Back to draft",
+      "DOWNLOAD": "Download Excel",
+      "FINISH": "Finish",
+      "GENERATE": "Generate plan",
+      "REGENERATE": "Regenerate"
+    },
+    "DAYS": {
+      "JUE": "Thursday",
+      "LUN": "Monday",
+      "MAR": "Tuesday",
+      "MIE": "Wednesday",
+      "VIE": "Friday"
+    },
+    "DETAIL": {
+      "BLANKS": "Blank enrollment",
+      "BLANKS_HINT": "These students have no group or letter and are not included in the Excel file.",
+      "BREADCRUMB": "Plan",
+      "GROUPS": "Groups",
+      "NO_GROUPS": "This plan has no groups.",
+      "OUTDATED": "Outdated",
+      "TITLE": "Trimestral plan {{term}}"
+    },
+    "ERRORS": {
+      "already_exists": "A plan already exists for that term.",
+      "annual_plan_required": "There is no annual plan for that term's year; create it first.",
+      "invalid_transition": "Invalid status transition.",
+      "not_editable": "A finished plan cannot be edited; move it back to draft.",
+      "not_found": "Trimestral plan not found.",
+      "server": "Something went wrong. Please try again.",
+      "survey_not_closed": "A plan can only be generated from a closed survey.",
+      "survey_not_found": "The selected survey does not exist.",
+      "validation": "Please check the values you entered."
+    },
+    "GROUP": {
+      "CUPO": "Quota",
+      "GRUPO": "Group",
+      "PROFESSOR": "Professor",
+      "STUDENTS": "Students",
+      "UEA": "UEA"
+    },
+    "LIST": {
+      "BLANKS": "Blank",
+      "EMPTY": "There are no trimestral plans yet.",
+      "GROUPS": "Groups",
+      "NEW": "Generate plan",
+      "STATUS": "Status",
+      "SUBTITLE": "One plan per term, generated from the closed survey.",
+      "TERM": "Term",
+      "TITLE": "Trimestral planning"
+    },
+    "NEW": {
+      "NO_CLOSED_SURVEYS": "There are no closed surveys to generate a plan from.",
+      "PICK_SURVEY": "Choose the survey the plan will be generated from",
+      "RESPONSES": "{{count}} responses",
+      "SUBTITLE": "The plan is generated from the answers of a closed survey.",
+      "TITLE": "Generate trimestral plan"
+    },
+    "STATES": {
+      "LOAD_ERROR": "The information could not be loaded."
+    },
+    "STATUS": {
+      "BORRADOR": "Draft",
+      "TERMINADA": "Finished"
+    },
+    "WARNINGS": {
+      "CUPO_EXCEEDED": "A group exceeds its defined quota.",
+      "NO_RESPONSES": "The survey has no responses; the plan was generated without UEAs.",
+      "PROFESSOR_INACTIVE": "The assigned professor ({{employeeNumber}}) is inactive.",
+      "STUDENT_INACTIVE": "Student {{enrollmentId}} was deactivated after answering.",
+      "UEA_DEACTIVATED": "UEA {{clave}} was deactivated from the catalog after being chosen.",
+      "UEA_NO_QUOTA": "UEA {{clave}} has no quota defined in the annual plan."
     }
   }
 }
