@@ -5,7 +5,9 @@
     </p>
   }
 
-  @for (group of groups.controls; track group.controls.id.value ?? $index; let i = $index) {
+  <!-- Se rastrea por la instancia del FormGroup: los grupos nuevos comparten id 0 y
+       `0 ?? $index` no cae al índice, así que dos altas colisionaban de clave. -->
+  @for (group of groups.controls; track group; let i = $index) {
     <app-group-card
       [form]="group"
       [students]="studentsByIndex()[i] ?? []"
@@ -33,7 +35,11 @@
       <span class="text-body-md font-medium">
         {{ 'TRIMESTRAL_PLANNING.ACTIONS.ADD_GROUP' | translate }}
       </span>
+      <!-- El valor se limpia tras agregar: si no, volver a elegir la misma UEA no
+           emitiría cambio y no se podría crear un segundo grupo (HU-57, cupo 1). -->
       <p-select
+        [ngModel]="ueaPick()"
+        [ngModelOptions]="{ standalone: true }"
         [options]="ueaOptions()"
         optionLabel="label"
         optionValue="value"
@@ -41,7 +47,7 @@
         [loading]="peopleLoading()"
         [placeholder]="'TRIMESTRAL_PLANNING.GROUP.SEARCH_UEA' | translate"
         (onFilter)="onUeaFilter($event)"
-        (onChange)="addGroup($event.value)"
+        (ngModelChange)="addGroup($event)"
         data-testid="add-group-uea"
       />
     </div>

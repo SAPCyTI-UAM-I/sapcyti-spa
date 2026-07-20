@@ -8,7 +8,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
@@ -29,6 +29,7 @@ import { ScheduleSubformComponent } from '../schedule-subform/schedule-subform.c
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
+    FormsModule,
     TranslatePipe,
     Button,
     InputText,
@@ -53,6 +54,9 @@ export class GroupCardComponent {
 
   /** Snapshot del catálogo; es una de las columnas del formato oficial (HU-58). */
   readonly tipoUea = computed(() => this.form().controls.tipoUea.value);
+
+  /** Selección transitoria del selector de alta de alumno; se limpia al agregar. */
+  readonly studentPick = signal<number | null>(null);
 
   readonly professorOptions = this.people.professors;
   readonly studentOptions = this.people.students;
@@ -94,6 +98,7 @@ export class GroupCardComponent {
 
   /** The picker only offers people not already in the group. */
   onStudentPicked(studentId: number | null): void {
+    this.studentPick.set(null);
     if (studentId === null) return;
     if (this.students().some((student) => student.studentId === studentId)) return;
     this.addStudent.emit(studentId);

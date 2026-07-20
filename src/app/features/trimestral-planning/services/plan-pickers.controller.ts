@@ -29,6 +29,7 @@ export class PlanPickersController {
   /** Catálogo activo para elegir la UEA de un grupo nuevo (HU-59). */
   readonly ueas = signal<PersonOption[]>([]);
   private readonly ueaCatalog = signal<UeaCatalogItem[]>([]);
+  private readonly studentCatalog = signal<StudentCatalogItem[]>([]);
   readonly loading = signal(false);
 
   private timeout?: ReturnType<typeof setTimeout>;
@@ -65,8 +66,14 @@ export class PlanPickersController {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (page) => this.students.set(page.content.map(studentOption)),
-        error: () => this.students.set([]),
+        next: (page) => {
+          this.studentCatalog.set(page.content);
+          this.students.set(page.content.map(studentOption));
+        },
+        error: () => {
+          this.studentCatalog.set([]);
+          this.students.set([]);
+        },
       });
   }
 
@@ -100,6 +107,11 @@ export class PlanPickersController {
    */
   ueaById(ueaId: number): UeaCatalogItem | undefined {
     return this.ueaCatalog().find((uea) => uea.id === ueaId);
+  }
+
+  /** Ídem para el alumno: el snapshot sale del DTO, no de partir la etiqueta. */
+  studentById(studentId: number): StudentCatalogItem | undefined {
+    return this.studentCatalog().find((student) => student.id === studentId);
   }
 
   private debounce(run: () => void): void {

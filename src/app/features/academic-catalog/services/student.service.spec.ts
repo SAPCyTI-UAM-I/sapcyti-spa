@@ -61,7 +61,7 @@ describe('StudentService', () => {
     });
     service.getStudent(1).subscribe((detail) => {
       expect(detail.id).toBe(1);
-      expect(detail.program.enrollmentId).toBe('223300456');
+      expect(detail.program.enrollmentId).toBe('2024630001');
     });
     service.updateStudent(1, updateReq).subscribe((response) => {
       expect(response.firstName).toBe('Ana Editada');

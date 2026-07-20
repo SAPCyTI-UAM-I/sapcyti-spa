@@ -56,7 +56,19 @@ describe('TrimestralPlanEditorComponent', () => {
           useValue: {
             saveGroups,
             searchProfessors: vi.fn(() => of({ content: [] })),
-            searchStudents: vi.fn(() => of({ content: [] })),
+            searchStudents: vi.fn(() =>
+              of({
+                content: [
+                  {
+                    id: 3,
+                    enrollmentId: '2024630003',
+                    firstName: 'Carla',
+                    firstLastName: 'Núñez',
+                    secondLastName: 'Vega',
+                  },
+                ],
+              }),
+            ),
             searchUeas: vi.fn(() =>
               of({ content: [{ id: 7, clave: '2156027', nombre: 'INTELIGENCIA ARTIFICIAL' }] }),
             ),
@@ -108,6 +120,22 @@ describe('TrimestralPlanEditorComponent', () => {
     });
   });
 
+  it('adds two groups for the same UEA without colliding (HU-57, cupo 1)', async () => {
+    const { fixture, component } = await setup();
+
+    component.addGroup(7);
+    // El selector se limpia para que volver a elegir la misma UEA sí emita cambio.
+    expect(component.ueaPick()).toBeNull();
+    component.addGroup(7);
+    fixture.detectChanges();
+
+    expect(component.groups.length).toBe(3);
+    // Ambos nacen con id 0: si se rastrean por id, @for revienta con claves duplicadas.
+    expect(component.groups.at(1).controls.id.value).toBe(0);
+    expect(component.groups.at(2).controls.id.value).toBe(0);
+    expect(component.studentsByIndex()).toHaveLength(3);
+  });
+
   it('ignores an empty pick in the add-group selector', async () => {
     const { component } = await setup();
 
@@ -130,7 +158,12 @@ describe('TrimestralPlanEditorComponent', () => {
     component.addStudentTo(0, 3);
     expect(component.groups.at(0).controls.studentIds.value).toEqual([5, 3]);
     expect(component.studentsByIndex()[0]).toHaveLength(2);
-    expect(component.studentsByIndex()[0]![1]!.source).toBe('MANUAL');
+
+    // El snapshot provisional sale del DTO, no de partir la etiqueta del selector.
+    const added = component.studentsByIndex()[0]![1]!;
+    expect(added.source).toBe('MANUAL');
+    expect(added.enrollmentId).toBe('2024630003');
+    expect(added.fullName).toBe('Carla Núñez Vega');
 
     component.removeStudentFrom(0, 5);
     expect(component.groups.at(0).controls.studentIds.value).toEqual([3]);

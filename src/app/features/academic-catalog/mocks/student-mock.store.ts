@@ -85,6 +85,9 @@ export class StudentMockStore {
       ...body,
       secondLastName: body.secondLastName?.trim() || undefined,
       phoneExtension: body.phoneExtension?.trim() || undefined,
+      // HU-56: opcional al editar. Si no viene, se conserva el valor guardado en vez de
+      // borrarlo — el spread lo dejaría en undefined porque la clave sí está presente.
+      admissionTerm: body.admissionTerm ?? current.admissionTerm,
     };
 
     this.students = [...this.students.slice(0, index), updated, ...this.students.slice(index + 1)];

@@ -10,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
@@ -47,6 +47,7 @@ import { GroupCardComponent } from '../group-card/group-card.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
+    FormsModule,
     TranslatePipe,
     Button,
     Message,
@@ -79,6 +80,9 @@ export class TrimestralPlanEditorComponent {
   readonly submitted = signal(false);
   readonly error = signal<TrimestralPlanError | null>(null);
 
+  /** Selección transitoria del selector de alta; se limpia en cuanto se agrega. */
+  readonly ueaPick = signal<number | null>(null);
+
   readonly ueaOptions = this.people.ueas;
   readonly peopleLoading = this.people.loading;
 
@@ -105,13 +109,19 @@ export class TrimestralPlanEditorComponent {
   addStudentTo(index: number, studentId: number): void {
     const control = this.groups.at(index).controls.studentIds;
     control.setValue([...control.value, studentId]);
-    // Placeholder snapshot until the backend returns the real one on save.
+    // Snapshot provisional hasta que el backend devuelva el suyo al guardar. Sale del
+    // DTO del catálogo, no de la etiqueta del selector, que es solo presentación.
+    const picked = this.people.studentById(studentId);
     this.updateStudents(index, (students) => [
       ...students,
       {
         studentId,
-        enrollmentId: '',
-        fullName: this.people.students().find((o) => o.value === studentId)?.label ?? '',
+        enrollmentId: picked?.enrollmentId ?? '',
+        fullName: picked
+          ? [picked.firstName, picked.firstLastName, picked.secondLastName]
+              .filter(Boolean)
+              .join(' ')
+          : '',
         source: 'MANUAL',
         academicTerm: null,
       },
@@ -143,6 +153,7 @@ export class TrimestralPlanEditorComponent {
 
     this.groups.push(buildGroupFormGroup(this.fb, emptyGroup(uea)));
     this.studentsByIndex.update((all) => [...all, []]);
+    this.ueaPick.set(null);
   }
 
   onUeaFilter(event: { filter?: string | null }): void {
