@@ -106,36 +106,6 @@ export class TrimestralPlanEditorComponent {
     this.people.loadUeas();
   }
 
-  addStudentTo(index: number, studentId: number): void {
-    const control = this.groups.at(index).controls.studentIds;
-    control.setValue([...control.value, studentId]);
-    // Snapshot provisional hasta que el backend devuelva el suyo al guardar. Sale del
-    // DTO del catálogo, no de la etiqueta del selector, que es solo presentación.
-    const picked = this.people.studentById(studentId);
-    this.updateStudents(index, (students) => [
-      ...students,
-      {
-        studentId,
-        enrollmentId: picked?.enrollmentId ?? '',
-        fullName: picked
-          ? [picked.firstName, picked.firstLastName, picked.secondLastName]
-              .filter(Boolean)
-              .join(' ')
-          : '',
-        source: 'MANUAL',
-        academicTerm: null,
-      },
-    ]);
-  }
-
-  removeStudentFrom(index: number, studentId: number): void {
-    const control = this.groups.at(index).controls.studentIds;
-    control.setValue(control.value.filter((id) => id !== studentId));
-    this.updateStudents(index, (students) =>
-      students.filter((student) => student.studentId !== studentId),
-    );
-  }
-
   removeGroup(index: number): void {
     this.groups.removeAt(index);
     this.studentsByIndex.update((all) => all.filter((_, i) => i !== index));
@@ -194,6 +164,9 @@ export class TrimestralPlanEditorComponent {
       this.groups.push(buildGroupFormGroup(this.fb, group));
     }
     this.studentsByIndex.set(plan.groups.map((group) => [...group.students]));
+    // Los ya asignados se fijan en las opciones para que el multiselect los muestre
+    // marcados aunque el buscador no los devuelva (p. ej. un alumno dado de baja).
+    this.people.pinStudents(plan.groups.flatMap((group) => group.students));
     this.submitted.set(false);
     this.error.set(null);
     // Se limpia al final: clear()/push() emiten valueChanges de forma síncrona.
@@ -201,14 +174,5 @@ export class TrimestralPlanEditorComponent {
     if (!isEditable(plan.status)) {
       this.groups.disable({ emitEvent: false });
     }
-  }
-
-  private updateStudents(
-    index: number,
-    change: (students: GroupStudent[]) => GroupStudent[],
-  ): void {
-    this.studentsByIndex.update((all) =>
-      all.map((students, i) => (i === index ? change(students) : students)),
-    );
   }
 }

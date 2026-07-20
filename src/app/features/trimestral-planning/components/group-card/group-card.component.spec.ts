@@ -24,7 +24,7 @@ const group: TrimestralGroup = {
   professorName: null,
   schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
   obs: null,
-  students: [],
+  students: [student(1), student(2), student(3)],
 };
 
 function student(studentId: number): GroupStudent {

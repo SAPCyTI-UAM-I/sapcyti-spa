@@ -9,7 +9,7 @@
       {{ form().controls.grupo.value || ('TRIMESTRAL_PLANNING.GROUP.NO_LETTER' | translate) }}
     </span>
     <span class="text-caption text-text-secondary">
-      {{ 'TRIMESTRAL_PLANNING.GROUP.STUDENT_COUNT' | translate: { count: students().length } }}
+      {{ 'TRIMESTRAL_PLANNING.GROUP.STUDENT_COUNT' | translate: { count: members().length } }}
     </span>
     @if (overCapacity()) {
       <span class="text-caption text-warning">
@@ -58,64 +58,44 @@
 
     <app-schedule-subform [schedule]="form().controls.schedule" [editable]="editable()" />
 
-    <!-- Alumnos del grupo -->
-    <div class="gap-sm flex flex-col">
-      <h3 class="text-body-md font-medium">
+    <!-- Alumnos del grupo: marcar y desmarcar en la misma lista, como en asesores -->
+    <div class="gap-xs flex flex-col">
+      <label for="students-{{ groupKey() }}" class="text-body-md font-medium">
         {{ 'TRIMESTRAL_PLANNING.GROUP.STUDENTS' | translate }}
-      </h3>
-      @if (students().length === 0) {
-        <p class="text-caption text-text-secondary">
-          {{ 'TRIMESTRAL_PLANNING.GROUP.NO_STUDENTS' | translate }}
-        </p>
-      } @else {
-        <ul class="gap-xs flex flex-col">
-          @for (student of students(); track student.studentId) {
-            <li class="gap-sm flex items-center">
-              <span class="text-body-md">{{ student.fullName }}</span>
-              <span class="text-caption text-text-secondary">{{ student.enrollmentId }}</span>
-              <!-- Trimestre que el alumno declaró inscribir; vacío si lo agregaron a mano. -->
+      </label>
+      <p-multiselect
+        inputId="students-{{ groupKey() }}"
+        formControlName="studentIds"
+        [options]="studentOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [filter]="true"
+        [fluid]="true"
+        [loading]="peopleLoading()"
+        [maxSelectedLabels]="3"
+        [placeholder]="'TRIMESTRAL_PLANNING.GROUP.ADD_STUDENT' | translate"
+        (onFilter)="onStudentFilter($event)"
+      />
+
+      <!-- HU-58 pide mostrar el trimestre declarado; el multiselect solo da el nombre. -->
+      @if (members().length > 0) {
+        <p class="gap-x-sm text-caption text-text-secondary flex flex-wrap">
+          @for (student of members(); track student.studentId) {
+            <span>
+              {{ student.fullName }}
               @if (student.academicTerm) {
-                <span class="text-caption text-text-secondary">
-                  {{
-                    'TRIMESTRAL_PLANNING.GROUP.DECLARED_TERM'
-                      | translate: { term: student.academicTerm }
-                  }}
-                </span>
-              }
-              @if (student.source === 'MANUAL') {
-                <span class="text-caption text-text-secondary italic">
+                {{
+                  'TRIMESTRAL_PLANNING.GROUP.DECLARED_TERM'
+                    | translate: { term: student.academicTerm }
+                }}
+              } @else {
+                <span class="italic">
                   {{ 'TRIMESTRAL_PLANNING.GROUP.MANUAL' | translate }}
                 </span>
               }
-              @if (editable()) {
-                <p-button
-                  severity="secondary"
-                  variant="text"
-                  icon="pi pi-times"
-                  [ariaLabel]="'COMMON.ACTIONS.DELETE' | translate"
-                  (onClick)="removeStudent.emit(student.studentId)"
-                />
-              }
-            </li>
+            </span>
           }
-        </ul>
-      }
-
-      @if (editable()) {
-        <!-- Se limpia tras agregar: si no, quitar a un alumno y volver a elegirlo no
-             emitiría cambio y no se podría reintegrar al grupo. -->
-        <p-select
-          [ngModel]="studentPick()"
-          [ngModelOptions]="{ standalone: true }"
-          [options]="studentOptions()"
-          optionLabel="label"
-          optionValue="value"
-          [filter]="true"
-          [loading]="peopleLoading()"
-          [placeholder]="'TRIMESTRAL_PLANNING.GROUP.ADD_STUDENT' | translate"
-          (onFilter)="onStudentFilter($event)"
-          (ngModelChange)="onStudentPicked($event)"
-        />
+        </p>
       }
     </div>
 

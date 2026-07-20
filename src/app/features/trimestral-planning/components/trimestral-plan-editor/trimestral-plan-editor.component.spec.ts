@@ -5,6 +5,7 @@ import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
 import { SCHEDULE_DAYS, TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
+import { PlanPickersController } from '../../services/plan-pickers.controller';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
 import { TrimestralPlanEditorComponent } from './trimestral-plan-editor.component';
 
@@ -152,22 +153,26 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.groups.length).toBe(0);
   });
 
-  it('adds and removes students, keeping ids and snapshots in sync', async () => {
+  it('lets the membership multiselect drive studentIds directly', async () => {
     const { component } = await setup();
+    const control = component.groups.at(0).controls.studentIds;
 
-    component.addStudentTo(0, 3);
-    expect(component.groups.at(0).controls.studentIds.value).toEqual([5, 3]);
-    expect(component.studentsByIndex()[0]).toHaveLength(2);
+    // Es lo que hace `p-multiselect` con formControlName: escribe el arreglo completo.
+    control.setValue([5, 3]);
+    expect(control.value).toEqual([5, 3]);
 
-    // El snapshot provisional sale del DTO, no de partir la etiqueta del selector.
-    const added = component.studentsByIndex()[0]![1]!;
-    expect(added.source).toBe('MANUAL');
-    expect(added.enrollmentId).toBe('2024630003');
-    expect(added.fullName).toBe('Carla Núñez Vega');
-
-    component.removeStudentFrom(0, 5);
-    expect(component.groups.at(0).controls.studentIds.value).toEqual([3]);
+    control.setValue([3]);
+    expect(control.value).toEqual([3]);
+    // Los snapshots del servidor no se tocan al marcar o desmarcar.
     expect(component.studentsByIndex()[0]).toHaveLength(1);
+  });
+
+  it('pins the already-assigned students so the picker keeps them checked', async () => {
+    const { fixture } = await setup();
+    const pickers = fixture.debugElement.injector.get(PlanPickersController);
+
+    // Elena no la devuelve el buscador (está de baja); sin fijarla se perdería al guardar.
+    expect(pickers.students().some((option) => option.value === 5)).toBe(true);
   });
 
   it('blocks the save when a cupo is invalid', async () => {

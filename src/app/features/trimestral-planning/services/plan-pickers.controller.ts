@@ -2,7 +2,12 @@ import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 
-import { ProfessorCatalogItem, StudentCatalogItem, UeaCatalogItem } from '../../../models';
+import {
+  GroupStudent,
+  ProfessorCatalogItem,
+  StudentCatalogItem,
+  UeaCatalogItem,
+} from '../../../models';
 import { TrimestralPlanService } from './trimestral-plan.service';
 
 export interface PersonOption {
@@ -68,7 +73,9 @@ export class PlanPickersController {
       .subscribe({
         next: (page) => {
           this.studentCatalog.set(page.content);
-          this.students.set(page.content.map(studentOption));
+          // Se fusiona en vez de reemplazar: los ya asignados siguen marcados aunque el
+          // filtro actual no los devuelva.
+          this.students.update((options) => mergeOptions(page.content.map(studentOption), options));
         },
         error: () => {
           this.studentCatalog.set([]);
@@ -114,6 +121,21 @@ export class PlanPickersController {
     return this.studentCatalog().find((student) => student.id === studentId);
   }
 
+  /**
+   * Fija en las opciones a los alumnos que ya están en algún grupo. Sin esto, un alumno
+   * que el buscador no devuelve —dado de baja, o fuera de la página filtrada— no
+   * aparecería marcado en el multiselect y se perdería al guardar.
+   */
+  pinStudents(students: readonly GroupStudent[]): void {
+    const pinned = students.map(
+      (student): PersonOption => ({
+        value: student.studentId,
+        label: `${student.enrollmentId} — ${student.fullName}`.trim(),
+      }),
+    );
+    this.students.update((options) => mergeOptions(options, pinned));
+  }
+
   private debounce(run: () => void): void {
     clearTimeout(this.timeout);
     this.timeout = setTimeout(run, DEBOUNCE_MS);
@@ -129,6 +151,20 @@ function professorOption(professor: ProfessorCatalogItem): PersonOption {
     value: professor.id,
     label: professor.employeeNumber ? `${professor.employeeNumber} — ${name}` : name,
   };
+}
+
+/** Une dos listas de opciones sin duplicar por id, ordenadas por etiqueta. */
+function mergeOptions(
+  base: readonly PersonOption[],
+  extra: readonly PersonOption[],
+): PersonOption[] {
+  const byValue = new Map(base.map((option) => [option.value, option]));
+  for (const option of extra) {
+    if (!byValue.has(option.value)) {
+      byValue.set(option.value, option);
+    }
+  }
+  return [...byValue.values()].sort((a, b) => a.label.localeCompare(b.label, 'es'));
 }
 
 function ueaOption(uea: UeaCatalogItem): PersonOption {
