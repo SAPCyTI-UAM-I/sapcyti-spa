@@ -13,7 +13,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { finalize } from 'rxjs';
@@ -49,7 +48,6 @@ import { GroupCardComponent } from '../group-card/group-card.component';
     ReactiveFormsModule,
     FormsModule,
     TranslatePipe,
-    Button,
     Message,
     Select,
     GroupCardComponent,
