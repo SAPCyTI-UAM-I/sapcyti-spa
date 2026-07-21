@@ -63,4 +63,6 @@ export const API_ENDPOINTS = {
     `${environment.apiBaseUrl}/enrollment-surveys/${id}/results/ueas`,
   enrollmentSurveyResultsUeaStudents: (id: number, ueaId: number): string =>
     `${environment.apiBaseUrl}/enrollment-surveys/${id}/results/ueas/${ueaId}/students`,
+  enrollmentSurveyResultsBlankStudents: (id: number): string =>
+    `${environment.apiBaseUrl}/enrollment-surveys/${id}/results/blank-students`,
 } as const;

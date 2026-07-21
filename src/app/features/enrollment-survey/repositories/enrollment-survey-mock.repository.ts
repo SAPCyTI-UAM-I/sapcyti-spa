@@ -71,4 +71,8 @@ export class EnrollmentSurveyMockRepository implements EnrollmentSurveyRepositor
   getResultsUeaStudents(id: number, ueaId: number): Observable<InterestedStudent[]> {
     return fromMockStore(() => this.store.getResultsUeaStudents(id, ueaId));
   }
+
+  getResultsBlankStudents(id: number): Observable<InterestedStudent[]> {
+    return fromMockStore(() => this.store.getResultsBlankStudents(id));
+  }
 }

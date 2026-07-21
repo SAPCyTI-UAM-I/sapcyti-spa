@@ -333,6 +333,7 @@ export class EnrollmentSurveyMockStore {
       eligibleCount,
       respondedCount,
       pendingCount: Math.max(eligibleCount - respondedCount, 0),
+      blankCount: record.responses.filter((r) => r.mode === 'BLANK').length,
     };
   }
 
@@ -360,6 +361,24 @@ export class EnrollmentSurveyMockStore {
     const record = this.requireSurvey(id);
     return record.responses
       .filter((r) => r.ueaIds.includes(ueaId))
+      .flatMap((r) => {
+        const student = this.students.find((s) => s.id === r.studentId);
+        return student
+          ? [
+              {
+                fullName: student.fullName,
+                enrollmentId: student.enrollmentId,
+                academicTerm: r.academicTerm,
+              },
+            ]
+          : [];
+      });
+  }
+
+  getResultsBlankStudents(id: number): InterestedStudent[] {
+    const record = this.requireSurvey(id);
+    return record.responses
+      .filter((r) => r.mode === 'BLANK')
       .flatMap((r) => {
         const student = this.students.find((s) => s.id === r.studentId);
         return student

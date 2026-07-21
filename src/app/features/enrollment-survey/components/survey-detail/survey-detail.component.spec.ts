@@ -43,9 +43,12 @@ describe('SurveyDetailComponent', () => {
   function serviceWith(s: SurveyResponse, respondedCount = 3): Partial<EnrollmentSurveyService> {
     return {
       getSurvey: vi.fn(() => of(s)),
-      getResultsSummary: vi.fn(() => of({ eligibleCount: 5, respondedCount, pendingCount: 2 })),
+      getResultsSummary: vi.fn(() =>
+        of({ eligibleCount: 5, respondedCount, pendingCount: 2, blankCount: 0 }),
+      ),
       getResultsUeas: vi.fn(() => of(rows)),
       getResultsUeaStudents: vi.fn(() => of([])),
+      getResultsBlankStudents: vi.fn(() => of([])),
     };
   }
 
@@ -64,6 +67,26 @@ describe('SurveyDetailComponent', () => {
   it('flags the no-responses empty state', async () => {
     const fixture = await setup(serviceWith(survey({ status: 'ACTIVO' }), 0));
     expect(fixture.componentInstance.hasResponses()).toBe(false);
+  });
+
+  // HU-42 — «1 respondieron» con tabla vacía era ilegible: los blancos ahora se listan.
+  it('lists blank respondents below the demand table', async () => {
+    const base = serviceWith(survey({ status: 'CERRADO' }), 1);
+    const fixture = await setup({
+      ...base,
+      getResultsSummary: vi.fn(() =>
+        of({ eligibleCount: 5, respondedCount: 1, pendingCount: 4, blankCount: 1 }),
+      ),
+      getResultsUeas: vi.fn(() => of([])),
+      getResultsBlankStudents: vi.fn(() =>
+        of([{ fullName: 'Bruno Lara Sol', enrollmentId: '2231800002', academicTerm: 'III' }]),
+      ),
+    });
+
+    expect(fixture.componentInstance.blankStudents()).toHaveLength(1);
+    expect(fixture.nativeElement.querySelector('[data-testid="blank-students"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="results-all-blank"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="blank-stat"]')).toBeTruthy();
   });
 
   it('loads interested students for a UEA row', async () => {
