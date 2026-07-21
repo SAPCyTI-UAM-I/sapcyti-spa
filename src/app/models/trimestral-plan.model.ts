@@ -50,6 +50,14 @@ export interface BlankStudent {
   academicTerm: AcademicTerm;
 }
 
+/** A professor assigned to a group; research groups can have several (co-directors). */
+export interface GroupProfessor {
+  professorId: number;
+  /** Snapshots — read-only, never sent back on save. */
+  employeeNumber: string | null;
+  professorName: string | null;
+}
+
 export interface TrimestralGroup {
   id: number;
   ueaId: number;
@@ -61,9 +69,8 @@ export interface TrimestralGroup {
   grupo: string | null;
   /** Number or `*`; null when the annual plan did not define it. */
   cupo: string | null;
-  employeeNumber: string | null;
-  professorId: number | null;
-  professorName: string | null;
+  /** Zero or more professors (co-directors); order is the capture order. */
+  professors: GroupProfessor[];
   /** Always 5 entries, LUN..VIE in order. */
   schedule: DaySchedule[];
   students: GroupStudent[];
@@ -108,7 +115,7 @@ export interface SaveGroupRequest {
   ueaId: number;
   grupo: string | null;
   cupo: string | null;
-  professorId: number | null;
+  professorIds: number[];
   schedule: DaySchedule[];
   students: SaveGroupStudentRequest[];
 }

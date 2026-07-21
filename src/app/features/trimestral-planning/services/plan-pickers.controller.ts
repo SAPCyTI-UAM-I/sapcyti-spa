@@ -141,12 +141,15 @@ export class PlanPickersController {
    * buscador mentiría. El snapshot del plan trae NEMP y nombre.
    */
   pinProfessors(groups: readonly TrimestralGroup[]): void {
-    const pinned = groups.flatMap((group): PersonOption[] => {
-      const { professorId, employeeNumber, professorName } = group;
-      if (professorId === null) return [];
-      const name = professorName ?? '';
-      return [{ value: professorId, label: employeeNumber ? `${employeeNumber} — ${name}` : name }];
-    });
+    const pinned = groups.flatMap((group): PersonOption[] =>
+      group.professors.map((professor) => {
+        const name = professor.professorName ?? '';
+        return {
+          value: professor.professorId,
+          label: professor.employeeNumber ? `${professor.employeeNumber} — ${name}` : name,
+        };
+      }),
+    );
     this.professors.update((options) => mergeOptions(options, pinned));
   }
 

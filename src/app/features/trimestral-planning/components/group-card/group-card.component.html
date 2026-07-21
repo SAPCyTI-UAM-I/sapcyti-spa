@@ -38,17 +38,19 @@
       <app-field-error [control]="form().controls.cupo" [submitted]="submitted()" />
     </div>
 
-    <p-select
-      formControlName="professorId"
+    <!-- Varios profesores: grupos de investigación tienen co-directores. -->
+    <p-multiselect
+      formControlName="professorIds"
       [options]="professorOptions()"
       optionLabel="label"
       optionValue="value"
       [filter]="true"
       [showClear]="true"
+      [fluid]="true"
       [loading]="professorsLoading()"
+      [maxSelectedLabels]="2"
       [placeholder]="'TRIMESTRAL_PLANNING.GROUP.SEARCH_PROFESSOR' | translate"
       [ariaLabel]="'TRIMESTRAL_PLANNING.GROUP.PROFESSOR' | translate"
-      fluid
       (onFilter)="onProfessorFilter($event)"
     />
   </div>

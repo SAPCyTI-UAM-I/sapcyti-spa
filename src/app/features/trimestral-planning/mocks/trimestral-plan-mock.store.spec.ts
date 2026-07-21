@@ -111,7 +111,7 @@ describe('TrimestralPlanMockStore', () => {
           ueaId: group.ueaId,
           grupo: group.grupo,
           cupo: '*',
-          professorId: null,
+          professorIds: [],
           schedule: group.schedule,
           // 3 = Carla, the blank responder, added by hand (HU-59).
           students: [
@@ -141,7 +141,7 @@ describe('TrimestralPlanMockStore', () => {
           ueaId: group.ueaId,
           grupo: group.grupo,
           cupo: '1',
-          professorId: null,
+          professorIds: [],
           schedule: group.schedule,
           students: [1, 3, 5].map((studentId) => ({ studentId, obs: null })),
         },

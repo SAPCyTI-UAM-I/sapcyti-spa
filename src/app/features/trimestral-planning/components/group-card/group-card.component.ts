@@ -12,6 +12,7 @@ import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angul
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
+import { MultiSelect } from 'primeng/multiselect';
 import { Select } from 'primeng/select';
 
 import { GroupStudent } from '../../../../models';
@@ -35,6 +36,7 @@ import { ScheduleSubformComponent } from '../schedule-subform/schedule-subform.c
     Button,
     InputText,
     Select,
+    MultiSelect,
     FieldErrorComponent,
     ScheduleSubformComponent,
   ],

@@ -4,6 +4,7 @@ import { mockApiError } from '../../../core/errors/testing/mock-api-error.util';
 import {
   AcademicTerm,
   BlankStudent,
+  GroupProfessor,
   ChangeTrimestralPlanStatusRequest,
   CreateTrimestralPlanRequest,
   DaySchedule,
@@ -314,12 +315,17 @@ export class TrimestralPlanMockStore {
       if (!uea) {
         throw mockApiError({ status: 404, message: `UEA ${update.ueaId} no existe` });
       }
-      const professor = update.professorId
-        ? PROFESSORS_SEED.find((p) => p.id === update.professorId)
-        : undefined;
-      if (update.professorId && !professor) {
-        throw mockApiError({ status: 404, message: `Profesor ${update.professorId} no existe` });
-      }
+      const professors: GroupProfessor[] = update.professorIds.map((professorId) => {
+        const professor = PROFESSORS_SEED.find((p) => p.id === professorId);
+        if (!professor) {
+          throw mockApiError({ status: 404, message: `Profesor ${professorId} no existe` });
+        }
+        return {
+          professorId: professor.id,
+          employeeNumber: professor.employeeNumber,
+          professorName: `${professor.firstName} ${professor.firstLastName}`,
+        };
+      });
       const previous = plan.groups.find((g) => g.id === update.id);
 
       return {
@@ -330,9 +336,7 @@ export class TrimestralPlanMockStore {
         tipoUea: uea.tipo,
         grupo: update.grupo,
         cupo: update.cupo,
-        professorId: professor?.id ?? null,
-        employeeNumber: professor?.employeeNumber ?? null,
-        professorName: professor ? `${professor.firstName} ${professor.firstLastName}` : null,
+        professors,
         schedule: update.schedule,
         // `source`/`academicTerm` are snapshots the API never accepts on write: keep the
         // previous value when the student was already there, otherwise it is a MANUAL add.
@@ -466,13 +470,15 @@ export class TrimestralPlanMockStore {
       if (!hasRoom(group, group.cupo, 0)) {
         warnings.push({ code: 'CUPO_EXCEEDED', groupId: group.id });
       }
-      const professor = PROFESSORS_SEED.find((p) => p.id === group.professorId);
-      if (professor && !professor.active) {
-        warnings.push({
-          code: 'PROFESSOR_INACTIVE',
-          employeeNumber: professor.employeeNumber,
-          groupId: group.id,
-        });
+      for (const groupProfessor of group.professors) {
+        const professor = PROFESSORS_SEED.find((p) => p.id === groupProfessor.professorId);
+        if (professor && !professor.active) {
+          warnings.push({
+            code: 'PROFESSOR_INACTIVE',
+            employeeNumber: professor.employeeNumber,
+            groupId: group.id,
+          });
+        }
       }
       if (group.cupo === null) {
         warnings.push({ code: 'UEA_NO_QUOTA', clave: group.clave });
@@ -596,9 +602,7 @@ function buildFromSurvey(
         tipoUea: uea.tipo,
         grupo: baseGroup && groupWithSuffix(baseGroup, siblings.length),
         cupo,
-        professorId: null,
-        employeeNumber: null,
-        professorName: null,
+        professors: [],
         schedule: emptySchedule(),
         students: [groupStudent],
       });
@@ -690,9 +694,7 @@ function seedFinished25P(): TrimestralPlanDetail {
         tipoUea: uea.tipo,
         grupo: 'CO43',
         cupo: '15',
-        professorId: 1,
-        employeeNumber: '40001',
-        professorName: 'Rafaela Blanco',
+        professors: [{ professorId: 1, employeeNumber: '40001', professorName: 'Rafaela Blanco' }],
         schedule: SCHEDULE_DAYS.map((day) => ({
           day,
           start: day === 'LUN' || day === 'MIE' ? '08:30' : null,
@@ -739,9 +741,7 @@ function seedOutdated25I(): TrimestralPlanDetail {
         tipoUea: uea.tipo,
         grupo: 'CQ43',
         cupo: '15',
-        professorId: 4,
-        employeeNumber: '40004',
-        professorName: 'Ernesto Salas',
+        professors: [{ professorId: 4, employeeNumber: '40004', professorName: 'Ernesto Salas' }],
         schedule: emptySchedule(),
         students: [
           {

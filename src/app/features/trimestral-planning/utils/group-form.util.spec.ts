@@ -32,9 +32,7 @@ const group: TrimestralGroup = {
   tipoUea: 'OBLIGATORIA',
   grupo: 'co43',
   cupo: '25',
-  professorId: 8,
-  employeeNumber: '40001',
-  professorName: 'Rafaela Blanco',
+  professors: [{ professorId: 8, employeeNumber: '40001', professorName: 'Rafaela Blanco' }],
   schedule: [{ day: 'LUN', start: '08:30', end: '10:00', lab: false }],
   students: [
     {
@@ -67,7 +65,7 @@ describe('group-form.util', () => {
       ueaId: 40,
       grupo: 'co43',
       cupo: '25',
-      professorId: 8,
+      professorIds: [8],
       // La nota por alumno viaja con su fila, recortada igual que los demás strings.
       students: [{ studentId: 101, obs: 'PIB' }],
     });

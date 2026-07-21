@@ -42,7 +42,7 @@ export type GroupFormGroup = FormGroup<{
   tipoUea: FormControl<string>;
   grupo: FormControl<string>;
   cupo: FormControl<string>;
-  professorId: FormControl<number | null>;
+  professorIds: FormControl<number[]>;
   schedule: FormArray<ScheduleFormGroup>;
   students: FormArray<StudentFormGroup>;
 }>;
@@ -100,7 +100,7 @@ export function buildGroupFormGroup(
     tipoUea: fb.control(group.tipoUea),
     grupo: fb.control(group.grupo ?? '', [Validators.maxLength(10)]),
     cupo: fb.control(group.cupo ?? '', [Validators.pattern(CUPO_PATTERN)]),
-    professorId: fb.control<number | null>(group.professorId),
+    professorIds: fb.control(group.professors.map((professor) => professor.professorId)),
     schedule: fb.array(
       SCHEDULE_DAYS.map((day) =>
         buildScheduleRow(
@@ -129,9 +129,7 @@ export function emptyGroup(uea: UeaCatalogItem): TrimestralGroup {
     tipoUea: uea.tipo,
     grupo: null,
     cupo: null,
-    professorId: null,
-    employeeNumber: null,
-    professorName: null,
+    professors: [],
     schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
     students: [],
   };
@@ -156,7 +154,7 @@ export function buildSaveGroupsRequest(
         // Sin normalizar: la spec pide «sin formato forzado» por las letras «quemadas».
         grupo: orNull(value.grupo),
         cupo: orNull(value.cupo),
-        professorId: value.professorId,
+        professorIds: value.professorIds,
         schedule: value.schedule.map((day) => ({
           day: day.day,
           start: orNull(day.start),

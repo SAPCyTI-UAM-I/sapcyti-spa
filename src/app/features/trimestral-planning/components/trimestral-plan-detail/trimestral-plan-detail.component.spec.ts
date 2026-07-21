@@ -103,9 +103,7 @@ describe('TrimestralPlanDetailComponent', () => {
                 tipoUea: 'OBLIGATORIA',
                 grupo: 'CO43',
                 cupo: '15',
-                professorId: null,
-                employeeNumber: null,
-                professorName: null,
+                professors: [],
                 schedule: SCHEDULE_DAYS.map((day) => ({
                   day,
                   start: null,

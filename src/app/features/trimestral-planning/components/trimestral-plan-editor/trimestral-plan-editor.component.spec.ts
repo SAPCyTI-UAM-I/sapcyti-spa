@@ -6,6 +6,7 @@ import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
 import { SCHEDULE_DAYS, TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
+import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
 import { buildStudentRow } from '../../utils/group-form.util';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
@@ -29,9 +30,7 @@ function plan(status: TrimestralPlanStatus = 'BORRADOR'): TrimestralPlanDetail {
         tipoUea: 'OBLIGATORIA',
         grupo: 'CO43',
         cupo: '15',
-        professorId: null,
-        employeeNumber: null,
-        professorName: null,
+        professors: [],
         schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
         students: [
           {
@@ -50,10 +49,11 @@ function plan(status: TrimestralPlanStatus = 'BORRADOR'): TrimestralPlanDetail {
 
 describe('TrimestralPlanEditorComponent', () => {
   async function setup(detail = plan(), saveGroups = vi.fn(() => of(plan()))) {
+    const messages = { add: vi.fn() };
     await TestBed.configureTestingModule({
       imports: [TrimestralPlanEditorComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
-        MessageService,
+        { provide: MessageService, useValue: messages },
         {
           provide: TrimestralPlanService,
           useValue: {
@@ -83,7 +83,7 @@ describe('TrimestralPlanEditorComponent', () => {
     const fixture = TestBed.createComponent(TrimestralPlanEditorComponent);
     fixture.componentRef.setInput('plan', detail);
     fixture.detectChanges();
-    return { fixture, component: fixture.componentInstance, saveGroups };
+    return { fixture, component: fixture.componentInstance, saveGroups, messages };
   }
 
   it('orders the groups by UEA clave, regardless of the group letter', async () => {
@@ -221,7 +221,7 @@ describe('TrimestralPlanEditorComponent', () => {
 
   it('saves the full set of groups and emits the returned detail', async () => {
     const saveGroups = vi.fn(() => of(plan()));
-    const { component, fixture } = await setup(plan(), saveGroups);
+    const { component, fixture, messages } = await setup(plan(), saveGroups);
     const emitted = vi.fn();
     fixture.componentInstance.saved.subscribe(emitted);
 
@@ -239,5 +239,10 @@ describe('TrimestralPlanEditorComponent', () => {
       ],
     });
     expect(emitted).toHaveBeenCalled();
+    expect(messages.add).toHaveBeenCalledWith({
+      severity: 'success',
+      summary: 'TRIMESTRAL_PLANNING.DETAIL.SAVED',
+      life: TOAST_LIFE.DEFAULT,
+    });
   });
 });
