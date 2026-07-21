@@ -8,36 +8,33 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
-import { MultiSelect } from 'primeng/multiselect';
 import { Select } from 'primeng/select';
 
 import { GroupStudent } from '../../../../models';
 import { FieldErrorComponent } from '../../../../shared/components';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
-import { GroupFormGroup } from '../../utils/group-form.util';
+import { buildStudentRow, GroupFormGroup } from '../../utils/group-form.util';
 import { ScheduleSubformComponent } from '../schedule-subform/schedule-subform.component';
 
-/** Sufijo único por tarjeta: dos grupos de la misma UEA no pueden compartir ids del DOM. */
-let nextGroupKey = 0;
-
 /**
- * HU-59 — one group as an expandable card (`<details>`), not a 25-column row: that width
- * belongs to the export format, not to a capture UI.
+ * HU-59 — one group as an inline capture row (nothing to expand): identity + base fields,
+ * the 5-day schedule and the student list are always visible and editable in place. The
+ * 25-column width still belongs to the export format, not to this UI.
  */
 @Component({
   selector: 'app-group-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
+    FormsModule,
     TranslatePipe,
     Button,
     InputText,
     Select,
-    MultiSelect,
     FieldErrorComponent,
     ScheduleSubformComponent,
   ],
@@ -45,19 +42,18 @@ let nextGroupKey = 0;
 })
 export class GroupCardComponent {
   private readonly people = inject(PlanPickersController);
+  private readonly fb = inject(NonNullableFormBuilder);
 
   readonly form = input.required<GroupFormGroup>();
   /**
    * Snapshots que devolvió el servidor: aportan trimestre declarado y `source`, que el
-   * formulario no lleva (solo guarda `studentIds`). No se mutan al marcar o desmarcar.
+   * formulario no lleva (solo guarda studentId + nota). No se mutan al agregar o quitar.
    */
   readonly students = input.required<GroupStudent[]>();
   readonly editable = input(true);
   readonly submitted = input(false);
 
   readonly removeGroup = output<void>();
-
-  readonly groupKey = signal(`g${nextGroupKey++}`);
 
   /**
    * Los valores de un `FormControl` no son señales, así que un `computed` que los lee
@@ -66,15 +62,23 @@ export class GroupCardComponent {
    */
   private readonly revision = signal(0);
 
-  /** Integrantes actuales: el formulario manda, los snapshots solo decoran. */
+  /** Selección transitoria del typeahead de alta; se limpia en cuanto se agrega. */
+  readonly studentPick = signal<number | null>(null);
+
+  /**
+   * Integrantes actuales, alineados por índice con las filas del `FormArray` de alumnos:
+   * el formulario manda (studentId + nota), los snapshots del servidor solo decoran.
+   */
   readonly members = computed<GroupStudent[]>(() => {
     this.revision();
     const snapshots = this.students();
-    return this.form().controls.studentIds.value.map(
-      (studentId) =>
+    return this.form().controls.students.controls.map((row) => {
+      const studentId = row.controls.studentId.value;
+      return (
         snapshots.find((student) => student.studentId === studentId) ??
-        this.fallbackMember(studentId),
-    );
+        this.fallbackMember(studentId)
+      );
+    });
   });
 
   /** Non-blocking notice: exceeding the cupo warns, it never blocks (HU-59). */
@@ -91,7 +95,8 @@ export class GroupCardComponent {
 
   readonly professorOptions = this.people.professors;
   readonly studentOptions = this.people.students;
-  readonly peopleLoading = this.people.loading;
+  readonly professorsLoading = this.people.professorsLoading;
+  readonly studentsLoading = this.people.studentsLoading;
 
   constructor() {
     // El input `form` puede cambiar de instancia: se resuscribe con cada una.
@@ -111,6 +116,21 @@ export class GroupCardComponent {
     this.people.onStudentFilter(event.filter);
   }
 
+  /** HU-59 — alta desde el typeahead; elegir a alguien que ya está en el grupo no duplica. */
+  addStudent(studentId: number | null): void {
+    if (studentId === null) return;
+
+    const rows = this.form().controls.students;
+    if (!rows.controls.some((row) => row.controls.studentId.value === studentId)) {
+      rows.push(buildStudentRow(this.fb, studentId));
+    }
+    this.studentPick.set(null);
+  }
+
+  removeStudent(index: number): void {
+    this.form().controls.students.removeAt(index);
+  }
+
   /** Alumno marcado que el servidor aún no conoce: se arma del catálogo del picker. */
   private fallbackMember(studentId: number): GroupStudent {
     const picked = this.people.studentById(studentId);
@@ -122,6 +142,7 @@ export class GroupCardComponent {
         : '',
       source: 'MANUAL',
       academicTerm: null,
+      obs: null,
     };
   }
 }

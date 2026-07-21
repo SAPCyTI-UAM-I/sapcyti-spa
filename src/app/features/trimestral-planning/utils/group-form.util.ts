@@ -28,6 +28,12 @@ export type ScheduleFormGroup = FormGroup<{
   lab: FormControl<boolean>;
 }>;
 
+/** One row of the students table: membership + the per-student note (col AB del Excel). */
+export type StudentFormGroup = FormGroup<{
+  studentId: FormControl<number>;
+  obs: FormControl<string>;
+}>;
+
 export type GroupFormGroup = FormGroup<{
   id: FormControl<number | null>;
   ueaId: FormControl<number>;
@@ -37,9 +43,8 @@ export type GroupFormGroup = FormGroup<{
   grupo: FormControl<string>;
   cupo: FormControl<string>;
   professorId: FormControl<number | null>;
-  obs: FormControl<string>;
   schedule: FormArray<ScheduleFormGroup>;
-  studentIds: FormControl<number[]>;
+  students: FormArray<StudentFormGroup>;
 }>;
 
 /** A day is invalid when it has both ends and start is after end. */
@@ -48,6 +53,17 @@ export function startBeforeEndValidator(group: AbstractControl): ValidationError
   const end = group.get('end')?.value as string;
   if (!start || !end) return null;
   return start <= end ? null : { startAfterEnd: true };
+}
+
+export function buildStudentRow(
+  fb: NonNullableFormBuilder,
+  studentId: number,
+  obs: string | null = null,
+): StudentFormGroup {
+  return fb.group({
+    studentId: fb.control(studentId),
+    obs: fb.control(obs ?? ''),
+  });
 }
 
 function buildScheduleRow(
@@ -85,7 +101,6 @@ export function buildGroupFormGroup(
     grupo: fb.control(group.grupo ?? '', [Validators.maxLength(10)]),
     cupo: fb.control(group.cupo ?? '', [Validators.pattern(CUPO_PATTERN)]),
     professorId: fb.control<number | null>(group.professorId),
-    obs: fb.control(group.obs ?? ''),
     schedule: fb.array(
       SCHEDULE_DAYS.map((day) =>
         buildScheduleRow(
@@ -95,7 +110,9 @@ export function buildGroupFormGroup(
         ),
       ),
     ),
-    studentIds: fb.control(group.students.map((student) => student.studentId)),
+    students: fb.array(
+      group.students.map((student) => buildStudentRow(fb, student.studentId, student.obs)),
+    ),
   });
 }
 
@@ -116,7 +133,6 @@ export function emptyGroup(uea: UeaCatalogItem): TrimestralGroup {
     employeeNumber: null,
     professorName: null,
     schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
-    obs: null,
     students: [],
   };
 }
@@ -137,7 +153,8 @@ export function buildSaveGroupsRequest(
         // A group created in this session carries id 0 from `emptyGroup`; the API wants null.
         id: value.id || null,
         ueaId: value.ueaId,
-        grupo: orNull(value.grupo)?.toUpperCase() ?? null,
+        // Sin normalizar: la spec pide «sin formato forzado» por las letras «quemadas».
+        grupo: orNull(value.grupo),
         cupo: orNull(value.cupo),
         professorId: value.professorId,
         schedule: value.schedule.map((day) => ({
@@ -146,8 +163,10 @@ export function buildSaveGroupsRequest(
           end: orNull(day.end),
           lab: day.lab,
         })),
-        obs: orNull(value.obs),
-        studentIds: value.studentIds,
+        students: value.students.map((student) => ({
+          studentId: student.studentId,
+          obs: orNull(student.obs),
+        })),
       };
     }),
   };

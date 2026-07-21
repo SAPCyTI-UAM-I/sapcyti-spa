@@ -27,6 +27,15 @@
           </div>
 
           <div class="gap-sm flex flex-wrap">
+            @if (editable()) {
+              <p-button
+                [label]="'TRIMESTRAL_PLANNING.ACTIONS.SAVE' | translate"
+                icon="pi pi-save"
+                [loading]="editor()?.saving() ?? false"
+                (onClick)="editor()?.save()"
+                data-testid="save-groups"
+              />
+            }
             <p-button
               [label]="'TRIMESTRAL_PLANNING.ACTIONS.DOWNLOAD' | translate"
               icon="pi pi-download"
@@ -77,17 +86,30 @@
           <p-message severity="error" [text]="planError | domainError: errorScope" />
         }
 
+        <!--
+          Colapsados: son informativos, no accionables, y apilados empujaban los grupos
+          fuera de la pantalla. Lo accionable vive en el encabezado de cada grupo.
+        -->
         @if (current.warnings.length > 0) {
-          <div class="gap-xs flex flex-col" data-testid="plan-warnings">
-            @for (warning of current.warnings; track $index) {
-              <p-message
-                severity="warn"
-                [text]="
-                  'TRIMESTRAL_PLANNING.WARNINGS.' + warning.code | translate: warningParams(warning)
-                "
-              />
-            }
-          </div>
+          <details class="border-outline rounded-lg border" data-testid="plan-warnings">
+            <summary class="p-sm text-body-md text-warning cursor-pointer">
+              ⚠
+              {{
+                'TRIMESTRAL_PLANNING.DETAIL.WARNING_COUNT'
+                  | translate: { count: current.warnings.length }
+              }}
+            </summary>
+            <ul class="p-sm gap-xs flex flex-col pt-0">
+              @for (warning of current.warnings; track $index) {
+                <li class="text-body-md">
+                  {{
+                    'TRIMESTRAL_PLANNING.WARNINGS.' + warning.code
+                      | translate: warningParams(warning)
+                  }}
+                </li>
+              }
+            </ul>
+          </details>
         }
 
         <!-- Grupos: editables en BORRADOR, solo lectura en TERMINADA -->

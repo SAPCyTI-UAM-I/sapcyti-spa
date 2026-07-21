@@ -6,6 +6,7 @@ import {
   GroupStudent,
   ProfessorCatalogItem,
   StudentCatalogItem,
+  TrimestralGroup,
   UeaCatalogItem,
 } from '../../../models';
 import { TrimestralPlanService } from './trimestral-plan.service';
@@ -16,6 +17,8 @@ export interface PersonOption {
 }
 
 const DEBOUNCE_MS = 300;
+
+type Picker = 'professors' | 'students' | 'ueas';
 
 /**
  * Debounced remote search for the professor and student pickers (HU-59). Same shape as
@@ -35,25 +38,36 @@ export class PlanPickersController {
   readonly ueas = signal<PersonOption[]>([]);
   private readonly ueaCatalog = signal<UeaCatalogItem[]>([]);
   private readonly studentCatalog = signal<StudentCatalogItem[]>([]);
-  readonly loading = signal(false);
+  /** Un indicador por buscador: los tres corren en paralelo y no comparten spinner. */
+  readonly professorsLoading = signal(false);
+  readonly studentsLoading = signal(false);
+  readonly ueasLoading = signal(false);
 
-  private timeout?: ReturnType<typeof setTimeout>;
+  private readonly timeouts = new Map<Picker, ReturnType<typeof setTimeout>>();
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      for (const timeout of this.timeouts.values()) {
+        clearTimeout(timeout);
+      }
+    });
+  }
 
   /** Handler for `p-select (onFilter)`. */
   onProfessorFilter(term: string | null | undefined): void {
-    this.debounce(() => this.loadProfessors(term ?? ''));
+    this.debounce('professors', () => this.loadProfessors(term ?? ''));
   }
 
   onStudentFilter(term: string | null | undefined): void {
-    this.debounce(() => this.loadStudents(term ?? ''));
+    this.debounce('students', () => this.loadStudents(term ?? ''));
   }
 
   loadProfessors(search = ''): void {
-    this.loading.set(true);
+    this.professorsLoading.set(true);
     this.service
       .searchProfessors(search.trim())
       .pipe(
-        finalize(() => this.loading.set(false)),
+        finalize(() => this.professorsLoading.set(false)),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
@@ -63,11 +77,11 @@ export class PlanPickersController {
   }
 
   loadStudents(search = ''): void {
-    this.loading.set(true);
+    this.studentsLoading.set(true);
     this.service
       .searchStudents(search.trim())
       .pipe(
-        finalize(() => this.loading.set(false)),
+        finalize(() => this.studentsLoading.set(false)),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
@@ -85,15 +99,15 @@ export class PlanPickersController {
   }
 
   onUeaFilter(term: string | null | undefined): void {
-    this.debounce(() => this.loadUeas(term ?? ''));
+    this.debounce('ueas', () => this.loadUeas(term ?? ''));
   }
 
   loadUeas(search = ''): void {
-    this.loading.set(true);
+    this.ueasLoading.set(true);
     this.service
       .searchUeas(search.trim())
       .pipe(
-        finalize(() => this.loading.set(false)),
+        finalize(() => this.ueasLoading.set(false)),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
@@ -122,6 +136,21 @@ export class PlanPickersController {
   }
 
   /**
+   * Ídem para los profesores ya asignados: el encabezado del grupo dice «sin profesor»
+   * cuando no encuentra la opción, así que un profesor fuera de la primera página del
+   * buscador mentiría. El snapshot del plan trae NEMP y nombre.
+   */
+  pinProfessors(groups: readonly TrimestralGroup[]): void {
+    const pinned = groups.flatMap((group): PersonOption[] => {
+      const { professorId, employeeNumber, professorName } = group;
+      if (professorId === null) return [];
+      const name = professorName ?? '';
+      return [{ value: professorId, label: employeeNumber ? `${employeeNumber} — ${name}` : name }];
+    });
+    this.professors.update((options) => mergeOptions(options, pinned));
+  }
+
+  /**
    * Fija en las opciones a los alumnos que ya están en algún grupo. Sin esto, un alumno
    * que el buscador no devuelve —dado de baja, o fuera de la página filtrada— no
    * aparecería marcado en el multiselect y se perdería al guardar.
@@ -136,9 +165,10 @@ export class PlanPickersController {
     this.students.update((options) => mergeOptions(options, pinned));
   }
 
-  private debounce(run: () => void): void {
-    clearTimeout(this.timeout);
-    this.timeout = setTimeout(run, DEBOUNCE_MS);
+  /** Debounce por buscador: teclear en uno no puede cancelar la búsqueda de otro. */
+  private debounce(picker: Picker, run: () => void): void {
+    clearTimeout(this.timeouts.get(picker));
+    this.timeouts.set(picker, setTimeout(run, DEBOUNCE_MS));
   }
 }
 

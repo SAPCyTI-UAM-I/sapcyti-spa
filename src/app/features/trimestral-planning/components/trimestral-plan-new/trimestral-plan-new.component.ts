@@ -104,6 +104,11 @@ export class TrimestralPlanNewComponent implements OnInit {
         next: ({ surveys, plans }) => {
           this.surveys.set(surveys);
           this.plans.set(plans);
+          // La encuesta preseleccionada pudo reabrirse entre el atajo y esta carga: sin
+          // esto quedaría un id que ningún radio muestra marcado y «Generar» habilitado.
+          if (!this.closedSurveys().some((survey) => survey.id === this.selectedId())) {
+            this.selectedId.set(null);
+          }
         },
         error: () => {
           this.surveys.set([]);

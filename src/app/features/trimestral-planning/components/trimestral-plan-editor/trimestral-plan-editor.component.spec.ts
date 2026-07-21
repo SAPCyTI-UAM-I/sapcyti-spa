@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { FormBuilder } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
@@ -6,6 +7,7 @@ import { of } from 'rxjs';
 
 import { SCHEDULE_DAYS, TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
+import { buildStudentRow } from '../../utils/group-form.util';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
 import { TrimestralPlanEditorComponent } from './trimestral-plan-editor.component';
 
@@ -31,7 +33,6 @@ function plan(status: TrimestralPlanStatus = 'BORRADOR'): TrimestralPlanDetail {
         employeeNumber: null,
         professorName: null,
         schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
-        obs: null,
         students: [
           {
             studentId: 5,
@@ -39,6 +40,7 @@ function plan(status: TrimestralPlanStatus = 'BORRADOR'): TrimestralPlanDetail {
             fullName: 'Elena Torres Gil',
             source: 'SURVEY',
             academicTerm: 'IV',
+            obs: null,
           },
         ],
       },
@@ -84,6 +86,35 @@ describe('TrimestralPlanEditorComponent', () => {
     return { fixture, component: fixture.componentInstance, saveGroups };
   }
 
+  it('orders the groups by UEA clave, regardless of the group letter', async () => {
+    const detail = plan();
+    const base = detail.groups[0]!;
+    detail.groups = [
+      { ...base, id: 11, clave: '2156073', grupo: 'CP43' },
+      { ...base, id: 12, clave: '2156027', grupo: 'CP43A' },
+      { ...base, id: 13, clave: '2156024', grupo: 'CO43' },
+      { ...base, id: 14, clave: '2156040', grupo: null },
+    ];
+    const { component } = await setup(detail);
+
+    // Índices ordenados por clave ascendente: 2156024, 2156027, 2156040, 2156073.
+    expect(component.order()).toEqual([2, 1, 3, 0]);
+  });
+
+  it('reorders when a group is added or removed, not while typing the letter', async () => {
+    const { component } = await setup();
+
+    component.addGroup(7); // clave 2156027 > 2156024 → va después
+    expect(component.order()).toEqual([0, 1]);
+
+    // La clave es snapshot inmutable: teclear la letra nunca reordena.
+    component.groups.at(1).controls.grupo.setValue('CO43A');
+    expect(component.order()).toEqual([0, 1]);
+
+    component.removeGroup(0); // queda solo el grupo agregado, ahora en índice 0
+    expect(component.order()).toEqual([0]);
+  });
+
   it('builds one form group per plan group, with the 5 fixed days', async () => {
     const { component } = await setup();
 
@@ -116,7 +147,7 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(saveGroups).toHaveBeenCalledWith(1, {
       groups: [
         expect.objectContaining({ id: 10 }),
-        expect.objectContaining({ id: null, ueaId: 7, grupo: null, cupo: null, studentIds: [] }),
+        expect.objectContaining({ id: null, ueaId: 7, grupo: null, cupo: null, students: [] }),
       ],
     });
   });
@@ -153,17 +184,20 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.groups.length).toBe(0);
   });
 
-  it('lets the membership multiselect drive studentIds directly', async () => {
+  it('adds and removes student rows without touching the server snapshots', async () => {
     const { component } = await setup();
-    const control = component.groups.at(0).controls.studentIds;
+    const fb = new FormBuilder().nonNullable;
+    const rows = component.groups.at(0).controls.students;
 
-    // Es lo que hace `p-multiselect` con formControlName: escribe el arreglo completo.
-    control.setValue([5, 3]);
-    expect(control.value).toEqual([5, 3]);
+    rows.push(buildStudentRow(fb, 3, 'PIB'));
+    expect(rows.getRawValue()).toEqual([
+      { studentId: 5, obs: '' },
+      { studentId: 3, obs: 'PIB' },
+    ]);
 
-    control.setValue([3]);
-    expect(control.value).toEqual([3]);
-    // Los snapshots del servidor no se tocan al marcar o desmarcar.
+    rows.removeAt(0);
+    expect(rows.getRawValue()).toEqual([{ studentId: 3, obs: 'PIB' }]);
+    // Los snapshots del servidor no se tocan al agregar o quitar filas.
     expect(component.studentsByIndex()[0]).toHaveLength(1);
   });
 
@@ -195,7 +229,13 @@ describe('TrimestralPlanEditorComponent', () => {
 
     expect(saveGroups).toHaveBeenCalledWith(1, {
       groups: [
-        expect.objectContaining({ id: 10, ueaId: 1, grupo: 'CO43', cupo: '15', studentIds: [5] }),
+        expect.objectContaining({
+          id: 10,
+          ueaId: 1,
+          grupo: 'CO43',
+          cupo: '15',
+          students: [{ studentId: 5, obs: null }],
+        }),
       ],
     });
     expect(emitted).toHaveBeenCalled();

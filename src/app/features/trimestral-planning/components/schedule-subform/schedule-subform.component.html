@@ -1,16 +1,15 @@
-<fieldset class="gap-sm flex flex-col">
-  <legend class="text-body-md pb-xs font-medium">
-    {{ 'TRIMESTRAL_PLANNING.GROUP.SCHEDULE' | translate }}
-  </legend>
+<fieldset>
+  <legend class="sr-only">{{ 'TRIMESTRAL_PLANNING.GROUP.SCHEDULE' | translate }}</legend>
 
-  <!-- Matriz día × campo: ocupa 3 filas en vez de 5 bloques apilados. -->
+  <!-- Matriz uniforme (decisión 2026-07-21): `table-fixed` reparte las 5 columnas de día
+       en anchos iguales al ancho completo de la tarjeta — nada se envuelve chueco. -->
   <div class="overflow-x-auto">
-    <table class="border-collapse">
+    <table class="w-full min-w-[36rem] table-fixed border-collapse">
       <thead>
         <tr>
-          <td></td>
+          <td class="w-14"></td>
           @for (day of schedule().controls; track day.controls.day.value) {
-            <th scope="col" class="px-sm pb-xs text-caption text-text-secondary font-medium">
+            <th scope="col" class="px-xs pb-xs text-caption text-text-secondary font-medium">
               {{ 'TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate }}
             </th>
           }
@@ -22,11 +21,11 @@
             {{ 'TRIMESTRAL_PLANNING.GROUP.START' | translate }}
           </th>
           @for (day of schedule().controls; track day.controls.day.value) {
-            <td class="px-sm pb-xs" [formGroup]="day">
+            <td class="px-xs pb-xs" [formGroup]="day">
               <input
                 type="time"
                 formControlName="start"
-                class="border-outline p-xs rounded-md border"
+                class="border-outline p-xs w-full rounded-md border"
                 [attr.aria-label]="
                   ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
                   ' · ' +
@@ -42,11 +41,11 @@
             {{ 'TRIMESTRAL_PLANNING.GROUP.END' | translate }}
           </th>
           @for (day of schedule().controls; track day.controls.day.value) {
-            <td class="px-sm pb-xs" [formGroup]="day">
+            <td class="px-xs pb-xs" [formGroup]="day">
               <input
                 type="time"
                 formControlName="end"
-                class="border-outline p-xs rounded-md border"
+                class="border-outline p-xs w-full rounded-md border"
                 [attr.aria-label]="
                   ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
                   ' · ' +
@@ -67,7 +66,7 @@
             {{ 'TRIMESTRAL_PLANNING.GROUP.LAB' | translate }}
           </th>
           @for (day of schedule().controls; track day.controls.day.value) {
-            <td class="px-sm text-center" [formGroup]="day">
+            <td class="px-xs text-center" [formGroup]="day">
               <p-checkbox
                 formControlName="lab"
                 [binary]="true"

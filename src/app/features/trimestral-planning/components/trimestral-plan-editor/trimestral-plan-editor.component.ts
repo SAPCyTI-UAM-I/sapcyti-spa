@@ -72,9 +72,17 @@ export class TrimestralPlanEditorComponent {
   readonly groups = this.fb.array<GroupFormGroup>([]);
   /**
    * Student snapshots per group, kept beside the form: names and matrículas are read-only
-   * data the API never accepts back, while the form only carries `studentIds`.
+   * data the API never accepts back, while the form only carries studentId + nota.
    */
   readonly studentsByIndex = signal<GroupStudent[][]>([]);
+
+  /**
+   * Índices de los grupos ordenados por clave de UEA (decisión 2026-07-21: lista plana,
+   * sin secciones por cohorte — distintos alumnos meten las UEAs en desorden y agrupar
+   * por letra fragmentaba la lista). Se recalcula al construir, agregar o quitar grupos;
+   * la clave es un snapshot inmutable, así que teclear nunca reordena.
+   */
+  readonly order = signal<number[]>([]);
 
   readonly saving = signal(false);
   readonly submitted = signal(false);
@@ -84,7 +92,7 @@ export class TrimestralPlanEditorComponent {
   readonly ueaPick = signal<number | null>(null);
 
   readonly ueaOptions = this.people.ueas;
-  readonly peopleLoading = this.people.loading;
+  readonly ueasLoading = this.people.ueasLoading;
 
   /**
    * Ediciones capturadas que aún no se guardan. El detalle lo consulta antes de
@@ -109,6 +117,7 @@ export class TrimestralPlanEditorComponent {
   removeGroup(index: number): void {
     this.groups.removeAt(index);
     this.studentsByIndex.update((all) => all.filter((_, i) => i !== index));
+    this.reorder();
   }
 
   /**
@@ -124,6 +133,7 @@ export class TrimestralPlanEditorComponent {
     this.groups.push(buildGroupFormGroup(this.fb, emptyGroup(uea)));
     this.studentsByIndex.update((all) => [...all, []]);
     this.ueaPick.set(null);
+    this.reorder();
   }
 
   onUeaFilter(event: { filter?: string | null }): void {
@@ -167,6 +177,7 @@ export class TrimestralPlanEditorComponent {
     // Los ya asignados se fijan en las opciones para que el multiselect los muestre
     // marcados aunque el buscador no los devuelva (p. ej. un alumno dado de baja).
     this.people.pinStudents(plan.groups.flatMap((group) => group.students));
+    this.people.pinProfessors(plan.groups);
     this.submitted.set(false);
     this.error.set(null);
     // Se limpia al final: clear()/push() emiten valueChanges de forma síncrona.
@@ -174,5 +185,15 @@ export class TrimestralPlanEditorComponent {
     if (!isEditable(plan.status)) {
       this.groups.disable({ emitEvent: false });
     }
+    this.reorder();
+  }
+
+  private reorder(): void {
+    const clave = (index: number) => this.groups.at(index).controls.clave.value;
+    this.order.set(
+      this.groups.controls
+        .map((_, index) => index)
+        .sort((a, b) => clave(a).localeCompare(clave(b), 'es', { numeric: true })),
+    );
   }
 }

@@ -823,11 +823,15 @@
       "UEAS_TITLE": "Available UEAs"
     },
     "RESULTS": {
+      "BLANK_STAT": "Blank",
+      "BLANKS_HINT": "These students answered without choosing UEAs; they add no demand.",
+      "BLANKS_TITLE": "Blank enrollment",
       "COL_CLAVE": "Code",
       "COL_CREDITOS": "Credits",
       "COL_DEMAND": "Responses",
       "COL_FORMACION": "Training type",
       "COL_NOMBRE": "Name",
+      "EMPTY_ALL_BLANK": "All responses were blank enrollment; there is no UEA demand.",
       "EMPTY_NO_RESPONSES": "This survey has no responses yet.",
       "NO_STUDENTS": "No student selected this UEA.",
       "RESPONDED": "Responded",
@@ -901,6 +905,7 @@
       "GENERATE": "Generate plan",
       "REGENERATE": "Regenerate",
       "REMOVE_GROUP": "Remove group",
+      "REMOVE_STUDENT": "Remove student",
       "SAVE": "Save groups"
     },
     "DAYS": {
@@ -909,6 +914,13 @@
       "MAR": "Tuesday",
       "MIE": "Wednesday",
       "VIE": "Friday"
+    },
+    "DAYS_SHORT": {
+      "JUE": "Thu",
+      "LUN": "Mon",
+      "MAR": "Tue",
+      "MIE": "Wed",
+      "VIE": "Fri"
     },
     "DETAIL": {
       "BACK_TO_DRAFT_WARNING": "The Excel file you already delivered will stop matching this plan. Move it back to draft?",
@@ -922,7 +934,8 @@
       "REGENERATE_WARNING": "Regenerating discards every manual edit and rebuilds the plan from the survey.",
       "SAVED": "Groups saved",
       "TITLE": "Trimestral plan {{term}}",
-      "UNSAVED_WARNING": "You have unsaved group changes. Finishing now will discard them. Continue?"
+      "UNSAVED_WARNING": "You have unsaved group changes. Finishing now will discard them. Continue?",
+      "WARNING_COUNT": "{{count}} generation warnings"
     },
     "ERRORS": {
       "already_exists": "A plan already exists for that term.",
@@ -943,9 +956,8 @@
       "GRUPO": "Group",
       "LAB": "LAB",
       "MANUAL": "added manually",
-      "NO_LETTER": "No group",
-      "NO_STUDENTS": "This group has no students.",
-      "OBS": "Notes",
+      "MATRICULA": "Enrollment ID",
+      "NAME": "Name",
       "OVER_CAPACITY": "Over quota",
       "PROFESSOR": "Professor",
       "SCHEDULE": "Schedule",
@@ -954,8 +966,8 @@
       "START": "Start",
       "START_AFTER_END": "The start time must be earlier than the end time.",
       "STUDENT_COUNT": "{{count}} students",
-      "STUDENTS": "Students",
-      "UEA": "UEA"
+      "STUDENT_NOTE": "Note",
+      "TRIM": "Term"
     },
     "LIST": {
       "BLANKS": "Blank",

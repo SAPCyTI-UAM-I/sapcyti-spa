@@ -66,7 +66,8 @@ export class TrimestralPlanDetailComponent implements OnInit {
   readonly showBackToDraftDialog = signal(false);
   readonly showUnsavedDialog = signal(false);
 
-  private readonly editor = viewChild(TrimestralPlanEditorComponent);
+  /** Referencia al editor: el botón «Guardar grupos» vive en el encabezado del detalle. */
+  protected readonly editor = viewChild(TrimestralPlanEditorComponent);
 
   readonly editable = computed(() => {
     const current = this.plan();

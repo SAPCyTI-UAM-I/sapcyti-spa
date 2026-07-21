@@ -65,7 +65,7 @@ describe('TrimestralPlanDetailComponent', () => {
     expect(component.editable()).toBe(true);
   });
 
-  it('renders one banner per warning', async () => {
+  it('lists one line per warning inside the collapsed panel', async () => {
     const { fixture } = await setup({
       get: vi.fn(() =>
         of(
@@ -76,9 +76,7 @@ describe('TrimestralPlanDetailComponent', () => {
       ),
     });
 
-    const banners = fixture.nativeElement.querySelectorAll(
-      '[data-testid="plan-warnings"] p-message',
-    );
+    const banners = fixture.nativeElement.querySelectorAll('[data-testid="plan-warnings"] li');
     expect(banners).toHaveLength(2);
   });
 
@@ -114,7 +112,6 @@ describe('TrimestralPlanDetailComponent', () => {
                   end: null,
                   lab: false,
                 })),
-                obs: null,
                 students: [],
               },
             ],

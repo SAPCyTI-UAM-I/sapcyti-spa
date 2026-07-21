@@ -11,6 +11,7 @@ import {
   PageResponse,
   PlanWarning,
   ProfessorCatalogItem,
+  SaveGroupStudentRequest,
   SaveTrimestralPlanRequest,
   SCHEDULE_DAYS,
   StudentCatalogItem,
@@ -58,8 +59,30 @@ interface SeedSurvey {
   responses: SeedResponse[];
 }
 
+/** Avisos que solo la generación puede producir: al guardar grupos no se recalculan. */
+const GENERATION_WARNINGS = new Set<PlanWarning['code']>([
+  'NO_RESPONSES',
+  'UEA_DEACTIVATED',
+  'STUDENT_INACTIVE',
+]);
+
+/** Dos alumnos que eligen la misma UEA sin cupo son un aviso, no dos. */
+function dedupeWarnings(warnings: readonly PlanWarning[]): PlanWarning[] {
+  const byKey = new Map(warnings.map((warning) => [JSON.stringify(warning), warning]));
+  return [...byKey.values()];
+}
+
 const SEED_SURVEYS: SeedSurvey[] = [
   { id: 3, term: '27I', status: 'PROGRAMADO', daysFromNow: [3, 10], responses: [] },
+  // Encuesta del plan `outdated` (25I): sin ella, Regenerar —la única acción que ofrece el
+  // badge «Desactualizado»— respondería SURVEY_NOT_FOUND y el seed quedaría muerto.
+  {
+    id: 6,
+    term: '25I',
+    status: 'CERRADO',
+    daysFromNow: [-200, -180],
+    responses: [{ studentId: 2, academicTerm: 'III', mode: 'ENROLL_UEAS', ueaIds: [5] }],
+  },
   // Cerrada pero solo con inscripciones en blanco: generar de aquí produce un plan sin
   // filas de UEA y el aviso NO_RESPONSES (HU-58).
   {
@@ -311,13 +334,13 @@ export class TrimestralPlanMockStore {
         employeeNumber: professor?.employeeNumber ?? null,
         professorName: professor ? `${professor.firstName} ${professor.firstLastName}` : null,
         schedule: update.schedule,
-        obs: update.obs,
         // `source`/`academicTerm` are snapshots the API never accepts on write: keep the
         // previous value when the student was already there, otherwise it is a MANUAL add.
-        students: update.studentIds.map((studentId) =>
+        // La nota (`obs`, col AB del Excel) sí es escribible por alumno.
+        students: update.students.map((member) =>
           toGroupStudent(
-            studentId,
-            previous?.students.find((s) => s.studentId === studentId),
+            member,
+            previous?.students.find((s) => s.studentId === member.studentId),
           ),
         ),
       };
@@ -433,7 +456,12 @@ export class TrimestralPlanMockStore {
 
   /** Warnings are recomputed on every write, never on read (HU-58 note 2). */
   private recomputeWarnings(plan: TrimestralPlanDetail): PlanWarning[] {
-    const warnings: PlanWarning[] = [];
+    // Los avisos de generación no son recalculables desde los grupos —la encuesta ya no se
+    // relee— pero tampoco pueden desaparecer al guardar: la regla 7 del api-spec dice que la
+    // generación nunca omite información en silencio. Se arrastran hasta regenerar.
+    const warnings: PlanWarning[] = plan.warnings.filter((warning) =>
+      GENERATION_WARNINGS.has(warning.code),
+    );
     for (const group of plan.groups) {
       if (!hasRoom(group, group.cupo, 0)) {
         warnings.push({ code: 'CUPO_EXCEEDED', groupId: group.id });
@@ -450,7 +478,7 @@ export class TrimestralPlanMockStore {
         warnings.push({ code: 'UEA_NO_QUOTA', clave: group.clave });
       }
     }
-    return warnings;
+    return dedupeWarnings(warnings);
   }
 
   private toSummary(plan: TrimestralPlanDetail): TrimestralPlanSummary {
@@ -544,6 +572,7 @@ function buildFromSurvey(
         fullName: seedFullName(student),
         source: 'SURVEY',
         academicTerm: response.academicTerm,
+        obs: null,
       };
 
       // Grupos ya creados para la misma UEA y la misma letra base. Sin letra (trimestres
@@ -571,7 +600,6 @@ function buildFromSurvey(
         employeeNumber: null,
         professorName: null,
         schedule: emptySchedule(),
-        obs: null,
         students: [groupStudent],
       });
     }
@@ -593,15 +621,15 @@ function buildFromSurvey(
         : [];
     });
 
-  return { groups, blankStudents, warnings };
+  return { groups, blankStudents, warnings: dedupeWarnings(warnings) };
 }
 
 /** Snapshots (`source`, `academicTerm`) survive a save; a brand-new id is a MANUAL add. */
-function toGroupStudent(studentId: number, previous?: GroupStudent): GroupStudent {
-  if (previous) return { ...previous };
-  const student = findStudent(studentId);
+function toGroupStudent(member: SaveGroupStudentRequest, previous?: GroupStudent): GroupStudent {
+  if (previous) return { ...previous, obs: member.obs };
+  const student = findStudent(member.studentId);
   if (!student) {
-    throw mockApiError({ status: 404, message: `Alumno ${studentId} no existe` });
+    throw mockApiError({ status: 404, message: `Alumno ${member.studentId} no existe` });
   }
   return {
     studentId: student.id,
@@ -609,6 +637,7 @@ function toGroupStudent(studentId: number, previous?: GroupStudent): GroupStuden
     fullName: seedFullName(student),
     source: 'MANUAL',
     academicTerm: null,
+    obs: member.obs,
   };
 }
 
@@ -670,7 +699,6 @@ function seedFinished25P(): TrimestralPlanDetail {
           end: day === 'LUN' || day === 'MIE' ? '10:00' : null,
           lab: day === 'MIE',
         })),
-        obs: null,
         students: [
           {
             studentId: ana.id,
@@ -678,6 +706,7 @@ function seedFinished25P(): TrimestralPlanDetail {
             fullName: seedFullName(ana),
             source: 'SURVEY',
             academicTerm: 'I',
+            obs: null,
           },
         ],
       },
@@ -697,7 +726,7 @@ function seedOutdated25I(): TrimestralPlanDetail {
     id: 3,
     term: '25I',
     status: 'BORRADOR',
-    surveyId: 0,
+    surveyId: 6,
     outdated: true,
     warnings: [{ code: 'PROFESSOR_INACTIVE', employeeNumber: '40004', groupId: 300 }],
     blankStudents: [],
@@ -714,7 +743,6 @@ function seedOutdated25I(): TrimestralPlanDetail {
         employeeNumber: '40004',
         professorName: 'Ernesto Salas',
         schedule: emptySchedule(),
-        obs: null,
         students: [
           {
             studentId: bruno.id,
@@ -722,6 +750,7 @@ function seedOutdated25I(): TrimestralPlanDetail {
             fullName: seedFullName(bruno),
             source: 'SURVEY',
             academicTerm: 'III',
+            obs: null,
           },
         ],
       },

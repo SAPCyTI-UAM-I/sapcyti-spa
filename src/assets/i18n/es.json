@@ -823,11 +823,15 @@
       "UEAS_TITLE": "UEAs disponibles"
     },
     "RESULTS": {
+      "BLANK_STAT": "En blanco",
+      "BLANKS_HINT": "Estos alumnos respondieron sin elegir UEAs; no generan demanda.",
+      "BLANKS_TITLE": "Inscripción en blanco",
       "COL_CLAVE": "Clave",
       "COL_CREDITOS": "Créditos",
       "COL_DEMAND": "Respuestas",
       "COL_FORMACION": "Tipo de formación",
       "COL_NOMBRE": "Nombre",
+      "EMPTY_ALL_BLANK": "Todas las respuestas fueron inscripción en blanco; no hay demanda de UEAs.",
       "EMPTY_NO_RESPONSES": "Este sondeo aún no tiene respuestas.",
       "NO_STUDENTS": "Ningún alumno seleccionó esta UEA.",
       "RESPONDED": "Respondieron",
@@ -901,6 +905,7 @@
       "GENERATE": "Generar planeación",
       "REGENERATE": "Regenerar",
       "REMOVE_GROUP": "Quitar grupo",
+      "REMOVE_STUDENT": "Quitar alumno",
       "SAVE": "Guardar grupos"
     },
     "DAYS": {
@@ -909,6 +914,13 @@
       "MAR": "Martes",
       "MIE": "Miércoles",
       "VIE": "Viernes"
+    },
+    "DAYS_SHORT": {
+      "JUE": "Jue",
+      "LUN": "Lun",
+      "MAR": "Mar",
+      "MIE": "Mié",
+      "VIE": "Vie"
     },
     "DETAIL": {
       "BACK_TO_DRAFT_WARNING": "El Excel que ya entregaste dejará de coincidir con la planeación. ¿Regresar a borrador?",
@@ -922,7 +934,8 @@
       "REGENERATE_WARNING": "Regenerar descarta todas las ediciones manuales y reconstruye la planeación desde la encuesta.",
       "SAVED": "Grupos guardados",
       "TITLE": "Planeación trimestral {{term}}",
-      "UNSAVED_WARNING": "Tienes cambios en los grupos sin guardar. Si terminas ahora se perderán. ¿Continuar?"
+      "UNSAVED_WARNING": "Tienes cambios en los grupos sin guardar. Si terminas ahora se perderán. ¿Continuar?",
+      "WARNING_COUNT": "{{count}} avisos de generación"
     },
     "ERRORS": {
       "already_exists": "Ya existe una planeación para ese trimestre.",
@@ -943,9 +956,8 @@
       "GRUPO": "Grupo",
       "LAB": "LAB",
       "MANUAL": "agregado a mano",
-      "NO_LETTER": "Sin grupo",
-      "NO_STUDENTS": "El grupo no tiene alumnos.",
-      "OBS": "Observaciones",
+      "MATRICULA": "Matrícula",
+      "NAME": "Nombre",
       "OVER_CAPACITY": "Rebasa el cupo",
       "PROFESSOR": "Profesor",
       "SCHEDULE": "Horario",
@@ -954,8 +966,8 @@
       "START": "Inicio",
       "START_AFTER_END": "La hora de inicio debe ser anterior a la de fin.",
       "STUDENT_COUNT": "{{count}} alumnos",
-      "STUDENTS": "Alumnos",
-      "UEA": "UEA"
+      "STUDENT_NOTE": "Nota",
+      "TRIM": "Trim."
     },
     "LIST": {
       "BLANKS": "En blanco",

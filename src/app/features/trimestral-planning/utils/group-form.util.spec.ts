@@ -36,7 +36,6 @@ const group: TrimestralGroup = {
   employeeNumber: '40001',
   professorName: 'Rafaela Blanco',
   schedule: [{ day: 'LUN', start: '08:30', end: '10:00', lab: false }],
-  obs: '  ',
   students: [
     {
       studentId: 101,
@@ -44,6 +43,7 @@ const group: TrimestralGroup = {
       fullName: 'Ana',
       source: 'SURVEY',
       academicTerm: 'II',
+      obs: ' PIB ',
     },
   ],
 };
@@ -58,17 +58,18 @@ describe('group-form.util', () => {
     expect(days[1]).toMatchObject({ start: '', end: '', lab: false });
   });
 
-  it('maps the form back to the API payload, trimming and uppercasing', () => {
+  // La spec pide `grupo` «sin formato forzado» (letras «quemadas»): se manda tal cual.
+  it('maps the form back to the API payload, trimming but not reformatting the letter', () => {
     const request = buildSaveGroupsRequest([buildGroupFormGroup(fb, group)]);
 
     expect(request.groups[0]).toMatchObject({
       id: 12,
       ueaId: 40,
-      grupo: 'CO43',
+      grupo: 'co43',
       cupo: '25',
       professorId: 8,
-      obs: null,
-      studentIds: [101],
+      // La nota por alumno viaja con su fila, recortada igual que los demás strings.
+      students: [{ studentId: 101, obs: 'PIB' }],
     });
     expect(request.groups[0]!.schedule).toHaveLength(5);
     expect(request.groups[0]!.schedule[1]).toEqual({

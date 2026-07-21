@@ -5,15 +5,16 @@
     </p>
   }
 
-  <!-- Se rastrea por la instancia del FormGroup: los grupos nuevos comparten id 0 y
-       `0 ?? $index` no cae al índice, así que dos altas colisionaban de clave. -->
-  @for (group of groups.controls; track group; let i = $index) {
+  <!-- Lista plana ordenada por clave de UEA. Se rastrea por la instancia del FormGroup:
+       los grupos nuevos comparten id 0 y `0 ?? $index` no cae al índice, así que dos
+       altas colisionaban de clave. -->
+  @for (index of order(); track groups.at(index)) {
     <app-group-card
-      [form]="group"
-      [students]="studentsByIndex()[i] ?? []"
+      [form]="groups.at(index)"
+      [students]="studentsByIndex()[index] ?? []"
       [editable]="editable()"
       [submitted]="submitted()"
-      (removeGroup)="removeGroup(i)"
+      (removeGroup)="removeGroup(index)"
     />
   }
 
@@ -42,21 +43,11 @@
         optionLabel="label"
         optionValue="value"
         [filter]="true"
-        [loading]="peopleLoading()"
+        [loading]="ueasLoading()"
         [placeholder]="'TRIMESTRAL_PLANNING.GROUP.SEARCH_UEA' | translate"
         (onFilter)="onUeaFilter($event)"
         (ngModelChange)="addGroup($event)"
         data-testid="add-group-uea"
-      />
-    </div>
-
-    <div class="gap-sm flex flex-wrap">
-      <p-button
-        [label]="'TRIMESTRAL_PLANNING.ACTIONS.SAVE' | translate"
-        icon="pi pi-save"
-        [loading]="saving()"
-        (onClick)="save()"
-        data-testid="save-groups"
       />
     </div>
   }

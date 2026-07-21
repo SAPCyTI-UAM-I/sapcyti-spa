@@ -23,7 +23,6 @@ const group: TrimestralGroup = {
   employeeNumber: null,
   professorName: null,
   schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
-  obs: null,
   students: [student(1), student(2), student(3)],
 };
 
@@ -34,6 +33,7 @@ function student(studentId: number): GroupStudent {
     fullName: `Alumno ${studentId}`,
     source: 'SURVEY',
     academicTerm: 'II',
+    obs: null,
   };
 }
 
@@ -97,5 +97,32 @@ describe('GroupCardComponent', () => {
     const { card } = await setup();
 
     expect(card.tipoUea()).toBe('OBLIGATORIA');
+  });
+
+  // HU-59 — la tabla de alumnos agrega por typeahead y quita por fila.
+  it('adds a student once (no duplicates) and removes by row index', async () => {
+    const { fixture, host, card } = await setup();
+    const rows = host.form.controls.students;
+
+    card.addStudent(2); // ya es integrante: no duplica
+    expect(rows.length).toBe(3);
+
+    card.addStudent(99);
+    fixture.detectChanges();
+    expect(rows.length).toBe(4);
+    expect(card.members()).toHaveLength(4);
+    expect(card.studentPick()).toBeNull();
+
+    card.removeStudent(3);
+    expect(rows.length).toBe(3);
+  });
+
+  // Hoja de captura inline: el horario vive siempre visible en el DOM, sin nada que abrir.
+  it('renders the 5 day cells with their time inputs always visible', async () => {
+    const { fixture } = await setup();
+
+    const timeInputs = fixture.nativeElement.querySelectorAll('input[type="time"]');
+    expect(timeInputs).toHaveLength(10); // 5 días × inicio/fin, sin <details> de por medio
+    expect(fixture.nativeElement.querySelector('details')).toBeNull();
   });
 });

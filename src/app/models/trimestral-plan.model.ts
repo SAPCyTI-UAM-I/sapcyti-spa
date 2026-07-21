@@ -39,6 +39,8 @@ export interface GroupStudent {
   /** MANUAL = added by hand, did not answer the survey. */
   source: 'SURVEY' | 'MANUAL';
   academicTerm: AcademicTerm | null;
+  /** Per-student note, exported next to the matrícula (col AB), e.g. "Maestría Física". */
+  obs: string | null;
 }
 
 export interface BlankStudent {
@@ -64,7 +66,6 @@ export interface TrimestralGroup {
   professorName: string | null;
   /** Always 5 entries, LUN..VIE in order. */
   schedule: DaySchedule[];
-  obs: string | null;
   students: GroupStudent[];
 }
 
@@ -96,6 +97,11 @@ export interface CreateTrimestralPlanRequest {
   surveyId: number;
 }
 
+export interface SaveGroupStudentRequest {
+  studentId: number;
+  obs: string | null;
+}
+
 export interface SaveGroupRequest {
   /** null = new group. */
   id: number | null;
@@ -104,8 +110,7 @@ export interface SaveGroupRequest {
   cupo: string | null;
   professorId: number | null;
   schedule: DaySchedule[];
-  obs: string | null;
-  studentIds: number[];
+  students: SaveGroupStudentRequest[];
 }
 
 /** HU-59: replaces the full set of groups. */

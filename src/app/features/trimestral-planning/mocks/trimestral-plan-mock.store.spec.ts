@@ -113,9 +113,11 @@ describe('TrimestralPlanMockStore', () => {
           cupo: '*',
           professorId: null,
           schedule: group.schedule,
-          obs: null,
           // 3 = Carla, the blank responder, added by hand (HU-59).
-          studentIds: [...group.students.map((st) => st.studentId), 3],
+          students: [
+            ...group.students.map((st) => ({ studentId: st.studentId, obs: st.obs })),
+            { studentId: 3, obs: 'PIB' },
+          ],
         },
       ],
     });
@@ -124,6 +126,8 @@ describe('TrimestralPlanMockStore', () => {
     const carla = saved.groups[0]!.students.find((st) => st.studentId === 3);
     expect(carla?.source).toBe('MANUAL');
     expect(carla?.academicTerm).toBeNull();
+    // La nota por alumno (col AB del Excel) sí se escribe y persiste.
+    expect(carla?.obs).toBe('PIB');
   });
 
   it('warns instead of blocking when a group exceeds its cupo', () => {
@@ -139,8 +143,7 @@ describe('TrimestralPlanMockStore', () => {
           cupo: '1',
           professorId: null,
           schedule: group.schedule,
-          obs: null,
-          studentIds: [1, 3, 5],
+          students: [1, 3, 5].map((studentId) => ({ studentId, obs: null })),
         },
       ],
     });
