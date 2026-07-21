@@ -109,6 +109,8 @@ export class StudentMockStore {
 
     const student: StudentCatalogItem = {
       ...request,
+      // Opcional (HU-56): sin capturar se guarda null, como los alumnos históricos.
+      admissionTerm: request.admissionTerm ?? null,
       id: nextId(this.students),
       userId: 100 + nextId(this.students),
       active: true,

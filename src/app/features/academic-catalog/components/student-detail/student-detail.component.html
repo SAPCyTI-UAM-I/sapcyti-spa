@@ -310,11 +310,11 @@
                 }
               </div>
 
-              @if (entry.ueas.length === 0) {
+              @if (entry.mode === 'BLANK') {
                 <p class="text-caption text-text-secondary">
                   {{ 'ACADEMIC_CATALOG.HISTORY.BLANK' | translate }}
                 </p>
-              } @else {
+              } @else if (entry.ueas.length > 0) {
                 <ul class="gap-xs flex flex-col">
                   @for (uea of entry.ueas; track uea.clave) {
                     <li class="gap-xs flex flex-wrap items-baseline">

@@ -102,7 +102,8 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
     lastDegreeObtained: ['' as DegreeLevel, Validators.required],
     programType: ['', Validators.required],
     admissionDate: ['', Validators.required],
-    admissionTerm: ['', [Validators.required, Validators.pattern(TERM_PATTERN)]],
+    // Opcional (HU-56): un alumno puede no tenerlo; si se captura, el formato sí se valida.
+    admissionTerm: ['', [Validators.pattern(TERM_PATTERN)]],
     lineOfKnowledge: [''],
     researchArea: [''],
     tutorId: [null as number | null],
@@ -180,7 +181,7 @@ export class StudentRegistrationComponent extends CatalogRegistrationBase<Regist
       secondLastName: value.secondLastName.trim() || undefined,
       phoneExtension: value.phoneExtension.trim() || undefined,
       programType: value.programType as RegisterStudentRequest['programType'],
-      admissionTerm: value.admissionTerm.trim().toUpperCase(),
+      admissionTerm: value.admissionTerm.trim().toUpperCase() || undefined,
       graduateProgramId: this.auth.getCurrentUser()?.graduateProgramId ?? 1,
       lineOfKnowledge: value.lineOfKnowledge.trim() || undefined,
       researchArea: value.researchArea.trim() || undefined,

@@ -23,8 +23,8 @@ export interface RegisterStudentRequest {
   lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
-  /** HU-56: trimestre de ingreso, capturado a mano. Formato `AA[OIP]`, ej. `26O`. */
-  admissionTerm: string;
+  /** HU-56: trimestre de ingreso, opcional. Formato `AA[OIP]`, ej. `26O`. */
+  admissionTerm?: string;
   lineOfKnowledge?: string;
   researchArea?: string;
   tutorId?: number | null;
@@ -35,10 +35,7 @@ export interface StudentCatalogItem extends Omit<RegisterStudentRequest, 'admiss
   id: number;
   userId: number;
   active: boolean;
-  /**
-   * HU-56: obligatorio al capturar, pero **nullable de lectura**: los alumnos cargados
-   * antes de que existiera el campo no lo tienen y deben consultarse sin error.
-   */
+  /** HU-56: opcional; los alumnos cargados antes del campo no lo tienen. */
   admissionTerm: string | null;
 }
 

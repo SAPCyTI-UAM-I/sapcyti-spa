@@ -30,6 +30,12 @@ export class ProfessorOptionsController {
   private pinned: ProfessorOption[] = [];
   private searchTimeout?: ReturnType<typeof setTimeout>;
 
+  constructor() {
+    // Sin esto, el debounce pendiente corre tras destruir la vista y `takeUntilDestroyed`
+    // lanza NG0911 sobre un `DestroyRef` ya cerrado.
+    this.destroyRef.onDestroy(() => clearTimeout(this.searchTimeout));
+  }
+
   /** Pins a program's assigned tutor + advisors so they stay listed while filtering. */
   pinFromProgram(program: StudentProgramResponse): void {
     const pinned = new Map<number, ProfessorOption>();
