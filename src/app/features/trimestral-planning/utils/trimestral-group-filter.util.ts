@@ -1,12 +1,15 @@
 import type { I18nSelectOption } from '../../../shared/components';
 import { GroupFormGroup, hasScheduleCapture } from './group-form.util';
+import { isGroupIncomplete } from './occupancy.util';
 
 export type GroupFilterState =
   | ''
   | 'WITH_STUDENTS'
   | 'WITHOUT_STUDENTS'
   | 'WITHOUT_PROFESSORS'
-  | 'WITHOUT_SCHEDULE';
+  | 'WITHOUT_SCHEDULE'
+  | 'INCOMPLETE'
+  | 'HAS_VIOLATIONS';
 
 export interface TrimestralGroupFilters {
   readonly search: string;
@@ -22,6 +25,8 @@ export const UEA_TYPE_FILTERS: I18nSelectOption[] = [
 
 export const GROUP_STATE_FILTERS: I18nSelectOption<GroupFilterState>[] = [
   { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.ALL_GROUPS', value: '' },
+  { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.HAS_VIOLATIONS', value: 'HAS_VIOLATIONS' },
+  { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.INCOMPLETE', value: 'INCOMPLETE' },
   { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.WITH_STUDENTS', value: 'WITH_STUDENTS' },
   { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.WITHOUT_STUDENTS', value: 'WITHOUT_STUDENTS' },
   { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.WITHOUT_PROFESSORS', value: 'WITHOUT_PROFESSORS' },
@@ -37,9 +42,15 @@ function normalize(value: string): string {
     .trim();
 }
 
+/**
+ * `hasViolation` llega ya resuelto: sobrecupo y exceso de grupos dependen del resto
+ * de los grupos, así que no se pueden deducir del `GroupFormGroup` aislado y esta
+ * función seguiría siendo pura solo si el llamador hace ese cálculo.
+ */
 export function matchesGroupFilters(
   group: GroupFormGroup,
   filters: TrimestralGroupFilters,
+  hasViolation = false,
 ): boolean {
   const search = normalize(filters.search);
   const searchable = normalize(
@@ -49,11 +60,15 @@ export function matchesGroupFilters(
   return (
     (!search || searchable.includes(search)) &&
     (!filters.ueaType || group.controls.tipoUea.value === filters.ueaType) &&
-    matchesState(group, filters.state)
+    matchesState(group, filters.state, hasViolation)
   );
 }
 
-function matchesState(group: GroupFormGroup, state: GroupFilterState): boolean {
+function matchesState(
+  group: GroupFormGroup,
+  state: GroupFilterState,
+  hasViolation: boolean,
+): boolean {
   switch (state) {
     case 'WITH_STUDENTS':
       return group.controls.students.length > 0;
@@ -63,6 +78,10 @@ function matchesState(group: GroupFormGroup, state: GroupFilterState): boolean {
       return group.controls.professorIds.value.length === 0;
     case 'WITHOUT_SCHEDULE':
       return !hasScheduleCapture(group.controls.schedule);
+    case 'INCOMPLETE':
+      return isGroupIncomplete(group);
+    case 'HAS_VIOLATIONS':
+      return hasViolation;
     default:
       return true;
   }

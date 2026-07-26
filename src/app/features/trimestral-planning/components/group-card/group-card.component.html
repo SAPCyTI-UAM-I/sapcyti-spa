@@ -2,6 +2,7 @@
 <article
   class="border-outline bg-surface overflow-hidden rounded-xl border shadow-sm"
   [formGroup]="form()"
+  [attr.data-invalid]="form().invalid"
   data-testid="trimestral-group-card"
 >
   <header
@@ -63,66 +64,92 @@
             ) | translate
           "
           [attr.aria-expanded]="expanded()"
+          [attr.aria-controls]="panelId"
           (onClick)="toggleExpanded.emit()"
           data-testid="toggle-group-details"
         />
       </div>
     </div>
 
+    <!--
+      Lo que se necesita para decidir, con la tarjeta cerrada: la letra, cuántos
+      alumnos caben y qué falta. El resto (profesor, horario) confirma, así que va
+      en una sola línea de menor peso; el límite de grupos vive dentro, porque es
+      un dato de la UEA y no de este grupo.
+    -->
     <div class="gap-xs flex flex-wrap items-center">
       <span appInfoChip>
         <i class="pi pi-tag text-primary" aria-hidden="true"></i>
-        {{ 'TRIMESTRAL_PLANNING.GROUP.GRUPO' | translate }}:
         <strong>{{ form().controls.grupo.value || '—' }}</strong>
       </span>
-      <span appInfoChip>
-        {{ 'TRIMESTRAL_PLANNING.GROUP.CUPO' | translate }}:
-        <strong>{{ form().controls.cupo.value || '—' }}</strong>
-      </span>
-      <span appInfoChip>
-        <i class="pi pi-users text-primary" aria-hidden="true"></i>
-        {{
-          (members().length === 1
-            ? 'TRIMESTRAL_PLANNING.GROUP.STUDENT_COUNT_ONE'
-            : 'TRIMESTRAL_PLANNING.GROUP.STUDENT_COUNT'
-          ) | translate: { count: members().length }
-        }}
-      </span>
-      <span appInfoChip>
-        <i class="pi pi-clone text-primary" aria-hidden="true"></i>
-        {{
-          'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT'
-            | translate: { used: ueaGroupCount(), limit: maxGroups() }
-        }}
-      </span>
-      <span appInfoChip class="max-w-[28rem]" [title]="professorSummary()">
-        <i class="pi pi-user text-primary shrink-0" aria-hidden="true"></i>
-        <span class="truncate">
-          {{ professorSummary() || ('TRIMESTRAL_PLANNING.GROUP.NO_PROFESSOR' | translate) }}
-        </span>
-      </span>
-    </div>
 
-    <div class="gap-xs flex flex-wrap items-center" data-testid="schedule-summary">
-      <i class="pi pi-clock text-primary text-caption" aria-hidden="true"></i>
-      @for (entry of configuredSchedule(); track entry.day) {
-        <span appInfoChip>
-          {{ 'TRIMESTRAL_PLANNING.DAYS_SHORT.' + entry.day | translate }}
-          · {{ entry.start || '—' }}–{{ entry.end || '—' }}
-          @if (entry.lab) {
-            · LAB
-          }
+      <span
+        appInfoChip
+        [class]="occupancyChipClass()"
+        [attr.title]="'TRIMESTRAL_PLANNING.GROUP.OCCUPANCY' | translate"
+        data-testid="group-occupancy"
+      >
+        <i class="pi pi-users" aria-hidden="true"></i>
+        <strong>{{ occupancy() }}</strong>
+      </span>
+
+      @if (occupancySeverity() === 'over') {
+        <span
+          appInfoChip
+          class="border-error-border bg-error-container text-on-error-container"
+          data-testid="over-capacity-badge"
+        >
+          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+          {{ 'TRIMESTRAL_PLANNING.GROUP.OVER_CAPACITY' | translate }}
         </span>
-      } @empty {
-        <span class="text-caption text-text-secondary">
-          {{ 'TRIMESTRAL_PLANNING.GROUP.NO_SCHEDULE' | translate }}
+      }
+      @if (groupLimitExceeded()) {
+        <span
+          appInfoChip
+          class="border-error-border bg-error-container text-on-error-container"
+          data-testid="group-limit-badge"
+        >
+          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+          {{ 'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT_EXCEEDED' | translate }}
+        </span>
+      }
+      @if (incomplete()) {
+        <span
+          appInfoChip
+          class="border-warning-border bg-warning-container text-warning-strong"
+          data-testid="incomplete-badge"
+        >
+          <i class="pi pi-pencil" aria-hidden="true"></i>
+          {{ 'TRIMESTRAL_PLANNING.GROUP.INCOMPLETE' | translate }}
         </span>
       }
     </div>
+
+    <p
+      class="text-caption text-text-secondary gap-xs flex min-w-0 flex-wrap items-center"
+      data-testid="schedule-summary"
+    >
+      <i class="pi pi-user" aria-hidden="true"></i>
+      <span class="truncate">
+        {{ professorSummary() || ('TRIMESTRAL_PLANNING.GROUP.NO_PROFESSOR' | translate) }}
+      </span>
+      <span aria-hidden="true">·</span>
+      <i class="pi pi-clock" aria-hidden="true"></i>
+      @for (entry of configuredSchedule(); track entry.day) {
+        <span>
+          {{ 'TRIMESTRAL_PLANNING.DAYS_SHORT.' + entry.day | translate }}
+          {{ entry.start || '—' }}–{{ entry.end || '—' }}@if (entry.lab) {
+            <span class="text-warning-strong font-semibold">LAB</span>
+          }
+        </span>
+      } @empty {
+        <span>{{ 'TRIMESTRAL_PLANNING.GROUP.NO_SCHEDULE' | translate }}</span>
+      }
+    </p>
   </header>
 
   @if (expanded()) {
-    <div class="p-md gap-md flex flex-col">
+    <div class="p-md gap-md flex flex-col" [id]="panelId">
       <section
         class="gap-sm flex flex-col"
         [attr.aria-label]="'TRIMESTRAL_PLANNING.GROUP.CONFIGURATION' | translate"
@@ -134,6 +161,14 @@
           </h4>
           <span class="text-caption text-text-secondary">
             {{ 'TRIMESTRAL_PLANNING.GROUP.CONFIGURATION_HINT' | translate }}
+          </span>
+          <!-- Límite de la UEA, no de este grupo: por eso no compite en el encabezado. -->
+          <span appInfoChip class="ml-auto">
+            <i class="pi pi-clone text-primary" aria-hidden="true"></i>
+            {{
+              'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT'
+                | translate: { used: ueaGroupCount(), limit: maxGroups() }
+            }}
           </span>
         </div>
 

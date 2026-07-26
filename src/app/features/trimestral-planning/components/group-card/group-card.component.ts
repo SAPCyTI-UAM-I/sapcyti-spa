@@ -26,6 +26,12 @@ import {
   GroupFormGroup,
   hasScheduleDayCapture,
 } from '../../utils/group-form.util';
+import {
+  isGroupIncomplete,
+  occupancyLabel,
+  OccupancySeverity,
+  occupancySeverity,
+} from '../../utils/occupancy.util';
 import { ScheduleSubformComponent } from '../schedule-subform/schedule-subform.component';
 
 /** One group: compact Excel-like summary that expands into the full editor on demand. */
@@ -104,6 +110,41 @@ export class GroupCardComponent {
     const limit = Number(cupo);
     return !Number.isNaN(limit) && this.members().length > limit;
   });
+
+  /** Ocupación y faltantes, legibles con la tarjeta cerrada: con 25 grupos, abrir
+   * cada uno para saber si tiene problema era el recorrido más caro del editor. */
+  readonly occupancy = computed(() => {
+    this.revision();
+    return occupancyLabel(this.form().controls.cupo.value, this.members().length);
+  });
+
+  readonly occupancySeverity = computed(() => {
+    this.revision();
+    return occupancySeverity(this.form().controls.cupo.value, this.members().length);
+  });
+
+  readonly incomplete = computed(() => {
+    this.revision();
+    return isGroupIncomplete(this.form());
+  });
+
+  private static readonly OCCUPANCY_CHIP_CLASS: Record<OccupancySeverity, string> = {
+    ok: 'text-text-primary',
+    full: 'border-warning-border bg-warning-container text-warning-strong',
+    over: 'border-error-border bg-error-container text-on-error-container',
+  };
+
+  readonly occupancyChipClass = computed(
+    () => GroupCardComponent.OCCUPANCY_CHIP_CLASS[this.occupancySeverity()],
+  );
+
+  /**
+   * Enlaza el botón con el panel que abre, para lectores de pantalla. El id del
+   * grupo no sirve como identificador: los grupos nuevos comparten el 0.
+   */
+  private static nextUid = 0;
+  private readonly uid = GroupCardComponent.nextUid++;
+  readonly panelId = `group-panel-${this.uid}`;
 
   /** Snapshot del catálogo; es una de las columnas del formato oficial (HU-58). */
   readonly tipoUea = computed(() => this.form().controls.tipoUea.value);

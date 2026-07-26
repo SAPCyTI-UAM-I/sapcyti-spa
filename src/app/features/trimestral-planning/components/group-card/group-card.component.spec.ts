@@ -169,6 +169,33 @@ describe('GroupCardComponent', () => {
     expect(fixture.nativeElement.querySelector('details')).toBeNull();
   });
 
+  // Con 25 grupos, abrir cada tarjeta para saber si tiene problema era el peor recorrido.
+  it('shows occupancy and what is missing while the card is collapsed', async () => {
+    const { fixture, host, card } = await setup();
+
+    host.expanded.set(false);
+    fixture.detectChanges();
+
+    expect(card.occupancy()).toBe('3/15');
+    expect(card.occupancySeverity()).toBe('ok');
+    // Sin profesor ni horario, el grupo está incompleto.
+    expect(fixture.nativeElement.querySelector('[data-testid="incomplete-badge"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="over-capacity-badge"]')).toBeNull();
+  });
+
+  it('flags over capacity on the collapsed card, not only inside', async () => {
+    const { fixture, host, card } = await setup();
+
+    host.expanded.set(false);
+    host.form.controls.cupo.setValue('2');
+    fixture.detectChanges();
+
+    expect(card.occupancySeverity()).toBe('over');
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="over-capacity-badge"]'),
+    ).not.toBeNull();
+  });
+
   // El backend rechaza un cupo distinto al del plan anual, así que no se captura.
   it('shows the cupo as read-only text pointing at the annual plan', async () => {
     const { fixture } = await setup();

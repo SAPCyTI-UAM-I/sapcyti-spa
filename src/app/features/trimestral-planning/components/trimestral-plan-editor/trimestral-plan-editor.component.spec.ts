@@ -325,6 +325,33 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.submitted()).toBe(true);
   });
 
+  // Expandir no basta con 25 grupos: hay que llevar al coordinador al que falló.
+  it('scrolls to the first invalid group after a blocked save', async () => {
+    // jsdom no implementa scrollIntoView, así que no se puede espiar: hay que definirlo.
+    const scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoView;
+    const { component, fixture } = await setup();
+    component.groups.at(0).controls.cupo.setValue('0');
+
+    component.save();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(scrollIntoView).toHaveBeenCalled();
+  });
+
+  it('filters down to the groups that break a limit', async () => {
+    const { component, fixture } = await setup();
+    component.groups.at(0).controls.cupo.setValue('1');
+    component.groups
+      .at(0)
+      .controls.students.push(buildStudentRow(new FormBuilder().nonNullable, 3));
+    component.filters.patchValue({ state: 'HAS_VIOLATIONS' });
+    fixture.detectChanges();
+
+    expect(component.filteredOrder()).toEqual([0]);
+  });
+
   it('blocks the save when current membership exceeds cupo', async () => {
     const { component, saveGroups } = await setup();
     component.groups.at(0).controls.cupo.setValue('1');

@@ -1,10 +1,13 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
   effect,
+  ElementRef,
   inject,
+  Injector,
   input,
   output,
   signal,
@@ -78,6 +81,8 @@ export class TrimestralPlanEditorComponent {
   private readonly messages = inject(MessageService);
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   readonly plan = input.required<TrimestralPlanDetail>();
   readonly saved = output<TrimestralPlanDetail>();
@@ -173,17 +178,27 @@ export class TrimestralPlanEditorComponent {
       this.capacityViolationIndices().length > 0 || this.groupLimitViolationIndices().length > 0,
   );
 
+  /** Las dos violaciones en un solo conjunto: alimenta el filtro y el badge de la tarjeta. */
+  readonly violatingGroupIndices = computed(
+    () => new Set([...this.capacityViolationIndices(), ...this.groupLimitViolationIndices()]),
+  );
+
   readonly filteredOrder = computed(() => {
     const filters = this.filterValue();
     // Group code, membership, professors and schedule are editable FormControls.
     this.hasUnsavedChanges();
 
+    const violating = this.violatingGroupIndices();
     return this.order().filter((index) =>
-      matchesGroupFilters(this.groups.at(index), {
-        search: filters.search ?? '',
-        ueaType: filters.ueaType ?? '',
-        state: filters.state ?? '',
-      }),
+      matchesGroupFilters(
+        this.groups.at(index),
+        {
+          search: filters.search ?? '',
+          ueaType: filters.ueaType ?? '',
+          state: filters.state ?? '',
+        },
+        violating.has(index),
+      ),
     );
   });
 
@@ -393,5 +408,23 @@ export class TrimestralPlanEditorComponent {
       });
       return next;
     });
+    this.scrollToFirstInvalid();
+  }
+
+  /**
+   * Expandir no basta con 25 grupos: había que buscar a mano cuál falló. Es mecánica
+   * de DOM, así que vive en el componente y no en un util.
+   */
+  private scrollToFirstInvalid(): void {
+    afterNextRender(
+      () => {
+        const target = this.host.nativeElement.querySelector<HTMLElement>(
+          '[data-testid="trimestral-group-card"][data-invalid="true"]',
+        );
+        target?.scrollIntoView({ block: 'center' });
+        target?.querySelector<HTMLElement>('input, select, [tabindex]')?.focus();
+      },
+      { injector: this.injector },
+    );
   }
 }
