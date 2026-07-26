@@ -929,7 +929,6 @@
       "BLANKS": "Inscripción en blanco",
       "BLANKS_HINT": "Estos alumnos no tienen grupo ni letra y no se incluyen en el Excel.",
       "BREADCRUMB": "Planeación",
-      "INVALID_GROUPS": "Revisa los grupos marcados: hay valores inválidos.",
       "LAST_EXPORTED": "Último Excel generado: {{date}}",
       "LEAVE_UNSAVED_CONFIRM": "Hay cambios sin guardar en los grupos. ¿Salir y perderlos?",
       "NO_GROUPS": "La planeación no tiene grupos.",
@@ -1000,6 +999,19 @@
       "STUDENT_NOTE": "Nota",
       "TIME_FORMAT_INVALID": "Usa el formato de 24 horas HH:mm, por ejemplo 09:30.",
       "TIME_RANGE_REQUIRED": "Captura juntas la hora de inicio y la hora de fin, o deja ambas vacías."
+    },
+    "ISSUES": {
+      "CUPO_FORMAT": "El cupo «{{cupo}}» no es válido: escribe un número entero o *.",
+      "GROUP_LIMIT": "La planeación anual autoriza {{max}} grupos para esta UEA y ya hay más: quita uno de los grupos.",
+      "GRUPO_TOO_LONG": "La letra de grupo no puede pasar de {{max}} caracteres.",
+      "LAB_TIME_REQUIRED": "{{day}} está marcado como laboratorio, pero le falta la hora de inicio o la de fin.",
+      "MISSING_END": "{{day}} empieza a las {{start}} pero no tiene hora de fin.",
+      "MISSING_START": "{{day}} termina a las {{end}} pero no tiene hora de inicio.",
+      "NO_GROUP_CODE": "sin letra de grupo",
+      "OVER_CAPACITY": "Tiene {{students}} alumnos y el cupo autorizado es {{cupo}}: quita alumnos o pásalos a otro grupo.",
+      "START_AFTER_END": "{{day}} empieza a las {{start}} y termina a las {{end}}: la clase no puede terminar antes de empezar.",
+      "TIME_FORMAT": "{{day}} tiene la hora «{{value}}», que no es del formato de 24 horas HH:mm.",
+      "TITLE": "Corrige estos {{count}} problemas para poder guardar"
     },
     "LIST": {
       "BLANKS": "En blanco",

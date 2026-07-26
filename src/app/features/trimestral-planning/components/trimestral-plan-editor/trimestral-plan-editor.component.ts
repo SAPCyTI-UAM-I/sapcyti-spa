@@ -42,6 +42,7 @@ import {
   GroupFormGroup,
 } from '../../utils/group-form.util';
 import { claveHeaderPositions } from '../../utils/group-ordering.util';
+import { collectGroupIssues } from '../../utils/plan-issues.util';
 import { nextGroupLetter } from '../../utils/group-letter.util';
 import {
   isGroupIncomplete,
@@ -244,6 +245,27 @@ export class TrimestralPlanEditorComponent {
     const filters = this.filterValue();
     return !!filters.search?.trim() || !!filters.ueaType || !!filters.state;
   });
+
+  /**
+   * Cada regla rota, dicha en concreto y con su grupo. «Hay valores inválidos» obligaba a
+   * recorrer 25 filas × 5 días buscando el borde rojo.
+   */
+  readonly issues = computed(() => {
+    this.revision();
+    return collectGroupIssues(
+      this.groups.controls,
+      this.capacityViolationIndices(),
+      this.groupLimitViolationIndices(),
+    );
+  });
+
+  /**
+   * Al abrir el plan no se acusa nada: los problemas se muestran en cuanto se edita algo
+   * o se intenta guardar, igual que el borde rojo de cada celda.
+   */
+  readonly showIssues = computed(
+    () => this.issues().length > 0 && (this.submitted() || this.hasUnsavedChanges()),
+  );
 
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
 
@@ -607,19 +629,23 @@ export class TrimestralPlanEditorComponent {
   /** En una tabla no hay nada que expandir: basta con quitar el filtro y llevar el foco. */
   private revealInvalidGroups(): void {
     this.clearFilters();
-    this.scrollToFirstInvalid();
+    this.scrollTo('[data-testid="trimestral-group-row"][data-invalid="true"]');
+  }
+
+  /** Salta a la fila del problema elegido en el panel; el filtro podría estar ocultándola. */
+  focusGroup(index: number): void {
+    this.clearFilters();
+    this.scrollTo(`[data-group-index="${index}"]`);
   }
 
   /**
-   * Expandir no basta con 25 grupos: había que buscar a mano cuál falló. Es mecánica
-   * de DOM, así que vive en el componente y no en un util.
+   * Buscar a mano cuál de los 25 grupos falló no es opción. Es mecánica de DOM, así que
+   * vive en el componente y no en un util.
    */
-  private scrollToFirstInvalid(): void {
+  private scrollTo(selector: string): void {
     afterNextRender(
       () => {
-        const target = this.host.nativeElement.querySelector<HTMLElement>(
-          '[data-testid="trimestral-group-row"][data-invalid="true"]',
-        );
+        const target = this.host.nativeElement.querySelector<HTMLElement>(selector);
         target?.scrollIntoView({ block: 'center' });
         target?.querySelector<HTMLElement>('input, select, [tabindex]')?.focus();
       },

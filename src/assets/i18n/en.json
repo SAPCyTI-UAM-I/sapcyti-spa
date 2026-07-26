@@ -929,7 +929,6 @@
       "BLANKS": "Blank enrollment",
       "BLANKS_HINT": "These students have no group or letter and are not included in the Excel file.",
       "BREADCRUMB": "Plan",
-      "INVALID_GROUPS": "Check the flagged groups: some values are invalid.",
       "LAST_EXPORTED": "Last Excel generated: {{date}}",
       "LEAVE_UNSAVED_CONFIRM": "There are unsaved group changes. Leave and lose them?",
       "NO_GROUPS": "This plan has no groups.",
@@ -1000,6 +999,19 @@
       "STUDENT_NOTE": "Note",
       "TIME_FORMAT_INVALID": "Use 24-hour format HH:mm, for example 09:30.",
       "TIME_RANGE_REQUIRED": "Enter both start and end times, or leave both empty."
+    },
+    "ISSUES": {
+      "CUPO_FORMAT": "Quota “{{cupo}}” is not valid: enter a whole number or *.",
+      "GROUP_LIMIT": "The annual plan authorizes {{max}} groups for this UEA and there are already more: remove one of the groups.",
+      "GRUPO_TOO_LONG": "The group code cannot be longer than {{max}} characters.",
+      "LAB_TIME_REQUIRED": "{{day}} is marked as a lab but is missing its start or end time.",
+      "MISSING_END": "{{day}} starts at {{start}} but has no end time.",
+      "MISSING_START": "{{day}} ends at {{end}} but has no start time.",
+      "NO_GROUP_CODE": "no group code",
+      "OVER_CAPACITY": "It has {{students}} students and the authorized quota is {{cupo}}: remove students or move them to another group.",
+      "START_AFTER_END": "{{day}} starts at {{start}} and ends at {{end}}: a class cannot end before it begins.",
+      "TIME_FORMAT": "{{day}} has the time “{{value}}”, which is not in 24-hour HH:mm format.",
+      "TITLE": "Fix these {{count}} problems before saving"
     },
     "LIST": {
       "BLANKS": "Blank",

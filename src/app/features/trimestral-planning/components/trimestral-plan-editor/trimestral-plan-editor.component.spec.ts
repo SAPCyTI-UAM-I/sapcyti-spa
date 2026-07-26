@@ -425,6 +425,28 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.occupancySeverityFor(0)).toBe('full');
   });
 
+  it('names each broken rule instead of a single invalid-values banner', async () => {
+    const detail = plan();
+    // Llega así del servidor: nada que el coordinador haya tecleado todavía.
+    detail.groups[0]!.schedule[0]!.lab = true;
+    const { component } = await setup(detail);
+
+    expect(component.issues()).toMatchObject([
+      {
+        index: 0,
+        grupo: 'CO43',
+        key: 'TRIMESTRAL_PLANNING.ISSUES.LAB_TIME_REQUIRED',
+        dayKey: 'TRIMESTRAL_PLANNING.DAYS.LUN',
+      },
+    ]);
+    // Sin tocar nada no se acusa al usuario de lo que encontró cargado.
+    expect(component.showIssues()).toBe(false);
+
+    component.save();
+
+    expect(component.showIssues()).toBe(true);
+  });
+
   it('flags a stored time that does not match the contract format', async () => {
     const { component } = await setup();
     const monday = component.groups.at(0).controls.schedule.at(0);

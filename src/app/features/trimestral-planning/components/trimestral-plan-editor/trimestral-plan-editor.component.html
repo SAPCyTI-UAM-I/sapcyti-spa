@@ -51,8 +51,50 @@
     <p-message severity="error" [text]="saveError | domainError: errorScope" />
   }
 
-  @if (submitted() && (groups.invalid || hasLimitViolations())) {
-    <p-message severity="error" [text]="'TRIMESTRAL_PLANNING.DETAIL.INVALID_GROUPS' | translate" />
+  <!--
+    Un problema por renglón, dicho en concreto y con el grupo al que pertenece: en una
+    tabla de 25 columnas, «hay valores inválidos» obliga a buscar el borde rojo a mano.
+  -->
+  @if (showIssues()) {
+    <section
+      class="border-error-border bg-error-container p-md gap-sm flex flex-col rounded-xl border"
+      data-testid="plan-issues"
+    >
+      <h2 class="text-h3 text-on-error-container gap-xs flex items-center">
+        <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+        {{ 'TRIMESTRAL_PLANNING.ISSUES.TITLE' | translate: { count: issues().length } }}
+      </h2>
+      <ul class="gap-xs flex flex-col">
+        @for (issue of issues(); track $index) {
+          <li class="text-body-md gap-xs flex flex-wrap items-baseline">
+            <button
+              type="button"
+              class="text-primary font-medium underline underline-offset-2"
+              (click)="focusGroup(issue.index)"
+              data-testid="issue-link"
+            >
+              {{ issue.clave }} ·
+              {{ issue.grupo || ('TRIMESTRAL_PLANNING.ISSUES.NO_GROUP_CODE' | translate) }}
+            </button>
+            <span>
+              {{
+                issue.key
+                  | translate
+                    : {
+                        day: issue.dayKey | translate,
+                        start: issue.params['start'],
+                        end: issue.params['end'],
+                        value: issue.params['value'],
+                        cupo: issue.params['cupo'],
+                        students: issue.params['students'],
+                        max: issue.params['max'],
+                      }
+              }}
+            </span>
+          </li>
+        }
+      </ul>
+    </section>
   }
 
   @if (groups.length > 0) {
@@ -185,6 +227,7 @@
               class="hover:bg-table-row-hover"
               [formGroup]="groups.at(index)"
               [attr.data-invalid]="groups.at(index).invalid"
+              [attr.data-group-index]="index"
               data-testid="trimestral-group-row"
             >
               <td class="border-outline p-sm border font-medium whitespace-nowrap">
