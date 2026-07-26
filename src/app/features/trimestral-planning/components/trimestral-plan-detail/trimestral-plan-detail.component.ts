@@ -28,6 +28,7 @@ import {
   TRIMESTRAL_PLAN_ERROR_I18N_SCOPE,
   TrimestralPlanError,
 } from '../../utils/trimestral-plan-error.util';
+import { GroupFormGroup } from '../../utils/group-form.util';
 import { computePlanSummary } from '../../utils/plan-summary.util';
 import { isEditable, statusTagSeverity } from '../../utils/trimestral-plan-status.util';
 import { GroupFilterState } from '../../utils/trimestral-group-filter.util';
@@ -137,18 +138,31 @@ export class TrimestralPlanDetailComponent implements OnInit {
   /**
    * Grupos ofrecidos en el panel de pendientes. `null` significa «cualquier grupo»,
    * que es el caso de una inscripción en blanco: no declaró UEA.
+   *
+   * Las listas se arman una vez por recálculo y se cachean por UEA: devolver un arreglo
+   * nuevo en cada ciclo de detección haría que PrimeNG redibujara el desplegable abierto.
    */
   readonly groupOptions = computed(() => {
     const editor = this.editor();
-    return (ueaId: number | null): GroupOption[] => {
-      if (!editor) return [];
-      editor.hasUnsavedChanges();
-      const groups = ueaId === null ? editor.groups.controls : editor.groupsForUea(ueaId);
-      return groups.map((group) => ({
-        label: `${group.controls.clave.value} · ${group.controls.grupo.value || '—'}`,
-        value: group,
-      }));
-    };
+    editor?.hasUnsavedChanges();
+
+    const byUea = new Map<number | null, GroupOption[]>();
+    const toOption = (group: GroupFormGroup): GroupOption => ({
+      label: `${group.controls.clave.value} · ${group.controls.grupo.value || '—'}`,
+      value: group,
+    });
+
+    if (editor) {
+      byUea.set(null, editor.groups.controls.map(toOption));
+      for (const group of editor.groups.controls) {
+        const ueaId = group.controls.ueaId.value;
+        if (!byUea.has(ueaId)) {
+          byUea.set(ueaId, editor.groupsForUea(ueaId).map(toOption));
+        }
+      }
+    }
+
+    return (ueaId: number | null): GroupOption[] => byUea.get(ueaId) ?? [];
   });
 
   readonly statusTagSeverity = statusTagSeverity;

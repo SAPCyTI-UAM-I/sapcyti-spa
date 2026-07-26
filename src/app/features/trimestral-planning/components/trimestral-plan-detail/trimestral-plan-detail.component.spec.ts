@@ -167,6 +167,21 @@ describe('TrimestralPlanDetailComponent', () => {
     expect(component.canDeactivate()).toBe(true);
   });
 
+  // PrimeNG redibuja el desplegable si cambia la identidad de [options] en cada ciclo.
+  it('keeps the same group option arrays between change detection cycles', async () => {
+    const { fixture, component } = await setup({ get: vi.fn(() => of(planWithGroup())) });
+
+    const first = component.groupOptions()(1);
+    fixture.detectChanges();
+
+    expect(component.groupOptions()(1)).toBe(first);
+    expect(first).toHaveLength(1);
+    expect(first[0]!.label).toContain('CO43');
+    // Una UEA sin grupos no ofrece nada, y los blancos ven todos los grupos.
+    expect(component.groupOptions()(999)).toEqual([]);
+    expect(component.groupOptions()(null)).toHaveLength(1);
+  });
+
   it('assigns a pending student into a group from the pending panel', async () => {
     const { fixture, component } = await setup({ get: vi.fn(() => of(planWithGroup())) });
     const editor = fixture.debugElement.query(By.directive(TrimestralPlanEditorComponent))
