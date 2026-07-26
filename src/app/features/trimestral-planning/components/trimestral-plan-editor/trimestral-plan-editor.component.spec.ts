@@ -374,6 +374,26 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(rows.at(1).controls.obs.value).toBe('');
   });
 
+  /**
+   * La plantilla lee esto en cada ciclo de detección. Si devolviera un arreglo nuevo,
+   * PrimeNG vería un modelo distinto, volvería a marcar para revisar y la página se
+   * quedaría colgada — que es exactamente lo que pasó la primera vez.
+   */
+  it('keeps a stable identity for the cells the template reads every cycle', async () => {
+    const { fixture, component } = await setup();
+
+    const ids = component.selectedStudentIds(0);
+    const members = component.membersFor(0);
+    fixture.detectChanges();
+
+    expect(component.selectedStudentIds(0)).toBe(ids);
+    expect(component.membersFor(0)).toBe(members);
+
+    // Y sí cambia cuando el formulario cambia de verdad.
+    component.onStudentsChange(0, [5, 7]);
+    expect(component.selectedStudentIds(0)).not.toBe(ids);
+  });
+
   it('does not duplicate a student already selected', async () => {
     const { component } = await setup();
 

@@ -64,6 +64,10 @@ import {
 } from '../../utils/trimestral-plan-error.util';
 import { isEditable } from '../../utils/trimestral-plan-status.util';
 
+/** Constantes: el vacío también necesita identidad estable para no redibujar la celda. */
+const EMPTY_IDS: readonly number[] = [];
+const EMPTY_MEMBERS: readonly GroupStudent[] = [];
+
 /**
  * HU-59 — group editor. Unlike the annual grid (fixed rows mirrored by index), the
  * `FormArray` here IS the source of truth: groups and students are added and removed,
@@ -258,30 +262,52 @@ export class TrimestralPlanEditorComponent {
    * `pinProfessors` mantiene fijas, así que un profesor dado de baja pero ya asignado
    * sigue apareciendo.
    */
-  professorNames(index: number): string {
+  private readonly professorNamesByIndex = computed<readonly string[]>(() => {
     this.revision();
     const labels = new Map(this.people.professors().map((option) => [option.value, option.label]));
-    return this.groups
-      .at(index)
-      .controls.professorIds.value.map((id) => labels.get(id))
-      .filter((label): label is string => label !== undefined)
-      .join(' · ');
+    return this.groups.controls.map((group) =>
+      group.controls.professorIds.value
+        .map((id) => labels.get(id))
+        .filter((label): label is string => label !== undefined)
+        .join(' · '),
+    );
+  });
+
+  professorNames(index: number): string {
+    return this.professorNamesByIndex()[index] ?? '';
   }
 
   /**
-   * Integrantes del grupo, alineados con las filas del `FormArray`: el formulario manda
+   * Integrantes por grupo, alineados con las filas del `FormArray`: el formulario manda
    * (studentId + nota) y los snapshots del servidor solo decoran.
+   *
+   * Se calcula **una vez por cambio del formulario**, no por llamada: la plantilla lo lee
+   * en cada ciclo de detección y devolver un arreglo nuevo cada vez hacía que PrimeNG
+   * viera un modelo distinto, volviera a marcar para revisar y el ciclo no terminara.
    */
-  membersFor(index: number): GroupStudent[] {
+  private readonly membersByIndex = computed<readonly GroupStudent[][]>(() => {
     this.revision();
-    const snapshots = this.studentsByIndex()[index] ?? [];
-    return this.groups.at(index).controls.students.controls.map((row) => {
-      const studentId = row.controls.studentId.value;
-      return (
-        snapshots.find((student) => student.studentId === studentId) ??
-        this.fallbackMember(studentId)
-      );
-    });
+    const snapshots = this.studentsByIndex();
+    return this.groups.controls.map((group, index) =>
+      group.controls.students.controls.map((row) => {
+        const studentId = row.controls.studentId.value;
+        return (
+          (snapshots[index] ?? []).find((student) => student.studentId === studentId) ??
+          this.fallbackMember(studentId)
+        );
+      }),
+    );
+  });
+
+  private readonly studentIdsByIndex = computed<readonly number[][]>(() => {
+    this.revision();
+    return this.groups.controls.map((group) =>
+      group.controls.students.controls.map((row) => row.controls.studentId.value),
+    );
+  });
+
+  membersFor(index: number): readonly GroupStudent[] {
+    return this.membersByIndex()[index] ?? EMPTY_MEMBERS;
   }
 
   studentNames(index: number): string {
@@ -381,11 +407,8 @@ export class TrimestralPlanEditorComponent {
 
   // ─── Celda de alumnos ───
 
-  selectedStudentIds(index: number): number[] {
-    this.revision();
-    return this.groups
-      .at(index)
-      .controls.students.controls.map((row) => row.controls.studentId.value);
+  selectedStudentIds(index: number): readonly number[] {
+    return this.studentIdsByIndex()[index] ?? EMPTY_IDS;
   }
 
   /**
