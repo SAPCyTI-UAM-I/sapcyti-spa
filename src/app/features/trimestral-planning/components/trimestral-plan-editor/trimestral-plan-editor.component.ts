@@ -23,6 +23,7 @@ import { finalize } from 'rxjs';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { GroupStudent, TrimestralPlanDetail } from '../../../../models';
 import { I18nSelectComponent } from '../../../../shared/components';
+import { termYear } from '../../../../shared/utils/term.util';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
@@ -128,6 +129,9 @@ export class TrimestralPlanEditorComponent {
    * así que sin esta guarda los cambios se perderían en silencio.
    */
   readonly hasUnsavedChanges = signal(false);
+
+  /** El cupo lo fija el plan anual del año del trimestre; la tarjeta enlaza ahí. */
+  readonly annualPlanYear = computed(() => termYear(this.plan().term));
 
   readonly editable = computed(() => {
     const plan = this.plan();

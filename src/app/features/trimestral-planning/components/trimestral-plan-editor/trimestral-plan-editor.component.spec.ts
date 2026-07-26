@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
@@ -58,6 +59,7 @@ describe('TrimestralPlanEditorComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TrimestralPlanEditorComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
+        provideRouter([]),
         { provide: MessageService, useValue: messages },
         {
           provide: TrimestralPlanService,

@@ -71,6 +71,7 @@
       [students]="studentsByIndex()[index] ?? []"
       [warnings]="plan().warnings"
       [ueaGroupCount]="groupCount(groups.at(index).controls.ueaId.value)"
+      [annualPlanYear]="annualPlanYear()"
       [groupLimitExceeded]="groupLimitViolationIndices().includes(index)"
       [editable]="editable()"
       [submitted]="submitted()"

@@ -985,6 +985,8 @@
       "CONFIGURATION": "Configuración del grupo",
       "CONFIGURATION_HINT": "Define la clave del grupo, el cupo y las personas responsables.",
       "CUPO": "Cupo",
+      "CUPO_SOURCE": "Definido en la planeación anual",
+      "CUPO_SOURCE_LINK": "Definido en la planeación anual {{year}}",
       "DECLARED_TERM": "trim. {{term}}",
       "END": "Fin",
       "GROUP_LIMIT": "Grupos de esta UEA: {{used}} / {{limit}}",

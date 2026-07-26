@@ -152,11 +152,30 @@
             <app-field-error [control]="form().controls.grupo" [submitted]="submitted()" />
           </label>
 
-          <label class="gap-xs flex flex-col">
+          <!--
+            El cupo no se captura: el backend rechaza cualquier valor distinto al de
+            la planeación anual, así que dejarlo editable solo producía un 400 al
+            guardar, después de haber llenado el resto del trimestre.
+          -->
+          <div class="gap-xs flex flex-col">
             <span class="text-label-md">{{ 'TRIMESTRAL_PLANNING.GROUP.CUPO' | translate }}</span>
-            <input pInputText formControlName="cupo" placeholder="15" [readonly]="!editable()" />
-            <app-field-error [control]="form().controls.cupo" [submitted]="submitted()" />
-          </label>
+            <p class="text-body-md py-xs font-semibold" data-testid="group-cupo">
+              {{ form().controls.cupo.value || '—' }}
+            </p>
+            <span class="text-caption text-text-secondary">
+              @if (annualPlanYear(); as year) {
+                <a
+                  class="text-primary hover:underline"
+                  [routerLink]="['/annual-planning', year]"
+                  data-testid="cupo-source-link"
+                >
+                  {{ 'TRIMESTRAL_PLANNING.GROUP.CUPO_SOURCE_LINK' | translate: { year } }}
+                </a>
+              } @else {
+                {{ 'TRIMESTRAL_PLANNING.GROUP.CUPO_SOURCE' | translate }}
+              }
+            </span>
+          </div>
 
           <div class="gap-xs flex min-w-0 flex-col">
             <span class="text-label-md">

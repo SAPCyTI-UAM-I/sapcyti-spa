@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
@@ -34,6 +35,7 @@ import { ScheduleSubformComponent } from '../schedule-subform/schedule-subform.c
   imports: [
     ReactiveFormsModule,
     FormsModule,
+    RouterLink,
     TranslatePipe,
     Button,
     InputText,
@@ -58,6 +60,8 @@ export class GroupCardComponent {
   readonly students = input.required<GroupStudent[]>();
   readonly warnings = input<PlanWarning[]>([]);
   readonly ueaGroupCount = input(1);
+  /** Año del plan anual que fija el cupo; null si el trimestre viene mal formado. */
+  readonly annualPlanYear = input<number | null>(null);
   readonly groupLimitExceeded = input(false);
   readonly editable = input(true);
   readonly submitted = input(false);

@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
@@ -44,6 +45,7 @@ function student(studentId: number): GroupStudent {
       [students]="students()"
       [warnings]="warnings()"
       [expanded]="expanded()"
+      [annualPlanYear]="2026"
     />
   `,
 })
@@ -59,6 +61,7 @@ describe('GroupCardComponent', () => {
     await TestBed.configureTestingModule({
       imports: [HostComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
+        provideRouter([]),
         PlanPickersController,
         {
           provide: TrimestralPlanService,
@@ -164,6 +167,19 @@ describe('GroupCardComponent', () => {
     const timeSelects = fixture.nativeElement.querySelectorAll('[data-testid="time-select"]');
     expect(timeSelects).toHaveLength(10); // 5 días × inicio/fin, sin <details> de por medio
     expect(fixture.nativeElement.querySelector('details')).toBeNull();
+  });
+
+  // El backend rechaza un cupo distinto al del plan anual, así que no se captura.
+  it('shows the cupo as read-only text pointing at the annual plan', async () => {
+    const { fixture } = await setup();
+
+    expect(fixture.nativeElement.querySelector('input[formcontrolname="cupo"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="group-cupo"]').textContent).toContain(
+      '15',
+    );
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="cupo-source-link"]').getAttribute('href'),
+    ).toBe('/annual-planning/2026');
   });
 
   it('shows an explicit empty state when a group has no students', async () => {

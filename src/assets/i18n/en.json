@@ -985,6 +985,8 @@
       "CONFIGURATION": "Group settings",
       "CONFIGURATION_HINT": "Define the group code, quota, and responsible instructors.",
       "CUPO": "Quota",
+      "CUPO_SOURCE": "Set by the annual plan",
+      "CUPO_SOURCE_LINK": "Set by the {{year}} annual plan",
       "DECLARED_TERM": "term {{term}}",
       "END": "End",
       "GROUP_LIMIT": "Groups for this UEA: {{used}} / {{limit}}",
