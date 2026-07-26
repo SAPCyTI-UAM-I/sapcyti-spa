@@ -12,7 +12,7 @@
     <div class="gap-sm flex min-w-0 flex-wrap items-start justify-between">
       <div class="gap-sm flex min-w-0 items-start">
         <span
-          class="bg-primary-container text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+          class="bg-primary-container text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
           aria-hidden="true"
         >
           <i class="pi pi-book"></i>
@@ -70,22 +70,16 @@
     </div>
 
     <div class="gap-xs flex flex-wrap items-center">
-      <span
-        class="border-outline bg-surface px-sm py-xs gap-xs text-caption inline-flex items-center rounded-lg border"
-      >
+      <span appInfoChip>
         <i class="pi pi-tag text-primary" aria-hidden="true"></i>
         {{ 'TRIMESTRAL_PLANNING.GROUP.GRUPO' | translate }}:
         <strong>{{ form().controls.grupo.value || '—' }}</strong>
       </span>
-      <span
-        class="border-outline bg-surface px-sm py-xs gap-xs text-caption inline-flex items-center rounded-lg border"
-      >
+      <span appInfoChip>
         {{ 'TRIMESTRAL_PLANNING.GROUP.CUPO' | translate }}:
         <strong>{{ form().controls.cupo.value || '—' }}</strong>
       </span>
-      <span
-        class="border-outline bg-surface px-sm py-xs gap-xs text-caption inline-flex items-center rounded-lg border"
-      >
+      <span appInfoChip>
         <i class="pi pi-users text-primary" aria-hidden="true"></i>
         {{
           (members().length === 1
@@ -94,19 +88,14 @@
           ) | translate: { count: members().length }
         }}
       </span>
-      <span
-        class="border-outline bg-surface px-sm py-xs gap-xs text-caption inline-flex items-center rounded-lg border"
-      >
+      <span appInfoChip>
         <i class="pi pi-clone text-primary" aria-hidden="true"></i>
         {{
           'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT'
             | translate: { used: ueaGroupCount(), limit: maxGroups() }
         }}
       </span>
-      <span
-        class="border-outline bg-surface px-sm py-xs gap-xs text-caption inline-flex max-w-[28rem] min-w-0 items-center rounded-lg border"
-        [title]="professorSummary()"
-      >
+      <span appInfoChip class="max-w-[28rem]" [title]="professorSummary()">
         <i class="pi pi-user text-primary shrink-0" aria-hidden="true"></i>
         <span class="truncate">
           {{ professorSummary() || ('TRIMESTRAL_PLANNING.GROUP.NO_PROFESSOR' | translate) }}
@@ -115,11 +104,9 @@
     </div>
 
     <div class="gap-xs flex flex-wrap items-center" data-testid="schedule-summary">
-      <i class="pi pi-clock text-primary ml-xs text-caption" aria-hidden="true"></i>
+      <i class="pi pi-clock text-primary text-caption" aria-hidden="true"></i>
       @for (entry of configuredSchedule(); track entry.day) {
-        <span
-          class="border-outline bg-surface px-sm py-xs text-caption inline-flex items-center rounded-lg border"
-        >
+        <span appInfoChip>
           {{ 'TRIMESTRAL_PLANNING.DAYS_SHORT.' + entry.day | translate }}
           · {{ entry.start || '—' }}–{{ entry.end || '—' }}
           @if (entry.lab) {
@@ -142,7 +129,7 @@
         data-testid="group-configuration"
       >
         <div class="gap-sm flex flex-wrap items-center">
-          <h4 class="text-body-md font-semibold">
+          <h4 class="text-h3">
             {{ 'TRIMESTRAL_PLANNING.GROUP.CONFIGURATION' | translate }}
           </h4>
           <span class="text-caption text-text-secondary">
@@ -193,23 +180,20 @@
           </div>
         </div>
 
+        <!-- `p-message` ya trae role="alert" + aria-live: la violación se anuncia sola. -->
         @if (overCapacity()) {
-          <div
-            class="border-error-border bg-error-container text-on-error-container p-sm gap-sm text-caption flex items-center rounded-lg border"
+          <p-message
+            severity="error"
+            [text]="'TRIMESTRAL_PLANNING.GROUP.OVER_CAPACITY' | translate"
             data-testid="capacity-violation"
-          >
-            <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
-            {{ 'TRIMESTRAL_PLANNING.GROUP.OVER_CAPACITY' | translate }}
-          </div>
+          />
         }
         @if (groupLimitExceeded()) {
-          <div
-            class="border-error-border bg-error-container text-on-error-container p-sm gap-sm text-caption flex items-center rounded-lg border"
+          <p-message
+            severity="error"
+            [text]="'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT_EXCEEDED' | translate"
             data-testid="group-limit-violation"
-          >
-            <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
-            {{ 'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT_EXCEEDED' | translate }}
-          </div>
+          />
         }
       </section>
 
@@ -228,7 +212,7 @@
         <div class="gap-sm flex flex-wrap items-end justify-between">
           <div>
             <div class="gap-sm flex flex-wrap items-center">
-              <h4 class="text-body-md font-semibold">
+              <h4 class="text-h3">
                 {{ 'TRIMESTRAL_PLANNING.GROUP.STUDENTS' | translate }}
               </h4>
               <span
@@ -305,10 +289,11 @@
                       {{ member.fullName }}
                       @if (studentInactive(member)) {
                         <span
-                          class="text-caption text-warning block"
+                          class="text-caption text-warning gap-xs flex items-center"
                           data-testid="inactive-student"
                         >
-                          ⚠ {{ 'TRIMESTRAL_PLANNING.GROUP.INACTIVE_STUDENT' | translate }}
+                          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+                          {{ 'TRIMESTRAL_PLANNING.GROUP.INACTIVE_STUDENT' | translate }}
                         </span>
                       }
                     </td>

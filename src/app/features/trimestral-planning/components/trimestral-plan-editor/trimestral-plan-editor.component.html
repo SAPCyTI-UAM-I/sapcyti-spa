@@ -5,23 +5,17 @@
     </p>
   } @else {
     <div
-      class="border-outline bg-surface p-sm gap-sm grid items-center rounded-xl border lg:grid-cols-[minmax(16rem,1fr)_12rem_14rem_auto]"
+      class="border-outline bg-surface p-md gap-md grid items-center rounded-xl border md:grid-cols-[minmax(16rem,1fr)_12rem_14rem_auto]"
       [formGroup]="filters"
       data-testid="group-filters"
     >
-      <div class="relative min-w-0">
-        <i
-          class="pi pi-search text-text-tertiary pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
-          aria-hidden="true"
-        ></i>
-        <input
-          pInputText
-          formControlName="search"
-          class="pl-xl"
-          [placeholder]="'TRIMESTRAL_PLANNING.FILTERS.SEARCH' | translate"
-          data-testid="group-search"
-        />
-      </div>
+      <input
+        pInputText
+        formControlName="search"
+        class="min-w-0"
+        [placeholder]="'TRIMESTRAL_PLANNING.FILTERS.SEARCH' | translate"
+        data-testid="group-search"
+      />
       <app-i18n-select
         controlName="ueaType"
         [options]="ueaTypeFilters"
@@ -116,7 +110,7 @@
       class="border-outline bg-surface-subtle p-md gap-md flex flex-wrap items-center rounded-xl border border-dashed"
     >
       <span
-        class="bg-primary-container text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+        class="bg-primary-container text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
         aria-hidden="true"
       >
         <i class="pi pi-plus"></i>

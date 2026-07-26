@@ -24,7 +24,7 @@
             />
             <div class="gap-xs flex min-w-0 flex-col">
               <div class="gap-sm flex flex-wrap items-center">
-                <h1 class="text-h2 text-primary">
+                <h1 class="text-h2 text-primary font-bold">
                   {{ 'TRIMESTRAL_PLANNING.DETAIL.TITLE' | translate: { term: current.term } }}
                 </h1>
                 <app-catalog-tag
@@ -129,11 +129,12 @@
         }
 
         @if (current.outdatedReasons.length > 0) {
-          <div class="border-warning bg-warning/5 p-md gap-xs flex flex-col rounded-xl border">
-            <span class="text-body-md font-medium">
-              {{ 'TRIMESTRAL_PLANNING.OUTDATED_REASONS.TITLE' | translate }}
-            </span>
-            <ul class="pl-lg list-disc">
+          <div class="gap-xs flex flex-col">
+            <p-message
+              severity="warn"
+              [text]="'TRIMESTRAL_PLANNING.OUTDATED_REASONS.TITLE' | translate"
+            />
+            <ul class="pl-lg text-body-md list-disc">
               @for (reason of current.outdatedReasons; track reason) {
                 <li>{{ 'TRIMESTRAL_PLANNING.OUTDATED_REASONS.' + reason | translate }}</li>
               }
@@ -153,8 +154,8 @@
         -->
         @if (current.warnings.length > 0) {
           <details class="border-outline rounded-lg border" data-testid="plan-warnings">
-            <summary class="p-sm text-body-md text-warning cursor-pointer">
-              ⚠
+            <summary class="p-sm text-body-md text-warning gap-xs flex cursor-pointer items-center">
+              <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
               {{
                 'TRIMESTRAL_PLANNING.DETAIL.WARNING_COUNT'
                   | translate: { count: current.warnings.length }
@@ -217,7 +218,7 @@
                 demand of current.unassignedDemand;
                 track demand.studentId + '-' + demand.ueaId
               ) {
-                <li class="border-outline/60 p-sm gap-xs flex flex-col rounded-lg border">
+                <li class="border-outline p-sm gap-xs flex flex-col rounded-lg border">
                   <span class="text-body-md font-medium">
                     {{ demand.fullName }} · {{ demand.enrollmentId }}
                   </span>
@@ -250,10 +251,11 @@
   [modal]="true"
   [header]="'TRIMESTRAL_PLANNING.ACTIONS.REGENERATE' | translate"
 >
-  <p class="text-body-md pb-md">
+  <p class="text-body-md">
     {{ 'TRIMESTRAL_PLANNING.DETAIL.REGENERATE_WARNING' | translate }}
   </p>
-  <div class="gap-sm flex justify-end">
+
+  <ng-template #footer>
     <p-button
       severity="secondary"
       variant="outlined"
@@ -265,7 +267,7 @@
       (onClick)="confirmRegenerate()"
       data-testid="confirm-regenerate"
     />
-  </div>
+  </ng-template>
 </p-dialog>
 
 <p-dialog
@@ -274,17 +276,18 @@
   [modal]="true"
   [header]="'TRIMESTRAL_PLANNING.ACTIONS.FINISH' | translate"
 >
-  <p class="text-body-md pb-md">
+  <p class="text-body-md">
     {{ 'TRIMESTRAL_PLANNING.DETAIL.UNSAVED_WARNING' | translate }}
   </p>
-  <div class="gap-sm flex justify-end">
+
+  <ng-template #footer>
     <p-button
       severity="secondary"
       variant="outlined"
       [label]="'COMMON.ACTIONS.CANCEL' | translate"
       (onClick)="showUnsavedDialog.set(false)"
     />
-  </div>
+  </ng-template>
 </p-dialog>
 
 <p-dialog
@@ -293,10 +296,11 @@
   [modal]="true"
   [header]="'TRIMESTRAL_PLANNING.ACTIONS.BACK_TO_DRAFT' | translate"
 >
-  <p class="text-body-md pb-md">
+  <p class="text-body-md">
     {{ 'TRIMESTRAL_PLANNING.DETAIL.BACK_TO_DRAFT_WARNING' | translate }}
   </p>
-  <div class="gap-sm flex justify-end">
+
+  <ng-template #footer>
     <p-button
       severity="secondary"
       variant="outlined"
@@ -308,5 +312,5 @@
       (onClick)="confirmBackToDraft()"
       data-testid="confirm-back-to-draft"
     />
-  </div>
+  </ng-template>
 </p-dialog>

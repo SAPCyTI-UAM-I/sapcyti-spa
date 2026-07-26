@@ -12,11 +12,13 @@ import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angul
 import { TranslatePipe } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
+import { Message } from 'primeng/message';
 import { MultiSelect } from 'primeng/multiselect';
 import { Select } from 'primeng/select';
 
 import { GroupStudent, PlanWarning } from '../../../../models';
 import { FieldErrorComponent } from '../../../../shared/components';
+import { InfoChipDirective } from '../../directives/info-chip.directive';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
 import {
   buildStudentRow,
@@ -35,9 +37,11 @@ import { ScheduleSubformComponent } from '../schedule-subform/schedule-subform.c
     TranslatePipe,
     Button,
     InputText,
+    Message,
     Select,
     MultiSelect,
     FieldErrorComponent,
+    InfoChipDirective,
     ScheduleSubformComponent,
   ],
   templateUrl: './group-card.component.html',
