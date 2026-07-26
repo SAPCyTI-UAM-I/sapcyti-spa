@@ -164,12 +164,19 @@
             @if (claveHeaders().has(position)) {
               <tr>
                 <td
-                  class="bg-surface-subtle border-outline text-label-md text-text-primary p-sm sticky top-18 z-20 border"
+                  class="bg-surface-subtle border-outline text-label-md text-text-primary py-sm sticky top-18 z-20 border"
                   [attr.colspan]="totalColumns"
                   data-testid="clave-header"
                 >
-                  {{ groups.at(index).controls.clave.value }} ·
-                  {{ groups.at(index).controls.nombre.value }}
+                  <!--
+                    La fila abarca las 25 columnas, así que su texto se iría con el scroll
+                    horizontal. Pegarlo por dentro lo deja sobre la columna fija de grupo,
+                    que es la referencia de dónde estás capturando.
+                  -->
+                  <span class="px-sm block w-fit md:sticky md:left-0">
+                    {{ groups.at(index).controls.clave.value }} ·
+                    {{ groups.at(index).controls.nombre.value }}
+                  </span>
                 </td>
               </tr>
             }
