@@ -10,7 +10,8 @@
     @if (plan(); as current) {
       <div class="gap-lg flex flex-col">
         <header
-          class="border-outline bg-surface p-md gap-md lg:p-lg flex flex-wrap items-center justify-between rounded-xl border shadow-sm"
+          class="gap-md flex flex-col justify-between xl:flex-row xl:items-start"
+          data-testid="plan-page-header"
         >
           <div class="gap-md flex min-w-0 items-center">
             <p-button

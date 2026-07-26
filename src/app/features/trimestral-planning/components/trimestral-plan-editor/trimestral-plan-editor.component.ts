@@ -9,16 +9,20 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
+import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { GroupStudent, TrimestralPlanDetail } from '../../../../models';
+import { I18nSelectComponent } from '../../../../shared/components';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
@@ -28,6 +32,12 @@ import {
   emptyGroup,
   GroupFormGroup,
 } from '../../utils/group-form.util';
+import {
+  GROUP_STATE_FILTERS,
+  type GroupFilterState,
+  matchesGroupFilters,
+  UEA_TYPE_FILTERS,
+} from '../../utils/trimestral-group-filter.util';
 import {
   mapTrimestralPlanError,
   TRIMESTRAL_PLAN_ERROR_I18N_SCOPE,
@@ -48,8 +58,12 @@ import { GroupCardComponent } from '../group-card/group-card.component';
     ReactiveFormsModule,
     FormsModule,
     TranslatePipe,
+    Button,
+    Dialog,
+    InputText,
     Message,
     Select,
+    I18nSelectComponent,
     GroupCardComponent,
     DomainErrorMessagePipe,
   ],
@@ -85,6 +99,22 @@ export class TrimestralPlanEditorComponent {
   readonly saving = signal(false);
   readonly submitted = signal(false);
   readonly error = signal<TrimestralPlanError | null>(null);
+
+  /** Same search/filter vocabulary used by the academic catalog lists. */
+  readonly filters = this.fb.group({
+    search: [''],
+    ueaType: [''],
+    state: this.fb.control<GroupFilterState>(''),
+  });
+  private readonly filterValue = toSignal(this.filters.valueChanges, {
+    initialValue: this.filters.getRawValue(),
+  });
+  readonly ueaTypeFilters = UEA_TYPE_FILTERS;
+  readonly groupStateFilters = GROUP_STATE_FILTERS;
+
+  /** FormGroup identity is stable while editing, unlike array indexes after a removal. */
+  readonly expandedGroups = signal<ReadonlySet<GroupFormGroup>>(new Set());
+  readonly pendingRemoval = signal<GroupFormGroup | null>(null);
 
   /** Selección transitoria del selector de alta; se limpia en cuanto se agrega. */
   readonly ueaPick = signal<number | null>(null);
@@ -138,6 +168,32 @@ export class TrimestralPlanEditorComponent {
     () =>
       this.capacityViolationIndices().length > 0 || this.groupLimitViolationIndices().length > 0,
   );
+
+  readonly filteredOrder = computed(() => {
+    const filters = this.filterValue();
+    // Group code, membership, professors and schedule are editable FormControls.
+    this.hasUnsavedChanges();
+
+    return this.order().filter((index) =>
+      matchesGroupFilters(this.groups.at(index), {
+        search: filters.search ?? '',
+        ueaType: filters.ueaType ?? '',
+        state: filters.state ?? '',
+      }),
+    );
+  });
+
+  readonly filtersActive = computed(() => {
+    const filters = this.filterValue();
+    return !!filters.search?.trim() || !!filters.ueaType || !!filters.state;
+  });
+
+  readonly allVisibleExpanded = computed(() => {
+    const visible = this.filteredOrder();
+    const expanded = this.expandedGroups();
+    return visible.length > 0 && visible.every((index) => expanded.has(this.groups.at(index)));
+  });
+
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
 
   constructor() {
@@ -150,11 +206,74 @@ export class TrimestralPlanEditorComponent {
     this.people.loadUeas();
   }
 
-  removeGroup(index: number): void {
-    if (!this.editable()) return;
-    this.groups.removeAt(index);
-    this.studentsByIndex.update((all) => all.filter((_, i) => i !== index));
-    this.reorder();
+  requestRemoveGroup(group: GroupFormGroup): void {
+    if (this.editable()) {
+      this.pendingRemoval.set(group);
+    }
+  }
+
+  cancelRemoveGroup(): void {
+    this.pendingRemoval.set(null);
+  }
+
+  confirmRemoveGroup(): void {
+    const group = this.pendingRemoval();
+    if (!group || !this.editable()) return;
+
+    const index = this.groups.controls.indexOf(group);
+    if (index >= 0) {
+      this.groups.removeAt(index);
+      this.studentsByIndex.update((all) => all.filter((_, i) => i !== index));
+      this.expandedGroups.update((current) => {
+        const next = new Set(current);
+        next.delete(group);
+        return next;
+      });
+      this.reorder();
+    }
+    this.pendingRemoval.set(null);
+  }
+
+  onRemoveDialogVisibleChange(visible: boolean): void {
+    if (!visible) {
+      this.cancelRemoveGroup();
+    }
+  }
+
+  toggleGroup(group: GroupFormGroup): void {
+    this.expandedGroups.update((current) => {
+      const next = new Set(current);
+      if (next.has(group)) {
+        next.delete(group);
+      } else {
+        next.add(group);
+      }
+      return next;
+    });
+  }
+
+  isExpanded(group: GroupFormGroup): boolean {
+    return this.expandedGroups().has(group);
+  }
+
+  toggleAllVisible(): void {
+    const collapse = this.allVisibleExpanded();
+    this.expandedGroups.update((current) => {
+      const next = new Set(current);
+      for (const index of this.filteredOrder()) {
+        const group = this.groups.at(index);
+        if (collapse) {
+          next.delete(group);
+        } else {
+          next.add(group);
+        }
+      }
+      return next;
+    });
+  }
+
+  clearFilters(): void {
+    this.filters.reset({ search: '', ueaType: '', state: '' });
   }
 
   /**
@@ -174,7 +293,10 @@ export class TrimestralPlanEditorComponent {
       group.maxGroups = annualSettings.maxGroups;
     }
     this.groups.push(buildGroupFormGroup(this.fb, group));
+    const added = this.groups.at(this.groups.length - 1);
     this.studentsByIndex.update((all) => [...all, []]);
+    this.clearFilters();
+    this.expandedGroups.update((current) => new Set([...current, added]));
     this.ueaPick.set(null);
     this.reorder();
   }
@@ -186,7 +308,11 @@ export class TrimestralPlanEditorComponent {
   save(): void {
     this.submitted.set(true);
     this.error.set(null);
-    if (!this.editable() || this.groups.invalid || this.hasLimitViolations() || this.saving()) {
+    if (!this.editable() || this.saving()) {
+      return;
+    }
+    if (this.groups.invalid || this.hasLimitViolations()) {
+      this.revealInvalidGroups();
       return;
     }
 
@@ -223,6 +349,8 @@ export class TrimestralPlanEditorComponent {
     this.people.pinProfessors(plan.groups);
     this.submitted.set(false);
     this.error.set(null);
+    this.pendingRemoval.set(null);
+    this.expandedGroups.set(new Set());
     // Se limpia al final: clear()/push() emiten valueChanges de forma síncrona.
     this.hasUnsavedChanges.set(false);
     if (
@@ -247,5 +375,19 @@ export class TrimestralPlanEditorComponent {
         .map((_, index) => index)
         .sort((a, b) => clave(a).localeCompare(clave(b), 'es', { numeric: true })),
     );
+  }
+
+  private revealInvalidGroups(): void {
+    this.clearFilters();
+    const groupLimitViolations = new Set(this.groupLimitViolationIndices());
+    this.expandedGroups.update((current) => {
+      const next = new Set(current);
+      this.groups.controls.forEach((group, index) => {
+        if (group.invalid || groupLimitViolations.has(index)) {
+          next.add(group);
+        }
+      });
+      return next;
+    });
   }
 }

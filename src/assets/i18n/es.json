@@ -909,13 +909,18 @@
       "ADD_GROUP": "Agregar grupo",
       "ADD_GROUP_HINT": "Selecciona una UEA para crear otro grupo en esta planeación.",
       "BACK_TO_DRAFT": "Regresar a borrador",
+      "COLLAPSE_ALL": "Contraer todos",
       "DOWNLOAD": "Descargar Excel",
+      "EXPAND_ALL": "Expandir todos",
       "FINISH": "Terminar",
       "GENERATE": "Generar planeación",
+      "HIDE_DETAILS": "Ocultar",
       "REGENERATE": "Regenerar",
       "REMOVE_GROUP": "Quitar grupo",
       "REMOVE_STUDENT": "Quitar alumno",
-      "SAVE": "Guardar grupos"
+      "SAVE": "Guardar grupos",
+      "SHOW_DETAILS": "Editar",
+      "VIEW_DETAILS": "Ver"
     },
     "DAYS": {
       "JUE": "Jueves",
@@ -961,6 +966,20 @@
       "survey_not_found": "No existe la encuesta seleccionada.",
       "validation": "Revisa los datos capturados."
     },
+    "FILTERS": {
+      "ALL_GROUPS": "Todos los grupos",
+      "ALL_TYPES": "Todos los tipos",
+      "CLEAR": "Limpiar filtros",
+      "NO_RESULTS": "Ningún grupo coincide con la búsqueda y los filtros.",
+      "RESULTS": "{{visible}} de {{total}} grupos",
+      "SEARCH": "Buscar por grupo, clave o nombre de UEA…",
+      "STATE": "Situación del grupo",
+      "UEA_TYPE": "Tipo de UEA",
+      "WITH_STUDENTS": "Con alumnos",
+      "WITHOUT_PROFESSORS": "Sin profesores",
+      "WITHOUT_SCHEDULE": "Sin horario",
+      "WITHOUT_STUDENTS": "Sin alumnos"
+    },
     "GROUP": {
       "ADD_STUDENT": "Agregar alumno…",
       "CONFIGURATION": "Configuración del grupo",
@@ -977,6 +996,8 @@
       "MANUAL": "agregado a mano",
       "MATRICULA": "Matrícula",
       "NAME": "Nombre",
+      "NO_PROFESSOR": "Sin profesores",
+      "NO_SCHEDULE": "Sin horario capturado",
       "NO_STUDENTS": "Este grupo todavía no tiene alumnos asignados.",
       "OVER_CAPACITY": "Rebasa el cupo",
       "PROFESSOR": "Profesor",
@@ -989,6 +1010,7 @@
       "START": "Inicio",
       "START_AFTER_END": "La hora de inicio debe ser anterior a la de fin.",
       "STUDENT_COUNT": "{{count}} alumnos",
+      "STUDENT_COUNT_ONE": "1 alumno",
       "STUDENT_NOTE": "Nota",
       "STUDENTS": "Alumnos del grupo",
       "STUDENTS_HINT": "Revisa la demanda asignada y agrega notas cuando sea necesario.",
@@ -1023,6 +1045,12 @@
       "ANNUAL_NOT_TERMINATED": "La planeación anual correspondiente no está terminada.",
       "READ_ONLY": "La planeación está disponible sólo para consulta hasta restaurar los prerrequisitos.",
       "SURVEY_NOT_CLOSED": "La encuesta correspondiente no está cerrada."
+    },
+    "REMOVE_GROUP": {
+      "HINT": "El cambio sólo se enviará al servidor cuando guardes la planeación.",
+      "MESSAGE": "¿Quieres quitar el grupo {{group}} de {{clave}} · {{name}}?",
+      "STUDENTS": "Alumnos que quedarán sin asignar al guardar: {{count}}.",
+      "TITLE": "Confirmar eliminación de grupo"
     },
     "STATES": {
       "LOAD_ERROR": "No se pudo cargar la información."

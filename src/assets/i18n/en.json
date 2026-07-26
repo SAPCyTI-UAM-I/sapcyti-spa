@@ -909,13 +909,18 @@
       "ADD_GROUP": "Add group",
       "ADD_GROUP_HINT": "Select a UEA to create another group in this plan.",
       "BACK_TO_DRAFT": "Back to draft",
+      "COLLAPSE_ALL": "Collapse all",
       "DOWNLOAD": "Download Excel",
+      "EXPAND_ALL": "Expand all",
       "FINISH": "Finish",
       "GENERATE": "Generate plan",
+      "HIDE_DETAILS": "Hide",
       "REGENERATE": "Regenerate",
       "REMOVE_GROUP": "Remove group",
       "REMOVE_STUDENT": "Remove student",
-      "SAVE": "Save groups"
+      "SAVE": "Save groups",
+      "SHOW_DETAILS": "Edit",
+      "VIEW_DETAILS": "View"
     },
     "DAYS": {
       "JUE": "Thursday",
@@ -961,6 +966,20 @@
       "survey_not_found": "The selected survey does not exist.",
       "validation": "Please check the values you entered."
     },
+    "FILTERS": {
+      "ALL_GROUPS": "All groups",
+      "ALL_TYPES": "All types",
+      "CLEAR": "Clear filters",
+      "NO_RESULTS": "No group matches the search and filters.",
+      "RESULTS": "{{visible}} of {{total}} groups",
+      "SEARCH": "Search by group, UEA key, or UEA name…",
+      "STATE": "Group situation",
+      "UEA_TYPE": "UEA type",
+      "WITH_STUDENTS": "With students",
+      "WITHOUT_PROFESSORS": "Without instructors",
+      "WITHOUT_SCHEDULE": "Without schedule",
+      "WITHOUT_STUDENTS": "Without students"
+    },
     "GROUP": {
       "ADD_STUDENT": "Add student…",
       "CONFIGURATION": "Group settings",
@@ -977,6 +996,8 @@
       "MANUAL": "added manually",
       "MATRICULA": "Enrollment ID",
       "NAME": "Name",
+      "NO_PROFESSOR": "No instructors",
+      "NO_SCHEDULE": "No schedule entered",
       "NO_STUDENTS": "This group has no assigned students yet.",
       "OVER_CAPACITY": "Over quota",
       "PROFESSOR": "Professor",
@@ -989,6 +1010,7 @@
       "START": "Start",
       "START_AFTER_END": "The start time must be earlier than the end time.",
       "STUDENT_COUNT": "{{count}} students",
+      "STUDENT_COUNT_ONE": "1 student",
       "STUDENT_NOTE": "Note",
       "STUDENTS": "Group students",
       "STUDENTS_HINT": "Review assigned demand and add notes when needed.",
@@ -1023,6 +1045,12 @@
       "ANNUAL_NOT_TERMINATED": "The corresponding annual plan is not finished.",
       "READ_ONLY": "This plan is read-only until its prerequisites are restored.",
       "SURVEY_NOT_CLOSED": "The corresponding survey is not closed."
+    },
+    "REMOVE_GROUP": {
+      "HINT": "This change is only sent to the server when you save the plan.",
+      "MESSAGE": "Remove group {{group}} from {{clave}} · {{name}}?",
+      "STUDENTS": "Students that will be unassigned when you save: {{count}}.",
+      "TITLE": "Confirm group removal"
     },
     "STATES": {
       "LOAD_ERROR": "The information could not be loaded."

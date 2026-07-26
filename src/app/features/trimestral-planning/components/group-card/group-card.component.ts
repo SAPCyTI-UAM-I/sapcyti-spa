@@ -18,14 +18,14 @@ import { Select } from 'primeng/select';
 import { GroupStudent, PlanWarning } from '../../../../models';
 import { FieldErrorComponent } from '../../../../shared/components';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
-import { buildStudentRow, GroupFormGroup } from '../../utils/group-form.util';
+import {
+  buildStudentRow,
+  GroupFormGroup,
+  hasScheduleDayCapture,
+} from '../../utils/group-form.util';
 import { ScheduleSubformComponent } from '../schedule-subform/schedule-subform.component';
 
-/**
- * HU-59 — one group as an inline capture row (nothing to expand): identity + base fields,
- * the 5-day schedule and the student list are always visible and editable in place. The
- * 25-column width still belongs to the export format, not to this UI.
- */
+/** One group: compact Excel-like summary that expands into the full editor on demand. */
 @Component({
   selector: 'app-group-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,8 +57,10 @@ export class GroupCardComponent {
   readonly groupLimitExceeded = input(false);
   readonly editable = input(true);
   readonly submitted = input(false);
+  readonly expanded = input(false);
 
   readonly removeGroup = output<void>();
+  readonly toggleExpanded = output<void>();
 
   /**
    * Los valores de un `FormControl` no son señales, así que un `computed` que los lee
@@ -98,6 +100,30 @@ export class GroupCardComponent {
   /** Snapshot del catálogo; es una de las columnas del formato oficial (HU-58). */
   readonly tipoUea = computed(() => this.form().controls.tipoUea.value);
   readonly maxGroups = computed(() => this.form().controls.maxGroups.value.trim() || '—');
+
+  /** Responsables resueltos desde las opciones fijadas por el editor. */
+  readonly professorSummary = computed(() => {
+    this.revision();
+    const labels = new Map(this.people.professors().map((option) => [option.value, option.label]));
+    return this.form()
+      .controls.professorIds.value.map((id) => labels.get(id))
+      .filter((label): label is string => label !== undefined)
+      .join(' · ');
+  });
+
+  /** Días con cualquier captura; permite verificar el horario sin abrir el grupo. */
+  readonly configuredSchedule = computed(() => {
+    this.revision();
+    return this.form()
+      .controls.schedule.controls.map((day) => ({
+        day: day.controls.day.value,
+        start: day.controls.start.value,
+        end: day.controls.end.value,
+        lab: day.controls.lab.value,
+        configured: hasScheduleDayCapture(day),
+      }))
+      .filter(({ configured }) => configured);
+  });
 
   readonly professorOptions = this.people.professors;
   readonly studentOptions = this.people.students;

@@ -5,6 +5,8 @@ import {
   buildGroupFormGroup,
   buildSaveGroupsRequest,
   emptyGroup,
+  hasScheduleCapture,
+  hasScheduleDayCapture,
   startBeforeEndValidator,
 } from './group-form.util';
 import { QUOTA_PATTERN } from '../../../shared/utils/quota.util';
@@ -58,6 +60,17 @@ describe('group-form.util', () => {
     expect(days.map((d) => d.day)).toEqual([...SCHEDULE_DAYS]);
     expect(days[0]).toMatchObject({ start: '08:30', end: '10:00', lab: false });
     expect(days[1]).toMatchObject({ start: '', end: '', lab: false });
+  });
+
+  it('shares one definition of a captured schedule across summaries and filters', () => {
+    const form = buildGroupFormGroup(fb, emptyGroup(uea));
+    const monday = form.controls.schedule.at(0);
+
+    expect(hasScheduleCapture(form.controls.schedule)).toBe(false);
+    monday.controls.lab.setValue(true);
+
+    expect(hasScheduleDayCapture(monday)).toBe(true);
+    expect(hasScheduleCapture(form.controls.schedule)).toBe(true);
   });
 
   // La spec pide `grupo` «sin formato forzado» (letras «quemadas»): se manda tal cual.

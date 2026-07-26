@@ -38,12 +38,20 @@ function student(studentId: number): GroupStudent {
 
 @Component({
   imports: [GroupCardComponent],
-  template: `<app-group-card [form]="form" [students]="students()" [warnings]="warnings()" />`,
+  template: `
+    <app-group-card
+      [form]="form"
+      [students]="students()"
+      [warnings]="warnings()"
+      [expanded]="expanded()"
+    />
+  `,
 })
 class HostComponent {
   readonly form: GroupFormGroup = buildGroupFormGroup(new FormBuilder().nonNullable, group);
   readonly students = signal<GroupStudent[]>([student(1), student(2), student(3)]);
   readonly warnings = signal([{ code: 'STUDENT_INACTIVE' as const, enrollmentId: 'A2' }]);
+  readonly expanded = signal(true);
 }
 
 describe('GroupCardComponent', () => {
@@ -136,6 +144,17 @@ describe('GroupCardComponent', () => {
     ).not.toBeNull();
     expect(fixture.nativeElement.querySelector('[data-testid="group-students"]')).not.toBeNull();
     expect(fixture.nativeElement.querySelectorAll('[data-testid="schedule-day"]')).toHaveLength(5);
+  });
+
+  it('keeps the Excel-like summary visible while the full editor is collapsed', async () => {
+    const { fixture, host } = await setup();
+
+    host.expanded.set(false);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="schedule-summary"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="group-configuration"]')).toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('input[type="time"]')).toHaveLength(0);
   });
 
   // El horario vive siempre visible, pero cada día agrupa su inicio, fin y LAB.

@@ -3,12 +3,75 @@
     <p class="text-body-md text-text-secondary">
       {{ 'TRIMESTRAL_PLANNING.DETAIL.NO_GROUPS' | translate }}
     </p>
+  } @else {
+    <div
+      class="border-outline bg-surface p-sm gap-sm grid items-center rounded-xl border lg:grid-cols-[minmax(16rem,1fr)_12rem_14rem_auto]"
+      [formGroup]="filters"
+      data-testid="group-filters"
+    >
+      <div class="relative min-w-0">
+        <i
+          class="pi pi-search text-text-tertiary pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
+          aria-hidden="true"
+        ></i>
+        <input
+          pInputText
+          formControlName="search"
+          class="pl-xl"
+          [placeholder]="'TRIMESTRAL_PLANNING.FILTERS.SEARCH' | translate"
+          data-testid="group-search"
+        />
+      </div>
+      <app-i18n-select
+        controlName="ueaType"
+        [options]="ueaTypeFilters"
+        [placeholder]="'TRIMESTRAL_PLANNING.FILTERS.UEA_TYPE' | translate"
+      />
+      <app-i18n-select
+        controlName="state"
+        [options]="groupStateFilters"
+        [placeholder]="'TRIMESTRAL_PLANNING.FILTERS.STATE' | translate"
+      />
+      <div class="gap-xs flex items-center justify-end">
+        <span class="text-caption text-text-secondary whitespace-nowrap" data-testid="filter-count">
+          {{
+            'TRIMESTRAL_PLANNING.FILTERS.RESULTS'
+              | translate: { visible: filteredOrder().length, total: groups.length }
+          }}
+        </span>
+        <p-button
+          type="button"
+          severity="secondary"
+          variant="outlined"
+          icon="pi pi-filter-slash"
+          [disabled]="!filtersActive()"
+          [ariaLabel]="'TRIMESTRAL_PLANNING.FILTERS.CLEAR' | translate"
+          (onClick)="clearFilters()"
+          data-testid="clear-group-filters"
+        />
+        <p-button
+          type="button"
+          severity="secondary"
+          variant="outlined"
+          [icon]="allVisibleExpanded() ? 'pi pi-minus' : 'pi pi-plus'"
+          [label]="
+            (allVisibleExpanded()
+              ? 'TRIMESTRAL_PLANNING.ACTIONS.COLLAPSE_ALL'
+              : 'TRIMESTRAL_PLANNING.ACTIONS.EXPAND_ALL'
+            ) | translate
+          "
+          [disabled]="filteredOrder().length === 0"
+          (onClick)="toggleAllVisible()"
+          data-testid="toggle-visible-groups"
+        />
+      </div>
+    </div>
   }
 
   <!-- Lista plana ordenada por clave de UEA. Se rastrea por la instancia del FormGroup:
        los grupos nuevos comparten id 0 y `0 ?? $index` no cae al índice, así que dos
        altas colisionaban de clave. -->
-  @for (index of order(); track groups.at(index)) {
+  @for (index of filteredOrder(); track groups.at(index)) {
     <app-group-card
       [form]="groups.at(index)"
       [students]="studentsByIndex()[index] ?? []"
@@ -17,8 +80,26 @@
       [groupLimitExceeded]="groupLimitViolationIndices().includes(index)"
       [editable]="editable()"
       [submitted]="submitted()"
-      (removeGroup)="removeGroup(index)"
+      [expanded]="isExpanded(groups.at(index))"
+      (toggleExpanded)="toggleGroup(groups.at(index))"
+      (removeGroup)="requestRemoveGroup(groups.at(index))"
     />
+  } @empty {
+    @if (groups.length > 0) {
+      <div
+        class="border-outline bg-surface text-text-secondary p-lg gap-sm flex flex-col items-center rounded-xl border border-dashed text-center"
+        data-testid="no-filtered-groups"
+      >
+        <i class="pi pi-search text-2xl opacity-50" aria-hidden="true"></i>
+        <p class="text-body-md">{{ 'TRIMESTRAL_PLANNING.FILTERS.NO_RESULTS' | translate }}</p>
+        <p-button
+          severity="secondary"
+          variant="text"
+          [label]="'TRIMESTRAL_PLANNING.FILTERS.CLEAR' | translate"
+          (onClick)="clearFilters()"
+        />
+      </div>
+    }
   }
 
   @if (error(); as saveError) {
@@ -67,3 +148,56 @@
     </div>
   }
 </div>
+
+<p-dialog
+  [visible]="pendingRemoval() !== null"
+  [modal]="true"
+  [style]="{ width: '32rem' }"
+  [header]="'TRIMESTRAL_PLANNING.REMOVE_GROUP.TITLE' | translate"
+  (visibleChange)="onRemoveDialogVisibleChange($event)"
+>
+  @if (pendingRemoval(); as pending) {
+    <div class="gap-md flex flex-col">
+      <p class="text-body-md">
+        {{
+          'TRIMESTRAL_PLANNING.REMOVE_GROUP.MESSAGE'
+            | translate
+              : {
+                  group: pending.controls.grupo.value || '—',
+                  clave: pending.controls.clave.value,
+                  name: pending.controls.nombre.value,
+                }
+        }}
+      </p>
+      @if (pending.controls.students.length > 0) {
+        <p-message
+          severity="warn"
+          [text]="
+            'TRIMESTRAL_PLANNING.REMOVE_GROUP.STUDENTS'
+              | translate: { count: pending.controls.students.length }
+          "
+          data-testid="remove-group-students-warning"
+        />
+      }
+      <p class="text-caption text-text-secondary">
+        {{ 'TRIMESTRAL_PLANNING.REMOVE_GROUP.HINT' | translate }}
+      </p>
+    </div>
+  }
+
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      variant="outlined"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="cancelRemoveGroup()"
+    />
+    <p-button
+      severity="danger"
+      icon="pi pi-trash"
+      [label]="'TRIMESTRAL_PLANNING.ACTIONS.REMOVE_GROUP' | translate"
+      (onClick)="confirmRemoveGroup()"
+      data-testid="confirm-remove-group"
+    />
+  </ng-template>
+</p-dialog>

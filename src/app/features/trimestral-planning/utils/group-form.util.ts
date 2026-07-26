@@ -46,6 +46,15 @@ export type GroupFormGroup = FormGroup<{
   students: FormArray<StudentFormGroup>;
 }>;
 
+/** A day belongs in summaries/filters as soon as any of its schedule fields was captured. */
+export function hasScheduleDayCapture(day: ScheduleFormGroup): boolean {
+  return day.controls.start.value !== '' || day.controls.end.value !== '' || day.controls.lab.value;
+}
+
+export function hasScheduleCapture(schedule: FormArray<ScheduleFormGroup>): boolean {
+  return schedule.controls.some(hasScheduleDayCapture);
+}
+
 /** A day is either empty or a complete, strictly increasing start/end range. */
 export function startBeforeEndValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('start')?.value as string;

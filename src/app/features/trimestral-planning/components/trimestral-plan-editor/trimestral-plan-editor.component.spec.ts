@@ -116,7 +116,8 @@ describe('TrimestralPlanEditorComponent', () => {
     component.groups.at(1).controls.grupo.setValue('CO43A');
     expect(component.order()).toEqual([0, 1]);
 
-    component.removeGroup(0); // queda solo el grupo agregado, ahora en índice 0
+    component.requestRemoveGroup(component.groups.at(0));
+    component.confirmRemoveGroup(); // queda solo el grupo agregado, ahora en índice 0
     expect(component.order()).toEqual([0]);
   });
 
@@ -190,12 +191,101 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.groups.length).toBe(1);
   });
 
-  it('removes a group from the FormArray', async () => {
+  it('only removes a group from the FormArray after confirmation', async () => {
+    const { fixture, component } = await setup();
+
+    const removeButton = fixture.nativeElement.querySelector(
+      '[data-testid="request-remove-group"] button',
+    ) as HTMLButtonElement;
+    expect(removeButton).not.toBeNull();
+    removeButton.click();
+    fixture.detectChanges();
+    expect(component.pendingRemoval()).toBe(component.groups.at(0));
+    expect(component.groups.length).toBe(1);
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="confirm-remove-group"]'),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="remove-group-students-warning"]'),
+    ).not.toBeNull();
+
+    component.confirmRemoveGroup();
+    expect(component.groups.length).toBe(0);
+    expect(component.pendingRemoval()).toBeNull();
+  });
+
+  it('cancels a pending group removal without changing the form', async () => {
     const { component } = await setup();
 
-    component.removeGroup(0);
+    component.requestRemoveGroup(component.groups.at(0));
+    component.cancelRemoveGroup();
 
-    expect(component.groups.length).toBe(0);
+    expect(component.groups.length).toBe(1);
+    expect(component.pendingRemoval()).toBeNull();
+  });
+
+  it('searches by group, UEA key and normalized UEA name', async () => {
+    const detail = plan();
+    const base = detail.groups[0]!;
+    detail.groups = [
+      { ...base, id: 11, clave: '2156024', nombre: 'REDES', grupo: 'CO43' },
+      {
+        ...base,
+        id: 12,
+        clave: '2156027',
+        nombre: 'INTELIGENCIA ARTIFICIAL',
+        grupo: 'CO43A',
+      },
+    ];
+    const { component } = await setup(detail);
+
+    component.filters.controls.search.setValue('CO43A');
+    expect(component.filteredOrder()).toEqual([1]);
+
+    component.filters.controls.search.setValue('2156024');
+    expect(component.filteredOrder()).toEqual([0]);
+
+    component.filters.controls.search.setValue('inteligencia');
+    expect(component.filteredOrder()).toEqual([1]);
+  });
+
+  it('filters groups by UEA type and operational situation', async () => {
+    const detail = plan();
+    const base = detail.groups[0]!;
+    detail.groups = [
+      base,
+      {
+        ...base,
+        id: 12,
+        ueaId: 2,
+        clave: '2156027',
+        nombre: 'OPTATIVA VACÍA',
+        tipoUea: 'OPTATIVA',
+        professors: [],
+        students: [],
+      },
+    ];
+    const { component } = await setup(detail);
+
+    component.filters.controls.ueaType.setValue('OPTATIVA');
+    expect(component.filteredOrder()).toEqual([1]);
+
+    component.filters.controls.ueaType.setValue('');
+    component.filters.controls.state.setValue('WITHOUT_STUDENTS');
+    expect(component.filteredOrder()).toEqual([1]);
+  });
+
+  it('expands and collapses only the currently visible groups', async () => {
+    const { component } = await setup();
+    const group = component.groups.at(0);
+
+    expect(component.isExpanded(group)).toBe(false);
+    component.toggleAllVisible();
+    expect(component.isExpanded(group)).toBe(true);
+    expect(component.allVisibleExpanded()).toBe(true);
+
+    component.toggleAllVisible();
+    expect(component.isExpanded(group)).toBe(false);
   });
 
   it('adds and removes student rows without touching the server snapshots', async () => {
