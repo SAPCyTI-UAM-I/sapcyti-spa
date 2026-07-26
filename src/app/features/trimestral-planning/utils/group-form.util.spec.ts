@@ -7,7 +7,9 @@ import {
   emptyGroup,
   hasScheduleCapture,
   hasScheduleDayCapture,
+  normalizeTimeInput,
   startBeforeEndValidator,
+  timeFormatValidator,
 } from './group-form.util';
 import { QUOTA_PATTERN } from '../../../shared/utils/quota.util';
 
@@ -170,5 +172,46 @@ describe('group-form.util', () => {
 
     tuesday.patchValue({ start: '09:00', end: '10:00' });
     expect(startBeforeEndValidator(tuesday)).toBeNull();
+  });
+
+  // La hora se teclea, así que el formato ya no lo garantiza el widget.
+  it('rejects a time that is not zero-padded 24h HH:mm', () => {
+    const control = fb.control('');
+
+    for (const valid of ['', '09:30', '00:00', '23:59']) {
+      control.setValue(valid);
+      expect(timeFormatValidator(control)).toBeNull();
+    }
+
+    for (const invalid of ['9:30', '0930', '24:00', '09:60', '09:3', 'nueve']) {
+      control.setValue(invalid);
+      expect(timeFormatValidator(control)).toEqual({ timeFormat: true });
+    }
+  });
+
+  /**
+   * Sin esta guarda, `'9:30' < '11:00'` es false como texto y el rango se acusaba de
+   * invertido cuando el problema real era el formato.
+   */
+  it('does not claim an inverted range when the format is what is wrong', () => {
+    const form = buildGroupFormGroup(fb, group);
+    const monday = form.controls.schedule.at(0);
+
+    monday.patchValue({ start: '9:30', end: '11:00' });
+
+    expect(startBeforeEndValidator(monday)).toBeNull();
+    expect(monday.controls.start.errors).toEqual({ timeFormat: true });
+  });
+
+  it('completes a typed time to HH:mm and leaves the unparseable alone', () => {
+    expect(normalizeTimeInput('930')).toBe('09:30');
+    expect(normalizeTimeInput('0930')).toBe('09:30');
+    expect(normalizeTimeInput('9:30')).toBe('09:30');
+    expect(normalizeTimeInput(' 18:00 ')).toBe('18:00');
+    expect(normalizeTimeInput('')).toBe('');
+    expect(normalizeTimeInput(null)).toBe('');
+    // Se dejan tal cual para que el validador los marque, no se inventa una hora.
+    expect(normalizeTimeInput('25:00')).toBe('25:00');
+    expect(normalizeTimeInput('nueve')).toBe('nueve');
   });
 });

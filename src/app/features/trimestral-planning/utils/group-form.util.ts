@@ -58,6 +58,37 @@ export function hasScheduleCapture(schedule: FormArray<ScheduleFormGroup>): bool
   return schedule.controls.some(hasScheduleDayCapture);
 }
 
+/**
+ * Mismo patrón que valida el backend (`TrimestralPlanGroup.TIME_PATTERN`). El cero a la
+ * izquierda no es cosmético: todo el stack compara las horas como texto.
+ */
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/**
+ * La hora se captura a mano, así que el formato hay que validarlo: antes lo garantizaba
+ * el widget (primero `<input type="time">`, luego un select de rejilla).
+ */
+export function timeFormatValidator(control: AbstractControl): ValidationErrors | null {
+  const value = (control.value as string | null)?.trim() ?? '';
+  if (!value) return null;
+  return TIME_PATTERN.test(value) ? null : { timeFormat: true };
+}
+
+/**
+ * `930`, `0930` y `9:30` se completan a `09:30` al salir del campo. Lo que no se puede
+ * interpretar se deja intacto para que `timeFormatValidator` lo marque.
+ */
+export function normalizeTimeInput(raw: string | null): string {
+  const value = raw?.trim() ?? '';
+  if (!value) return '';
+
+  const match = /^(\d{1,2}):?(\d{2})$/.exec(value);
+  if (!match) return value;
+
+  const [, hours, minutes] = match;
+  return `${hours!.padStart(2, '0')}:${minutes}`;
+}
+
 /** A day is either empty or a complete, strictly increasing start/end range. */
 export function startBeforeEndValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('start')?.value as string;
@@ -66,6 +97,9 @@ export function startBeforeEndValidator(group: AbstractControl): ValidationError
   if (lab && (!start || !end)) return { labTimeRequired: true };
   if (!start && !end) return null;
   if (!start || !end) return { incompleteRange: true };
+  // Comparar `9:30` con `11:00` como texto da false: el formato lo reporta cada control,
+  // así que aquí se calla en vez de acusar un rango invertido que no existe.
+  if (!TIME_PATTERN.test(start) || !TIME_PATTERN.test(end)) return null;
   return start < end ? null : { startAfterEnd: true };
 }
 
@@ -103,8 +137,8 @@ function buildScheduleRow(
   return fb.group(
     {
       day: fb.control(day),
-      start: fb.control(entry?.start ?? ''),
-      end: fb.control(entry?.end ?? ''),
+      start: fb.control(entry?.start ?? '', timeFormatValidator),
+      end: fb.control(entry?.end ?? '', timeFormatValidator),
       lab: fb.control(entry?.lab ?? false),
     },
     { validators: startBeforeEndValidator },
