@@ -971,7 +971,6 @@
       "WITHOUT_STUDENTS": "Sin alumnos"
     },
     "GRID": {
-      "ACTIONS": "Acciones",
       "CVEUEA": "Clave",
       "NEMP": "NEMP",
       "PROF": "Profesores",
@@ -979,7 +978,6 @@
       "UEA": "UEA"
     },
     "GROUP": {
-      "COPY_RANGE": "Aplicar a los demás días",
       "CUPO": "Cupo",
       "CUPO_SOURCE_LINK": "Definido en la planeación anual {{year}}",
       "DECLARED_TERM": "trim. {{term}}",
@@ -987,7 +985,6 @@
       "GROUP_LIMIT_EXCEEDED": "Rebasa el máximo de grupos de la planeación anual",
       "GRUPO": "Grupo",
       "INACTIVE_STUDENT": "Alumno inactivo: puede permanecer, pero no moverse ni reponerse",
-      "INCOMPLETE": "Falta capturar",
       "LAB": "LAB",
       "LAB_TIME_REQUIRED": "LAB requiere hora de inicio y fin.",
       "MATRICULA": "Matrícula",
@@ -1023,11 +1020,6 @@
       "SUBTITLE": "La planeación se genera a partir de las respuestas de una encuesta cerrada.",
       "TITLE": "Generar planeación trimestral"
     },
-    "NOTES": {
-      "HINT": "Se exporta junto a la matrícula. Suele quedar vacía.",
-      "OPEN": "Notas por alumno",
-      "TITLE": "Notas por alumno"
-    },
     "OUTDATED_REASONS": {
       "ANNUAL_PLAN_CHANGED": "Cambió la oferta de la planeación anual.",
       "SURVEY_REOPENED": "La encuesta fue reabierta después de generar esta planeación.",
@@ -1043,11 +1035,6 @@
       "ANNUAL_NOT_TERMINATED": "La planeación anual correspondiente no está terminada.",
       "READ_ONLY": "La planeación está disponible sólo para consulta hasta restaurar los prerrequisitos.",
       "SURVEY_NOT_CLOSED": "La encuesta correspondiente no está cerrada."
-    },
-    "PREVIEW": {
-      "HINT": "Así se entregará a Sistemas Escolares",
-      "STALE": "Hay cambios sin guardar: la vista previa muestra lo último guardado.",
-      "TITLE": "Vista previa del Excel"
     },
     "REMOVE_GROUP": {
       "HINT": "El cambio sólo se enviará al servidor cuando guardes la planeación.",

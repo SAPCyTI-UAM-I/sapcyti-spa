@@ -38,6 +38,11 @@ export class PlanPickersController {
   readonly ueas = signal<PersonOption[]>([]);
   private readonly ueaCatalog = signal<UeaCatalogItem[]>([]);
   private readonly studentCatalog = signal<StudentCatalogItem[]>([]);
+  /**
+   * Nombre sin el NEMP, para la columna que solo lleva el nombre. Se guarda aparte en vez
+   * de partir la etiqueta: el label es presentación, no una fuente de datos.
+   */
+  private readonly professorNameById = signal<ReadonlyMap<number, string>>(new Map());
   /** Un indicador por buscador: los tres corren en paralelo y no comparten spinner. */
   readonly professorsLoading = signal(false);
   readonly studentsLoading = signal(false);
@@ -72,10 +77,14 @@ export class PlanPickersController {
       )
       .subscribe({
         // Keep assigned/inactive snapshots pinned while remote filters change pages.
-        next: (page) =>
+        next: (page) => {
+          this.rememberProfessorNames(
+            page.content.map((professor) => [professor.id, professorName(professor)] as const),
+          );
           this.professors.update((options) =>
             mergeOptions(page.content.map(professorOption), options),
-          ),
+          );
+        },
         // A failed search must not erase already selected professor labels.
         error: () => undefined,
       });
@@ -144,16 +153,29 @@ export class PlanPickersController {
    * buscador mentiría. El snapshot del plan trae NEMP y nombre.
    */
   pinProfessors(groups: readonly TrimestralGroup[]): void {
-    const pinned = groups.flatMap((group): PersonOption[] =>
-      group.professors.map((professor) => {
-        const name = professor.professorName;
-        return {
-          value: professor.professorId,
-          label: professor.employeeNumber ? `${professor.employeeNumber} — ${name}` : name,
-        };
+    const assigned = groups.flatMap((group) => group.professors);
+    this.rememberProfessorNames(
+      assigned.map((professor) => [professor.professorId, professor.professorName] as const),
+    );
+    const pinned = assigned.map(
+      (professor): PersonOption => ({
+        value: professor.professorId,
+        label: professor.employeeNumber
+          ? `${professor.employeeNumber} — ${professor.professorName}`
+          : professor.professorName,
       }),
     );
     this.professors.update((options) => mergeOptions(options, pinned));
+  }
+
+  /** Nombre del profesor sin el NEMP; vacío si aún no se conoce. */
+  professorNameOf(professorId: number): string {
+    return this.professorNameById().get(professorId) ?? '';
+  }
+
+  private rememberProfessorNames(entries: readonly (readonly [number, string])[]): void {
+    if (entries.length === 0) return;
+    this.professorNameById.update((current) => new Map([...current, ...entries]));
   }
 
   /**
@@ -179,10 +201,14 @@ export class PlanPickersController {
 }
 
 /** Searchable by NEMP or name, so both go in the label. */
-function professorOption(professor: ProfessorCatalogItem): PersonOption {
-  const name = [professor.firstName, professor.firstLastName, professor.secondLastName]
+function professorName(professor: ProfessorCatalogItem): string {
+  return [professor.firstName, professor.firstLastName, professor.secondLastName]
     .filter(Boolean)
     .join(' ');
+}
+
+function professorOption(professor: ProfessorCatalogItem): PersonOption {
+  const name = professorName(professor);
   return {
     value: professor.id,
     label: professor.employeeNumber ? `${professor.employeeNumber} — ${name}` : name,

@@ -40,7 +40,6 @@ import {
   buildSaveGroupsRequest,
   emptyGroup,
   GroupFormGroup,
-  hasScheduleDayCapture,
   normalizeTimeInput,
 } from '../../utils/group-form.util';
 import { claveHeaderPositions } from '../../utils/group-ordering.util';
@@ -139,8 +138,6 @@ export class TrimestralPlanEditorComponent {
   readonly groupStateFilters = GROUP_STATE_FILTERS;
 
   readonly pendingRemoval = signal<GroupFormGroup | null>(null);
-  /** Índice del grupo cuyas notas por alumno se están editando; null = diálogo cerrado. */
-  readonly notesGroupIndex = signal<number | null>(null);
 
   /** Selección transitoria del selector de alta; se limpia en cuanto se agrega. */
   readonly ueaPick = signal<number | null>(null);
@@ -264,11 +261,12 @@ export class TrimestralPlanEditorComponent {
    */
   private readonly professorNamesByIndex = computed<readonly string[]>(() => {
     this.revision();
-    const labels = new Map(this.people.professors().map((option) => [option.value, option.label]));
+    // Solo el nombre: el NEMP ya vive en su propia columna, repetirlo es ruido.
+    this.people.professors();
     return this.groups.controls.map((group) =>
       group.controls.professorIds.value
-        .map((id) => labels.get(id))
-        .filter((label): label is string => label !== undefined)
+        .map((id) => this.people.professorNameOf(id))
+        .filter(Boolean)
         .join(' · '),
     );
   });
@@ -429,35 +427,6 @@ export class TrimestralPlanEditorComponent {
       }
     }
     this.bumpRevision();
-  }
-
-  // ─── Notas por alumno (columna AB del Excel) ───
-
-  openNotes(index: number): void {
-    this.notesGroupIndex.set(index);
-  }
-
-  onNotesDialogVisibleChange(visible: boolean): void {
-    if (!visible) this.notesGroupIndex.set(null);
-  }
-
-  /**
-   * Copia el rango del primer día capturado a los demás días que ya tengan algo: casi
-   * todos los grupos repiten el mismo bloque horario.
-   */
-  copyScheduleAcrossDays(index: number): void {
-    if (!this.editable()) return;
-
-    const schedule = this.groups.at(index).controls.schedule;
-    const source = schedule.controls.find((day) => hasScheduleDayCapture(day));
-    if (!source) return;
-
-    const { start, end } = source.getRawValue();
-    for (const day of schedule.controls) {
-      if (day !== source && hasScheduleDayCapture(day)) {
-        day.patchValue({ start, end });
-      }
-    }
   }
 
   /** Alumno marcado que el servidor aún no conoce: se arma del catálogo del picker. */

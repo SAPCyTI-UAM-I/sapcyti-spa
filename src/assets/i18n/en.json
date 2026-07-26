@@ -971,7 +971,6 @@
       "WITHOUT_STUDENTS": "Without students"
     },
     "GRID": {
-      "ACTIONS": "Actions",
       "CVEUEA": "Key",
       "NEMP": "NEMP",
       "PROF": "Instructors",
@@ -979,7 +978,6 @@
       "UEA": "UEA"
     },
     "GROUP": {
-      "COPY_RANGE": "Apply to the other days",
       "CUPO": "Quota",
       "CUPO_SOURCE_LINK": "Set by the {{year}} annual plan",
       "DECLARED_TERM": "term {{term}}",
@@ -987,7 +985,6 @@
       "GROUP_LIMIT_EXCEEDED": "Exceeds the annual-plan group limit",
       "GRUPO": "Group",
       "INACTIVE_STUDENT": "Inactive student: may remain, but cannot be moved or restored",
-      "INCOMPLETE": "Missing data",
       "LAB": "LAB",
       "LAB_TIME_REQUIRED": "LAB requires both start and end times.",
       "MATRICULA": "Enrollment ID",
@@ -1023,11 +1020,6 @@
       "SUBTITLE": "The plan is generated from the answers of a closed survey.",
       "TITLE": "Generate trimestral plan"
     },
-    "NOTES": {
-      "HINT": "Exported next to the enrolment id. Usually left empty.",
-      "OPEN": "Per-student notes",
-      "TITLE": "Per-student notes"
-    },
     "OUTDATED_REASONS": {
       "ANNUAL_PLAN_CHANGED": "The annual-plan offering changed.",
       "SURVEY_REOPENED": "The survey was reopened after this plan was generated.",
@@ -1043,11 +1035,6 @@
       "ANNUAL_NOT_TERMINATED": "The corresponding annual plan is not finished.",
       "READ_ONLY": "This plan is read-only until its prerequisites are restored.",
       "SURVEY_NOT_CLOSED": "The corresponding survey is not closed."
-    },
-    "PREVIEW": {
-      "HINT": "How it will be delivered to Sistemas Escolares",
-      "STALE": "There are unsaved changes: the preview shows the last saved version.",
-      "TITLE": "Excel preview"
     },
     "REMOVE_GROUP": {
       "HINT": "This change is only sent to the server when you save the plan.",

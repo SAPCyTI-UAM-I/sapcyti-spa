@@ -403,14 +403,14 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.selectedStudentIds(0)).toEqual([5, 7]);
   });
 
-  it('derives the instructor names column from the selected ids', async () => {
+  it('derives the instructor names column without repeating the NEMP', async () => {
     const { component } = await setup();
 
     expect(component.professorNames(0)).toBe('');
     component.groups.at(0).controls.professorIds.setValue([8]);
 
-    // Resuelto desde las opciones fijadas por el controller, no desde el form.
-    expect(component.professorNames(0)).toContain('40001');
+    // El NEMP ya vive en su propia columna: aquí solo el nombre.
+    expect(component.professorNames(0)).toBe('Rafaela Blanco');
   });
 
   it('reads occupancy and what is missing per row', async () => {
@@ -454,23 +454,6 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.scheduleCellError(0, 0, 'start')).toBe(
       'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END',
     );
-  });
-
-  it('copies the captured range across the other captured days', async () => {
-    const { component } = await setup();
-    const schedule = component.groups.at(0).controls.schedule;
-    schedule.at(0).patchValue({ start: '09:00', end: '11:00' });
-    schedule.at(2).patchValue({ start: '15:00', end: '18:00', lab: true });
-
-    component.copyScheduleAcrossDays(0);
-
-    expect(schedule.at(2).getRawValue()).toMatchObject({
-      start: '09:00',
-      end: '11:00',
-      lab: true,
-    });
-    // Un día vacío sigue vacío: copiar no inventa sesiones.
-    expect(schedule.at(1).getRawValue()).toMatchObject({ start: '', end: '' });
   });
 
   it('adds and removes student rows without touching the server snapshots', async () => {

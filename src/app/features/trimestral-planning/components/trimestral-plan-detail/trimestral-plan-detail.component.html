@@ -187,10 +187,6 @@
 
         <!-- Grupos: editables en BORRADOR, solo lectura en TERMINADA -->
         <app-trimestral-plan-editor [plan]="current" (saved)="onSaved($event)" />
-
-        @if (current.groups.length > 0) {
-          <app-excel-preview [plan]="current" [stale]="dirty()" />
-        }
       </div>
     }
   </app-load-state>
