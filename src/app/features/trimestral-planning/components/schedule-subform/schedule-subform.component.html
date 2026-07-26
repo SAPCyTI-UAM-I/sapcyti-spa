@@ -1,91 +1,88 @@
-<fieldset>
+<fieldset class="gap-md flex flex-col">
   <legend class="sr-only">{{ 'TRIMESTRAL_PLANNING.GROUP.SCHEDULE' | translate }}</legend>
 
-  <!-- Matriz uniforme (decisión 2026-07-21): `table-fixed` reparte las 5 columnas de día
-       en anchos iguales al ancho completo de la tarjeta — nada se envuelve chueco. -->
-  <div class="overflow-x-auto">
-    <table class="w-full min-w-[36rem] table-fixed border-collapse">
-      <thead>
-        <tr>
-          <td class="w-14"></td>
-          @for (day of schedule().controls; track day.controls.day.value) {
-            <th scope="col" class="px-xs pb-xs text-caption text-text-secondary font-medium">
-              {{ 'TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate }}
-            </th>
-          }
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row" class="pr-sm text-caption text-text-secondary text-right font-normal">
-            {{ 'TRIMESTRAL_PLANNING.GROUP.START' | translate }}
-          </th>
-          @for (day of schedule().controls; track day.controls.day.value) {
-            <td class="px-xs pb-xs" [formGroup]="day">
-              <input
-                type="time"
-                formControlName="start"
-                class="border-outline p-xs w-full rounded-md border"
-                [attr.aria-label]="
-                  ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
-                  ' · ' +
-                  ('TRIMESTRAL_PLANNING.GROUP.START' | translate)
-                "
-              />
-            </td>
-          }
-        </tr>
-        <tr>
-          <th scope="row" class="pr-sm text-caption text-text-secondary text-right font-normal">
-            {{ 'TRIMESTRAL_PLANNING.GROUP.END' | translate }}
-          </th>
-          @for (day of schedule().controls; track day.controls.day.value) {
-            <td class="px-xs pb-xs" [formGroup]="day">
-              <input
-                type="time"
-                formControlName="end"
-                class="border-outline p-xs w-full rounded-md border"
-                [attr.aria-label]="
-                  ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
-                  ' · ' +
-                  ('TRIMESTRAL_PLANNING.GROUP.END' | translate)
-                "
-              />
-              @if (day.errors?.['labTimeRequired']) {
-                <span class="text-caption text-error block">
-                  {{ 'TRIMESTRAL_PLANNING.GROUP.LAB_TIME_REQUIRED' | translate }}
-                </span>
-              } @else if (day.errors?.['incompleteRange']) {
-                <span class="text-caption text-error block">
-                  {{ 'TRIMESTRAL_PLANNING.GROUP.TIME_RANGE_REQUIRED' | translate }}
-                </span>
-              } @else if (day.errors?.['startAfterEnd']) {
-                <span class="text-caption text-error block">
-                  {{ 'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END' | translate }}
-                </span>
-              }
-            </td>
-          }
-        </tr>
-        <tr>
-          <th scope="row" class="pr-sm text-caption text-text-secondary text-right font-normal">
-            {{ 'TRIMESTRAL_PLANNING.GROUP.LAB' | translate }}
-          </th>
-          @for (day of schedule().controls; track day.controls.day.value) {
-            <td class="px-xs text-center" [formGroup]="day">
-              <p-checkbox
-                formControlName="lab"
-                [binary]="true"
-                [ariaLabel]="
-                  ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
-                  ' · ' +
-                  ('TRIMESTRAL_PLANNING.GROUP.LAB' | translate)
-                "
-              />
-            </td>
-          }
-        </tr>
-      </tbody>
-    </table>
+  <div class="gap-sm flex items-start">
+    <span
+      class="bg-primary-container text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+      aria-hidden="true"
+    >
+      <i class="pi pi-clock"></i>
+    </span>
+    <div>
+      <h4 class="text-h3">{{ 'TRIMESTRAL_PLANNING.GROUP.SCHEDULE' | translate }}</h4>
+      <p class="text-caption text-text-secondary">
+        {{ 'TRIMESTRAL_PLANNING.GROUP.SCHEDULE_HINT' | translate }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Cada día es una unidad completa. Así se lee de arriba abajo y se evita recorrer
+       tres filas lejanas (inicio, fin y LAB) para entender un solo día. -->
+  <div class="gap-sm grid sm:grid-cols-2 xl:grid-cols-5">
+    @for (day of schedule().controls; track day.controls.day.value) {
+      <section
+        class="border-outline bg-surface-muted p-sm gap-sm flex min-w-0 flex-col rounded-lg border"
+        [formGroup]="day"
+        [attr.aria-label]="'TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate"
+        data-testid="schedule-day"
+      >
+        <h5 class="text-label-md text-primary font-semibold">
+          {{ 'TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate }}
+        </h5>
+
+        <div class="gap-sm grid 2xl:grid-cols-2">
+          <label class="gap-xs flex min-w-0 flex-col">
+            <span class="text-caption text-text-secondary">
+              {{ 'TRIMESTRAL_PLANNING.GROUP.START' | translate }}
+            </span>
+            <input
+              type="time"
+              formControlName="start"
+              class="p-inputtext min-w-0"
+              [attr.aria-readonly]="!editable()"
+            />
+          </label>
+
+          <label class="gap-xs flex min-w-0 flex-col">
+            <span class="text-caption text-text-secondary">
+              {{ 'TRIMESTRAL_PLANNING.GROUP.END' | translate }}
+            </span>
+            <input
+              type="time"
+              formControlName="end"
+              class="p-inputtext min-w-0"
+              [attr.aria-readonly]="!editable()"
+            />
+          </label>
+        </div>
+
+        <div class="gap-sm text-body-md flex min-h-6 items-center">
+          <p-checkbox
+            formControlName="lab"
+            [binary]="true"
+            [ariaLabel]="
+              ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
+              ' · ' +
+              ('TRIMESTRAL_PLANNING.GROUP.LAB' | translate)
+            "
+          />
+          <span>{{ 'TRIMESTRAL_PLANNING.GROUP.LAB' | translate }}</span>
+        </div>
+
+        @if (day.errors?.['labTimeRequired']) {
+          <span class="text-caption text-error" data-testid="schedule-day-error">
+            {{ 'TRIMESTRAL_PLANNING.GROUP.LAB_TIME_REQUIRED' | translate }}
+          </span>
+        } @else if (day.errors?.['incompleteRange']) {
+          <span class="text-caption text-error" data-testid="schedule-day-error">
+            {{ 'TRIMESTRAL_PLANNING.GROUP.TIME_RANGE_REQUIRED' | translate }}
+          </span>
+        } @else if (day.errors?.['startAfterEnd']) {
+          <span class="text-caption text-error" data-testid="schedule-day-error">
+            {{ 'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END' | translate }}
+          </span>
+        }
+      </section>
+    }
   </div>
 </fieldset>

@@ -9,29 +9,44 @@
   >
     @if (plan(); as current) {
       <div class="gap-lg flex flex-col">
-        <header class="gap-md flex flex-wrap items-center justify-between">
-          <div class="gap-sm flex flex-wrap items-center">
-            <h1 class="text-h2">
-              {{ 'TRIMESTRAL_PLANNING.DETAIL.TITLE' | translate: { term: current.term } }}
-            </h1>
-            <app-catalog-tag
-              [value]="'TRIMESTRAL_PLANNING.STATUS.' + current.status | translate"
-              [severity]="statusTagSeverity(current.status)"
+        <header
+          class="border-outline bg-surface p-md gap-md lg:p-lg flex flex-wrap items-center justify-between rounded-xl border shadow-sm"
+        >
+          <div class="gap-md flex min-w-0 items-center">
+            <p-button
+              severity="secondary"
+              variant="text"
+              icon="pi pi-arrow-left"
+              [rounded]="true"
+              [ariaLabel]="'COMMON.ACTIONS.BACK' | translate"
+              routerLink="/trimestral-planning"
             />
-            @if (current.outdated) {
-              <app-catalog-tag
-                [value]="'TRIMESTRAL_PLANNING.DETAIL.OUTDATED' | translate"
-                severity="warn"
-              />
-            }
-            @if (current.exportedAt) {
-              <span class="text-caption text-text-secondary" data-testid="last-exported">
-                {{
-                  'TRIMESTRAL_PLANNING.DETAIL.LAST_EXPORTED'
-                    | translate: { date: (current.exportedAt | date: 'medium') }
-                }}
-              </span>
-            }
+            <div class="gap-xs flex min-w-0 flex-col">
+              <div class="gap-sm flex flex-wrap items-center">
+                <h1 class="text-h2 text-primary">
+                  {{ 'TRIMESTRAL_PLANNING.DETAIL.TITLE' | translate: { term: current.term } }}
+                </h1>
+                <app-catalog-tag
+                  [value]="'TRIMESTRAL_PLANNING.STATUS.' + current.status | translate"
+                  [severity]="statusTagSeverity(current.status)"
+                />
+                @if (current.outdated) {
+                  <app-catalog-tag
+                    [value]="'TRIMESTRAL_PLANNING.DETAIL.OUTDATED' | translate"
+                    severity="warn"
+                  />
+                }
+              </div>
+              @if (current.exportedAt) {
+                <span class="text-caption text-text-secondary" data-testid="last-exported">
+                  <i class="pi pi-file-excel mr-xs text-success" aria-hidden="true"></i>
+                  {{
+                    'TRIMESTRAL_PLANNING.DETAIL.LAST_EXPORTED'
+                      | translate: { date: (current.exportedAt | date: 'medium') }
+                  }}
+                </span>
+              }
+            </div>
           </div>
 
           <div class="gap-sm flex flex-wrap">
@@ -57,6 +72,7 @@
               <p-button
                 severity="secondary"
                 icon="pi pi-check"
+                variant="outlined"
                 [label]="'TRIMESTRAL_PLANNING.ACTIONS.FINISH' | translate"
                 [loading]="changingStatus()"
                 [disabled]="!editable() || dirty()"
@@ -76,19 +92,14 @@
               />
             }
             <p-button
+              severity="secondary"
+              variant="outlined"
               [label]="'TRIMESTRAL_PLANNING.ACTIONS.DOWNLOAD' | translate"
               icon="pi pi-download"
               [loading]="exporting()"
               [disabled]="!canExport()"
               (onClick)="downloadExcel()"
               data-testid="download-excel"
-            />
-            <p-button
-              severity="secondary"
-              variant="outlined"
-              icon="pi pi-arrow-left"
-              [label]="'COMMON.ACTIONS.BACK' | translate"
-              routerLink="/trimestral-planning"
             />
           </div>
         </header>
@@ -163,7 +174,12 @@
 
         <!-- Grupos: editables en BORRADOR, solo lectura en TERMINADA -->
         <div class="gap-md flex flex-col">
-          <h2 class="text-h3">{{ 'TRIMESTRAL_PLANNING.DETAIL.GROUPS' | translate }}</h2>
+          <div>
+            <h2 class="text-h3">{{ 'TRIMESTRAL_PLANNING.DETAIL.GROUPS' | translate }}</h2>
+            <p class="text-caption text-text-secondary">
+              {{ 'TRIMESTRAL_PLANNING.DETAIL.GROUPS_HINT' | translate }}
+            </p>
+          </div>
           <app-trimestral-plan-editor [plan]="current" (saved)="onSaved($event)" />
         </div>
 

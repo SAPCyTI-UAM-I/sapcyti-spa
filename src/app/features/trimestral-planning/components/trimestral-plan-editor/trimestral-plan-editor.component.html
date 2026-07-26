@@ -1,4 +1,4 @@
-<div class="gap-md flex flex-col">
+<div class="gap-lg flex flex-col">
   @if (groups.length === 0) {
     <p class="text-body-md text-text-secondary">
       {{ 'TRIMESTRAL_PLANNING.DETAIL.NO_GROUPS' | translate }}
@@ -32,14 +32,26 @@
   @if (editable()) {
     <!-- HU-59: agregar un grupo/UEA que la encuesta no generó -->
     <div
-      class="border-outline bg-surface p-md gap-sm flex flex-wrap items-center rounded-xl border"
+      class="border-outline bg-surface-subtle p-md gap-md flex flex-wrap items-center rounded-xl border border-dashed"
     >
-      <span class="text-body-md font-medium">
-        {{ 'TRIMESTRAL_PLANNING.ACTIONS.ADD_GROUP' | translate }}
+      <span
+        class="bg-primary-container text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+        aria-hidden="true"
+      >
+        <i class="pi pi-plus"></i>
       </span>
+      <div class="mr-auto">
+        <p class="text-body-md font-semibold">
+          {{ 'TRIMESTRAL_PLANNING.ACTIONS.ADD_GROUP' | translate }}
+        </p>
+        <p class="text-caption text-text-secondary">
+          {{ 'TRIMESTRAL_PLANNING.ACTIONS.ADD_GROUP_HINT' | translate }}
+        </p>
+      </div>
       <!-- El valor se limpia tras agregar: si no, volver a elegir la misma UEA no
            emitiría cambio y no se podría crear un segundo grupo (HU-57, cupo 1). -->
       <p-select
+        class="min-w-[18rem]"
         [ngModel]="ueaPick()"
         [ngModelOptions]="{ standalone: true }"
         [options]="ueaOptions()"

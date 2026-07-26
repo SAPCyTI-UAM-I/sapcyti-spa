@@ -125,12 +125,36 @@ describe('GroupCardComponent', () => {
     expect(rows.length).toBe(3);
   });
 
-  // Hoja de captura inline: el horario vive siempre visible en el DOM, sin nada que abrir.
-  it('renders the 5 day cells with their time inputs always visible', async () => {
+  it('organizes each UEA into identity, configuration, schedule and students', async () => {
+    const { fixture } = await setup();
+
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="trimestral-group-card"]'),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="group-configuration"]'),
+    ).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="group-students"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('[data-testid="schedule-day"]')).toHaveLength(5);
+  });
+
+  // El horario vive siempre visible, pero cada día agrupa su inicio, fin y LAB.
+  it('renders the 5 day cards with their time inputs always visible', async () => {
     const { fixture } = await setup();
 
     const timeInputs = fixture.nativeElement.querySelectorAll('input[type="time"]');
     expect(timeInputs).toHaveLength(10); // 5 días × inicio/fin, sin <details> de por medio
     expect(fixture.nativeElement.querySelector('details')).toBeNull();
+  });
+
+  it('shows an explicit empty state when a group has no students', async () => {
+    const { fixture, host } = await setup();
+
+    host.form.controls.students.clear();
+    fixture.detectChanges();
+
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="empty-group-students"]'),
+    ).not.toBeNull();
   });
 });
