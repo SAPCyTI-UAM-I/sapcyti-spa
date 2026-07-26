@@ -1036,8 +1036,7 @@
       "NO_RESPONSES": "The survey has no responses; the plan was generated without UEAs.",
       "PROFESSOR_INACTIVE": "The assigned professor ({{employeeNumber}}) is inactive.",
       "STUDENT_INACTIVE": "Student {{enrollmentId}} was deactivated after answering.",
-      "UEA_DEACTIVATED": "UEA {{clave}} was deactivated from the catalog after being chosen.",
-      "UEA_NO_QUOTA": "UEA {{clave}} has no quota defined in the annual plan."
+      "UEA_DEACTIVATED": "UEA {{clave}} was deactivated from the catalog after being chosen."
     }
   }
 }

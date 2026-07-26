@@ -17,9 +17,7 @@ import {
   TrimestralGroup,
   UeaCatalogItem,
 } from '../../../models';
-
-/** Same pattern as `AnnualPlanEntry.GROUP_QUOTA_PATTERN`: a positive integer or `*`. */
-export const CUPO_PATTERN = /^\*$|^[1-9][0-9]*$/;
+import { QUOTA_PATTERN } from '../../../shared/utils/quota.util';
 
 export type ScheduleFormGroup = FormGroup<{
   day: FormControl<ScheduleDay>;
@@ -103,7 +101,7 @@ export function buildGroupFormGroup(
     nombre: fb.control(group.nombre),
     tipoUea: fb.control(group.tipoUea),
     grupo: fb.control(group.grupo ?? '', [Validators.maxLength(10)]),
-    cupo: fb.control(group.cupo ?? '', [Validators.pattern(CUPO_PATTERN)]),
+    cupo: fb.control(group.cupo ?? '', [Validators.pattern(QUOTA_PATTERN)]),
     maxGroups: fb.control(group.maxGroups ?? ''),
     professorIds: fb.control(group.professors.map((professor) => professor.professorId)),
     schedule: fb.array(

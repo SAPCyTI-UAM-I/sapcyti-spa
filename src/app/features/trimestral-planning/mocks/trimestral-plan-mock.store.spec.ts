@@ -1,3 +1,4 @@
+import { SaveTrimestralPlanRequest } from '../../../models';
 import { TrimestralPlanMockStore } from './trimestral-plan-mock.store';
 
 describe('TrimestralPlanMockStore', () => {
@@ -5,7 +6,9 @@ describe('TrimestralPlanMockStore', () => {
     return new TrimestralPlanMockStore();
   }
 
-  function saveRequest(plan: ReturnType<TrimestralPlanMockStore['get']>) {
+  function saveRequest(
+    plan: ReturnType<TrimestralPlanMockStore['get']>,
+  ): SaveTrimestralPlanRequest {
     return {
       groups: plan.groups.map((group) => ({
         id: group.id,
@@ -167,7 +170,7 @@ describe('TrimestralPlanMockStore', () => {
           id: group.id,
           ueaId: group.ueaId,
           grupo: group.grupo,
-          cupo: '*',
+          cupo: group.cupo,
           professorIds: [],
           schedule: group.schedule,
           // 3 = Carla, the blank responder, added by hand (HU-59).
@@ -243,7 +246,7 @@ describe('TrimestralPlanMockStore', () => {
 
   it('blocks saving when a group exceeds its cupo', () => {
     const s = store();
-    const group = s.get(1).groups[0]!;
+    const group = s.get(1).groups.find((candidate) => candidate.cupo === '1')!;
 
     expect(() =>
       s.saveGroups(1, {
@@ -252,13 +255,54 @@ describe('TrimestralPlanMockStore', () => {
             id: group.id,
             ueaId: group.ueaId,
             grupo: group.grupo,
-            cupo: '1',
+            cupo: group.cupo,
             professorIds: [],
             schedule: group.schedule,
             students: [1, 3, 5].map((studentId) => ({ studentId, obs: null })),
           },
         ],
       }),
-    ).toThrowError(expect.objectContaining({ status: 400 }));
+    ).toThrowError(
+      expect.objectContaining({
+        status: 400,
+        error: expect.objectContaining({ error: 'VALIDATION_ERROR' }),
+      }),
+    );
+  });
+
+  it('inherits annual quota for a new group when cupo is omitted', () => {
+    const s = store();
+    const original = s.get(1);
+    const source = original.groups[0]!;
+    const request = saveRequest(original);
+    request.groups.push({
+      id: null,
+      ueaId: source.ueaId,
+      grupo: `${source.grupo}A`,
+      cupo: null,
+      professorIds: [],
+      schedule: source.schedule,
+      students: [],
+    });
+
+    const saved = s.saveGroups(1, request);
+    const added = saved.groups.find((group) => !original.groups.some((old) => old.id === group.id));
+
+    expect(added?.cupo).toBe(source.cupo);
+    expect(added?.maxGroups).toBe(source.maxGroups);
+  });
+
+  it('rejects an explicit capacity that differs from the annual plan', () => {
+    const s = store();
+    const original = s.get(1);
+    const request = saveRequest(original);
+    request.groups[0]!.cupo = '999';
+
+    expect(() => s.saveGroups(1, request)).toThrowError(
+      expect.objectContaining({
+        status: 400,
+        error: expect.objectContaining({ error: 'VALIDATION_ERROR' }),
+      }),
+    );
   });
 });

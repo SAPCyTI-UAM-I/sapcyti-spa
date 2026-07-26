@@ -20,6 +20,7 @@ import { getApiErrorMessage } from '../../../../core/errors/utils/parse-api-erro
 import { AnnualPlanDetail, AnnualPlanStatus, FormatCheckReport } from '../../../../models';
 import { CatalogTagComponent, LoadStateComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
+import { downloadBlob } from '../../../../shared/utils/download.util';
 import { AnnualPlanService } from '../../services/annual-plan.service';
 import {
   ANNUAL_PLAN_ERROR_I18N_SCOPE,
@@ -176,7 +177,7 @@ export class AnnualPlanDetailComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (blob) => this.triggerDownload(blob),
+        next: (blob) => downloadBlob(blob, `Planeacion PCyTI ${this.year}.xlsx`),
         error: (error) => this.actionError.set(mapAnnualPlanError(error)),
       });
   }
@@ -228,15 +229,5 @@ export class AnnualPlanDetailComponent implements OnInit {
           }
         },
       });
-  }
-
-  // ponytail: descarga única, sin util compartido.
-  private triggerDownload(blob: Blob): void {
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = `Planeacion PCyTI ${this.year}.xlsx`;
-    anchor.click();
-    URL.revokeObjectURL(url);
   }
 }

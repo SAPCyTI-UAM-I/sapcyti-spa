@@ -5,6 +5,7 @@ import {
   ProgramCode,
   SaveEntriesRequest,
 } from '../../../models';
+import { isQuotaValue } from '../../../shared/utils/quota.util';
 
 /** The 9 fixed DCBI program columns, in the order of the official format. */
 export const PROGRAM_CODES: readonly ProgramCode[] = [
@@ -34,14 +35,7 @@ export const EDITABLE_PROGRAM_CODES: readonly ProgramCode[] = PROGRAM_CODES.filt
  * what the backend re-validates on save.
  */
 export function isValidCell(value: string | null | undefined): boolean {
-  if (value == null) {
-    return true;
-  }
-  const v = value.trim();
-  if (v === '' || v === '*') {
-    return true;
-  }
-  return /^[0-9]+$/.test(v) && Number(v) > 0;
+  return isQuotaValue(value);
 }
 
 /**

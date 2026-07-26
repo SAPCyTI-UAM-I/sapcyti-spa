@@ -2,23 +2,18 @@ import { Injectable } from '@angular/core';
 
 import { mockApiError } from '../../../core/errors/testing/mock-api-error.util';
 import {
-  AcademicTerm,
   BlankStudent,
   GroupProfessor,
   ChangeTrimestralPlanStatusRequest,
   CreateTrimestralPlanRequest,
-  DaySchedule,
   GroupStudent,
   PageResponse,
   PlanWarning,
   ProfessorCatalogItem,
   SaveGroupStudentRequest,
   SaveTrimestralPlanRequest,
-  SCHEDULE_DAYS,
   StudentCatalogItem,
-  SurveyMode,
   SurveyResponse,
-  SurveyStatus,
   TrimestralGroup,
   TrimestralPlanDetail,
   TrimestralPlanSummary,
@@ -32,34 +27,18 @@ import {
   seedToCatalogItem,
 } from '../../../shared/mocks/enrolled-students.mock-data';
 import { UEA_CATALOG_SEED } from '../../../shared/mocks/uea-catalog.mock-data';
+import {
+  ANNUAL_PLAN_YEARS,
+  DAY_MS,
+  emptySchedule,
+  PROFESSORS_SEED,
+  SEED_SURVEYS,
+  SeedSurvey,
+  seedFinished25P,
+  seedOutdated25I,
+} from './trimestral-plan-mock.data';
 import { baseGroupForTerm, compareByLastNames, groupWithSuffix } from '../utils/group-letter.util';
 import { compareTermsDesc } from '../utils/trimestral-plan-status.util';
-
-const DAY = 24 * 60 * 60 * 1000;
-
-/**
- * Survey responses the trimestral plan generates from. The real backend reads these
- * through an outbound port into the `survey` module; the mock restates the seed of
- * `enrollment-survey-mock.store.ts` (same survey ids, terms and picks) because features
- * — and therefore their mock stores — must not import each other.
- *
- * ponytail: duplicación deliberada y acotada; las identidades (alumnos, UEAs) sí vienen
- * de los seeds compartidos, que es donde importa la coherencia entre pantallas.
- */
-interface SeedResponse {
-  studentId: number;
-  academicTerm: AcademicTerm;
-  mode: SurveyMode;
-  ueaIds: number[];
-}
-
-interface SeedSurvey {
-  id: number;
-  term: string;
-  status: SurveyStatus;
-  daysFromNow: [open: number, close: number];
-  responses: SeedResponse[];
-}
 
 /** Avisos que solo la generación puede producir: al guardar grupos no se recalculan. */
 const GENERATION_WARNINGS = new Set<PlanWarning['code']>([
@@ -72,133 +51,6 @@ const GENERATION_WARNINGS = new Set<PlanWarning['code']>([
 function dedupeWarnings(warnings: readonly PlanWarning[]): PlanWarning[] {
   const byKey = new Map(warnings.map((warning) => [JSON.stringify(warning), warning]));
   return [...byKey.values()];
-}
-
-const SEED_SURVEYS: SeedSurvey[] = [
-  { id: 3, term: '27I', status: 'PROGRAMADO', daysFromNow: [3, 10], responses: [] },
-  // Encuesta del plan `outdated` (25I): sin ella, Regenerar —la única acción que ofrece el
-  // badge «Desactualizado»— respondería SURVEY_NOT_FOUND y el seed quedaría muerto.
-  {
-    id: 6,
-    term: '25I',
-    status: 'CERRADO',
-    daysFromNow: [-200, -180],
-    responses: [{ studentId: 2, academicTerm: 'III', mode: 'ENROLL_UEAS', ueaIds: [5] }],
-  },
-  // Cerrada pero solo con inscripciones en blanco: generar de aquí produce un plan sin
-  // filas de UEA y el aviso NO_RESPONSES (HU-58).
-  {
-    id: 4,
-    term: '25O',
-    status: 'CERRADO',
-    daysFromNow: [-120, -100],
-    responses: [{ studentId: 4, academicTerm: 'II', mode: 'BLANK', ueaIds: [] }],
-  },
-  {
-    id: 2,
-    term: '26O',
-    status: 'ACTIVO',
-    daysFromNow: [-2, 5],
-    responses: [
-      { studentId: 2, academicTerm: 'III', mode: 'ENROLL_UEAS', ueaIds: [1, 3] },
-      { studentId: 3, academicTerm: 'V', mode: 'ENROLL_UEAS', ueaIds: [3, 4] },
-      { studentId: 4, academicTerm: 'I', mode: 'BLANK', ueaIds: [] },
-    ],
-  },
-  {
-    id: 1,
-    term: '26I',
-    status: 'CERRADO',
-    daysFromNow: [-40, -20],
-    responses: [
-      { studentId: 1, academicTerm: 'II', mode: 'ENROLL_UEAS', ueaIds: [1] },
-      // La UEA 36 está dada de baja en el catálogo: dispara UEA_DEACTIVATED (HU-58).
-      { studentId: 5, academicTerm: 'IV', mode: 'ENROLL_UEAS', ueaIds: [1, 2, 36] },
-      { studentId: 3, academicTerm: 'VI', mode: 'BLANK', ueaIds: [] },
-    ],
-  },
-  // 2024 no tiene planeación anual: generar de aquí devuelve ANNUAL_PLAN_REQUIRED (HU-58).
-  {
-    id: 5,
-    term: '24O',
-    status: 'CERRADO',
-    daysFromNow: [-400, -380],
-    responses: [{ studentId: 1, academicTerm: 'I', mode: 'ENROLL_UEAS', ueaIds: [1] }],
-  },
-];
-
-/**
- * Años con planeación anual. El backend lo consulta al módulo `planning` por un puerto;
- * el mock lo declara porque los features no se importan entre sí.
- */
-const ANNUAL_PLAN_YEARS = new Set([2025, 2026, 2027]);
-
-interface PlanProfessor extends ProfessorCatalogItem {
-  employeeNumber: string;
-}
-
-const PROFESSORS_SEED: PlanProfessor[] = [
-  {
-    id: 1,
-    userId: 201,
-    graduateProgramId: 1,
-    employeeNumber: '40001',
-    firstName: 'Rafaela',
-    firstLastName: 'Blanco',
-    secondLastName: 'Vargas',
-    email: 'rblanco@uam.mx',
-    phone: '5500000001',
-    professorType: 'INTERNO',
-    commissionMember: true,
-    active: true,
-  },
-  {
-    id: 2,
-    userId: 202,
-    graduateProgramId: 1,
-    employeeNumber: '40002',
-    firstName: 'Humberto',
-    firstLastName: 'Cedillo',
-    secondLastName: 'Nava',
-    email: 'hcedillo@uam.mx',
-    phone: '5500000002',
-    professorType: 'INTERNO',
-    commissionMember: false,
-    active: true,
-  },
-  {
-    id: 3,
-    userId: 203,
-    graduateProgramId: 1,
-    employeeNumber: '40003',
-    firstName: 'Lucía',
-    firstLastName: 'Ontiveros',
-    secondLastName: 'Paz',
-    email: 'lontiveros@uam.mx',
-    phone: '5500000003',
-    professorType: 'EXTERNO',
-    commissionMember: false,
-    active: true,
-  },
-  // De baja: asignarlo a un grupo y marcar TERMINADA dispara PROFESSOR_INACTIVE (HU-58).
-  {
-    id: 4,
-    userId: 204,
-    graduateProgramId: 1,
-    employeeNumber: '40004',
-    firstName: 'Ernesto',
-    firstLastName: 'Salas',
-    secondLastName: 'Mora',
-    email: 'esalas@uam.mx',
-    phone: '5500000004',
-    professorType: 'INTERNO',
-    commissionMember: false,
-    active: false,
-  },
-];
-
-function emptySchedule(): DaySchedule[] {
-  return SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false }));
 }
 
 function clone<T>(value: T): T {
@@ -331,6 +183,21 @@ export class TrimestralPlanMockStore {
         previous ??
         plan.groups.find((group) => group.ueaId === update.ueaId) ??
         seedAnnualSettings(update.ueaId);
+      if (!annualSettings) {
+        throw mockApiError({
+          status: 400,
+          error: 'VALIDATION_ERROR',
+          message: `La UEA ${uea.clave} no está ofertada en la planeación anual`,
+        });
+      }
+      const resolvedCupo = update.cupo ?? annualSettings.cupo;
+      if (resolvedCupo !== annualSettings.cupo) {
+        throw mockApiError({
+          status: 400,
+          error: 'VALIDATION_ERROR',
+          message: `El cupo de la UEA ${uea.clave} debe coincidir con la planeación anual`,
+        });
+      }
       const seenProfessorIds = new Set<number>();
       const professors: GroupProfessor[] = update.professorIds.map((professorId) => {
         if (!seenProfessorIds.add(professorId)) {
@@ -370,8 +237,8 @@ export class TrimestralPlanMockStore {
         nombre: uea.nombre,
         tipoUea: uea.tipo,
         grupo: update.grupo,
-        cupo: update.cupo,
-        maxGroups: annualSettings?.maxGroups ?? null,
+        cupo: resolvedCupo,
+        maxGroups: annualSettings.maxGroups,
         professors,
         schedule: update.schedule,
         // `source`/`academicTerm` are snapshots the API never accepts on write: keep the
@@ -390,7 +257,7 @@ export class TrimestralPlanMockStore {
       if (!hasRoom(group, group.cupo, 0)) {
         throw mockApiError({
           status: 400,
-          error: 'GROUP_CAPACITY_EXCEEDED',
+          error: 'VALIDATION_ERROR',
           message: `El grupo ${group.grupo ?? group.clave} rebasa su cupo`,
         });
       }
@@ -404,7 +271,7 @@ export class TrimestralPlanMockStore {
       if (maxGroups && maxGroups !== '*' && sameUea.length > Number(maxGroups)) {
         throw mockApiError({
           status: 400,
-          error: 'GROUP_LIMIT_REACHED',
+          error: 'VALIDATION_ERROR',
           message: `La UEA ${sameUea[0]?.clave} rebasa el máximo de grupos`,
         });
       }
@@ -450,8 +317,8 @@ export class TrimestralPlanMockStore {
       id: survey.id,
       term: survey.term,
       status: survey.status,
-      opensAt: new Date(now + survey.daysFromNow[0] * DAY).toISOString(),
-      closesAt: new Date(now + survey.daysFromNow[1] * DAY).toISOString(),
+      opensAt: new Date(now + survey.daysFromNow[0] * DAY_MS).toISOString(),
+      closesAt: new Date(now + survey.daysFromNow[1] * DAY_MS).toISOString(),
       introMessage: null,
       responseCount: survey.responses.length,
       suggestedTerm: null,
@@ -573,9 +440,6 @@ export class TrimestralPlanMockStore {
             groupId: group.id,
           });
         }
-      }
-      if (group.cupo === null) {
-        warnings.push({ code: 'UEA_NO_QUOTA', clave: group.clave });
       }
     }
     return dedupeWarnings(warnings);
@@ -782,9 +646,8 @@ function toGroupStudent(member: SaveGroupStudentRequest, previous?: GroupStudent
 }
 
 /**
- * Quota the annual plan defined for the UEA. UEA 2 is left undefined on purpose so the
- * generated plan carries a `UEA_NO_QUOTA` warning, and the research UEAs get cupo 1 so
- * the A/B suffix rule is exercised.
+ * Quota the annual plan defined for the UEA. UEA 2 is left undefined on purpose so its
+ * demand is reported as `UEA_NOT_OFFERED`; research UEAs get cupo 1 to exercise suffixes.
  */
 function seedAnnualSettings(ueaId: number): { maxGroups: string; cupo: string } | null {
   if (ueaId === 2) return null;
@@ -826,100 +689,5 @@ function page<T>(content: T[]): PageResponse<T> {
     totalPages: 1,
     size: content.length || 1,
     number: 0,
-  };
-}
-
-/** 25P already TERMINADA: exercises read-only mode, export and the HU-61 history. */
-function seedFinished25P(): TrimestralPlanDetail {
-  const ana = ENROLLED_STUDENTS_SEED[0]!;
-  const uea = UEA_CATALOG_SEED[0]!;
-  return {
-    id: 2,
-    term: '25P',
-    status: 'TERMINADA',
-    surveyId: 0,
-    outdated: false,
-    outdatedReasons: [],
-    prerequisites: { surveyClosed: true, annualPlanTerminated: true },
-    exportedAt: '2026-04-20T18:00:00Z',
-    warnings: [],
-    blankStudents: [],
-    unassignedDemand: [],
-    groups: [
-      {
-        id: 200,
-        ueaId: uea.id,
-        clave: uea.clave,
-        nombre: uea.nombre,
-        tipoUea: uea.tipo,
-        grupo: 'CO43',
-        cupo: '15',
-        maxGroups: '2',
-        professors: [{ professorId: 1, employeeNumber: '40001', professorName: 'Rafaela Blanco' }],
-        schedule: SCHEDULE_DAYS.map((day) => ({
-          day,
-          start: day === 'LUN' || day === 'MIE' ? '08:30' : null,
-          end: day === 'LUN' || day === 'MIE' ? '10:00' : null,
-          lab: day === 'MIE',
-        })),
-        students: [
-          {
-            studentId: ana.id,
-            enrollmentId: ana.enrollmentId,
-            fullName: seedFullName(ana),
-            source: 'SURVEY',
-            academicTerm: 'I',
-            obs: null,
-          },
-        ],
-      },
-    ],
-  };
-}
-
-/**
- * 25I en BORRADOR con la encuesta reabierta (`outdated`) y un profesor dado de baja ya
- * asignado. Hace alcanzables dos reglas que si no quedarían muertas hasta que exista el
- * backend: el badge «Desactualizado» y el aviso `PROFESSOR_INACTIVE` al Terminar.
- */
-function seedOutdated25I(): TrimestralPlanDetail {
-  const bruno = ENROLLED_STUDENTS_SEED[1]!;
-  const uea = UEA_CATALOG_SEED[4]!;
-  return {
-    id: 3,
-    term: '25I',
-    status: 'BORRADOR',
-    surveyId: 6,
-    outdated: true,
-    outdatedReasons: ['SURVEY_REOPENED'],
-    prerequisites: { surveyClosed: false, annualPlanTerminated: true },
-    exportedAt: null,
-    warnings: [{ code: 'PROFESSOR_INACTIVE', employeeNumber: '40004', groupId: 300 }],
-    blankStudents: [],
-    unassignedDemand: [],
-    groups: [
-      {
-        id: 300,
-        ueaId: uea.id,
-        clave: uea.clave,
-        nombre: uea.nombre,
-        tipoUea: uea.tipo,
-        grupo: 'CQ43',
-        cupo: '15',
-        maxGroups: '2',
-        professors: [{ professorId: 4, employeeNumber: '40004', professorName: 'Ernesto Salas' }],
-        schedule: emptySchedule(),
-        students: [
-          {
-            studentId: bruno.id,
-            enrollmentId: bruno.enrollmentId,
-            fullName: seedFullName(bruno),
-            source: 'SURVEY',
-            academicTerm: 'III',
-            obs: null,
-          },
-        ],
-      },
-    ],
   };
 }

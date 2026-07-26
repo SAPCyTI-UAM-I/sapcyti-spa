@@ -19,7 +19,6 @@ export interface DaySchedule {
 export type PlanWarningCode =
   | 'NO_RESPONSES'
   | 'UEA_DEACTIVATED'
-  | 'UEA_NO_QUOTA'
   | 'STUDENT_INACTIVE'
   | 'PROFESSOR_INACTIVE'
   | 'CUPO_EXCEEDED';
@@ -80,7 +79,7 @@ export interface GroupProfessor {
   professorId: number;
   /** Snapshots — read-only, never sent back on save. */
   employeeNumber: string | null;
-  professorName: string | null;
+  professorName: string;
 }
 
 export interface TrimestralGroup {

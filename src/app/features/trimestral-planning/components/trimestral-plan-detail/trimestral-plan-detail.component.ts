@@ -21,6 +21,7 @@ import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-err
 import { PlanWarning, TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
 import { CatalogTagComponent, LoadStateComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
+import { downloadBlob } from '../../../../shared/utils/download.util';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
 import {
   mapTrimestralPlanError,
@@ -196,7 +197,7 @@ export class TrimestralPlanDetailComponent implements OnInit {
       )
       .subscribe({
         next: (blob) => {
-          this.triggerDownload(blob);
+          downloadBlob(blob, `PCYTI ${this.plan()?.term ?? this.id}.xlsx`);
           // Export returns bytes. Reload so the response model receives the new exportedAt.
           this.load();
         },
@@ -219,15 +220,5 @@ export class TrimestralPlanDetailComponent implements OnInit {
         next: (plan) => this.plan.set(plan),
         error: (err) => this.actionError.set(mapTrimestralPlanError(err)),
       });
-  }
-
-  // ponytail: descarga única, sin util compartido (igual que annual-plan-detail).
-  private triggerDownload(blob: Blob): void {
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = `PCYTI ${this.plan()?.term ?? this.id}.xlsx`;
-    anchor.click();
-    URL.revokeObjectURL(url);
   }
 }

@@ -146,7 +146,7 @@ export class PlanPickersController {
   pinProfessors(groups: readonly TrimestralGroup[]): void {
     const pinned = groups.flatMap((group): PersonOption[] =>
       group.professors.map((professor) => {
-        const name = professor.professorName ?? '';
+        const name = professor.professorName;
         return {
           value: professor.professorId,
           label: professor.employeeNumber ? `${professor.employeeNumber} — ${name}` : name,

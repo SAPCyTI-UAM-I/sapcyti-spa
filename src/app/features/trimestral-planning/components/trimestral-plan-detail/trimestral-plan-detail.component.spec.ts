@@ -74,7 +74,7 @@ describe('TrimestralPlanDetailComponent', () => {
       get: vi.fn(() =>
         of(
           plan('BORRADOR', {
-            warnings: [{ code: 'UEA_NO_QUOTA', clave: '2156027' }, { code: 'NO_RESPONSES' }],
+            warnings: [{ code: 'UEA_DEACTIVATED', clave: '2156027' }, { code: 'NO_RESPONSES' }],
           }),
         ),
       ),

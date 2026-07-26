@@ -1036,8 +1036,7 @@
       "NO_RESPONSES": "La encuesta no tiene respuestas; se generó un plan sin UEAs.",
       "PROFESSOR_INACTIVE": "El profesor asignado ({{employeeNumber}}) está dado de baja.",
       "STUDENT_INACTIVE": "El alumno {{enrollmentId}} fue dado de baja después de responder.",
-      "UEA_DEACTIVATED": "La UEA {{clave}} fue desactivada del catálogo después de elegirse.",
-      "UEA_NO_QUOTA": "La UEA {{clave}} no tiene cupo definido en la planeación anual."
+      "UEA_DEACTIVATED": "La UEA {{clave}} fue desactivada del catálogo después de elegirse."
     }
   }
 }

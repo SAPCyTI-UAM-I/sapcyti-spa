@@ -4,10 +4,10 @@ import { SCHEDULE_DAYS, TrimestralGroup, UeaCatalogItem } from '../../../models'
 import {
   buildGroupFormGroup,
   buildSaveGroupsRequest,
-  CUPO_PATTERN,
   emptyGroup,
   startBeforeEndValidator,
 } from './group-form.util';
+import { QUOTA_PATTERN } from '../../../shared/utils/quota.util';
 
 const fb: NonNullableFormBuilder = new FormBuilder().nonNullable;
 
@@ -101,11 +101,11 @@ describe('group-form.util', () => {
   });
 
   it('accepts only a positive integer or * as cupo', () => {
-    expect(CUPO_PATTERN.test('25')).toBe(true);
-    expect(CUPO_PATTERN.test('*')).toBe(true);
-    expect(CUPO_PATTERN.test('0')).toBe(false);
-    expect(CUPO_PATTERN.test('012')).toBe(false);
-    expect(CUPO_PATTERN.test('x')).toBe(false);
+    expect(QUOTA_PATTERN.test('25')).toBe(true);
+    expect(QUOTA_PATTERN.test('*')).toBe(true);
+    expect(QUOTA_PATTERN.test('0')).toBe(false);
+    expect(QUOTA_PATTERN.test('012')).toBe(false);
+    expect(QUOTA_PATTERN.test('x')).toBe(false);
   });
 
   it('requires start and end together while allowing a completely empty day', () => {

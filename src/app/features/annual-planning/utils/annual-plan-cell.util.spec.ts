@@ -17,8 +17,9 @@ describe('isValidCell', () => {
     expect(isValidCell('15')).toBe(true);
   });
 
-  it('rejects zero, negatives, decimals and non-numeric', () => {
+  it('rejects zero, leading zeroes, negatives, decimals and non-numeric', () => {
     expect(isValidCell('0')).toBe(false);
+    expect(isValidCell('012')).toBe(false);
     expect(isValidCell('-1')).toBe(false);
     expect(isValidCell('1.5')).toBe(false);
     expect(isValidCell('abc')).toBe(false);
