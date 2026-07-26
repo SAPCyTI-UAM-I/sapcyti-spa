@@ -124,7 +124,7 @@ export class TrimestralPlanDetailComponent implements OnInit {
     return computePlanSummary(
       editor.groups.controls,
       current.blankStudents.length + current.unassignedDemand.length,
-      editor.violatingGroupIndices(),
+      editor.problemGroupIndices(),
     );
   });
 

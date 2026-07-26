@@ -209,17 +209,20 @@ export class TrimestralPlanEditorComponent {
       this.capacityViolationIndices().length > 0 || this.groupLimitViolationIndices().length > 0,
   );
 
-  /** Las dos violaciones en un solo conjunto: alimenta el filtro y el badge de la tarjeta. */
-  readonly violatingGroupIndices = computed(
-    () => new Set([...this.capacityViolationIndices(), ...this.groupLimitViolationIndices()]),
-  );
+  /**
+   * Las filas que impiden guardar, para el filtro «con problemas» y la cifra del resumen.
+   *
+   * Sale de `issues()` y no solo de cupo y máximo de grupos: el filtro dejaba fuera al
+   * grupo con el horario a medias, que es justo el que hay que ir a corregir.
+   */
+  readonly problemGroupIndices = computed(() => new Set(this.issues().map((issue) => issue.index)));
 
   readonly filteredOrder = computed(() => {
     const filters = this.filterValue();
     // Group code, membership, professors and schedule are editable FormControls.
     this.revision();
 
-    const violating = this.violatingGroupIndices();
+    const problems = this.problemGroupIndices();
     return this.order().filter((index) =>
       matchesGroupFilters(
         this.groups.at(index),
@@ -228,7 +231,7 @@ export class TrimestralPlanEditorComponent {
           ueaType: filters.ueaType ?? '',
           state: filters.state ?? '',
         },
-        violating.has(index),
+        problems.has(index),
       ),
     );
   });

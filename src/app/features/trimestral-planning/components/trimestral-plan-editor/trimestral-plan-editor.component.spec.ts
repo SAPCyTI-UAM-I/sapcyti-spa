@@ -217,7 +217,7 @@ describe('TrimestralPlanEditorComponent', () => {
 
     expect(component.groupLimitViolationIndices()).toEqual([]);
     expect(component.hasLimitViolations()).toBe(false);
-    expect(component.violatingGroupIndices().size).toBe(0);
+    expect(component.problemGroupIndices().size).toBe(0);
   });
 
   it('recomputes the capacity flag when a member is removed, not only when added', async () => {
@@ -423,6 +423,20 @@ describe('TrimestralPlanEditorComponent', () => {
 
     component.groups.at(0).controls.cupo.setValue('1');
     expect(component.occupancySeverityFor(0)).toBe('full');
+  });
+
+  /**
+   * El filtro solo miraba cupo y máximo de grupos, así que «Con problemas» devolvía
+   * «0 de 5» mientras el panel listaba dos horarios a medias.
+   */
+  it('filters by any problem, not only by the quota and group limits', async () => {
+    const { component } = await setup();
+    component.groups.at(0).controls.schedule.at(2).patchValue({ end: '10:00' });
+
+    component.filters.patchValue({ state: 'HAS_VIOLATIONS' });
+
+    expect(component.problemGroupIndices()).toEqual(new Set([0]));
+    expect(component.filteredOrder()).toEqual([0]);
   });
 
   it('names each broken rule instead of a single invalid-values banner', async () => {
