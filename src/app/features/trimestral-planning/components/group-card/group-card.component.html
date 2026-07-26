@@ -41,6 +41,16 @@
 
       <div class="gap-xs flex shrink-0 items-center">
         @if (editable()) {
+          <!-- Abrir otra sección de la misma UEA: mismo cupo, profesores y horario. -->
+          <p-button
+            severity="secondary"
+            variant="text"
+            icon="pi pi-copy"
+            [ariaLabel]="'TRIMESTRAL_PLANNING.ACTIONS.DUPLICATE_GROUP' | translate"
+            [attr.title]="'TRIMESTRAL_PLANNING.ACTIONS.DUPLICATE_GROUP' | translate"
+            (onClick)="duplicateGroup.emit()"
+            data-testid="duplicate-group"
+          />
           <p-button
             severity="danger"
             variant="text"
@@ -315,9 +325,9 @@
         }
 
         @if (members().length > 0) {
-          <div class="border-outline overflow-x-auto rounded-lg border">
-            <table class="w-full min-w-[42rem] border-collapse">
-              <thead class="bg-table-header text-left">
+          <div class="border-outline rounded-lg border md:overflow-x-auto">
+            <table class="block w-full border-collapse md:table md:min-w-[42rem]">
+              <thead class="bg-table-header hidden text-left md:table-header-group">
                 <tr class="text-caption text-text-secondary">
                   <th class="p-sm w-32 font-medium">
                     {{ 'TRIMESTRAL_PLANNING.GROUP.MATRICULA' | translate }}
@@ -336,11 +346,25 @@
                   }
                 </tr>
               </thead>
-              <tbody class="divide-outline divide-y" formArrayName="students">
+              <tbody
+                class="divide-outline block divide-y md:table-row-group md:divide-y-0"
+                formArrayName="students"
+              >
                 @for (member of members(); track member.studentId; let i = $index) {
-                  <tr [formGroupName]="i" class="text-body-md">
-                    <td class="p-sm">{{ member.enrollmentId || '—' }}</td>
-                    <td class="p-sm align-top">
+                  <tr
+                    [formGroupName]="i"
+                    class="text-body-md p-sm gap-sm md:border-outline grid grid-cols-2 md:table-row md:border-t"
+                  >
+                    <td class="md:p-sm md:table-cell">
+                      <span class="text-caption text-text-secondary block md:hidden">
+                        {{ 'TRIMESTRAL_PLANNING.GROUP.MATRICULA' | translate }}
+                      </span>
+                      {{ member.enrollmentId || '—' }}
+                    </td>
+                    <td class="md:p-sm col-span-2 md:table-cell md:align-top">
+                      <span class="text-caption text-text-secondary block md:hidden">
+                        {{ 'TRIMESTRAL_PLANNING.GROUP.NAME' | translate }}
+                      </span>
                       {{ member.fullName }}
                       @if (studentInactive(member)) {
                         <span
@@ -352,7 +376,10 @@
                         </span>
                       }
                     </td>
-                    <td class="p-sm align-top">
+                    <td class="md:p-sm md:table-cell md:align-top">
+                      <span class="text-caption text-text-secondary block md:hidden">
+                        {{ 'TRIMESTRAL_PLANNING.GROUP.TRIM' | translate }}
+                      </span>
                       @if (member.academicTerm) {
                         {{ member.academicTerm }}
                       } @else {
@@ -361,7 +388,10 @@
                         </span>
                       }
                     </td>
-                    <td class="p-sm align-top">
+                    <td class="md:p-sm col-span-2 md:table-cell md:align-top">
+                      <span class="text-caption text-text-secondary block md:hidden">
+                        {{ 'TRIMESTRAL_PLANNING.GROUP.STUDENT_NOTE' | translate }}
+                      </span>
                       <input
                         pInputText
                         formControlName="obs"
@@ -371,7 +401,7 @@
                       />
                     </td>
                     @if (editable()) {
-                      <td class="p-sm align-top">
+                      <td class="md:p-sm col-span-2 text-right md:table-cell md:align-top">
                         <p-button
                           severity="danger"
                           variant="text"

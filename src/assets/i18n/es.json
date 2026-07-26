@@ -911,6 +911,7 @@
       "BACK_TO_DRAFT": "Regresar a borrador",
       "COLLAPSE_ALL": "Contraer todos",
       "DOWNLOAD": "Descargar Excel",
+      "DUPLICATE_GROUP": "Duplicar grupo",
       "EXPAND_ALL": "Expandir todos",
       "FINISH": "Terminar",
       "GENERATE": "Generar planeación",
@@ -989,6 +990,8 @@
       "ADD_STUDENT": "Agregar alumno…",
       "CONFIGURATION": "Configuración del grupo",
       "CONFIGURATION_HINT": "Define la clave del grupo, el cupo y las personas responsables.",
+      "COPY_FROM": "Copiar horario de…",
+      "COPY_RANGE": "Aplicar a los demás días",
       "CUPO": "Cupo",
       "CUPO_SOURCE": "Definido en la planeación anual",
       "CUPO_SOURCE_LINK": "Definido en la planeación anual {{year}}",
@@ -1061,6 +1064,11 @@
       "ANNUAL_NOT_TERMINATED": "La planeación anual correspondiente no está terminada.",
       "READ_ONLY": "La planeación está disponible sólo para consulta hasta restaurar los prerrequisitos.",
       "SURVEY_NOT_CLOSED": "La encuesta correspondiente no está cerrada."
+    },
+    "PREVIEW": {
+      "HINT": "Así se entregará a Sistemas Escolares",
+      "STALE": "Hay cambios sin guardar: la vista previa muestra lo último guardado.",
+      "TITLE": "Vista previa del Excel"
     },
     "REMOVE_GROUP": {
       "HINT": "El cambio sólo se enviará al servidor cuando guardes la planeación.",

@@ -32,11 +32,14 @@ import { PlanPickersController } from '../../services/plan-pickers.controller';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
 import {
   addStudentIfAbsent,
+  buildDuplicateGroupFormGroup,
   buildGroupFormGroup,
   buildSaveGroupsRequest,
   emptyGroup,
   GroupFormGroup,
 } from '../../utils/group-form.util';
+import { claveHeaderPositions } from '../../utils/group-ordering.util';
+import { nextGroupLetter } from '../../utils/group-letter.util';
 import {
   GROUP_STATE_FILTERS,
   type GroupFilterState,
@@ -203,6 +206,14 @@ export class TrimestralPlanEditorComponent {
     );
   });
 
+  /** Dónde arranca cada UEA en la lista visible, para el encabezado que las agrupa. */
+  readonly claveHeaders = computed(() =>
+    claveHeaderPositions(
+      this.filteredOrder(),
+      (index) => this.groups.at(index).controls.clave.value,
+    ),
+  );
+
   readonly filtersActive = computed(() => {
     const filters = this.filterValue();
     return !!filters.search?.trim() || !!filters.ueaType || !!filters.state;
@@ -312,6 +323,10 @@ export class TrimestralPlanEditorComponent {
       group.cupo = annualSettings.cupo;
       group.maxGroups = annualSettings.maxGroups;
     }
+    // Con hermanos existentes la letra se deduce (CR43 → CR43A); sin ellos se captura.
+    group.grupo = nextGroupLetter(
+      this.groupsForUea(ueaId).map((sibling) => sibling.controls.grupo.value),
+    );
     this.groups.push(buildGroupFormGroup(this.fb, group));
     const added = this.groups.at(this.groups.length - 1);
     this.studentsByIndex.update((all) => [...all, []]);
@@ -337,6 +352,24 @@ export class TrimestralPlanEditorComponent {
   groupsForUea(ueaId: number): GroupFormGroup[] {
     this.hasUnsavedChanges();
     return this.groups.controls.filter((group) => group.controls.ueaId.value === ueaId);
+  }
+
+  /**
+   * Otra sección de la misma UEA. Los ~8 grupos de Proyecto de Investigación de un
+   * trimestre son casi idénticos salvo el alumno, así que se copia y se renumera.
+   */
+  duplicateGroup(source: GroupFormGroup): void {
+    if (!this.editable()) return;
+
+    const ueaId = source.controls.ueaId.value;
+    const grupo = nextGroupLetter(
+      this.groupsForUea(ueaId).map((sibling) => sibling.controls.grupo.value),
+    );
+    this.groups.push(buildDuplicateGroupFormGroup(this.fb, source, grupo));
+    const added = this.groups.at(this.groups.length - 1);
+    this.studentsByIndex.update((all) => [...all, []]);
+    this.expandedGroups.update((current) => new Set([...current, added]));
+    this.reorder();
   }
 
   onUeaFilter(event: { filter?: string | null }): void {

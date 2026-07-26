@@ -3,6 +3,7 @@ import {
   compareByLastNames,
   groupLetterForTerm,
   groupWithSuffix,
+  nextGroupLetter,
 } from './group-letter.util';
 
 describe('group-letter.util (HU-57)', () => {
@@ -86,5 +87,22 @@ describe('group-letter.util (HU-57)', () => {
 
     expect(students.map((s) => s.firstLastName)).toEqual(['Aguirre', 'López', 'Ramos']);
     expect(groups).toEqual(['CR43', 'CR43A', 'CR43B']);
+  });
+
+  // Alta manual de otra sección: la letra se deduce de los hermanos existentes.
+  it('proposes the next free suffix for a UEA that already has groups', () => {
+    expect(nextGroupLetter(['CR43'])).toBe('CR43A');
+    expect(nextGroupLetter(['CR43', 'CR43A'])).toBe('CR43B');
+    // El orden en que llegan no importa, ni el capitalizado.
+    expect(nextGroupLetter(['cr43b', 'CR43', 'CR43A'])).toBe('CR43C');
+  });
+
+  it('fills a freed suffix instead of skipping it', () => {
+    expect(nextGroupLetter(['CR43', 'CR43B'])).toBe('CR43A');
+  });
+
+  it('has nothing to propose without siblings, so the letter is captured by hand', () => {
+    expect(nextGroupLetter([])).toBeNull();
+    expect(nextGroupLetter([null, ''])).toBeNull();
   });
 });

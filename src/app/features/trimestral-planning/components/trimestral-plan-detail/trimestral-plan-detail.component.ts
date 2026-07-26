@@ -31,6 +31,7 @@ import {
 import { computePlanSummary } from '../../utils/plan-summary.util';
 import { isEditable, statusTagSeverity } from '../../utils/trimestral-plan-status.util';
 import { GroupFilterState } from '../../utils/trimestral-group-filter.util';
+import { ExcelPreviewComponent } from '../excel-preview/excel-preview.component';
 import {
   AssignRequest,
   GroupOption,
@@ -54,6 +55,7 @@ import { TrimestralPlanEditorComponent } from '../trimestral-plan-editor/trimest
     CatalogTagComponent,
     LoadStateComponent,
     DomainErrorMessagePipe,
+    ExcelPreviewComponent,
     PlanPendingComponent,
     PlanSummaryComponent,
     TrimestralPlanEditorComponent,

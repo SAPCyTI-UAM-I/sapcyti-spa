@@ -14,6 +14,31 @@
         {{ 'TRIMESTRAL_PLANNING.GROUP.SCHEDULE_HINT' | translate }}
       </p>
     </div>
+
+    <!-- Casi todos los grupos repiten el mismo bloque en varios días. -->
+    @if (dayOptions().length > 0) {
+      <div class="gap-xs ml-auto flex flex-wrap items-center">
+        <p-select
+          [ngModel]="copySource()"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="copySource.set($event)"
+          [options]="dayOptions()"
+          [placeholder]="'TRIMESTRAL_PLANNING.GROUP.COPY_FROM' | translate"
+          [ariaLabel]="'TRIMESTRAL_PLANNING.GROUP.COPY_FROM' | translate"
+          data-testid="copy-schedule-source"
+        />
+        <p-button
+          type="button"
+          severity="secondary"
+          variant="outlined"
+          icon="pi pi-copy"
+          [label]="'TRIMESTRAL_PLANNING.GROUP.COPY_RANGE' | translate"
+          [disabled]="copySource() === null"
+          (onClick)="copyRangeToCapturedDays()"
+          data-testid="copy-schedule-range"
+        />
+      </div>
+    }
   </div>
 
   <!-- Cada día es una unidad completa. Así se lee de arriba abajo y se evita recorrer

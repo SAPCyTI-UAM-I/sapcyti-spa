@@ -78,6 +78,31 @@ describe('ScheduleSubformComponent', () => {
     expect(monday.controls.start.value).toBe('09:47');
   });
 
+  // Casi todos los grupos repiten el mismo bloque; capturarlo 5 veces era el mayor tedio.
+  it('copies the range to the other captured days, leaving LAB alone', async () => {
+    const { fixture, subform } = await setup('09:00', '11:00');
+    const schedule = fixture.componentInstance.form.controls.schedule;
+    // Miércoles ya tiene algo capturado, pero con otro horario y en laboratorio.
+    schedule.at(2).patchValue({ start: '15:00', end: '18:00', lab: true });
+
+    subform.copySource.set('LUN');
+    subform.copyRangeToCapturedDays();
+
+    expect(schedule.at(2).getRawValue()).toMatchObject({
+      start: '09:00',
+      end: '11:00',
+      lab: true,
+    });
+    // Un día vacío sigue vacío: copiar no inventa sesiones.
+    expect(schedule.at(1).getRawValue()).toMatchObject({ start: '', end: '' });
+  });
+
+  it('only offers days that already have a full range as the copy source', async () => {
+    const { subform } = await setup('09:00', '11:00');
+
+    expect(subform.dayOptions()).toEqual(['LUN']);
+  });
+
   it('leaves an empty day valid, with the whole grid available', async () => {
     const { subform, monday } = await setup();
 

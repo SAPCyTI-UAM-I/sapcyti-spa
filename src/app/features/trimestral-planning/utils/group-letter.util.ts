@@ -33,6 +33,25 @@ export function groupWithSuffix(baseGroup: string, index: number): string {
   return `${baseGroup}${String.fromCharCode('A'.charCodeAt(0) + index - 1)}`;
 }
 
+/**
+ * Siguiente letra libre para un grupo manual de una UEA que ya tiene hermanos:
+ * `CR43` → `CR43A` → `CR43B`. Sin hermanos no hay nada que deducir (el trimestre no
+ * está disponible en un alta manual), así que devuelve null y se captura a mano.
+ */
+export function nextGroupLetter(existingCodes: readonly (string | null)[]): string | null {
+  const codes = existingCodes.map((code) => code?.trim().toUpperCase() ?? '').filter(Boolean);
+  if (codes.length === 0) return null;
+
+  // El base es el código más corto: los demás son él más un sufijo.
+  const base = codes.reduce((shortest, code) => (code.length < shortest.length ? code : shortest));
+  const taken = new Set(codes);
+  for (let index = 0; index <= 26; index++) {
+    const candidate = groupWithSuffix(base, index);
+    if (!taken.has(candidate)) return candidate;
+  }
+  return null;
+}
+
 /** A missing second last name sorts last, never first (HU-57). */
 function compareOptional(a: string | undefined, b: string | undefined): number {
   const left = a?.trim() ?? '';

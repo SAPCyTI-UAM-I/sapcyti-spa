@@ -65,7 +65,17 @@
   <!-- Lista plana ordenada por clave de UEA. Se rastrea por la instancia del FormGroup:
        los grupos nuevos comparten id 0 y `0 ?? $index` no cae al índice, así que dos
        altas colisionaban de clave. -->
-  @for (index of filteredOrder(); track groups.at(index)) {
+  @for (index of filteredOrder(); track groups.at(index); let position = $index) {
+    <!-- Una UEA con varias letras (CR43, CR43A…) se lee como un bloque, no como tarjetas sueltas. -->
+    @if (claveHeaders().has(position)) {
+      <h3
+        class="text-label-md text-text-secondary bg-background py-xs sticky top-0 z-10"
+        data-testid="clave-header"
+      >
+        {{ groups.at(index).controls.clave.value }} ·
+        {{ groups.at(index).controls.nombre.value }}
+      </h3>
+    }
     <app-group-card
       [form]="groups.at(index)"
       [students]="studentsByIndex()[index] ?? []"
@@ -78,6 +88,7 @@
       [expanded]="isExpanded(groups.at(index))"
       (toggleExpanded)="toggleGroup(groups.at(index))"
       (removeGroup)="requestRemoveGroup(groups.at(index))"
+      (duplicateGroup)="duplicateGroup(groups.at(index))"
     />
   } @empty {
     @if (groups.length > 0) {

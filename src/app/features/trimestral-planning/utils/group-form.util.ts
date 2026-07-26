@@ -177,6 +177,41 @@ function orNull(value: string | null): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+/**
+ * Copia de un grupo para abrir otra sección de la misma UEA: se conserva cupo, profesores
+ * y horario, que es lo que comparten, y se dejan los alumnos fuera. `id: 0` lo marca como
+ * nuevo, igual que `emptyGroup`.
+ */
+export function buildDuplicateGroupFormGroup(
+  fb: NonNullableFormBuilder,
+  source: GroupFormGroup,
+  grupo: string | null,
+): GroupFormGroup {
+  const value = source.getRawValue();
+  return buildGroupFormGroup(fb, {
+    id: 0,
+    ueaId: value.ueaId,
+    clave: value.clave,
+    nombre: value.nombre,
+    tipoUea: value.tipoUea,
+    grupo,
+    cupo: value.cupo || null,
+    maxGroups: value.maxGroups || null,
+    professors: value.professorIds.map((professorId) => ({
+      professorId,
+      employeeNumber: null,
+      professorName: '',
+    })),
+    schedule: value.schedule.map((day) => ({
+      day: day.day,
+      start: day.start || null,
+      end: day.end || null,
+      lab: day.lab,
+    })),
+    students: [],
+  });
+}
+
 export function buildSaveGroupsRequest(
   groups: readonly GroupFormGroup[],
 ): SaveTrimestralPlanRequest {

@@ -74,6 +74,7 @@ export class GroupCardComponent {
   readonly expanded = input(false);
 
   readonly removeGroup = output<void>();
+  readonly duplicateGroup = output<void>();
   readonly toggleExpanded = output<void>();
 
   /**

@@ -195,6 +195,10 @@
           </div>
           <app-trimestral-plan-editor [plan]="current" (saved)="onSaved($event)" />
         </div>
+
+        @if (current.groups.length > 0) {
+          <app-excel-preview [plan]="current" [stale]="dirty()" />
+        }
       </div>
     }
   </app-load-state>

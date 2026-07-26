@@ -911,6 +911,7 @@
       "BACK_TO_DRAFT": "Back to draft",
       "COLLAPSE_ALL": "Collapse all",
       "DOWNLOAD": "Download Excel",
+      "DUPLICATE_GROUP": "Duplicate group",
       "EXPAND_ALL": "Expand all",
       "FINISH": "Finish",
       "GENERATE": "Generate plan",
@@ -989,6 +990,8 @@
       "ADD_STUDENT": "Add student…",
       "CONFIGURATION": "Group settings",
       "CONFIGURATION_HINT": "Define the group code, quota, and responsible instructors.",
+      "COPY_FROM": "Copy schedule from…",
+      "COPY_RANGE": "Apply to the other days",
       "CUPO": "Quota",
       "CUPO_SOURCE": "Set by the annual plan",
       "CUPO_SOURCE_LINK": "Set by the {{year}} annual plan",
@@ -1061,6 +1064,11 @@
       "ANNUAL_NOT_TERMINATED": "The corresponding annual plan is not finished.",
       "READ_ONLY": "This plan is read-only until its prerequisites are restored.",
       "SURVEY_NOT_CLOSED": "The corresponding survey is not closed."
+    },
+    "PREVIEW": {
+      "HINT": "How it will be delivered to Sistemas Escolares",
+      "STALE": "There are unsaved changes: the preview shows the last saved version.",
+      "TITLE": "Excel preview"
     },
     "REMOVE_GROUP": {
       "HINT": "This change is only sent to the server when you save the plan.",

@@ -185,6 +185,58 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.studentsByIndex()).toHaveLength(3);
   });
 
+  // Los ~8 grupos de Proyecto de Investigación de un trimestre son casi idénticos.
+  it('duplicates a group with its cupo, professors and schedule, without students', async () => {
+    const { component } = await setup();
+    const source = component.groups.at(0);
+    source.controls.professorIds.setValue([7]);
+    source.controls.schedule.at(0).patchValue({ start: '09:00', end: '11:00', lab: true });
+    source.controls.students.push(buildStudentRow(new FormBuilder().nonNullable, 3));
+
+    component.duplicateGroup(source);
+
+    const copy = component.groups.at(component.groups.length - 1);
+    expect(copy.controls.id.value).toBe(0);
+    expect(copy.controls.cupo.value).toBe(source.controls.cupo.value);
+    expect(copy.controls.professorIds.value).toEqual([7]);
+    expect(copy.controls.schedule.at(0).getRawValue()).toMatchObject({
+      start: '09:00',
+      end: '11:00',
+      lab: true,
+    });
+    // Los alumnos no se copian: el grupo nuevo existe para repartirlos.
+    expect(copy.controls.students.length).toBe(0);
+    // Y la letra se renumera respecto a la del original.
+    expect(copy.controls.grupo.value).toBe('CO43A');
+  });
+
+  it('proposes the next group letter when adding a second group for a UEA', async () => {
+    const { component } = await setup();
+
+    component.addGroup(7);
+    // El primero nace sin letra (no hay hermano del que deducirla) y se captura.
+    const first = component.groups.at(component.groups.length - 1);
+    expect(first.controls.grupo.value).toBe('');
+    first.controls.grupo.setValue('CP43');
+
+    component.addGroup(7);
+
+    expect(component.groups.at(component.groups.length - 1).controls.grupo.value).toBe('CP43A');
+  });
+
+  it('marks where each UEA starts in the visible list', async () => {
+    const { component } = await setup();
+
+    // Un solo grupo: un encabezado al inicio.
+    expect([...component.claveHeaders()]).toEqual([0]);
+
+    // Una UEA distinta abre su propio bloque; dos grupos de la misma comparten uno.
+    component.addGroup(7);
+    component.addGroup(7);
+
+    expect([...component.claveHeaders()]).toEqual([0, 1]);
+  });
+
   it('ignores an empty pick in the add-group selector', async () => {
     const { component } = await setup();
 
