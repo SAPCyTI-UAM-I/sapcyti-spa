@@ -1014,6 +1014,7 @@
       "STUDENT_NOTE": "Note",
       "STUDENTS": "Group students",
       "STUDENTS_HINT": "Review assigned demand and add notes when needed.",
+      "TIME_PLACEHOLDER": "Pick a time",
       "TIME_RANGE_REQUIRED": "Enter both start and end times, or leave both empty.",
       "TRIM": "Term"
     },

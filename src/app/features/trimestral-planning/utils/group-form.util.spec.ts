@@ -144,6 +144,23 @@ describe('group-form.util', () => {
     expect(startBeforeEndValidator(tuesday)).toBeNull();
   });
 
+  // Limpiar un `p-select` escribe null en un control tipado como no-nulable.
+  it('treats a cleared time select as an empty day, not as a captured one', () => {
+    const form = buildGroupFormGroup(fb, group);
+    const monday = form.controls.schedule.at(0);
+
+    monday.patchValue({ start: null as unknown as string, end: null as unknown as string });
+
+    expect(hasScheduleDayCapture(monday)).toBe(false);
+    expect(startBeforeEndValidator(monday)).toBeNull();
+    expect(buildSaveGroupsRequest([form]).groups[0]!.schedule[0]).toEqual({
+      day: 'LUN',
+      start: null,
+      end: null,
+      lab: false,
+    });
+  });
+
   it('requires a complete time range when LAB is selected', () => {
     const form = buildGroupFormGroup(fb, group);
     const tuesday = form.controls.schedule.at(1);

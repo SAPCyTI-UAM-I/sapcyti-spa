@@ -154,15 +154,15 @@ describe('GroupCardComponent', () => {
 
     expect(fixture.nativeElement.querySelector('[data-testid="schedule-summary"]')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('[data-testid="group-configuration"]')).toBeNull();
-    expect(fixture.nativeElement.querySelectorAll('input[type="time"]')).toHaveLength(0);
+    expect(fixture.nativeElement.querySelectorAll('[data-testid="time-select"]')).toHaveLength(0);
   });
 
   // El horario vive siempre visible, pero cada día agrupa su inicio, fin y LAB.
-  it('renders the 5 day cards with their time inputs always visible', async () => {
+  it('renders the 5 day cards with their time selects always visible', async () => {
     const { fixture } = await setup();
 
-    const timeInputs = fixture.nativeElement.querySelectorAll('input[type="time"]');
-    expect(timeInputs).toHaveLength(10); // 5 días × inicio/fin, sin <details> de por medio
+    const timeSelects = fixture.nativeElement.querySelectorAll('[data-testid="time-select"]');
+    expect(timeSelects).toHaveLength(10); // 5 días × inicio/fin, sin <details> de por medio
     expect(fixture.nativeElement.querySelector('details')).toBeNull();
   });
 

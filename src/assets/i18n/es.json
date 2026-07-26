@@ -1014,6 +1014,7 @@
       "STUDENT_NOTE": "Nota",
       "STUDENTS": "Alumnos del grupo",
       "STUDENTS_HINT": "Revisa la demanda asignada y agrega notas cuando sea necesario.",
+      "TIME_PLACEHOLDER": "Elegir hora",
       "TIME_RANGE_REQUIRED": "Captura juntas la hora de inicio y la hora de fin, o deja ambas vacías.",
       "TRIM": "Trim."
     },

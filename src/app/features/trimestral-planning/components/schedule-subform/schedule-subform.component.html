@@ -30,30 +30,48 @@
           {{ 'TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate }}
         </h5>
 
+        <!--
+          Bloques de media hora en vez de `<input type="time">`: el nativo se dibuja
+          en 12h o 24h según el sistema operativo, y el Excel siempre lleva 24h.
+        -->
         <div class="gap-sm grid 2xl:grid-cols-2">
-          <label class="gap-xs flex min-w-0 flex-col">
+          <div class="gap-xs flex min-w-0 flex-col">
             <span class="text-caption text-text-secondary">
               {{ 'TRIMESTRAL_PLANNING.GROUP.START' | translate }}
             </span>
-            <input
-              type="time"
+            <p-select
               formControlName="start"
-              class="p-inputtext min-w-0"
-              [attr.aria-readonly]="!editable()"
+              [options]="startOptionsFor(day)"
+              [showClear]="true"
+              [fluid]="true"
+              [ariaLabel]="
+                ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
+                ' · ' +
+                ('TRIMESTRAL_PLANNING.GROUP.START' | translate)
+              "
+              [placeholder]="'TRIMESTRAL_PLANNING.GROUP.TIME_PLACEHOLDER' | translate"
+              data-testid="time-select"
             />
-          </label>
+          </div>
 
-          <label class="gap-xs flex min-w-0 flex-col">
+          <div class="gap-xs flex min-w-0 flex-col">
             <span class="text-caption text-text-secondary">
               {{ 'TRIMESTRAL_PLANNING.GROUP.END' | translate }}
             </span>
-            <input
-              type="time"
+            <p-select
               formControlName="end"
-              class="p-inputtext min-w-0"
-              [attr.aria-readonly]="!editable()"
+              [options]="endOptionsFor(day)"
+              [showClear]="true"
+              [fluid]="true"
+              [ariaLabel]="
+                ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
+                ' · ' +
+                ('TRIMESTRAL_PLANNING.GROUP.END' | translate)
+              "
+              [placeholder]="'TRIMESTRAL_PLANNING.GROUP.TIME_PLACEHOLDER' | translate"
+              data-testid="time-select"
             />
-          </label>
+          </div>
         </div>
 
         <div class="gap-sm text-body-md flex min-h-6 items-center">

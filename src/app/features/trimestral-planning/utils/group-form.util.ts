@@ -46,9 +46,12 @@ export type GroupFormGroup = FormGroup<{
   students: FormArray<StudentFormGroup>;
 }>;
 
-/** A day belongs in summaries/filters as soon as any of its schedule fields was captured. */
+/**
+ * A day belongs in summaries/filters as soon as any of its schedule fields was
+ * captured. Clearing a `p-select` leaves null, not '', so both count as empty.
+ */
 export function hasScheduleDayCapture(day: ScheduleFormGroup): boolean {
-  return day.controls.start.value !== '' || day.controls.end.value !== '' || day.controls.lab.value;
+  return !!day.controls.start.value || !!day.controls.end.value || day.controls.lab.value;
 }
 
 export function hasScheduleCapture(schedule: FormArray<ScheduleFormGroup>): boolean {
@@ -148,9 +151,14 @@ export function emptyGroup(uea: UeaCatalogItem): TrimestralGroup {
   };
 }
 
-/** Empty strings become null: the API distinguishes "not set" from "". */
-function orNull(value: string): string | null {
-  const trimmed = value.trim();
+/**
+ * Empty strings become null: the API distinguishes "not set" from "".
+ *
+ * Accepts null because clearing a `p-select` writes null into the control even
+ * though it is typed non-nullable; without this, saving a cleared day threw.
+ */
+function orNull(value: string | null): string | null {
+  const trimmed = value?.trim() ?? '';
   return trimmed.length > 0 ? trimmed : null;
 }
 
