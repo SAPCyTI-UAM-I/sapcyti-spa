@@ -80,7 +80,13 @@ describe('TrimestralPlanEditorComponent', () => {
               }),
             ),
             searchUeas: vi.fn(() =>
-              of({ content: [{ id: 7, clave: '2156027', nombre: 'INTELIGENCIA ARTIFICIAL' }] }),
+              of({
+                content: [
+                  { id: 7, clave: '2156027', nombre: 'INTELIGENCIA ARTIFICIAL' },
+                  // La UEA del grupo que ya trae el plan: agregar otro hereda su maxGroups.
+                  { id: 1, clave: '2156024', nombre: 'REDES' },
+                ],
+              }),
             ),
           },
         },
@@ -185,29 +191,39 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.studentsByIndex()).toHaveLength(3);
   });
 
-  // Los ~8 grupos de Proyecto de Investigación de un trimestre son casi idénticos.
-  it('duplicates a group with its cupo, professors and schedule, without students', async () => {
+  /**
+   * El plan anual permite 2 grupos de esta UEA. Al agregar un tercero los tres quedan
+   * marcados, y al quitarlo la marca debe irse: cuando los computed se disparaban con
+   * `hasUnsavedChanges` (que ya valía true) no se recalculaban y la bandera se quedaba.
+   */
+  it('clears the group-limit flag once the offending group is removed', async () => {
     const { component } = await setup();
-    const source = component.groups.at(0);
-    source.controls.professorIds.setValue([7]);
-    source.controls.schedule.at(0).patchValue({ start: '09:00', end: '11:00', lab: true });
-    source.controls.students.push(buildStudentRow(new FormBuilder().nonNullable, 3));
 
-    component.duplicateGroup(source);
+    // El plan anual permite 2 grupos de la UEA 1; con el que ya existe, el tercero sobra.
+    component.addGroup(1);
+    component.addGroup(1);
+    expect(component.groupLimitViolationIndices().length).toBeGreaterThan(0);
+    expect(component.hasLimitViolations()).toBe(true);
 
-    const copy = component.groups.at(component.groups.length - 1);
-    expect(copy.controls.id.value).toBe(0);
-    expect(copy.controls.cupo.value).toBe(source.controls.cupo.value);
-    expect(copy.controls.professorIds.value).toEqual([7]);
-    expect(copy.controls.schedule.at(0).getRawValue()).toMatchObject({
-      start: '09:00',
-      end: '11:00',
-      lab: true,
-    });
-    // Los alumnos no se copian: el grupo nuevo existe para repartirlos.
-    expect(copy.controls.students.length).toBe(0);
-    // Y la letra se renumera respecto a la del original.
-    expect(copy.controls.grupo.value).toBe('CO43A');
+    const extra = component.groups.at(component.groups.length - 1);
+    component.requestRemoveGroup(extra);
+    component.confirmRemoveGroup();
+
+    expect(component.groupLimitViolationIndices()).toEqual([]);
+    expect(component.hasLimitViolations()).toBe(false);
+    expect(component.violatingGroupIndices().size).toBe(0);
+  });
+
+  it('recomputes the capacity flag when a member is removed, not only when added', async () => {
+    const { component } = await setup();
+    const group = component.groups.at(0);
+    group.controls.cupo.setValue('1');
+    group.controls.students.push(buildStudentRow(new FormBuilder().nonNullable, 3));
+    expect(component.capacityViolationIndices()).toEqual([0]);
+
+    group.controls.students.removeAt(1);
+
+    expect(component.capacityViolationIndices()).toEqual([]);
   });
 
   it('proposes the next group letter when adding a second group for a UEA', async () => {

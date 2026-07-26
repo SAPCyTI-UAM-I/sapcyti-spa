@@ -121,8 +121,8 @@ export class TrimestralPlanDetailComponent implements OnInit {
     const editor = this.editor();
     const current = this.plan();
     if (!editor || !current) return null;
-    // Se lee `hasUnsavedChanges` para recalcular al teclear: los controles no son señales.
-    editor.hasUnsavedChanges();
+    // El contador de cambios del editor es lo que dispara el recálculo al teclear.
+    editor.revision();
     return computePlanSummary(
       editor.groups.controls,
       current.blankStudents.length + current.unassignedDemand.length,
@@ -144,7 +144,7 @@ export class TrimestralPlanDetailComponent implements OnInit {
    */
   readonly groupOptions = computed(() => {
     const editor = this.editor();
-    editor?.hasUnsavedChanges();
+    editor?.revision();
 
     const byUea = new Map<number | null, GroupOption[]>();
     const toOption = (group: GroupFormGroup): GroupOption => ({

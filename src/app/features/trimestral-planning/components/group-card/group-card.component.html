@@ -41,16 +41,6 @@
 
       <div class="gap-xs flex shrink-0 items-center">
         @if (editable()) {
-          <!-- Abrir otra sección de la misma UEA: mismo cupo, profesores y horario. -->
-          <p-button
-            severity="secondary"
-            variant="text"
-            icon="pi pi-copy"
-            [ariaLabel]="'TRIMESTRAL_PLANNING.ACTIONS.DUPLICATE_GROUP' | translate"
-            [attr.title]="'TRIMESTRAL_PLANNING.ACTIONS.DUPLICATE_GROUP' | translate"
-            (onClick)="duplicateGroup.emit()"
-            data-testid="duplicate-group"
-          />
           <p-button
             severity="danger"
             variant="text"
@@ -82,12 +72,12 @@
     </div>
 
     <!--
-      Lo que se necesita para decidir, con la tarjeta cerrada: la letra, cuántos
-      alumnos caben y qué falta. El resto (profesor, horario) confirma, así que va
-      en una sola línea de menor peso; el límite de grupos vive dentro, porque es
-      un dato de la UEA y no de este grupo.
+      Todo lo consultable en un solo renglón (letra, ocupación, profesor, horario y qué
+      falta): con 25 grupos cada línea extra multiplica el scroll. Envuelve cuando no
+      cabe. Los errores bajan a su propia línea para que resalten; el límite de grupos
+      vive dentro de la tarjeta, porque describe a la UEA y no a este grupo.
     -->
-    <div class="gap-xs flex flex-wrap items-center">
+    <div class="gap-xs flex flex-wrap items-center" data-testid="schedule-summary">
       <span appInfoChip>
         <i class="pi pi-tag text-primary" aria-hidden="true"></i>
         <strong>{{ form().controls.grupo.value || '—' }}</strong>
@@ -103,26 +93,28 @@
         <strong>{{ occupancy() }}</strong>
       </span>
 
-      @if (occupancySeverity() === 'over') {
-        <span
-          appInfoChip
-          class="border-error-border bg-error-container text-on-error-container"
-          data-testid="over-capacity-badge"
-        >
-          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
-          {{ 'TRIMESTRAL_PLANNING.GROUP.OVER_CAPACITY' | translate }}
+      <span class="text-caption text-text-secondary gap-xs flex min-w-0 items-center">
+        <i class="pi pi-user shrink-0" aria-hidden="true"></i>
+        <span class="truncate">
+          {{ professorSummary() || ('TRIMESTRAL_PLANNING.GROUP.NO_PROFESSOR' | translate) }}
         </span>
-      }
-      @if (groupLimitExceeded()) {
-        <span
-          appInfoChip
-          class="border-error-border bg-error-container text-on-error-container"
-          data-testid="group-limit-badge"
-        >
-          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
-          {{ 'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT_EXCEEDED' | translate }}
-        </span>
-      }
+      </span>
+
+      <span class="text-caption text-text-secondary gap-xs flex min-w-0 flex-wrap items-center">
+        <i class="pi pi-clock shrink-0" aria-hidden="true"></i>
+        @for (entry of configuredSchedule(); track entry.day) {
+          <span class="whitespace-nowrap">
+            {{ 'TRIMESTRAL_PLANNING.DAYS_SHORT.' + entry.day | translate }}
+            {{ entry.start || '—' }}–{{ entry.end || '—' }}
+            @if (entry.lab) {
+              <span class="text-warning-strong font-semibold">LAB</span>
+            }
+          </span>
+        } @empty {
+          <span>{{ 'TRIMESTRAL_PLANNING.GROUP.NO_SCHEDULE' | translate }}</span>
+        }
+      </span>
+
       @if (incomplete()) {
         <span
           appInfoChip
@@ -135,28 +127,30 @@
       }
     </div>
 
-    <p
-      class="text-caption text-text-secondary gap-xs flex min-w-0 flex-wrap items-center"
-      data-testid="schedule-summary"
-    >
-      <i class="pi pi-user" aria-hidden="true"></i>
-      <span class="truncate">
-        {{ professorSummary() || ('TRIMESTRAL_PLANNING.GROUP.NO_PROFESSOR' | translate) }}
-      </span>
-      <span aria-hidden="true">·</span>
-      <i class="pi pi-clock" aria-hidden="true"></i>
-      @for (entry of configuredSchedule(); track entry.day) {
-        <span>
-          {{ 'TRIMESTRAL_PLANNING.DAYS_SHORT.' + entry.day | translate }}
-          {{ entry.start || '—' }}–{{ entry.end || '—' }}
-          @if (entry.lab) {
-            <span class="text-warning-strong font-semibold">LAB</span>
-          }
-        </span>
-      } @empty {
-        <span>{{ 'TRIMESTRAL_PLANNING.GROUP.NO_SCHEDULE' | translate }}</span>
-      }
-    </p>
+    @if (occupancySeverity() === 'over' || groupLimitExceeded()) {
+      <div class="gap-xs flex flex-wrap items-center">
+        @if (occupancySeverity() === 'over') {
+          <span
+            appInfoChip
+            class="border-error-border bg-error-container text-on-error-container"
+            data-testid="over-capacity-badge"
+          >
+            <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+            {{ 'TRIMESTRAL_PLANNING.GROUP.OVER_CAPACITY' | translate }}
+          </span>
+        }
+        @if (groupLimitExceeded()) {
+          <span
+            appInfoChip
+            class="border-error-border bg-error-container text-on-error-container"
+            data-testid="group-limit-badge"
+          >
+            <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+            {{ 'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT_EXCEEDED' | translate }}
+          </span>
+        }
+      </div>
+    }
   </header>
 
   @if (expanded()) {

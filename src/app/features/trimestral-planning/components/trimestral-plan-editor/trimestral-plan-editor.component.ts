@@ -32,7 +32,6 @@ import { PlanPickersController } from '../../services/plan-pickers.controller';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
 import {
   addStudentIfAbsent,
-  buildDuplicateGroupFormGroup,
   buildGroupFormGroup,
   buildSaveGroupsRequest,
   emptyGroup,
@@ -139,6 +138,16 @@ export class TrimestralPlanEditorComponent {
    */
   readonly hasUnsavedChanges = signal(false);
 
+  /**
+   * Contador de cambios del formulario: los valores de un `FormControl` no son señales,
+   * así que los `computed` que los leen necesitan un disparador.
+   *
+   * No sirve `hasUnsavedChanges` para esto: una vez en `true` deja de notificar, y quitar
+   * un grupo no recalculaba nada — la bandera de «excede el límite» se quedaba pegada al
+   * grupo que ya no la incumplía. Un contador siempre cambia de valor.
+   */
+  readonly revision = signal(0);
+
   /** El cupo lo fija el plan anual del año del trimestre; la tarjeta enlaza ahí. */
   readonly annualPlanYear = computed(() => termYear(this.plan().term));
 
@@ -152,7 +161,7 @@ export class TrimestralPlanEditorComponent {
   });
 
   readonly capacityViolationIndices = computed(() => {
-    this.hasUnsavedChanges();
+    this.revision();
     return this.groups.controls.flatMap((group, index) => {
       const cupo = group.controls.cupo.value.trim();
       if (!cupo || cupo === '*') return [];
@@ -162,7 +171,7 @@ export class TrimestralPlanEditorComponent {
   });
 
   readonly groupLimitViolationIndices = computed(() => {
-    this.hasUnsavedChanges();
+    this.revision();
     const counts = new Map<number, number>();
     for (const group of this.groups.controls) {
       counts.set(group.controls.ueaId.value, (counts.get(group.controls.ueaId.value) ?? 0) + 1);
@@ -190,7 +199,7 @@ export class TrimestralPlanEditorComponent {
   readonly filteredOrder = computed(() => {
     const filters = this.filterValue();
     // Group code, membership, professors and schedule are editable FormControls.
-    this.hasUnsavedChanges();
+    this.revision();
 
     const violating = this.violatingGroupIndices();
     return this.order().filter((index) =>
@@ -229,9 +238,10 @@ export class TrimestralPlanEditorComponent {
 
   constructor() {
     effect(() => this.buildForm(this.plan()));
-    this.groups.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.hasUnsavedChanges.set(true));
+    this.groups.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.hasUnsavedChanges.set(true);
+      this.bumpRevision();
+    });
     this.people.loadProfessors();
     this.people.loadStudents();
     this.people.loadUeas();
@@ -261,8 +271,15 @@ export class TrimestralPlanEditorComponent {
         return next;
       });
       this.reorder();
+      // Explícito además del `valueChanges`: quitar un grupo cambia quién incumple el
+      // límite de la UEA, y esas banderas se calculan sobre el resto de los grupos.
+      this.bumpRevision();
     }
     this.pendingRemoval.set(null);
+  }
+
+  private bumpRevision(): void {
+    this.revision.update((value) => value + 1);
   }
 
   onRemoveDialogVisibleChange(visible: boolean): void {
@@ -350,26 +367,8 @@ export class TrimestralPlanEditorComponent {
 
   /** Grupos candidatos para una UEA; el panel de pendientes filtra con esto. */
   groupsForUea(ueaId: number): GroupFormGroup[] {
-    this.hasUnsavedChanges();
+    this.revision();
     return this.groups.controls.filter((group) => group.controls.ueaId.value === ueaId);
-  }
-
-  /**
-   * Otra sección de la misma UEA. Los ~8 grupos de Proyecto de Investigación de un
-   * trimestre son casi idénticos salvo el alumno, así que se copia y se renumera.
-   */
-  duplicateGroup(source: GroupFormGroup): void {
-    if (!this.editable()) return;
-
-    const ueaId = source.controls.ueaId.value;
-    const grupo = nextGroupLetter(
-      this.groupsForUea(ueaId).map((sibling) => sibling.controls.grupo.value),
-    );
-    this.groups.push(buildDuplicateGroupFormGroup(this.fb, source, grupo));
-    const added = this.groups.at(this.groups.length - 1);
-    this.studentsByIndex.update((all) => [...all, []]);
-    this.expandedGroups.update((current) => new Set([...current, added]));
-    this.reorder();
   }
 
   onUeaFilter(event: { filter?: string | null }): void {
@@ -435,7 +434,7 @@ export class TrimestralPlanEditorComponent {
   }
 
   groupCount(ueaId: number): number {
-    this.hasUnsavedChanges();
+    this.revision();
     return this.groups.controls.filter((group) => group.controls.ueaId.value === ueaId).length;
   }
 

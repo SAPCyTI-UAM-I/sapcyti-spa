@@ -186,15 +186,7 @@
         }
 
         <!-- Grupos: editables en BORRADOR, solo lectura en TERMINADA -->
-        <div class="gap-md flex flex-col">
-          <div>
-            <h2 class="text-h3">{{ 'TRIMESTRAL_PLANNING.DETAIL.GROUPS' | translate }}</h2>
-            <p class="text-caption text-text-secondary">
-              {{ 'TRIMESTRAL_PLANNING.DETAIL.GROUPS_HINT' | translate }}
-            </p>
-          </div>
-          <app-trimestral-plan-editor [plan]="current" (saved)="onSaved($event)" />
-        </div>
+        <app-trimestral-plan-editor [plan]="current" (saved)="onSaved($event)" />
 
         @if (current.groups.length > 0) {
           <app-excel-preview [plan]="current" [stale]="dirty()" />
