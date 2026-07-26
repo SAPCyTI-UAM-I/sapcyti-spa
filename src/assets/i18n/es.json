@@ -909,19 +909,13 @@
       "ADD_GROUP": "Agregar grupo",
       "ADD_GROUP_HINT": "Selecciona una UEA para crear otro grupo en esta planeación.",
       "BACK_TO_DRAFT": "Regresar a borrador",
-      "COLLAPSE_ALL": "Contraer todos",
       "DOWNLOAD": "Descargar Excel",
-      "EXPAND_ALL": "Expandir todos",
       "FINISH": "Terminar",
       "GENERATE": "Generar planeación",
-      "HIDE_DETAILS": "Ocultar",
       "REGENERATE": "Regenerar",
       "REMOVE_GROUP": "Quitar grupo",
-      "REMOVE_STUDENT": "Quitar alumno",
       "SAVE": "Guardar grupos",
-      "SAVE_AND_FINISH": "Guardar y terminar",
-      "SHOW_DETAILS": "Editar",
-      "VIEW_DETAILS": "Ver"
+      "SAVE_AND_FINISH": "Guardar y terminar"
     },
     "DAYS": {
       "JUE": "Jueves",
@@ -929,13 +923,6 @@
       "MAR": "Martes",
       "MIE": "Miércoles",
       "VIE": "Viernes"
-    },
-    "DAYS_SHORT": {
-      "JUE": "Jue",
-      "LUN": "Lun",
-      "MAR": "Mar",
-      "MIE": "Mié",
-      "VIE": "Vie"
     },
     "DETAIL": {
       "BACK_TO_DRAFT_WARNING": "El Excel que ya entregaste dejará de coincidir con la planeación. ¿Regresar a borrador?",
@@ -983,49 +970,39 @@
       "WITHOUT_SCHEDULE": "Sin horario",
       "WITHOUT_STUDENTS": "Sin alumnos"
     },
+    "GRID": {
+      "ACTIONS": "Acciones",
+      "CVEUEA": "Clave",
+      "NEMP": "NEMP",
+      "PROF": "Profesores",
+      "TIPO_UEA": "Tipo de UEA",
+      "UEA": "UEA"
+    },
     "GROUP": {
-      "ADD_STUDENT": "Agregar alumno…",
-      "CONFIGURATION": "Configuración del grupo",
-      "CONFIGURATION_HINT": "Define la clave del grupo, el cupo y las personas responsables.",
-      "COPY_FROM": "Copiar horario de…",
       "COPY_RANGE": "Aplicar a los demás días",
       "CUPO": "Cupo",
-      "CUPO_SOURCE": "Definido en la planeación anual",
       "CUPO_SOURCE_LINK": "Definido en la planeación anual {{year}}",
       "DECLARED_TERM": "trim. {{term}}",
       "END": "Fin",
-      "GROUP_LIMIT": "Grupos de esta UEA: {{used}} / {{limit}}",
       "GROUP_LIMIT_EXCEEDED": "Rebasa el máximo de grupos de la planeación anual",
       "GRUPO": "Grupo",
       "INACTIVE_STUDENT": "Alumno inactivo: puede permanecer, pero no moverse ni reponerse",
       "INCOMPLETE": "Falta capturar",
       "LAB": "LAB",
       "LAB_TIME_REQUIRED": "LAB requiere hora de inicio y fin.",
-      "MANUAL": "agregado a mano",
       "MATRICULA": "Matrícula",
       "NAME": "Nombre",
-      "NO_PROFESSOR": "Sin profesores",
-      "NO_SCHEDULE": "Sin horario capturado",
       "NO_STUDENTS": "Este grupo todavía no tiene alumnos asignados.",
       "OCCUPANCY": "Alumnos inscritos / cupo",
       "OVER_CAPACITY": "Rebasa el cupo",
-      "PROFESSOR": "Profesor",
-      "PROFESSORS": "Profesores responsables",
-      "SCHEDULE": "Horario",
-      "SCHEDULE_HINT": "Captura inicio y fin únicamente en los días que se impartirá la UEA.",
       "SEARCH_PROFESSOR": "Buscar por NEMP o nombre…",
       "SEARCH_STUDENT": "Buscar por matrícula o nombre…",
       "SEARCH_UEA": "Buscar UEA por clave o nombre…",
       "START": "Inicio",
       "START_AFTER_END": "La hora de inicio debe ser anterior a la de fin.",
-      "STUDENT_COUNT": "{{count}} alumnos",
-      "STUDENT_COUNT_ONE": "1 alumno",
       "STUDENT_NOTE": "Nota",
-      "STUDENTS": "Alumnos del grupo",
-      "STUDENTS_HINT": "Revisa la demanda asignada y agrega notas cuando sea necesario.",
-      "TIME_PLACEHOLDER": "Elegir hora",
-      "TIME_RANGE_REQUIRED": "Captura juntas la hora de inicio y la hora de fin, o deja ambas vacías.",
-      "TRIM": "Trim."
+      "TIME_FORMAT_INVALID": "Usa el formato de 24 horas HH:mm, por ejemplo 09:30.",
+      "TIME_RANGE_REQUIRED": "Captura juntas la hora de inicio y la hora de fin, o deja ambas vacías."
     },
     "LIST": {
       "BLANKS": "En blanco",
@@ -1045,6 +1022,11 @@
       "RESPONSES": "{{count}} respuestas",
       "SUBTITLE": "La planeación se genera a partir de las respuestas de una encuesta cerrada.",
       "TITLE": "Generar planeación trimestral"
+    },
+    "NOTES": {
+      "HINT": "Se exporta junto a la matrícula. Suele quedar vacía.",
+      "OPEN": "Notas por alumno",
+      "TITLE": "Notas por alumno"
     },
     "OUTDATED_REASONS": {
       "ANNUAL_PLAN_CHANGED": "Cambió la oferta de la planeación anual.",
@@ -1088,7 +1070,6 @@
       "WITH_PROBLEMS": "con problemas"
     },
     "UNASSIGNED": {
-      "HINT": "Estas selecciones no tienen grupo y no se incluyen en el Excel.",
       "REASONS": {
         "GROUP_LIMIT_REACHED": "Se alcanzó el máximo de grupos.",
         "GROUP_SUFFIX_LIMIT": "Se agotaron los sufijos de grupo A–Z.",

@@ -13,19 +13,23 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
+import { Checkbox } from 'primeng/checkbox';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
+import { MultiSelect } from 'primeng/multiselect';
 import { Select } from 'primeng/select';
 import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { GroupStudent, TrimestralPlanDetail } from '../../../../models';
+import { GroupStudent, SCHEDULE_DAYS, TrimestralPlanDetail } from '../../../../models';
 import { I18nSelectComponent } from '../../../../shared/components';
+import { shouldShowFieldError } from '../../../../shared/utils/field-error.util';
 import { termYear } from '../../../../shared/utils/term.util';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
@@ -36,9 +40,17 @@ import {
   buildSaveGroupsRequest,
   emptyGroup,
   GroupFormGroup,
+  hasScheduleDayCapture,
+  normalizeTimeInput,
 } from '../../utils/group-form.util';
 import { claveHeaderPositions } from '../../utils/group-ordering.util';
 import { nextGroupLetter } from '../../utils/group-letter.util';
+import {
+  isGroupIncomplete,
+  occupancyLabel,
+  OccupancySeverity,
+  occupancySeverity,
+} from '../../utils/occupancy.util';
 import {
   GROUP_STATE_FILTERS,
   type GroupFilterState,
@@ -51,7 +63,6 @@ import {
   TrimestralPlanError,
 } from '../../utils/trimestral-plan-error.util';
 import { isEditable } from '../../utils/trimestral-plan-status.util';
-import { GroupCardComponent } from '../group-card/group-card.component';
 
 /**
  * HU-59 — group editor. Unlike the annual grid (fixed rows mirrored by index), the
@@ -64,14 +75,16 @@ import { GroupCardComponent } from '../group-card/group-card.component';
   imports: [
     ReactiveFormsModule,
     FormsModule,
+    RouterLink,
     TranslatePipe,
     Button,
+    Checkbox,
     Dialog,
     InputText,
     Message,
+    MultiSelect,
     Select,
     I18nSelectComponent,
-    GroupCardComponent,
     DomainErrorMessagePipe,
   ],
   providers: [PlanPickersController],
@@ -121,15 +134,19 @@ export class TrimestralPlanEditorComponent {
   readonly ueaTypeFilters = UEA_TYPE_FILTERS;
   readonly groupStateFilters = GROUP_STATE_FILTERS;
 
-  /** FormGroup identity is stable while editing, unlike array indexes after a removal. */
-  readonly expandedGroups = signal<ReadonlySet<GroupFormGroup>>(new Set());
   readonly pendingRemoval = signal<GroupFormGroup | null>(null);
+  /** Índice del grupo cuyas notas por alumno se están editando; null = diálogo cerrado. */
+  readonly notesGroupIndex = signal<number | null>(null);
 
   /** Selección transitoria del selector de alta; se limpia en cuanto se agrega. */
   readonly ueaPick = signal<number | null>(null);
 
   readonly ueaOptions = this.people.ueas;
   readonly ueasLoading = this.people.ueasLoading;
+  readonly professorOptions = this.people.professors;
+  readonly professorsLoading = this.people.professorsLoading;
+  readonly studentOptions = this.people.students;
+  readonly studentsLoading = this.people.studentsLoading;
 
   /**
    * Ediciones capturadas que aún no se guardan. El detalle lo consulta antes de
@@ -228,13 +245,212 @@ export class TrimestralPlanEditorComponent {
     return !!filters.search?.trim() || !!filters.ueaType || !!filters.state;
   });
 
-  readonly allVisibleExpanded = computed(() => {
-    const visible = this.filteredOrder();
-    const expanded = this.expandedGroups();
-    return visible.length > 0 && visible.every((index) => expanded.has(this.groups.at(index)));
-  });
-
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
+
+  /** Columnas del formato oficial; se usa para el colspan del divisor por UEA. */
+  readonly scheduleDays = SCHEDULE_DAYS;
+  readonly totalColumns = 10 + SCHEDULE_DAYS.length * 3;
+
+  // ─── Celdas derivadas (antes vivían en la tarjeta de grupo) ───
+
+  /**
+   * Nombres de los profesores elegidos, para la columna PROF. Salen de las opciones que
+   * `pinProfessors` mantiene fijas, así que un profesor dado de baja pero ya asignado
+   * sigue apareciendo.
+   */
+  professorNames(index: number): string {
+    this.revision();
+    const labels = new Map(this.people.professors().map((option) => [option.value, option.label]));
+    return this.groups
+      .at(index)
+      .controls.professorIds.value.map((id) => labels.get(id))
+      .filter((label): label is string => label !== undefined)
+      .join(' · ');
+  }
+
+  /**
+   * Integrantes del grupo, alineados con las filas del `FormArray`: el formulario manda
+   * (studentId + nota) y los snapshots del servidor solo decoran.
+   */
+  membersFor(index: number): GroupStudent[] {
+    this.revision();
+    const snapshots = this.studentsByIndex()[index] ?? [];
+    return this.groups.at(index).controls.students.controls.map((row) => {
+      const studentId = row.controls.studentId.value;
+      return (
+        snapshots.find((student) => student.studentId === studentId) ??
+        this.fallbackMember(studentId)
+      );
+    });
+  }
+
+  studentNames(index: number): string {
+    return this.membersFor(index)
+      .map((member) => member.fullName)
+      .filter(Boolean)
+      .join(' · ');
+  }
+
+  occupancyFor(index: number): string {
+    this.revision();
+    const group = this.groups.at(index);
+    return occupancyLabel(group.controls.cupo.value, group.controls.students.length);
+  }
+
+  occupancySeverityFor(index: number): OccupancySeverity {
+    this.revision();
+    const group = this.groups.at(index);
+    return occupancySeverity(group.controls.cupo.value, group.controls.students.length);
+  }
+
+  incompleteFor(index: number): boolean {
+    this.revision();
+    return isGroupIncomplete(this.groups.at(index));
+  }
+
+  private static readonly OCCUPANCY_CHIP_CLASS: Record<OccupancySeverity, string> = {
+    ok: 'bg-surface-subtle text-text-secondary',
+    full: 'bg-warning-container text-warning-strong',
+    over: 'bg-error-container text-on-error-container',
+  };
+
+  occupancyChipClass(index: number): string {
+    return TrimestralPlanEditorComponent.OCCUPANCY_CHIP_CLASS[this.occupancySeverityFor(index)];
+  }
+
+  onProfessorFilter(event: { filter?: string | null }): void {
+    this.people.onProfessorFilter(event.filter);
+  }
+
+  onStudentFilter(event: { filter?: string | null }): void {
+    this.people.onStudentFilter(event.filter);
+  }
+
+  /** Días con alguna captura, para leer el horario de un grupo de un vistazo. */
+  studentInactive(index: number, member: GroupStudent): boolean {
+    const groupId = this.groups.at(index).controls.id.value;
+    return this.plan().warnings.some(
+      (warning) =>
+        warning.code === 'STUDENT_INACTIVE' &&
+        warning.enrollmentId === member.enrollmentId &&
+        (warning.groupId === undefined || warning.groupId === groupId),
+    );
+  }
+
+  // ─── Errores por celda ───
+
+  /**
+   * Con 25 filas × 5 días, un mensaje por celda es ilegible: se marca el borde y el
+   * detalle va en el `title`, con un único banner al pie. Mismo criterio que la anual.
+   */
+  cellInvalid(index: number, control: 'grupo' | 'cupo'): boolean {
+    this.revision();
+    return shouldShowFieldError(this.groups.at(index).controls[control], this.submitted());
+  }
+
+  scheduleCellInvalid(index: number, dayIndex: number, field: 'start' | 'end'): boolean {
+    this.revision();
+    const day = this.groups.at(index).controls.schedule.at(dayIndex);
+    return (
+      shouldShowFieldError(day.controls[field], this.submitted()) ||
+      shouldShowFieldError(day, this.submitted())
+    );
+  }
+
+  /** Clave i18n del problema de un día, para el `title` de la celda. */
+  scheduleCellError(index: number, dayIndex: number, field: 'start' | 'end'): string {
+    this.revision();
+    const day = this.groups.at(index).controls.schedule.at(dayIndex);
+    if (day.controls[field].errors?.['timeFormat']) {
+      return 'TRIMESTRAL_PLANNING.GROUP.TIME_FORMAT_INVALID';
+    }
+    if (day.errors?.['labTimeRequired']) return 'TRIMESTRAL_PLANNING.GROUP.LAB_TIME_REQUIRED';
+    if (day.errors?.['incompleteRange']) return 'TRIMESTRAL_PLANNING.GROUP.TIME_RANGE_REQUIRED';
+    if (day.errors?.['startAfterEnd']) return 'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END';
+    return '';
+  }
+
+  /** `930` → `09:30` al salir del campo; lo que no se entiende lo marca el validador. */
+  onTimeBlur(index: number, dayIndex: number, field: 'start' | 'end'): void {
+    const control = this.groups.at(index).controls.schedule.at(dayIndex).controls[field];
+    const normalized = normalizeTimeInput(control.value);
+    if (normalized !== control.value) {
+      control.setValue(normalized);
+    }
+  }
+
+  // ─── Celda de alumnos ───
+
+  selectedStudentIds(index: number): number[] {
+    this.revision();
+    return this.groups
+      .at(index)
+      .controls.students.controls.map((row) => row.controls.studentId.value);
+  }
+
+  /**
+   * Sincroniza la selección con el `FormArray` **por diferencia**, nunca reconstruyéndolo:
+   * las filas que siguen elegidas conservan su `FormGroup` y con él la nota ya capturada.
+   */
+  onStudentsChange(index: number, ids: readonly number[]): void {
+    if (!this.editable()) return;
+
+    const rows = this.groups.at(index).controls.students;
+    for (const id of ids) {
+      addStudentIfAbsent(this.fb, rows, id);
+    }
+    const keep = new Set(ids);
+    for (let row = rows.length - 1; row >= 0; row--) {
+      if (!keep.has(rows.at(row).controls.studentId.value)) {
+        rows.removeAt(row);
+      }
+    }
+    this.bumpRevision();
+  }
+
+  // ─── Notas por alumno (columna AB del Excel) ───
+
+  openNotes(index: number): void {
+    this.notesGroupIndex.set(index);
+  }
+
+  onNotesDialogVisibleChange(visible: boolean): void {
+    if (!visible) this.notesGroupIndex.set(null);
+  }
+
+  /**
+   * Copia el rango del primer día capturado a los demás días que ya tengan algo: casi
+   * todos los grupos repiten el mismo bloque horario.
+   */
+  copyScheduleAcrossDays(index: number): void {
+    if (!this.editable()) return;
+
+    const schedule = this.groups.at(index).controls.schedule;
+    const source = schedule.controls.find((day) => hasScheduleDayCapture(day));
+    if (!source) return;
+
+    const { start, end } = source.getRawValue();
+    for (const day of schedule.controls) {
+      if (day !== source && hasScheduleDayCapture(day)) {
+        day.patchValue({ start, end });
+      }
+    }
+  }
+
+  /** Alumno marcado que el servidor aún no conoce: se arma del catálogo del picker. */
+  private fallbackMember(studentId: number): GroupStudent {
+    const picked = this.people.studentById(studentId);
+    return {
+      studentId,
+      enrollmentId: picked?.enrollmentId ?? '',
+      fullName: picked
+        ? [picked.firstName, picked.firstLastName, picked.secondLastName].filter(Boolean).join(' ')
+        : '',
+      source: 'MANUAL',
+      academicTerm: null,
+      obs: null,
+    };
+  }
 
   constructor() {
     effect(() => this.buildForm(this.plan()));
@@ -265,11 +481,6 @@ export class TrimestralPlanEditorComponent {
     if (index >= 0) {
       this.groups.removeAt(index);
       this.studentsByIndex.update((all) => all.filter((_, i) => i !== index));
-      this.expandedGroups.update((current) => {
-        const next = new Set(current);
-        next.delete(group);
-        return next;
-      });
       this.reorder();
       // Explícito además del `valueChanges`: quitar un grupo cambia quién incumple el
       // límite de la UEA, y esas banderas se calculan sobre el resto de los grupos.
@@ -286,38 +497,6 @@ export class TrimestralPlanEditorComponent {
     if (!visible) {
       this.cancelRemoveGroup();
     }
-  }
-
-  toggleGroup(group: GroupFormGroup): void {
-    this.expandedGroups.update((current) => {
-      const next = new Set(current);
-      if (next.has(group)) {
-        next.delete(group);
-      } else {
-        next.add(group);
-      }
-      return next;
-    });
-  }
-
-  isExpanded(group: GroupFormGroup): boolean {
-    return this.expandedGroups().has(group);
-  }
-
-  toggleAllVisible(): void {
-    const collapse = this.allVisibleExpanded();
-    this.expandedGroups.update((current) => {
-      const next = new Set(current);
-      for (const index of this.filteredOrder()) {
-        const group = this.groups.at(index);
-        if (collapse) {
-          next.delete(group);
-        } else {
-          next.add(group);
-        }
-      }
-      return next;
-    });
   }
 
   clearFilters(): void {
@@ -345,10 +524,8 @@ export class TrimestralPlanEditorComponent {
       this.groupsForUea(ueaId).map((sibling) => sibling.controls.grupo.value),
     );
     this.groups.push(buildGroupFormGroup(this.fb, group));
-    const added = this.groups.at(this.groups.length - 1);
     this.studentsByIndex.update((all) => [...all, []]);
     this.clearFilters();
-    this.expandedGroups.update((current) => new Set([...current, added]));
     this.ueaPick.set(null);
     this.reorder();
   }
@@ -362,7 +539,6 @@ export class TrimestralPlanEditorComponent {
     if (!this.editable()) return;
 
     addStudentIfAbsent(this.fb, group.controls.students, studentId);
-    this.expandedGroups.update((current) => new Set([...current, group]));
   }
 
   /** Grupos candidatos para una UEA; el panel de pendientes filtra con esto. */
@@ -420,7 +596,6 @@ export class TrimestralPlanEditorComponent {
     this.submitted.set(false);
     this.error.set(null);
     this.pendingRemoval.set(null);
-    this.expandedGroups.set(new Set());
     // Se limpia al final: clear()/push() emiten valueChanges de forma síncrona.
     this.hasUnsavedChanges.set(false);
     if (
@@ -447,18 +622,9 @@ export class TrimestralPlanEditorComponent {
     );
   }
 
+  /** En una tabla no hay nada que expandir: basta con quitar el filtro y llevar el foco. */
   private revealInvalidGroups(): void {
     this.clearFilters();
-    const groupLimitViolations = new Set(this.groupLimitViolationIndices());
-    this.expandedGroups.update((current) => {
-      const next = new Set(current);
-      this.groups.controls.forEach((group, index) => {
-        if (group.invalid || groupLimitViolations.has(index)) {
-          next.add(group);
-        }
-      });
-      return next;
-    });
     this.scrollToFirstInvalid();
   }
 
@@ -470,7 +636,7 @@ export class TrimestralPlanEditorComponent {
     afterNextRender(
       () => {
         const target = this.host.nativeElement.querySelector<HTMLElement>(
-          '[data-testid="trimestral-group-card"][data-invalid="true"]',
+          '[data-testid="trimestral-group-row"][data-invalid="true"]',
         );
         target?.scrollIntoView({ block: 'center' });
         target?.querySelector<HTMLElement>('input, select, [tabindex]')?.focus();

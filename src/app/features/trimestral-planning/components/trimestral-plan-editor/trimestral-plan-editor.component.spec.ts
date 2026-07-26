@@ -65,7 +65,13 @@ describe('TrimestralPlanEditorComponent', () => {
           provide: TrimestralPlanService,
           useValue: {
             saveGroups,
-            searchProfessors: vi.fn(() => of({ content: [] })),
+            searchProfessors: vi.fn(() =>
+              of({
+                content: [
+                  { id: 8, employeeNumber: '40001', firstName: 'Rafaela', firstLastName: 'Blanco' },
+                ],
+              }),
+            ),
             searchStudents: vi.fn(() =>
               of({
                 content: [
@@ -345,17 +351,106 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.filteredOrder()).toEqual([1]);
   });
 
-  it('expands and collapses only the currently visible groups', async () => {
+  /**
+   * El multiselect entrega un `number[]` y la fuente de verdad es un `FormArray` con la
+   * nota por alumno: se sincroniza por diferencia, nunca reconstruyendo, o cada cambio
+   * de selección borraría notas ya capturadas.
+   */
+  it('syncs the student selection by diff, keeping the notes already typed', async () => {
     const { component } = await setup();
-    const group = component.groups.at(0);
+    const rows = component.groups.at(0).controls.students;
 
-    expect(component.isExpanded(group)).toBe(false);
-    component.toggleAllVisible();
-    expect(component.isExpanded(group)).toBe(true);
-    expect(component.allVisibleExpanded()).toBe(true);
+    component.onStudentsChange(0, [5, 7]);
+    expect(component.selectedStudentIds(0)).toEqual([5, 7]);
 
-    component.toggleAllVisible();
-    expect(component.isExpanded(group)).toBe(false);
+    rows.at(0).controls.obs.setValue('Maestría Física');
+    rows.at(1).controls.obs.setValue('PIB');
+
+    // Se quita al segundo y se agrega un tercero: la nota del primero sobrevive.
+    component.onStudentsChange(0, [5, 9]);
+
+    expect(component.selectedStudentIds(0)).toEqual([5, 9]);
+    expect(rows.at(0).controls.obs.value).toBe('Maestría Física');
+    expect(rows.at(1).controls.obs.value).toBe('');
+  });
+
+  it('does not duplicate a student already selected', async () => {
+    const { component } = await setup();
+
+    component.onStudentsChange(0, [5]);
+    component.onStudentsChange(0, [5, 5, 7]);
+
+    expect(component.selectedStudentIds(0)).toEqual([5, 7]);
+  });
+
+  it('derives the instructor names column from the selected ids', async () => {
+    const { component } = await setup();
+
+    expect(component.professorNames(0)).toBe('');
+    component.groups.at(0).controls.professorIds.setValue([8]);
+
+    // Resuelto desde las opciones fijadas por el controller, no desde el form.
+    expect(component.professorNames(0)).toContain('40001');
+  });
+
+  it('reads occupancy and what is missing per row', async () => {
+    const { component } = await setup();
+
+    expect(component.occupancyFor(0)).toBe('1/15');
+    expect(component.occupancySeverityFor(0)).toBe('ok');
+    // Sin profesor ni horario, la fila está incompleta.
+    expect(component.incompleteFor(0)).toBe(true);
+
+    component.groups.at(0).controls.cupo.setValue('1');
+    expect(component.occupancySeverityFor(0)).toBe('full');
+  });
+
+  it('normalizes a typed time on blur and flags what it cannot parse', async () => {
+    const { component } = await setup();
+    const monday = component.groups.at(0).controls.schedule.at(0);
+
+    monday.controls.start.setValue('930');
+    component.onTimeBlur(0, 0, 'start');
+    expect(monday.controls.start.value).toBe('09:30');
+
+    monday.controls.end.setValue('25:00');
+    monday.controls.end.markAsDirty();
+    component.onTimeBlur(0, 0, 'end');
+    expect(monday.controls.end.value).toBe('25:00');
+    expect(component.scheduleCellInvalid(0, 0, 'end')).toBe(true);
+    expect(component.scheduleCellError(0, 0, 'end')).toBe(
+      'TRIMESTRAL_PLANNING.GROUP.TIME_FORMAT_INVALID',
+    );
+  });
+
+  it('reports the range error on the day, not the format one', async () => {
+    const { component } = await setup();
+    const monday = component.groups.at(0).controls.schedule.at(0);
+
+    monday.patchValue({ start: '11:00', end: '09:00' });
+    monday.controls.start.markAsDirty();
+
+    expect(component.scheduleCellInvalid(0, 0, 'start')).toBe(true);
+    expect(component.scheduleCellError(0, 0, 'start')).toBe(
+      'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END',
+    );
+  });
+
+  it('copies the captured range across the other captured days', async () => {
+    const { component } = await setup();
+    const schedule = component.groups.at(0).controls.schedule;
+    schedule.at(0).patchValue({ start: '09:00', end: '11:00' });
+    schedule.at(2).patchValue({ start: '15:00', end: '18:00', lab: true });
+
+    component.copyScheduleAcrossDays(0);
+
+    expect(schedule.at(2).getRawValue()).toMatchObject({
+      start: '09:00',
+      end: '11:00',
+      lab: true,
+    });
+    // Un día vacío sigue vacío: copiar no inventa sesiones.
+    expect(schedule.at(1).getRawValue()).toMatchObject({ start: '', end: '' });
   });
 
   it('adds and removes student rows without touching the server snapshots', async () => {
