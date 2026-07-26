@@ -42,7 +42,7 @@ import {
   GroupFormGroup,
 } from '../../utils/group-form.util';
 import { claveHeaderPositions } from '../../utils/group-ordering.util';
-import { collectGroupIssues } from '../../utils/plan-issues.util';
+import { collectGroupIssues, GroupIssue } from '../../utils/plan-issues.util';
 import { nextGroupLetter } from '../../utils/group-letter.util';
 import {
   isGroupIncomplete,
@@ -635,10 +635,14 @@ export class TrimestralPlanEditorComponent {
     this.scrollTo('[data-testid="trimestral-group-row"][data-invalid="true"]');
   }
 
-  /** Salta a la fila del problema elegido en el panel; el filtro podría estar ocultándola. */
-  focusGroup(index: number): void {
-    this.clearFilters();
-    this.scrollTo(`[data-group-index="${index}"]`);
+  /**
+   * Deja en pantalla solo la UEA del problema y lleva el foco a su fila. Buscar la clave
+   * a mano entre 25 columnas es justo el trabajo que este panel evita; los otros filtros
+   * se limpian porque podrían estar ocultando la fila a la que se salta.
+   */
+  focusGroup(issue: GroupIssue): void {
+    this.filters.setValue({ search: issue.clave, ueaType: '', state: '' });
+    this.scrollTo(`[data-group-index="${issue.index}"]`);
   }
 
   /**

@@ -425,6 +425,18 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.occupancySeverityFor(0)).toBe('full');
   });
 
+  it('filters the table by the UEA key of the issue picked in the panel', async () => {
+    const { component } = await setup();
+    component.addGroup(7); // otra UEA: la tabla queda con dos claves distintas
+    component.groups.at(0).controls.schedule.at(2).patchValue({ end: '10:00' });
+
+    const [issue] = component.issues();
+    component.focusGroup(issue!);
+
+    expect(component.filters.value.search).toBe('2156024');
+    expect(component.filteredOrder()).toEqual([0]);
+  });
+
   /**
    * El filtro solo miraba cupo y máximo de grupos, así que «Con problemas» devolvía
    * «0 de 5» mientras el panel listaba dos horarios a medias.
