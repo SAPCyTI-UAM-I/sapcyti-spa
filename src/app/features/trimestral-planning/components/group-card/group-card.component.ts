@@ -22,7 +22,7 @@ import { FieldErrorComponent } from '../../../../shared/components';
 import { InfoChipDirective } from '../../directives/info-chip.directive';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
 import {
-  buildStudentRow,
+  addStudentIfAbsent,
   GroupFormGroup,
   hasScheduleDayCapture,
 } from '../../utils/group-form.util';
@@ -201,10 +201,7 @@ export class GroupCardComponent {
   addStudent(studentId: number | null): void {
     if (!this.editable() || studentId === null) return;
 
-    const rows = this.form().controls.students;
-    if (!rows.controls.some((row) => row.controls.studentId.value === studentId)) {
-      rows.push(buildStudentRow(this.fb, studentId));
-    }
+    addStudentIfAbsent(this.fb, this.form().controls.students, studentId);
     this.studentPick.set(null);
   }
 

@@ -109,37 +109,48 @@
           <p-message severity="error" [text]="planError | domainError: errorScope" />
         }
 
-        @if (!current.prerequisites.surveyClosed || !current.prerequisites.annualPlanTerminated) {
-          <div class="gap-xs flex flex-col" data-testid="prerequisite-blockers">
-            <p-message
-              severity="warn"
-              [text]="'TRIMESTRAL_PLANNING.PREREQUISITES.READ_ONLY' | translate"
-            />
-            @if (!current.prerequisites.surveyClosed) {
-              <p class="text-body-md">
-                {{ 'TRIMESTRAL_PLANNING.PREREQUISITES.SURVEY_NOT_CLOSED' | translate }}
-              </p>
+        <!--
+          Prerrequisitos y desactualización responden la misma pregunta («por qué este
+          plan no opera del todo»), así que se leen como un solo bloque.
+        -->
+        @if (!prerequisitesMet() || current.outdatedReasons.length > 0) {
+          <section class="gap-xs flex flex-col" data-testid="prerequisite-blockers">
+            <h2 class="text-h3">{{ 'TRIMESTRAL_PLANNING.DETAIL.PLAN_STATE' | translate }}</h2>
+            @if (!prerequisitesMet()) {
+              <p-message
+                severity="warn"
+                [text]="'TRIMESTRAL_PLANNING.PREREQUISITES.READ_ONLY' | translate"
+              />
             }
-            @if (!current.prerequisites.annualPlanTerminated) {
-              <p class="text-body-md">
-                {{ 'TRIMESTRAL_PLANNING.PREREQUISITES.ANNUAL_NOT_TERMINATED' | translate }}
-              </p>
-            }
-          </div>
-        }
-
-        @if (current.outdatedReasons.length > 0) {
-          <div class="gap-xs flex flex-col">
-            <p-message
-              severity="warn"
-              [text]="'TRIMESTRAL_PLANNING.OUTDATED_REASONS.TITLE' | translate"
-            />
             <ul class="pl-lg text-body-md list-disc">
+              @if (!current.prerequisites.surveyClosed) {
+                <li>{{ 'TRIMESTRAL_PLANNING.PREREQUISITES.SURVEY_NOT_CLOSED' | translate }}</li>
+              }
+              @if (!current.prerequisites.annualPlanTerminated) {
+                <li>
+                  {{ 'TRIMESTRAL_PLANNING.PREREQUISITES.ANNUAL_NOT_TERMINATED' | translate }}
+                </li>
+              }
               @for (reason of current.outdatedReasons; track reason) {
                 <li>{{ 'TRIMESTRAL_PLANNING.OUTDATED_REASONS.' + reason | translate }}</li>
               }
             </ul>
-          </div>
+          </section>
+        }
+
+        @if (summary(); as counts) {
+          <app-plan-summary [counts]="counts" (applyFilter)="applyFilter($event)" />
+        }
+
+        @if (hasPending()) {
+          <app-plan-pending
+            [blankStudents]="current.blankStudents"
+            [unassignedDemand]="current.unassignedDemand"
+            [editable]="editable()"
+            [groupOptions]="groupOptions()"
+            (assign)="onAssign($event)"
+            (createGroupForUea)="onCreateGroupForUea($event)"
+          />
         }
 
         @if (dirty()) {
@@ -184,62 +195,6 @@
           </div>
           <app-trimestral-plan-editor [plan]="current" (saved)="onSaved($event)" />
         </div>
-
-        <!-- Inscripción en blanco: solo lectura, no se exporta -->
-        @if (current.blankStudents.length > 0) {
-          <div class="border-outline bg-surface rounded-xl border">
-            <h2 class="text-h3 p-md">{{ 'TRIMESTRAL_PLANNING.DETAIL.BLANKS' | translate }}</h2>
-            <p class="px-md text-caption text-text-secondary">
-              {{ 'TRIMESTRAL_PLANNING.DETAIL.BLANKS_HINT' | translate }}
-            </p>
-            <ul class="p-md gap-xs flex flex-col">
-              @for (student of current.blankStudents; track student.studentId) {
-                <li class="text-body-md">
-                  {{ student.fullName }}
-                  <span class="text-caption text-text-secondary">
-                    · {{ student.enrollmentId }} · {{ student.academicTerm }}
-                  </span>
-                </li>
-              }
-            </ul>
-          </div>
-        }
-
-        @if (current.unassignedDemand.length > 0) {
-          <div class="border-outline bg-surface rounded-xl border" data-testid="unassigned-demand">
-            <h2 class="text-h3 p-md">
-              {{ 'TRIMESTRAL_PLANNING.UNASSIGNED.TITLE' | translate }}
-            </h2>
-            <p class="px-md text-caption text-text-secondary">
-              {{ 'TRIMESTRAL_PLANNING.UNASSIGNED.HINT' | translate }}
-            </p>
-            <ul class="p-md gap-sm flex flex-col">
-              @for (
-                demand of current.unassignedDemand;
-                track demand.studentId + '-' + demand.ueaId
-              ) {
-                <li class="border-outline p-sm gap-xs flex flex-col rounded-lg border">
-                  <span class="text-body-md font-medium">
-                    {{ demand.fullName }} · {{ demand.enrollmentId }}
-                  </span>
-                  <span class="text-caption text-text-secondary">
-                    {{ demand.clave }} · {{ demand.nombre }}
-                    @if (demand.academicTerm) {
-                      ·
-                      {{
-                        'TRIMESTRAL_PLANNING.GROUP.DECLARED_TERM'
-                          | translate: { term: demand.academicTerm }
-                      }}
-                    }
-                  </span>
-                  <span class="text-caption text-warning">
-                    {{ 'TRIMESTRAL_PLANNING.UNASSIGNED.REASONS.' + demand.reason | translate }}
-                  </span>
-                </li>
-              }
-            </ul>
-          </div>
-        }
       </div>
     }
   </app-load-state>
@@ -286,6 +241,12 @@
       variant="outlined"
       [label]="'COMMON.ACTIONS.CANCEL' | translate"
       (onClick)="showUnsavedDialog.set(false)"
+    />
+    <p-button
+      icon="pi pi-save"
+      [label]="'TRIMESTRAL_PLANNING.ACTIONS.SAVE_AND_FINISH' | translate"
+      (onClick)="saveAndFinish()"
+      data-testid="confirm-finish-unsaved"
     />
   </ng-template>
 </p-dialog>

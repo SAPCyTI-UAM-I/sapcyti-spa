@@ -1,0 +1,57 @@
+<div class="gap-sm flex flex-wrap items-stretch" data-testid="plan-summary">
+  <div
+    class="bg-surface-subtle text-text-secondary gap-sm px-md py-sm inline-flex items-center rounded-xl"
+  >
+    <i class="pi pi-clone text-lg" aria-hidden="true"></i>
+    <span class="text-h1 leading-none font-bold">{{ counts().groups }}</span>
+    <span class="text-body-md">{{ 'TRIMESTRAL_PLANNING.SUMMARY.GROUPS' | translate }}</span>
+  </div>
+
+  <div
+    class="bg-primary-container text-primary gap-sm px-md py-sm inline-flex items-center rounded-xl"
+  >
+    <i class="pi pi-check-circle text-lg" aria-hidden="true"></i>
+    <span class="text-h1 leading-none font-bold">{{ counts().assignedStudents }}</span>
+    <span class="text-body-md">{{ 'TRIMESTRAL_PLANNING.SUMMARY.ASSIGNED' | translate }}</span>
+  </div>
+
+  @if (counts().unassignedStudents > 0) {
+    <div
+      class="bg-warning-container text-warning-strong gap-sm px-md py-sm inline-flex items-center rounded-xl"
+      data-testid="summary-unassigned"
+    >
+      <i class="pi pi-user-plus text-lg" aria-hidden="true"></i>
+      <span class="text-h1 leading-none font-bold">{{ counts().unassignedStudents }}</span>
+      <span class="text-body-md">{{ 'TRIMESTRAL_PLANNING.SUMMARY.UNASSIGNED' | translate }}</span>
+    </div>
+  }
+
+  <!-- Las dos cifras accionables son botones: llevan al subconjunto que describen. -->
+  @if (counts().groupsWithProblems > 0) {
+    <button
+      type="button"
+      class="border-error-border bg-error-container text-on-error-container gap-sm px-md py-sm focus-visible:ring-focus-ring inline-flex cursor-pointer items-center rounded-xl border focus-visible:ring-2 focus-visible:outline-none"
+      (click)="applyFilter.emit('HAS_VIOLATIONS')"
+      data-testid="summary-chip-HAS_VIOLATIONS"
+    >
+      <i class="pi pi-exclamation-triangle text-lg" aria-hidden="true"></i>
+      <span class="text-h1 leading-none font-bold">{{ counts().groupsWithProblems }}</span>
+      <span class="text-body-md">
+        {{ 'TRIMESTRAL_PLANNING.SUMMARY.WITH_PROBLEMS' | translate }}
+      </span>
+    </button>
+  }
+
+  @if (counts().incompleteGroups > 0) {
+    <button
+      type="button"
+      class="border-outline bg-surface text-text-secondary gap-sm px-md py-sm focus-visible:ring-focus-ring inline-flex cursor-pointer items-center rounded-xl border focus-visible:ring-2 focus-visible:outline-none"
+      (click)="applyFilter.emit('INCOMPLETE')"
+      data-testid="summary-chip-INCOMPLETE"
+    >
+      <i class="pi pi-pencil text-lg" aria-hidden="true"></i>
+      <span class="text-h1 leading-none font-bold">{{ counts().incompleteGroups }}</span>
+      <span class="text-body-md">{{ 'TRIMESTRAL_PLANNING.SUMMARY.INCOMPLETE' | translate }}</span>
+    </button>
+  }
+</div>

@@ -919,6 +919,7 @@
       "REMOVE_GROUP": "Quitar grupo",
       "REMOVE_STUDENT": "Quitar alumno",
       "SAVE": "Guardar grupos",
+      "SAVE_AND_FINISH": "Guardar y terminar",
       "SHOW_DETAILS": "Editar",
       "VIEW_DETAILS": "Ver"
     },
@@ -945,8 +946,10 @@
       "GROUPS_HINT": "Configura responsables, horario e integrantes de cada UEA.",
       "INVALID_GROUPS": "Revisa los grupos marcados: hay valores inválidos.",
       "LAST_EXPORTED": "Último Excel generado: {{date}}",
+      "LEAVE_UNSAVED_CONFIRM": "Hay cambios sin guardar en los grupos. ¿Salir y perderlos?",
       "NO_GROUPS": "La planeación no tiene grupos.",
       "OUTDATED": "Desactualizado",
+      "PLAN_STATE": "Estado del plan",
       "REGENERATE_WARNING": "Regenerar descarta todas las ediciones manuales y reconstruye la planeación desde la encuesta.",
       "SAVE_BEFORE_EXPORT": "Guarda los cambios locales antes de generar el Excel.",
       "SAVED": "Grupos guardados",
@@ -1048,6 +1051,12 @@
       "SURVEY_REOPENED": "La encuesta fue reabierta después de generar esta planeación.",
       "TITLE": "Motivos de desactualización"
     },
+    "PENDING": {
+      "ASSIGN": "Asignar a grupo…",
+      "CREATE_GROUP": "Crear grupo",
+      "HINT": "Alumnos sin grupo y demanda que no cupo. Nada de esto se exporta al Excel.",
+      "TITLE": "Pendientes por resolver"
+    },
     "PREREQUISITES": {
       "ANNUAL_NOT_TERMINATED": "La planeación anual correspondiente no está terminada.",
       "READ_ONLY": "La planeación está disponible sólo para consulta hasta restaurar los prerrequisitos.",
@@ -1065,6 +1074,13 @@
     "STATUS": {
       "BORRADOR": "Borrador",
       "TERMINADA": "Terminada"
+    },
+    "SUMMARY": {
+      "ASSIGNED": "inscripciones colocadas",
+      "GROUPS": "grupos",
+      "INCOMPLETE": "incompletos",
+      "UNASSIGNED": "sin asignar",
+      "WITH_PROBLEMS": "con problemas"
     },
     "UNASSIGNED": {
       "HINT": "Estas selecciones no tienen grupo y no se incluyen en el Excel.",

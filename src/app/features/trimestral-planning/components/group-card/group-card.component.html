@@ -138,7 +138,8 @@
       @for (entry of configuredSchedule(); track entry.day) {
         <span>
           {{ 'TRIMESTRAL_PLANNING.DAYS_SHORT.' + entry.day | translate }}
-          {{ entry.start || '—' }}–{{ entry.end || '—' }}@if (entry.lab) {
+          {{ entry.start || '—' }}–{{ entry.end || '—' }}
+          @if (entry.lab) {
             <span class="text-warning-strong font-semibold">LAB</span>
           }
         </span>

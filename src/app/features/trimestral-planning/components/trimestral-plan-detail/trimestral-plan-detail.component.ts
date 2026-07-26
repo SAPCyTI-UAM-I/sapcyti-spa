@@ -11,7 +11,7 @@ import {
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { Message } from 'primeng/message';
@@ -28,7 +28,15 @@ import {
   TRIMESTRAL_PLAN_ERROR_I18N_SCOPE,
   TrimestralPlanError,
 } from '../../utils/trimestral-plan-error.util';
+import { computePlanSummary } from '../../utils/plan-summary.util';
 import { isEditable, statusTagSeverity } from '../../utils/trimestral-plan-status.util';
+import { GroupFilterState } from '../../utils/trimestral-group-filter.util';
+import {
+  AssignRequest,
+  GroupOption,
+  PlanPendingComponent,
+} from '../plan-pending/plan-pending.component';
+import { PlanSummaryComponent } from '../plan-summary/plan-summary.component';
 import { TrimestralPlanEditorComponent } from '../trimestral-plan-editor/trimestral-plan-editor.component';
 
 /** HU-58/59/60 — the generated plan: warnings, group editor, status actions and export. */
@@ -46,6 +54,8 @@ import { TrimestralPlanEditorComponent } from '../trimestral-plan-editor/trimest
     CatalogTagComponent,
     LoadStateComponent,
     DomainErrorMessagePipe,
+    PlanPendingComponent,
+    PlanSummaryComponent,
     TrimestralPlanEditorComponent,
   ],
   templateUrl: './trimestral-plan-detail.component.html',
@@ -54,6 +64,7 @@ export class TrimestralPlanDetailComponent implements OnInit {
   private readonly service = inject(TrimestralPlanService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly translate = inject(TranslateService);
 
   readonly id = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -68,6 +79,8 @@ export class TrimestralPlanDetailComponent implements OnInit {
   readonly showRegenerateDialog = signal(false);
   readonly showBackToDraftDialog = signal(false);
   readonly showUnsavedDialog = signal(false);
+  /** Terminar quedó en espera de que el guardado en curso termine bien. */
+  private readonly pendingFinishAfterSave = signal(false);
 
   /** Referencia al editor: el botón «Guardar grupos» vive en el encabezado del detalle. */
   protected readonly editor = viewChild(TrimestralPlanEditorComponent);
@@ -100,6 +113,42 @@ export class TrimestralPlanDetailComponent implements OnInit {
     );
   });
 
+  /** Los conteos salen del formulario vivo, así que reflejan lo capturado sin guardar. */
+  readonly summary = computed(() => {
+    const editor = this.editor();
+    const current = this.plan();
+    if (!editor || !current) return null;
+    // Se lee `hasUnsavedChanges` para recalcular al teclear: los controles no son señales.
+    editor.hasUnsavedChanges();
+    return computePlanSummary(
+      editor.groups.controls,
+      current.blankStudents.length + current.unassignedDemand.length,
+      editor.violatingGroupIndices(),
+    );
+  });
+
+  readonly hasPending = computed(() => {
+    const current = this.plan();
+    return !!current && current.blankStudents.length + current.unassignedDemand.length > 0;
+  });
+
+  /**
+   * Grupos ofrecidos en el panel de pendientes. `null` significa «cualquier grupo»,
+   * que es el caso de una inscripción en blanco: no declaró UEA.
+   */
+  readonly groupOptions = computed(() => {
+    const editor = this.editor();
+    return (ueaId: number | null): GroupOption[] => {
+      if (!editor) return [];
+      editor.hasUnsavedChanges();
+      const groups = ueaId === null ? editor.groups.controls : editor.groupsForUea(ueaId);
+      return groups.map((group) => ({
+        label: `${group.controls.clave.value} · ${group.controls.grupo.value || '—'}`,
+        value: group,
+      }));
+    };
+  });
+
   readonly statusTagSeverity = statusTagSeverity;
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
 
@@ -127,6 +176,47 @@ export class TrimestralPlanDetailComponent implements OnInit {
 
   onSaved(plan: TrimestralPlanDetail): void {
     this.plan.set(plan);
+    if (this.pendingFinishAfterSave()) {
+      this.pendingFinishAfterSave.set(false);
+      this.changeStatus('TERMINADA');
+    }
+  }
+
+  /** Aplica el filtro que describe la cifra pulsada en el resumen. */
+  applyFilter(state: GroupFilterState): void {
+    this.editor()?.filters.patchValue({ state });
+  }
+
+  onAssign({ studentId, group }: AssignRequest): void {
+    this.editor()?.assignStudent(studentId, group);
+  }
+
+  onCreateGroupForUea(ueaId: number): void {
+    this.editor()?.addGroup(ueaId);
+  }
+
+  /**
+   * El diálogo de cambios sin guardar solo ofrecía Cancelar: había que cerrarlo, subir
+   * a buscar Guardar y volver a pulsar Terminar. Esto encadena las dos acciones.
+   */
+  saveAndFinish(): void {
+    const editor = this.editor();
+    if (!editor) return;
+
+    this.showUnsavedDialog.set(false);
+    this.pendingFinishAfterSave.set(true);
+    editor.save();
+  }
+
+  /**
+   * Salir por el breadcrumb o por «atrás» perdía las ediciones sin ningún aviso.
+   *
+   * ponytail: `confirm()` nativo en vez de armar un `p-dialog` asíncrono con un
+   * Subject; se cambia si aparece una segunda ruta que necesite lo mismo.
+   */
+  canDeactivate(): boolean {
+    if (!this.dirty()) return true;
+    return confirm(this.translate.instant('TRIMESTRAL_PLANNING.DETAIL.LEAVE_UNSAVED_CONFIRM'));
   }
 
   /** Interpolation params for `TRIMESTRAL_PLANNING.WARNINGS.{code}`. */

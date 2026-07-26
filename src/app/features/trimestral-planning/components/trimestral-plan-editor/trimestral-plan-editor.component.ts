@@ -31,6 +31,7 @@ import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
 import {
+  addStudentIfAbsent,
   buildGroupFormGroup,
   buildSaveGroupsRequest,
   emptyGroup,
@@ -318,6 +319,24 @@ export class TrimestralPlanEditorComponent {
     this.expandedGroups.update((current) => new Set([...current, added]));
     this.ueaPick.set(null);
     this.reorder();
+  }
+
+  /**
+   * HU-59 — alta desde el panel de pendientes. El editor sigue siendo el único dueño
+   * del `FormArray`: el detalle pide, no muta. Expande el grupo para que el alta se
+   * vea, que es la mitad del punto de resolverlo desde la lista de pendientes.
+   */
+  assignStudent(studentId: number, group: GroupFormGroup): void {
+    if (!this.editable()) return;
+
+    addStudentIfAbsent(this.fb, group.controls.students, studentId);
+    this.expandedGroups.update((current) => new Set([...current, group]));
+  }
+
+  /** Grupos candidatos para una UEA; el panel de pendientes filtra con esto. */
+  groupsForUea(ueaId: number): GroupFormGroup[] {
+    this.hasUnsavedChanges();
+    return this.groups.controls.filter((group) => group.controls.ueaId.value === ueaId);
   }
 
   onUeaFilter(event: { filter?: string | null }): void {

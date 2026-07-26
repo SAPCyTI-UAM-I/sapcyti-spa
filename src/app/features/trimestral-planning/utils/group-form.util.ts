@@ -69,6 +69,21 @@ export function startBeforeEndValidator(group: AbstractControl): ValidationError
   return start < end ? null : { startAfterEnd: true };
 }
 
+/**
+ * Alta idempotente: el mismo alumno se puede pedir desde el buscador del grupo y
+ * desde el panel de pendientes, y ninguno de los dos debe poder duplicarlo.
+ * Devuelve si lo agregó, para no avisar de un alta que no ocurrió.
+ */
+export function addStudentIfAbsent(
+  fb: NonNullableFormBuilder,
+  students: FormArray<StudentFormGroup>,
+  studentId: number,
+): boolean {
+  if (students.controls.some((row) => row.controls.studentId.value === studentId)) return false;
+  students.push(buildStudentRow(fb, studentId));
+  return true;
+}
+
 export function buildStudentRow(
   fb: NonNullableFormBuilder,
   studentId: number,

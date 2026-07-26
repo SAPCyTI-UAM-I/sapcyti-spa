@@ -33,6 +33,27 @@ function plan(
   };
 }
 
+/** Un grupo real, para los casos que necesitan tocar el formulario del editor. */
+function planWithGroup(status: TrimestralPlanStatus = 'BORRADOR'): TrimestralPlanDetail {
+  return plan(status, {
+    groups: [
+      {
+        id: 10,
+        ueaId: 1,
+        clave: '2156024',
+        nombre: 'REDES',
+        tipoUea: 'OBLIGATORIA',
+        grupo: 'CO43',
+        cupo: '15',
+        maxGroups: '2',
+        professors: [],
+        schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
+        students: [],
+      },
+    ],
+  });
+}
+
 describe('TrimestralPlanDetailComponent', () => {
   async function setup(service: Partial<TrimestralPlanService> = {}) {
     const stub = {
@@ -94,34 +115,7 @@ describe('TrimestralPlanDetailComponent', () => {
   });
 
   it('blocks finishing until unsaved group changes are saved', async () => {
-    const { fixture, component, stub } = await setup({
-      get: vi.fn(() =>
-        of(
-          plan('BORRADOR', {
-            groups: [
-              {
-                id: 10,
-                ueaId: 1,
-                clave: '2156024',
-                nombre: 'REDES',
-                tipoUea: 'OBLIGATORIA',
-                grupo: 'CO43',
-                cupo: '15',
-                maxGroups: '2',
-                professors: [],
-                schedule: SCHEDULE_DAYS.map((day) => ({
-                  day,
-                  start: null,
-                  end: null,
-                  lab: false,
-                })),
-                students: [],
-              },
-            ],
-          }),
-        ),
-      ),
-    });
+    const { fixture, component, stub } = await setup({ get: vi.fn(() => of(planWithGroup())) });
 
     // El coordinador captura un horario y pulsa Terminar sin guardar.
     const editor = fixture.debugElement.query(By.directive(TrimestralPlanEditorComponent))
@@ -131,12 +125,61 @@ describe('TrimestralPlanDetailComponent', () => {
     expect(component.canExport()).toBe(false);
 
     component.finish();
+    fixture.detectChanges();
 
     expect(stub.changeStatus).not.toHaveBeenCalled();
     expect(component.showUnsavedDialog()).toBe(true);
+    // El diálogo ofrece salir del paso, no solo cancelar.
     expect(
       fixture.nativeElement.querySelector('[data-testid="confirm-finish-unsaved"]'),
-    ).toBeNull();
+    ).not.toBeNull();
+  });
+
+  it('saves and then finishes from the unsaved-changes dialog', async () => {
+    const { fixture, component, stub } = await setup({ get: vi.fn(() => of(planWithGroup())) });
+    const editor = fixture.debugElement.query(By.directive(TrimestralPlanEditorComponent))
+      .componentInstance as TrimestralPlanEditorComponent;
+    editor.groups.at(0).controls.grupo.setValue('CO43X');
+
+    component.finish();
+    component.saveAndFinish();
+
+    expect(stub.saveGroups).toHaveBeenCalled();
+    expect(component.showUnsavedDialog()).toBe(false);
+    // Terminar se dispara solo cuando el guardado devolvió el detalle.
+    expect(stub.changeStatus).toHaveBeenCalledWith(1, { status: 'TERMINADA' });
+  });
+
+  it('asks before leaving the route with unsaved group changes', async () => {
+    const { fixture, component } = await setup({ get: vi.fn(() => of(planWithGroup())) });
+    const editor = fixture.debugElement.query(By.directive(TrimestralPlanEditorComponent))
+      .componentInstance as TrimestralPlanEditorComponent;
+
+    expect(component.canDeactivate()).toBe(true);
+
+    editor.groups.at(0).controls.grupo.setValue('CO43X');
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+    expect(component.canDeactivate()).toBe(false);
+    expect(confirmSpy).toHaveBeenCalled();
+
+    confirmSpy.mockReturnValue(true);
+    expect(component.canDeactivate()).toBe(true);
+  });
+
+  it('assigns a pending student into a group from the pending panel', async () => {
+    const { fixture, component } = await setup({ get: vi.fn(() => of(planWithGroup())) });
+    const editor = fixture.debugElement.query(By.directive(TrimestralPlanEditorComponent))
+      .componentInstance as TrimestralPlanEditorComponent;
+    const group = editor.groups.at(0);
+    const before = group.controls.students.length;
+
+    component.onAssign({ studentId: 77, group });
+
+    expect(group.controls.students.length).toBe(before + 1);
+    // Repetirlo no duplica: el mismo alumno puede pedirse desde dos lugares.
+    component.onAssign({ studentId: 77, group });
+    expect(group.controls.students.length).toBe(before + 1);
   });
 
   it('only regenerates after the confirmation dialog', async () => {

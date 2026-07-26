@@ -919,6 +919,7 @@
       "REMOVE_GROUP": "Remove group",
       "REMOVE_STUDENT": "Remove student",
       "SAVE": "Save groups",
+      "SAVE_AND_FINISH": "Save and finish",
       "SHOW_DETAILS": "Edit",
       "VIEW_DETAILS": "View"
     },
@@ -945,8 +946,10 @@
       "GROUPS_HINT": "Configure the instructors, schedule, and members for each UEA.",
       "INVALID_GROUPS": "Check the flagged groups: some values are invalid.",
       "LAST_EXPORTED": "Last Excel generated: {{date}}",
+      "LEAVE_UNSAVED_CONFIRM": "There are unsaved group changes. Leave and lose them?",
       "NO_GROUPS": "This plan has no groups.",
       "OUTDATED": "Outdated",
+      "PLAN_STATE": "Plan state",
       "REGENERATE_WARNING": "Regenerating discards every manual edit and rebuilds the plan from the survey.",
       "SAVE_BEFORE_EXPORT": "Save local changes before generating the Excel file.",
       "SAVED": "Groups saved",
@@ -1048,6 +1051,12 @@
       "SURVEY_REOPENED": "The survey was reopened after this plan was generated.",
       "TITLE": "Outdated reasons"
     },
+    "PENDING": {
+      "ASSIGN": "Assign to group…",
+      "CREATE_GROUP": "Create group",
+      "HINT": "Students with no group and demand that did not fit. None of this is exported to Excel.",
+      "TITLE": "Left to resolve"
+    },
     "PREREQUISITES": {
       "ANNUAL_NOT_TERMINATED": "The corresponding annual plan is not finished.",
       "READ_ONLY": "This plan is read-only until its prerequisites are restored.",
@@ -1065,6 +1074,13 @@
     "STATUS": {
       "BORRADOR": "Draft",
       "TERMINADA": "Finished"
+    },
+    "SUMMARY": {
+      "ASSIGNED": "placed enrolments",
+      "GROUPS": "groups",
+      "INCOMPLETE": "incomplete",
+      "UNASSIGNED": "unassigned",
+      "WITH_PROBLEMS": "with problems"
     },
     "UNASSIGNED": {
       "HINT": "These selections have no group and are excluded from the Excel file.",
