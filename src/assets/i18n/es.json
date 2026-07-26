@@ -1002,6 +1002,7 @@
     },
     "ISSUES": {
       "CUPO_FORMAT": "El cupo «{{cupo}}» no es válido: escribe un número entero o *.",
+      "GO_TO_GROUP": "Filtrar la tabla por esta UEA e ir al grupo",
       "GROUP_LIMIT": "La planeación anual autoriza {{max}} grupos para esta UEA y ya hay más: quita uno de los grupos.",
       "GRUPO_TOO_LONG": "La letra de grupo no puede pasar de {{max}} caracteres.",
       "LAB_TIME_REQUIRED": "{{day}} está marcado como laboratorio, pero le falta la hora de inicio o la de fin.",

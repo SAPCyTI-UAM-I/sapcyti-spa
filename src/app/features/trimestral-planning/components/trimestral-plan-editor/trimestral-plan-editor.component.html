@@ -69,7 +69,8 @@
           <li class="text-body-md gap-xs flex flex-wrap items-baseline">
             <button
               type="button"
-              class="text-primary font-medium underline underline-offset-2"
+              class="text-primary hover:text-primary-hover focus-visible:ring-primary cursor-pointer rounded font-medium whitespace-nowrap underline underline-offset-2 focus-visible:ring-2 focus-visible:outline-none"
+              [attr.title]="'TRIMESTRAL_PLANNING.ISSUES.GO_TO_GROUP' | translate"
               (click)="focusGroup(issue)"
               data-testid="issue-link"
             >

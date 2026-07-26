@@ -1002,6 +1002,7 @@
     },
     "ISSUES": {
       "CUPO_FORMAT": "Quota “{{cupo}}” is not valid: enter a whole number or *.",
+      "GO_TO_GROUP": "Filter the table by this UEA and jump to the group",
       "GROUP_LIMIT": "The annual plan authorizes {{max}} groups for this UEA and there are already more: remove one of the groups.",
       "GRUPO_TOO_LONG": "The group code cannot be longer than {{max}} characters.",
       "LAB_TIME_REQUIRED": "{{day}} is marked as a lab but is missing its start or end time.",
