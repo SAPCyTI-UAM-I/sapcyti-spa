@@ -50,6 +50,31 @@ export interface BlankStudent {
   academicTerm: AcademicTerm;
 }
 
+export type UnassignedDemandReason =
+  | 'UEA_NOT_OFFERED'
+  | 'GROUP_LIMIT_REACHED'
+  | 'GROUP_SUFFIX_LIMIT'
+  | 'MANUALLY_UNASSIGNED';
+
+/** One UEA selection that could not be placed in a group. It is never exported. */
+export interface UnassignedDemand {
+  studentId: number;
+  enrollmentId: string;
+  fullName: string;
+  academicTerm: AcademicTerm | null;
+  ueaId: number;
+  clave: string;
+  nombre: string;
+  reason: UnassignedDemandReason;
+}
+
+export type TrimestralPlanOutdatedReason = 'SURVEY_REOPENED' | 'ANNUAL_PLAN_CHANGED';
+
+export interface TrimestralPlanPrerequisites {
+  surveyClosed: boolean;
+  annualPlanTerminated: boolean;
+}
+
 /** A professor assigned to a group; research groups can have several (co-directors). */
 export interface GroupProfessor {
   professorId: number;
@@ -69,6 +94,8 @@ export interface TrimestralGroup {
   grupo: string | null;
   /** Number or `*`; null when the annual plan did not define it. */
   cupo: string | null;
+  /** Maximum groups from the annual plan; `*` means flexible. */
+  maxGroups: string | null;
   /** Zero or more professors (co-directors); order is the capture order. */
   professors: GroupProfessor[];
   /** Always 5 entries, LUN..VIE in order. */
@@ -81,8 +108,10 @@ export interface TrimestralPlanSummary {
   term: string;
   status: TrimestralPlanStatus;
   surveyId: number;
-  /** true when the survey was reopened while the plan was in BORRADOR. */
+  /** Compatibility projection of the persisted outdated reasons. */
   outdated: boolean;
+  /** ISO-8601 instant of the latest Excel export; null until the plan is exported. */
+  exportedAt: string | null;
   groupCount: number;
   blankCount: number;
 }
@@ -92,10 +121,17 @@ export interface TrimestralPlanDetail {
   term: string;
   status: TrimestralPlanStatus;
   surveyId: number;
+  /** Compatibility projection of `outdatedReasons.length > 0`. */
   outdated: boolean;
+  outdatedReasons: TrimestralPlanOutdatedReason[];
+  prerequisites: TrimestralPlanPrerequisites;
+  /** ISO-8601 instant of the latest Excel export; null until the plan is exported. */
+  exportedAt: string | null;
   groups: TrimestralGroup[];
   /** No group and no letter; excluded from the Excel export. */
   blankStudents: BlankStudent[];
+  /** Demand that could not be placed; excluded from the Excel export. */
+  unassignedDemand: UnassignedDemand[];
   /** Never null; `[]` when there are no warnings. */
   warnings: PlanWarning[];
 }

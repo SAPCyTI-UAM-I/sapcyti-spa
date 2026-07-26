@@ -29,6 +29,8 @@ describe('group-letter.util (HU-57)', () => {
     expect(groupWithSuffix('CR43', 0)).toBe('CR43');
     expect(groupWithSuffix('CR43', 1)).toBe('CR43A');
     expect(groupWithSuffix('CR43', 2)).toBe('CR43B');
+    expect(groupWithSuffix('CR43', 26)).toBe('CR43Z');
+    expect(() => groupWithSuffix('CR43', 27)).toThrowError(RangeError);
   });
 
   it('orders students by last names, then first name', () => {
@@ -40,6 +42,28 @@ describe('group-letter.util (HU-57)', () => {
       alvarezB,
       alvarezC,
       zamora,
+    ]);
+  });
+
+  it('uses enrollment id as the final deterministic tie-breaker', () => {
+    const people = [
+      {
+        firstLastName: 'Pérez',
+        secondLastName: 'López',
+        firstName: 'Ana',
+        enrollmentId: '2200000002',
+      },
+      {
+        firstLastName: 'Pérez',
+        secondLastName: 'López',
+        firstName: 'Ana',
+        enrollmentId: '2200000001',
+      },
+    ];
+
+    expect(people.sort(compareByLastNames).map((person) => person.enrollmentId)).toEqual([
+      '2200000001',
+      '2200000002',
     ]);
   });
 

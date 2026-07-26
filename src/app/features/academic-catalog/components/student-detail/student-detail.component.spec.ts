@@ -145,10 +145,11 @@ describe('StudentDetailComponent', () => {
           note: 'PENDING' as const,
           ueas: [
             {
+              status: 'PENDING' as const,
               clave: '2156024',
               nombre: 'REDES',
               grupo: null,
-              professorName: null,
+              professors: [],
               schedule: null,
             },
           ],
@@ -161,6 +162,67 @@ describe('StudentDetailComponent', () => {
     expect(history).toHaveBeenCalledWith(1);
     expect(fixture.componentInstance.history()).toHaveLength(1);
     // Sin plan TERMINADA no se pinta ninguna letra de grupo.
+    expect(fixture.nativeElement.textContent).not.toContain('CO43');
+  });
+
+  it('shows every co-director in a finished enrollment-history group', async () => {
+    const history = vi.fn(() =>
+      of([
+        {
+          term: '25P',
+          academicTermSelected: 'IV',
+          mode: 'ENROLL_UEAS' as const,
+          planStatus: 'TERMINADA' as const,
+          note: null,
+          ueas: [
+            {
+              status: 'ASSIGNED' as const,
+              clave: '2156047',
+              nombre: 'PROYECTO DE INVESTIGACIÓN',
+              grupo: 'CR43',
+              professors: [
+                { professorId: 8, employeeNumber: '40008', professorName: 'Rafaela Blanco' },
+                { professorId: 9, employeeNumber: '40009', professorName: 'Elena Soto' },
+              ],
+              schedule: null,
+            },
+          ],
+        },
+      ]),
+    );
+    const { fixture } = await setup('1', false, history);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Rafaela Blanco');
+    expect(fixture.nativeElement.textContent).toContain('Elena Soto');
+  });
+
+  it('keeps a requested UEA that was removed from the final plan', async () => {
+    const history = vi.fn(() =>
+      of([
+        {
+          term: '25P',
+          academicTermSelected: 'IV',
+          mode: 'ENROLL_UEAS' as const,
+          planStatus: 'TERMINADA' as const,
+          note: null,
+          ueas: [
+            {
+              status: 'REMOVED_FROM_FINAL_PLAN' as const,
+              clave: '2156040',
+              nombre: 'TEMAS SELECTOS',
+              grupo: null,
+              professors: [],
+              schedule: null,
+            },
+          ],
+        },
+      ]),
+    );
+    const { fixture } = await setup('1', false, history);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('2156040');
     expect(fixture.nativeElement.textContent).not.toContain('CO43');
   });
 

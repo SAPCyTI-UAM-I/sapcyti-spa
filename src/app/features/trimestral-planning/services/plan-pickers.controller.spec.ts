@@ -30,6 +30,13 @@ const STUDENT = {
   firstLastName: 'Reyes',
 } as StudentCatalogItem;
 
+const SECOND_STUDENT = {
+  id: 2,
+  enrollmentId: '2231800002',
+  firstName: 'Beatriz',
+  firstLastName: 'Soto',
+} as StudentCatalogItem;
+
 describe('PlanPickersController', () => {
   function setup() {
     const searchProfessors = vi.fn(() => of(page([PROFESSOR])));
@@ -104,5 +111,40 @@ describe('PlanPickersController', () => {
     ]);
 
     expect(controller.students().map((option) => option.value)).toEqual([1, 99]);
+  });
+
+  it('keeps pinned co-directors after a remote professor load', () => {
+    const { controller } = setup();
+    controller.pinProfessors([
+      {
+        id: 1,
+        ueaId: 1,
+        clave: '2156047',
+        nombre: 'PROYECTO',
+        tipoUea: 'OBLIGATORIA',
+        grupo: 'CR43',
+        cupo: '1',
+        maxGroups: '*',
+        professors: [
+          { professorId: 99, employeeNumber: '49999', professorName: 'Profesor Inactivo' },
+        ],
+        schedule: [],
+        students: [],
+      },
+    ]);
+
+    controller.loadProfessors('rafa');
+
+    expect(controller.professors().map((option) => option.value)).toEqual([8, 99]);
+  });
+
+  it('retains raw student snapshots across remote search pages', () => {
+    const { controller, searchStudents } = setup();
+    controller.loadStudents('ana');
+    searchStudents.mockReturnValueOnce(of(page([SECOND_STUDENT])));
+    controller.loadStudents('beatriz');
+
+    expect(controller.studentById(STUDENT.id)).toEqual(STUDENT);
+    expect(controller.studentById(SECOND_STUDENT.id)).toEqual(SECOND_STUDENT);
   });
 });

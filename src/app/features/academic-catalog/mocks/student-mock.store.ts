@@ -85,9 +85,8 @@ export class StudentMockStore {
       ...body,
       secondLastName: body.secondLastName?.trim() || undefined,
       phoneExtension: body.phoneExtension?.trim() || undefined,
-      // HU-56: opcional al editar. Si no viene, se conserva el valor guardado en vez de
-      // borrarlo — el spread lo dejaría en undefined porque la clave sí está presente.
-      admissionTerm: body.admissionTerm ?? current.admissionTerm,
+      // PUT is a full replacement: blank/omitted clears the optional value, like the API.
+      admissionTerm: body.admissionTerm ?? null,
     };
 
     this.students = [...this.students.slice(0, index), updated, ...this.students.slice(index + 1)];
@@ -140,10 +139,11 @@ const ENROLLMENT_HISTORY_SEED: Record<number, EnrollmentHistoryEntry[]> = {
       note: 'PENDING',
       ueas: [
         {
+          status: 'PENDING',
           clave: '2156024',
           nombre: 'REDES Y PROTOCOLOS DE COMUNICACIONES',
           grupo: null,
-          professorName: null,
+          professors: [],
           schedule: null,
         },
       ],
@@ -156,10 +156,14 @@ const ENROLLMENT_HISTORY_SEED: Record<number, EnrollmentHistoryEntry[]> = {
       note: null,
       ueas: [
         {
+          status: 'ASSIGNED',
           clave: '2156027',
           nombre: 'INTELIGENCIA ARTIFICIAL',
           grupo: 'CP43',
-          professorName: 'Rafaela Blanco',
+          professors: [
+            { professorId: 1, employeeNumber: '40001', professorName: 'Rafaela Blanco' },
+            { professorId: 2, employeeNumber: '40002', professorName: 'Elena Soto' },
+          ],
           schedule: [
             { day: 'LUN', start: '08:30', end: '10:00', lab: false },
             { day: 'MAR', start: null, end: null, lab: false },
@@ -167,6 +171,14 @@ const ENROLLMENT_HISTORY_SEED: Record<number, EnrollmentHistoryEntry[]> = {
             { day: 'JUE', start: null, end: null, lab: false },
             { day: 'VIE', start: null, end: null, lab: false },
           ],
+        },
+        {
+          status: 'REMOVED_FROM_FINAL_PLAN',
+          clave: '2156040',
+          nombre: 'TEMAS SELECTOS DE CÓMPUTO',
+          grupo: null,
+          professors: [],
+          schedule: null,
         },
       ],
     },
@@ -180,10 +192,13 @@ const ENROLLMENT_HISTORY_SEED: Record<number, EnrollmentHistoryEntry[]> = {
       note: 'MANUAL_NOT_SURVEYED',
       ueas: [
         {
+          status: 'ASSIGNED',
           clave: '2156038',
           nombre: 'ALGORITMOS DISTRIBUIDOS',
           grupo: 'CO43',
-          professorName: 'Humberto Cedillo',
+          professors: [
+            { professorId: 3, employeeNumber: '40003', professorName: 'Humberto Cedillo' },
+          ],
           schedule: null,
         },
       ],

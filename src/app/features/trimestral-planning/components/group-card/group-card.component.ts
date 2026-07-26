@@ -15,7 +15,7 @@ import { InputText } from 'primeng/inputtext';
 import { MultiSelect } from 'primeng/multiselect';
 import { Select } from 'primeng/select';
 
-import { GroupStudent } from '../../../../models';
+import { GroupStudent, PlanWarning } from '../../../../models';
 import { FieldErrorComponent } from '../../../../shared/components';
 import { PlanPickersController } from '../../services/plan-pickers.controller';
 import { buildStudentRow, GroupFormGroup } from '../../utils/group-form.util';
@@ -52,6 +52,9 @@ export class GroupCardComponent {
    * formulario no lleva (solo guarda studentId + nota). No se mutan al agregar o quitar.
    */
   readonly students = input.required<GroupStudent[]>();
+  readonly warnings = input<PlanWarning[]>([]);
+  readonly ueaGroupCount = input(1);
+  readonly groupLimitExceeded = input(false);
   readonly editable = input(true);
   readonly submitted = input(false);
 
@@ -83,7 +86,7 @@ export class GroupCardComponent {
     });
   });
 
-  /** Non-blocking notice: exceeding the cupo warns, it never blocks (HU-59). */
+  /** Capacity is enforced on save; this keeps the violation next to the affected group. */
   readonly overCapacity = computed(() => {
     this.revision();
     const cupo = this.form().controls.cupo.value.trim();
@@ -94,6 +97,7 @@ export class GroupCardComponent {
 
   /** Snapshot del catálogo; es una de las columnas del formato oficial (HU-58). */
   readonly tipoUea = computed(() => this.form().controls.tipoUea.value);
+  readonly maxGroups = computed(() => this.form().controls.maxGroups.value.trim() || '—');
 
   readonly professorOptions = this.people.professors;
   readonly studentOptions = this.people.students;
@@ -120,7 +124,7 @@ export class GroupCardComponent {
 
   /** HU-59 — alta desde el typeahead; elegir a alguien que ya está en el grupo no duplica. */
   addStudent(studentId: number | null): void {
-    if (studentId === null) return;
+    if (!this.editable() || studentId === null) return;
 
     const rows = this.form().controls.students;
     if (!rows.controls.some((row) => row.controls.studentId.value === studentId)) {
@@ -130,7 +134,17 @@ export class GroupCardComponent {
   }
 
   removeStudent(index: number): void {
+    if (!this.editable()) return;
     this.form().controls.students.removeAt(index);
+  }
+
+  studentInactive(member: GroupStudent): boolean {
+    return this.warnings().some(
+      (warning) =>
+        warning.code === 'STUDENT_INACTIVE' &&
+        warning.enrollmentId === member.enrollmentId &&
+        (warning.groupId === undefined || warning.groupId === this.form().controls.id.value),
+    );
   }
 
   /** Alumno marcado que el servidor aún no conoce: se arma del catálogo del picker. */

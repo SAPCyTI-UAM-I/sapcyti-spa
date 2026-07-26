@@ -19,8 +19,12 @@ function plan(status: TrimestralPlanStatus = 'BORRADOR'): TrimestralPlanDetail {
     status,
     surveyId: 1,
     outdated: false,
+    outdatedReasons: [],
+    prerequisites: { surveyClosed: true, annualPlanTerminated: true },
+    exportedAt: null,
     warnings: [],
     blankStudents: [],
+    unassignedDemand: [],
     groups: [
       {
         id: 10,
@@ -30,6 +34,7 @@ function plan(status: TrimestralPlanStatus = 'BORRADOR'): TrimestralPlanDetail {
         tipoUea: 'OBLIGATORIA',
         grupo: 'CO43',
         cupo: '15',
+        maxGroups: '2',
         professors: [],
         schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
         students: [
@@ -130,6 +135,15 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.groups.disabled).toBe(true);
   });
 
+  it('disables the draft form when a prerequisite is not met', async () => {
+    const detail = plan();
+    detail.prerequisites = { surveyClosed: true, annualPlanTerminated: false };
+    const { component } = await setup(detail);
+
+    expect(component.editable()).toBe(false);
+    expect(component.groups.disabled).toBe(true);
+  });
+
   it('adds a group for a catalog UEA, sent to the API with id null (HU-59)', async () => {
     const saveGroups = vi.fn(() => of(plan()));
     const { component } = await setup(plan(), saveGroups);
@@ -217,6 +231,19 @@ describe('TrimestralPlanEditorComponent', () => {
 
     expect(saveGroups).not.toHaveBeenCalled();
     expect(component.submitted()).toBe(true);
+  });
+
+  it('blocks the save when current membership exceeds cupo', async () => {
+    const { component, saveGroups } = await setup();
+    component.groups.at(0).controls.cupo.setValue('1');
+    component.groups
+      .at(0)
+      .controls.students.push(buildStudentRow(new FormBuilder().nonNullable, 3));
+
+    component.save();
+
+    expect(component.hasLimitViolations()).toBe(true);
+    expect(saveGroups).not.toHaveBeenCalled();
   });
 
   it('saves the full set of groups and emits the returned detail', async () => {

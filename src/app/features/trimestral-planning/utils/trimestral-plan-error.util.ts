@@ -9,6 +9,7 @@ export const TRIMESTRAL_PLAN_ERROR_I18N_SCOPE = 'TRIMESTRAL_PLANNING.ERRORS' as 
 export type TrimestralPlanError =
   | 'already_exists'
   | 'annual_plan_required'
+  | 'annual_plan_not_terminated'
   | 'survey_not_closed'
   | 'survey_not_found'
   | 'not_editable'
@@ -21,6 +22,10 @@ export const mapTrimestralPlanError = createDomainErrorMapper<TrimestralPlanErro
   rules: [
     { match: matchCode('TRIMESTRAL_PLAN_ALREADY_EXISTS'), key: 'already_exists' },
     { match: matchCode('ANNUAL_PLAN_REQUIRED'), key: 'annual_plan_required' },
+    {
+      match: matchCode('ANNUAL_PLAN_NOT_TERMINATED'),
+      key: 'annual_plan_not_terminated',
+    },
     { match: matchCode('SURVEY_NOT_CLOSED'), key: 'survey_not_closed' },
     { match: matchCode('SURVEY_NOT_FOUND'), key: 'survey_not_found' },
     { match: matchCode('TRIMESTRAL_PLAN_NOT_EDITABLE'), key: 'not_editable' },

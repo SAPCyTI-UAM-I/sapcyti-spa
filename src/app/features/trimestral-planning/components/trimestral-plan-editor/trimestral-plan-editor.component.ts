@@ -99,7 +99,45 @@ export class TrimestralPlanEditorComponent {
    */
   readonly hasUnsavedChanges = signal(false);
 
-  readonly editable = computed(() => isEditable(this.plan().status));
+  readonly editable = computed(() => {
+    const plan = this.plan();
+    return (
+      isEditable(plan.status) &&
+      plan.prerequisites.surveyClosed &&
+      plan.prerequisites.annualPlanTerminated
+    );
+  });
+
+  readonly capacityViolationIndices = computed(() => {
+    this.hasUnsavedChanges();
+    return this.groups.controls.flatMap((group, index) => {
+      const cupo = group.controls.cupo.value.trim();
+      if (!cupo || cupo === '*') return [];
+      const limit = Number(cupo);
+      return Number.isInteger(limit) && group.controls.students.length > limit ? [index] : [];
+    });
+  });
+
+  readonly groupLimitViolationIndices = computed(() => {
+    this.hasUnsavedChanges();
+    const counts = new Map<number, number>();
+    for (const group of this.groups.controls) {
+      counts.set(group.controls.ueaId.value, (counts.get(group.controls.ueaId.value) ?? 0) + 1);
+    }
+    return this.groups.controls.flatMap((group, index) => {
+      const maxGroups = group.controls.maxGroups.value.trim();
+      if (!maxGroups || maxGroups === '*') return [];
+      const limit = Number(maxGroups);
+      return Number.isInteger(limit) && (counts.get(group.controls.ueaId.value) ?? 0) > limit
+        ? [index]
+        : [];
+    });
+  });
+
+  readonly hasLimitViolations = computed(
+    () =>
+      this.capacityViolationIndices().length > 0 || this.groupLimitViolationIndices().length > 0,
+  );
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
 
   constructor() {
@@ -113,6 +151,7 @@ export class TrimestralPlanEditorComponent {
   }
 
   removeGroup(index: number): void {
+    if (!this.editable()) return;
     this.groups.removeAt(index);
     this.studentsByIndex.update((all) => all.filter((_, i) => i !== index));
     this.reorder();
@@ -123,12 +162,18 @@ export class TrimestralPlanEditorComponent {
    * alumnos) y con `id: 0`, que `buildSaveGroupsRequest` traduce a `id: null` para la API.
    */
   addGroup(ueaId: number | null): void {
-    if (ueaId === null) return;
+    if (!this.editable() || ueaId === null) return;
 
     const uea = this.people.ueaById(ueaId);
     if (!uea) return;
 
-    this.groups.push(buildGroupFormGroup(this.fb, emptyGroup(uea)));
+    const group = emptyGroup(uea);
+    const annualSettings = this.plan().groups.find((candidate) => candidate.ueaId === ueaId);
+    if (annualSettings) {
+      group.cupo = annualSettings.cupo;
+      group.maxGroups = annualSettings.maxGroups;
+    }
+    this.groups.push(buildGroupFormGroup(this.fb, group));
     this.studentsByIndex.update((all) => [...all, []]);
     this.ueaPick.set(null);
     this.reorder();
@@ -141,7 +186,7 @@ export class TrimestralPlanEditorComponent {
   save(): void {
     this.submitted.set(true);
     this.error.set(null);
-    if (this.groups.invalid || this.saving()) {
+    if (!this.editable() || this.groups.invalid || this.hasLimitViolations() || this.saving()) {
       return;
     }
 
@@ -180,10 +225,19 @@ export class TrimestralPlanEditorComponent {
     this.error.set(null);
     // Se limpia al final: clear()/push() emiten valueChanges de forma síncrona.
     this.hasUnsavedChanges.set(false);
-    if (!isEditable(plan.status)) {
+    if (
+      !isEditable(plan.status) ||
+      !plan.prerequisites.surveyClosed ||
+      !plan.prerequisites.annualPlanTerminated
+    ) {
       this.groups.disable({ emitEvent: false });
     }
     this.reorder();
+  }
+
+  groupCount(ueaId: number): number {
+    this.hasUnsavedChanges();
+    return this.groups.controls.filter((group) => group.controls.ueaId.value === ueaId).length;
   }
 
   private reorder(): void {

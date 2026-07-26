@@ -1,4 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
+
 import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
+import { ProfessorDeactivationConflict } from '../../../models';
 import {
   createDomainErrorMapper,
   matchCode,
@@ -101,4 +104,26 @@ export function mapProfessorError(error: unknown): CatalogError {
     return 'professor_not_found';
   }
   return mapped;
+}
+
+export function professorDeactivationConflict(
+  error: unknown,
+): ProfessorDeactivationConflict | null {
+  if (!(error instanceof HttpErrorResponse) || typeof error.error !== 'object' || !error.error) {
+    return null;
+  }
+  const body = error.error as Partial<ProfessorDeactivationConflict>;
+  if (
+    body.error !== 'PROFESSOR_HAS_ACTIVE_ASSIGNMENTS' ||
+    typeof body.hasTutorOrAdvisorAssignments !== 'boolean' ||
+    !Array.isArray(body.openGroupAssignments)
+  ) {
+    return null;
+  }
+  return {
+    error: body.error,
+    message: typeof body.message === 'string' ? body.message : '',
+    hasTutorOrAdvisorAssignments: body.hasTutorOrAdvisorAssignments,
+    openGroupAssignments: body.openGroupAssignments,
+  };
 }

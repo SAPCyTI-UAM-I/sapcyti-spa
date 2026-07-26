@@ -15,6 +15,7 @@ const plan: TrimestralPlanSummary = {
   status: 'BORRADOR',
   surveyId: 1,
   outdated: false,
+  exportedAt: null,
   groupCount: 3,
   blankCount: 1,
 };

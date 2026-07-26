@@ -27,6 +27,9 @@ export function baseGroupForTerm(term: AcademicTerm | null): string | null {
  */
 export function groupWithSuffix(baseGroup: string, index: number): string {
   if (index <= 0) return baseGroup;
+  if (index > 26) {
+    throw new RangeError('Group suffix limit A-Z reached');
+  }
   return `${baseGroup}${String.fromCharCode('A'.charCodeAt(0) + index - 1)}`;
 }
 
@@ -42,12 +45,23 @@ function compareOptional(a: string | undefined, b: string | undefined): number {
 
 /** Alphabetical order used to decide which student keeps the unsuffixed group. */
 export function compareByLastNames(
-  a: { firstLastName: string; secondLastName?: string; firstName: string },
-  b: { firstLastName: string; secondLastName?: string; firstName: string },
+  a: {
+    firstLastName: string;
+    secondLastName?: string;
+    firstName: string;
+    enrollmentId?: string;
+  },
+  b: {
+    firstLastName: string;
+    secondLastName?: string;
+    firstName: string;
+    enrollmentId?: string;
+  },
 ): number {
   return (
     a.firstLastName.localeCompare(b.firstLastName, 'es') ||
     compareOptional(a.secondLastName, b.secondLastName) ||
-    a.firstName.localeCompare(b.firstName, 'es')
+    a.firstName.localeCompare(b.firstName, 'es') ||
+    (a.enrollmentId ?? '').localeCompare(b.enrollmentId ?? '', 'es', { numeric: true })
   );
 }

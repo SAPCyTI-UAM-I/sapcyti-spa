@@ -32,7 +32,11 @@ const group: TrimestralGroup = {
   tipoUea: 'OBLIGATORIA',
   grupo: 'co43',
   cupo: '25',
-  professors: [{ professorId: 8, employeeNumber: '40001', professorName: 'Rafaela Blanco' }],
+  maxGroups: '2',
+  professors: [
+    { professorId: 8, employeeNumber: '40001', professorName: 'Rafaela Blanco' },
+    { professorId: 9, employeeNumber: '40002', professorName: 'Elena Soto' },
+  ],
   schedule: [{ day: 'LUN', start: '08:30', end: '10:00', lab: false }],
   students: [
     {
@@ -65,7 +69,7 @@ describe('group-form.util', () => {
       ueaId: 40,
       grupo: 'co43',
       cupo: '25',
-      professorIds: [8],
+      professorIds: [8, 9],
       // La nota por alumno viaja con su fila, recortada igual que los demás strings.
       students: [{ studentId: 101, obs: 'PIB' }],
     });
@@ -104,11 +108,37 @@ describe('group-form.util', () => {
     expect(CUPO_PATTERN.test('x')).toBe(false);
   });
 
-  it('leaves a day with only one end untouched (partial capture is allowed)', () => {
+  it('requires start and end together while allowing a completely empty day', () => {
     const form = buildGroupFormGroup(fb, group);
     const tuesday = form.controls.schedule.at(1);
+
+    expect(startBeforeEndValidator(tuesday)).toBeNull();
     tuesday.patchValue({ start: '09:00' });
 
+    expect(startBeforeEndValidator(tuesday)).toEqual({ incompleteRange: true });
+    tuesday.patchValue({ start: '', end: '10:00' });
+    expect(startBeforeEndValidator(tuesday)).toEqual({ incompleteRange: true });
+  });
+
+  it('requires start to be strictly earlier than end', () => {
+    const form = buildGroupFormGroup(fb, group);
+    const tuesday = form.controls.schedule.at(1);
+
+    tuesday.patchValue({ start: '09:00', end: '09:00' });
+    expect(startBeforeEndValidator(tuesday)).toEqual({ startAfterEnd: true });
+
+    tuesday.patchValue({ start: '08:59', end: '09:00' });
+    expect(startBeforeEndValidator(tuesday)).toBeNull();
+  });
+
+  it('requires a complete time range when LAB is selected', () => {
+    const form = buildGroupFormGroup(fb, group);
+    const tuesday = form.controls.schedule.at(1);
+
+    tuesday.patchValue({ lab: true });
+    expect(startBeforeEndValidator(tuesday)).toEqual({ labTimeRequired: true });
+
+    tuesday.patchValue({ start: '09:00', end: '10:00' });
     expect(startBeforeEndValidator(tuesday)).toBeNull();
   });
 });

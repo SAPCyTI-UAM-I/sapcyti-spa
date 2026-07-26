@@ -70,7 +70,12 @@
       "EMPTY": "This student has no enrollment history yet.",
       "MANUAL_NOT_SURVEYED": "Did not answer the survey; added during planning",
       "PENDING": "Trimestral plan pending",
-      "TITLE": "Enrollment history"
+      "TITLE": "Enrollment history",
+      "UEA_STATUS": {
+        "ASSIGNED": "Assigned",
+        "PENDING": "Pending",
+        "REMOVED_FROM_FINAL_PLAN": "Removed from final plan"
+      }
     },
     "PAGINATION": {
       "TOTAL": "Total"
@@ -88,7 +93,10 @@
         "ACTION": "Deactivate",
         "CONFIRM_MESSAGE": "The professor will no longer be available for new assignments and will not be able to sign in. Their academic history will be preserved.",
         "CONFIRM_TITLE": "Confirm professor deactivation",
-        "SUCCESS": "Professor deactivated successfully."
+        "OPEN_GROUP": "{{term}} · {{clave}} · group {{grupo}}",
+        "OPEN_GROUPS_TITLE": "Remove the professor from these open groups:",
+        "SUCCESS": "Professor deactivated successfully.",
+        "TUTOR_OR_ADVISOR_BLOCKER": "The professor still has active tutor or advisor assignments that must be reassigned."
       },
       "DETAIL": {
         "CHANGE_PASSWORD": "Change password",
@@ -929,16 +937,19 @@
       "BREADCRUMB": "Plan",
       "GROUPS": "Groups",
       "INVALID_GROUPS": "Check the flagged groups: some values are invalid.",
+      "LAST_EXPORTED": "Last Excel generated: {{date}}",
       "NO_GROUPS": "This plan has no groups.",
       "OUTDATED": "Outdated",
       "REGENERATE_WARNING": "Regenerating discards every manual edit and rebuilds the plan from the survey.",
+      "SAVE_BEFORE_EXPORT": "Save local changes before generating the Excel file.",
       "SAVED": "Groups saved",
       "TITLE": "Trimestral plan {{term}}",
-      "UNSAVED_WARNING": "You have unsaved group changes. Finishing now will discard them. Continue?",
+      "UNSAVED_WARNING": "You have unsaved group changes. Save them before finishing the plan.",
       "WARNING_COUNT": "{{count}} generation warnings"
     },
     "ERRORS": {
       "already_exists": "A plan already exists for that term.",
+      "annual_plan_not_terminated": "The annual plan must be finished before working on the trimestral plan.",
       "annual_plan_required": "There is no annual plan for that term's year; create it first.",
       "invalid_transition": "Invalid status transition.",
       "not_editable": "A finished plan cannot be edited; move it back to draft.",
@@ -953,8 +964,12 @@
       "CUPO": "Quota",
       "DECLARED_TERM": "term {{term}}",
       "END": "End",
+      "GROUP_LIMIT": "Groups for this UEA: {{used}} / {{limit}}",
+      "GROUP_LIMIT_EXCEEDED": "Exceeds the annual-plan group limit",
       "GRUPO": "Group",
+      "INACTIVE_STUDENT": "Inactive student: may remain, but cannot be moved or restored",
       "LAB": "LAB",
+      "LAB_TIME_REQUIRED": "LAB requires both start and end times.",
       "MANUAL": "added manually",
       "MATRICULA": "Enrollment ID",
       "NAME": "Name",
@@ -967,6 +982,7 @@
       "START_AFTER_END": "The start time must be earlier than the end time.",
       "STUDENT_COUNT": "{{count}} students",
       "STUDENT_NOTE": "Note",
+      "TIME_RANGE_REQUIRED": "Enter both start and end times, or leave both empty.",
       "TRIM": "Term"
     },
     "LIST": {
@@ -988,12 +1004,32 @@
       "SUBTITLE": "The plan is generated from the answers of a closed survey.",
       "TITLE": "Generate trimestral plan"
     },
+    "OUTDATED_REASONS": {
+      "ANNUAL_PLAN_CHANGED": "The annual-plan offering changed.",
+      "SURVEY_REOPENED": "The survey was reopened after this plan was generated.",
+      "TITLE": "Outdated reasons"
+    },
+    "PREREQUISITES": {
+      "ANNUAL_NOT_TERMINATED": "The corresponding annual plan is not finished.",
+      "READ_ONLY": "This plan is read-only until its prerequisites are restored.",
+      "SURVEY_NOT_CLOSED": "The corresponding survey is not closed."
+    },
     "STATES": {
       "LOAD_ERROR": "The information could not be loaded."
     },
     "STATUS": {
       "BORRADOR": "Draft",
       "TERMINADA": "Finished"
+    },
+    "UNASSIGNED": {
+      "HINT": "These selections have no group and are excluded from the Excel file.",
+      "REASONS": {
+        "GROUP_LIMIT_REACHED": "The maximum number of groups was reached.",
+        "GROUP_SUFFIX_LIMIT": "Group suffixes A–Z were exhausted.",
+        "MANUALLY_UNASSIGNED": "The student was manually removed from the group.",
+        "UEA_NOT_OFFERED": "The UEA is not offered in this term."
+      },
+      "TITLE": "Unassigned demand"
     },
     "WARNINGS": {
       "CUPO_EXCEEDED": "A group exceeds its defined quota.",

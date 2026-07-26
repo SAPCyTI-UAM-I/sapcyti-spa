@@ -23,6 +23,7 @@
         formControlName="grupo"
         maxlength="10"
         placeholder="CO43"
+        [readonly]="!editable()"
         [attr.aria-label]="'TRIMESTRAL_PLANNING.GROUP.GRUPO' | translate"
       />
       <app-field-error [control]="form().controls.grupo" [submitted]="submitted()" />
@@ -33,6 +34,7 @@
         pInputText
         formControlName="cupo"
         placeholder="15"
+        [readonly]="!editable()"
         [attr.aria-label]="'TRIMESTRAL_PLANNING.GROUP.CUPO' | translate"
       />
       <app-field-error [control]="form().controls.cupo" [submitted]="submitted()" />
@@ -64,8 +66,19 @@
         {{ 'TRIMESTRAL_PLANNING.GROUP.STUDENT_COUNT' | translate: { count: members().length } }}
       </span>
       @if (overCapacity()) {
-        <span class="text-caption text-warning">
+        <span class="text-caption text-error" data-testid="capacity-violation">
           ⚠ {{ 'TRIMESTRAL_PLANNING.GROUP.OVER_CAPACITY' | translate }}
+        </span>
+      }
+      <span class="text-caption text-text-secondary">
+        {{
+          'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT'
+            | translate: { used: ueaGroupCount(), limit: maxGroups() }
+        }}
+      </span>
+      @if (groupLimitExceeded()) {
+        <span class="text-caption text-error" data-testid="group-limit-violation">
+          ⚠ {{ 'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT_EXCEEDED' | translate }}
         </span>
       }
       @if (editable()) {
@@ -110,7 +123,14 @@
             @for (member of members(); track member.studentId; let i = $index) {
               <tr [formGroupName]="i" class="text-body-md">
                 <td class="p-sm">{{ member.enrollmentId || '—' }}</td>
-                <td class="p-sm">{{ member.fullName }}</td>
+                <td class="p-sm">
+                  {{ member.fullName }}
+                  @if (studentInactive(member)) {
+                    <span class="text-caption text-warning block" data-testid="inactive-student">
+                      ⚠ {{ 'TRIMESTRAL_PLANNING.GROUP.INACTIVE_STUDENT' | translate }}
+                    </span>
+                  }
+                </td>
                 <td class="p-sm">
                   @if (member.academicTerm) {
                     {{ member.academicTerm }}
@@ -125,6 +145,7 @@
                     pInputText
                     formControlName="obs"
                     class="w-full"
+                    [readonly]="!editable()"
                     [attr.aria-label]="'TRIMESTRAL_PLANNING.GROUP.STUDENT_NOTE' | translate"
                   />
                 </td>

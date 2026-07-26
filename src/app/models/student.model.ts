@@ -1,6 +1,6 @@
 import type { SurveyMode } from './enrollment-survey.model';
 import type { StudentProgramResponse } from './student-program.model';
-import type { DaySchedule } from './trimestral-plan.model';
+import type { DaySchedule, GroupProfessor } from './trimestral-plan.model';
 
 export type ProgramType = 'MAESTRIA' | 'DOCTORADO';
 
@@ -64,11 +64,7 @@ export interface UpdateStudentRequest {
   lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
-  /**
-   * HU-56: opcional en la edición para no obligar a inventar el dato de un alumno
-   * histórico al que solo se le corrige otro campo. La api-spec todavía lo declara
-   * obligatorio en `PUT /students/{id}`; ver la nota de diseño de 2026-07-19.
-   */
+  /** Opcional (HU-56); vacío/omitido limpia el dato en este PUT de reemplazo completo. */
   admissionTerm?: string;
   active: boolean;
 }
@@ -84,12 +80,16 @@ export type EnrollmentHistoryPlanStatus = 'PENDING' | 'TERMINADA';
 /** Clave i18n de la nota de la entrada; null cuando no hay nada que aclarar. */
 export type EnrollmentHistoryNote = 'PENDING' | 'MANUAL_NOT_SURVEYED';
 
+export type EnrollmentHistoryUeaStatus = 'PENDING' | 'ASSIGNED' | 'REMOVED_FROM_FINAL_PLAN';
+
 export interface EnrollmentHistoryUea {
   clave: string;
   nombre: string;
+  status: EnrollmentHistoryUeaStatus;
   /** Letra de grupo; null mientras `planStatus` es PENDING o en inscripción en blanco. */
   grupo: string | null;
-  professorName: string | null;
+  /** Ordered professor snapshots; research groups can have co-directors. */
+  professors: GroupProfessor[];
   schedule: DaySchedule[] | null;
 }
 

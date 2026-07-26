@@ -71,8 +71,13 @@ export class PlanPickersController {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (page) => this.professors.set(page.content.map(professorOption)),
-        error: () => this.professors.set([]),
+        // Keep assigned/inactive snapshots pinned while remote filters change pages.
+        next: (page) =>
+          this.professors.update((options) =>
+            mergeOptions(page.content.map(professorOption), options),
+          ),
+        // A failed search must not erase already selected professor labels.
+        error: () => undefined,
       });
   }
 
@@ -86,15 +91,13 @@ export class PlanPickersController {
       )
       .subscribe({
         next: (page) => {
-          this.studentCatalog.set(page.content);
+          this.studentCatalog.update((catalog) => mergeCatalog(page.content, catalog));
           // Se fusiona en vez de reemplazar: los ya asignados siguen marcados aunque el
           // filtro actual no los devuelva.
           this.students.update((options) => mergeOptions(page.content.map(studentOption), options));
         },
-        error: () => {
-          this.studentCatalog.set([]);
-          this.students.set([]);
-        },
+        // Keep cached snapshots: existing manual rows must retain name and matrícula.
+        error: () => undefined,
       });
   }
 
@@ -198,6 +201,15 @@ function mergeOptions(
     }
   }
   return [...byValue.values()].sort((a, b) => a.label.localeCompare(b.label, 'es'));
+}
+
+/** Keeps the raw DTO snapshots used by fallbackMember, keyed by stable catalog id. */
+function mergeCatalog<T extends { id: number }>(base: readonly T[], extra: readonly T[]): T[] {
+  const byId = new Map(extra.map((item) => [item.id, item]));
+  for (const item of base) {
+    byId.set(item.id, item);
+  }
+  return [...byId.values()];
 }
 
 function ueaOption(uea: UeaCatalogItem): PersonOption {

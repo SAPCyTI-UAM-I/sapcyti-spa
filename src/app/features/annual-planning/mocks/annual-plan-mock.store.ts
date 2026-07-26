@@ -12,7 +12,7 @@ import {
 } from '../../../models';
 import { UEA_CATALOG_SEED } from '../../../shared/mocks/uea-catalog.mock-data';
 import { isAdjacent } from '../utils/annual-plan-status.util';
-import { isValidCell } from '../utils/annual-plan-cell.util';
+import { isValidCellPair } from '../utils/annual-plan-cell.util';
 
 /**
  * Active UEAs from the shared catalog seed. The real backend derives a plan's rows from the
@@ -153,15 +153,12 @@ export class AnnualPlanMockStore {
       if (!plan.entries.some((e) => e.id === entry.id)) {
         throw mockApiError({ status: 404, message: `Entry ${entry.id} no pertenece al plan` });
       }
-      const cells = [
-        entry.gruposI,
-        entry.cupoI,
-        entry.gruposP,
-        entry.cupoP,
-        entry.gruposO,
-        entry.cupoO,
+      const pairs = [
+        [entry.gruposI, entry.cupoI],
+        [entry.gruposP, entry.cupoP],
+        [entry.gruposO, entry.cupoO],
       ];
-      if (cells.some((cell) => !isValidCell(cell))) {
+      if (pairs.some(([groups, quota]) => !isValidCellPair(groups, quota))) {
         invalid.push(String(entry.id));
       }
     }

@@ -180,6 +180,38 @@
       [text]="deactivateError() | domainError: catalogErrorScope"
     />
   }
+  @if (deactivateConflict(); as conflict) {
+    <div class="mt-md gap-sm flex flex-col" data-testid="deactivation-conflict-details">
+      @if (conflict.hasTutorOrAdvisorAssignments) {
+        <p class="text-body-md">
+          {{ 'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.TUTOR_OR_ADVISOR_BLOCKER' | translate }}
+        </p>
+      }
+      @if (conflict.openGroupAssignments.length > 0) {
+        <p class="text-body-md font-medium">
+          {{ 'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.OPEN_GROUPS_TITLE' | translate }}
+        </p>
+        <ul class="pl-lg list-disc">
+          @for (
+            assignment of conflict.openGroupAssignments;
+            track assignment.planId + '-' + assignment.ueaId + '-' + assignment.grupo
+          ) {
+            <li>
+              {{
+                'ACADEMIC_CATALOG.PROFESSORS.DEACTIVATE.OPEN_GROUP'
+                  | translate
+                    : {
+                        term: assignment.term,
+                        clave: assignment.clave,
+                        grupo: assignment.grupo,
+                      }
+              }}
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
   <ng-template #footer>
     <div class="gap-sm flex justify-end">
       <p-button

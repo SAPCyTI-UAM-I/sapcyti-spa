@@ -24,32 +24,33 @@
                 severity="warn"
               />
             }
+            @if (current.exportedAt) {
+              <span class="text-caption text-text-secondary" data-testid="last-exported">
+                {{
+                  'TRIMESTRAL_PLANNING.DETAIL.LAST_EXPORTED'
+                    | translate: { date: (current.exportedAt | date: 'medium') }
+                }}
+              </span>
+            }
           </div>
 
           <div class="gap-sm flex flex-wrap">
-            @if (editable()) {
+            @if (draft()) {
               <p-button
                 [label]="'TRIMESTRAL_PLANNING.ACTIONS.SAVE' | translate"
                 icon="pi pi-save"
                 [loading]="editor()?.saving() ?? false"
+                [disabled]="!editable()"
                 (onClick)="editor()?.save()"
                 data-testid="save-groups"
               />
-            }
-            <p-button
-              [label]="'TRIMESTRAL_PLANNING.ACTIONS.DOWNLOAD' | translate"
-              icon="pi pi-download"
-              [loading]="exporting()"
-              (onClick)="downloadExcel()"
-              data-testid="download-excel"
-            />
-            @if (editable()) {
               <p-button
                 severity="secondary"
                 variant="outlined"
                 icon="pi pi-refresh"
                 [label]="'TRIMESTRAL_PLANNING.ACTIONS.REGENERATE' | translate"
                 [loading]="regenerating()"
+                [disabled]="!editable()"
                 (onClick)="showRegenerateDialog.set(true)"
                 data-testid="regenerate-plan"
               />
@@ -58,6 +59,7 @@
                 icon="pi pi-check"
                 [label]="'TRIMESTRAL_PLANNING.ACTIONS.FINISH' | translate"
                 [loading]="changingStatus()"
+                [disabled]="!editable() || dirty()"
                 (onClick)="finish()"
                 data-testid="finish-plan"
               />
@@ -68,10 +70,19 @@
                 icon="pi pi-undo"
                 [label]="'TRIMESTRAL_PLANNING.ACTIONS.BACK_TO_DRAFT' | translate"
                 [loading]="changingStatus()"
-                (onClick)="showBackToDraftDialog.set(true)"
+                [disabled]="!prerequisitesMet()"
+                (onClick)="backToDraft()"
                 data-testid="back-to-draft"
               />
             }
+            <p-button
+              [label]="'TRIMESTRAL_PLANNING.ACTIONS.DOWNLOAD' | translate"
+              icon="pi pi-download"
+              [loading]="exporting()"
+              [disabled]="!canExport()"
+              (onClick)="downloadExcel()"
+              data-testid="download-excel"
+            />
             <p-button
               severity="secondary"
               variant="outlined"
@@ -84,6 +95,44 @@
 
         @if (actionError(); as planError) {
           <p-message severity="error" [text]="planError | domainError: errorScope" />
+        }
+
+        @if (!current.prerequisites.surveyClosed || !current.prerequisites.annualPlanTerminated) {
+          <div class="gap-xs flex flex-col" data-testid="prerequisite-blockers">
+            <p-message
+              severity="warn"
+              [text]="'TRIMESTRAL_PLANNING.PREREQUISITES.READ_ONLY' | translate"
+            />
+            @if (!current.prerequisites.surveyClosed) {
+              <p class="text-body-md">
+                {{ 'TRIMESTRAL_PLANNING.PREREQUISITES.SURVEY_NOT_CLOSED' | translate }}
+              </p>
+            }
+            @if (!current.prerequisites.annualPlanTerminated) {
+              <p class="text-body-md">
+                {{ 'TRIMESTRAL_PLANNING.PREREQUISITES.ANNUAL_NOT_TERMINATED' | translate }}
+              </p>
+            }
+          </div>
+        }
+
+        @if (current.outdatedReasons.length > 0) {
+          <div class="border-warning bg-warning/5 p-md gap-xs flex flex-col rounded-xl border">
+            <span class="text-body-md font-medium">
+              {{ 'TRIMESTRAL_PLANNING.OUTDATED_REASONS.TITLE' | translate }}
+            </span>
+            <ul class="pl-lg list-disc">
+              @for (reason of current.outdatedReasons; track reason) {
+                <li>{{ 'TRIMESTRAL_PLANNING.OUTDATED_REASONS.' + reason | translate }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (dirty()) {
+          <p class="text-caption text-warning" data-testid="dirty-export-hint">
+            {{ 'TRIMESTRAL_PLANNING.DETAIL.SAVE_BEFORE_EXPORT' | translate }}
+          </p>
         }
 
         <!--
@@ -137,6 +186,42 @@
             </ul>
           </div>
         }
+
+        @if (current.unassignedDemand.length > 0) {
+          <div class="border-outline bg-surface rounded-xl border" data-testid="unassigned-demand">
+            <h2 class="text-h3 p-md">
+              {{ 'TRIMESTRAL_PLANNING.UNASSIGNED.TITLE' | translate }}
+            </h2>
+            <p class="px-md text-caption text-text-secondary">
+              {{ 'TRIMESTRAL_PLANNING.UNASSIGNED.HINT' | translate }}
+            </p>
+            <ul class="p-md gap-sm flex flex-col">
+              @for (
+                demand of current.unassignedDemand;
+                track demand.studentId + '-' + demand.ueaId
+              ) {
+                <li class="border-outline/60 p-sm gap-xs flex flex-col rounded-lg border">
+                  <span class="text-body-md font-medium">
+                    {{ demand.fullName }} · {{ demand.enrollmentId }}
+                  </span>
+                  <span class="text-caption text-text-secondary">
+                    {{ demand.clave }} · {{ demand.nombre }}
+                    @if (demand.academicTerm) {
+                      ·
+                      {{
+                        'TRIMESTRAL_PLANNING.GROUP.DECLARED_TERM'
+                          | translate: { term: demand.academicTerm }
+                      }}
+                    }
+                  </span>
+                  <span class="text-caption text-warning">
+                    {{ 'TRIMESTRAL_PLANNING.UNASSIGNED.REASONS.' + demand.reason | translate }}
+                  </span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
       </div>
     }
   </app-load-state>
@@ -181,11 +266,6 @@
       variant="outlined"
       [label]="'COMMON.ACTIONS.CANCEL' | translate"
       (onClick)="showUnsavedDialog.set(false)"
-    />
-    <p-button
-      [label]="'TRIMESTRAL_PLANNING.ACTIONS.FINISH' | translate"
-      (onClick)="confirmFinishDiscardingChanges()"
-      data-testid="confirm-finish-unsaved"
     />
   </div>
 </p-dialog>

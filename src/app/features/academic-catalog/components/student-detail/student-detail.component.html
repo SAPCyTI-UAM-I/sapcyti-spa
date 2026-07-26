@@ -320,14 +320,20 @@
                     <li class="gap-xs flex flex-wrap items-baseline">
                       <span class="text-body-md">{{ uea.clave }}</span>
                       <span class="text-caption text-text-secondary">{{ uea.nombre }}</span>
+                      <app-catalog-tag
+                        [value]="'ACADEMIC_CATALOG.HISTORY.UEA_STATUS.' + uea.status | translate"
+                        [severity]="uea.status === 'ASSIGNED' ? 'success' : 'secondary'"
+                      />
                       <!-- Mientras el plan no esté TERMINADA no se enseñan letras provisionales. -->
                       @if (uea.grupo) {
                         <span class="text-body-md font-medium">{{ uea.grupo }}</span>
                       }
-                      @if (uea.professorName) {
-                        <span class="text-caption text-text-secondary">
-                          · {{ uea.professorName }}
-                        </span>
+                      @for (professor of uea.professors; track professor.professorId) {
+                        @if (professor.professorName || professor.employeeNumber) {
+                          <span class="text-caption text-text-secondary">
+                            · {{ professor.professorName || professor.employeeNumber }}
+                          </span>
+                        }
                       }
                       @if (uea.schedule) {
                         <span class="text-caption text-text-secondary">

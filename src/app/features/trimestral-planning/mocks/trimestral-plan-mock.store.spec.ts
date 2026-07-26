@@ -5,6 +5,23 @@ describe('TrimestralPlanMockStore', () => {
     return new TrimestralPlanMockStore();
   }
 
+  function saveRequest(plan: ReturnType<TrimestralPlanMockStore['get']>) {
+    return {
+      groups: plan.groups.map((group) => ({
+        id: group.id,
+        ueaId: group.ueaId,
+        grupo: group.grupo,
+        cupo: group.cupo,
+        professorIds: group.professors.map((professor) => professor.professorId),
+        schedule: group.schedule,
+        students: group.students.map((student) => ({
+          studentId: student.studentId,
+          obs: student.obs,
+        })),
+      })),
+    };
+  }
+
   it('seeds the 26I draft from the closed survey, with a blank student and warnings', () => {
     const plan = store().get(1);
 
@@ -13,17 +30,17 @@ describe('TrimestralPlanMockStore', () => {
     expect(plan.groups.length).toBeGreaterThan(0);
     // Carla answered BLANK: no group, listed apart, not exported.
     expect(plan.blankStudents.map((s) => s.enrollmentId)).toEqual(['2024630003']);
-    expect(plan.warnings.some((w) => w.code === 'UEA_NO_QUOTA')).toBe(true);
+    expect(plan.unassignedDemand.some((item) => item.reason === 'UEA_NOT_OFFERED')).toBe(true);
   });
 
-  it('proposes the HU-57 letter from the declared trimestre', () => {
+  it('mixes ordinary demand into the CO43 base group', () => {
     const plan = store().get(1);
-    // Ana declared II → CP43; Elena declared IV → CR43.
+    // Ordinary UEAs share CO43 regardless of the declared academic term.
     const ana = plan.groups.find((g) => g.students.some((s) => s.enrollmentId === '2024630001'));
     const elena = plan.groups.find((g) => g.students.some((s) => s.enrollmentId === '2024630005'));
 
-    expect(ana?.grupo).toBe('CP43');
-    expect(elena?.grupo).toBe('CR43');
+    expect(ana?.grupo).toBe('CO43');
+    expect(elena?.grupo).toBe('CO43');
   });
 
   it('seeds a plan with the outdated badge and an inactive professor already assigned', () => {
@@ -39,6 +56,30 @@ describe('TrimestralPlanMockStore', () => {
     expect(s.searchProfessors('').content.every((p) => p.active)).toBe(true);
     expect(s.searchProfessors('40004').content).toEqual([]);
     expect(s.searchUeas('').content.every((u) => u.active)).toBe(true);
+  });
+
+  it('blocks writes while the source survey is reopened', () => {
+    const mockStore = store();
+    const existing = mockStore.get(3).groups[0]!;
+
+    expect(() =>
+      mockStore.saveGroups(3, {
+        groups: [
+          {
+            id: existing.id,
+            ueaId: existing.ueaId,
+            grupo: existing.grupo,
+            cupo: existing.cupo,
+            professorIds: [4],
+            schedule: existing.schedule,
+            students: existing.students.map((student) => ({
+              studentId: student.studentId,
+              obs: student.obs,
+            })),
+          },
+        ],
+      }),
+    ).toThrowError(expect.objectContaining({ status: 409 }));
   });
 
   it('warns STUDENT_INACTIVE for someone dropped after answering, without removing them', () => {
@@ -89,14 +130,30 @@ describe('TrimestralPlanMockStore', () => {
     const plan = store().get(1);
 
     expect(plan.warnings.some((w) => w.code === 'UEA_DEACTIVATED')).toBe(true);
-    // No se le arma grupo: la UEA ya no está en el catálogo activo.
-    expect(plan.groups.every((g) => g.ueaId !== 36)).toBe(true);
+    // La demanda se conserva: el coordinador decide si la elimina durante la edición.
+    expect(plan.groups.some((g) => g.ueaId === 36)).toBe(true);
   });
 
   it('blocks edits once the plan is TERMINADA', () => {
     expect(() => store().saveGroups(2, { groups: [] })).toThrowError(
       expect.objectContaining({ status: 409 }),
     );
+  });
+
+  it('exports BORRADOR and TERMINADA plans and preserves exportedAt after reopening', () => {
+    const mockStore = store();
+
+    expect(mockStore.export(1)).toBeInstanceOf(Blob);
+    expect(mockStore.get(1).exportedAt).not.toBeNull();
+
+    mockStore.changeStatus(1, { status: 'TERMINADA' });
+    mockStore.export(1);
+    const exportedAt = mockStore.get(1).exportedAt;
+    expect(exportedAt).not.toBeNull();
+
+    mockStore.changeStatus(1, { status: 'BORRADOR' });
+    expect(mockStore.get(1).exportedAt).toBe(exportedAt);
+    expect(mockStore.get(1).exportedAt).toBe(exportedAt);
   });
 
   it('drops a blank student from the blanks list once placed in a group', () => {
@@ -130,25 +187,78 @@ describe('TrimestralPlanMockStore', () => {
     expect(carla?.obs).toBe('PIB');
   });
 
-  it('warns instead of blocking when a group exceeds its cupo', () => {
+  it('reconciles manual removals and clears them after reassignment', () => {
+    const s = store();
+    const original = s.get(1);
+    const target = original.groups.find((group) =>
+      group.students.some((student) => student.studentId === 1),
+    )!;
+    const removed = saveRequest(original);
+    removed.groups.find((group) => group.id === target.id)!.students = [];
+
+    const saved = s.saveGroups(1, removed);
+    expect(
+      saved.unassignedDemand.some(
+        (item) =>
+          item.ueaId === target.ueaId &&
+          item.studentId === 1 &&
+          item.reason === 'MANUALLY_UNASSIGNED',
+      ),
+    ).toBe(true);
+
+    const reassigned = saveRequest(saved);
+    reassigned.groups
+      .find((group) => group.id === target.id)!
+      .students.push({
+        studentId: 1,
+        obs: null,
+      });
+    const savedAgain = s.saveGroups(1, reassigned);
+    expect(
+      savedAgain.unassignedDemand.some(
+        (item) => item.ueaId === target.ueaId && item.studentId === 1,
+      ),
+    ).toBe(false);
+  });
+
+  it('does not allow restoring an inactive student after manual removal', () => {
+    const s = store();
+    const original = s.get(1);
+    const target = original.groups.find((group) =>
+      group.students.some((student) => student.studentId === 5),
+    )!;
+    const removed = saveRequest(original);
+    removed.groups.find((group) => group.id === target.id)!.students = [];
+    const saved = s.saveGroups(1, removed);
+    const restore = saveRequest(saved);
+    restore.groups
+      .find((group) => group.id === target.id)!
+      .students.push({
+        studentId: 5,
+        obs: null,
+      });
+
+    expect(() => s.saveGroups(1, restore)).toThrowError(expect.objectContaining({ status: 409 }));
+  });
+
+  it('blocks saving when a group exceeds its cupo', () => {
     const s = store();
     const group = s.get(1).groups[0]!;
 
-    const saved = s.saveGroups(1, {
-      groups: [
-        {
-          id: group.id,
-          ueaId: group.ueaId,
-          grupo: group.grupo,
-          cupo: '1',
-          professorIds: [],
-          schedule: group.schedule,
-          students: [1, 3, 5].map((studentId) => ({ studentId, obs: null })),
-        },
-      ],
-    });
-
-    expect(saved.warnings.some((w) => w.code === 'CUPO_EXCEEDED')).toBe(true);
-    expect(saved.groups[0]!.students).toHaveLength(3);
+    expect(() =>
+      s.saveGroups(1, {
+        groups: [
+          {
+            id: group.id,
+            ueaId: group.ueaId,
+            grupo: group.grupo,
+            cupo: '1',
+            professorIds: [],
+            schedule: group.schedule,
+            students: [1, 3, 5].map((studentId) => ({ studentId, obs: null })),
+          },
+        ],
+      }),
+    ).toThrowError(expect.objectContaining({ status: 400 }));
   });
 });

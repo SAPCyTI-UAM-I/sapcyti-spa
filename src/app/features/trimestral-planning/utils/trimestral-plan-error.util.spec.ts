@@ -6,6 +6,7 @@ describe('mapTrimestralPlanError', () => {
     const cases = [
       ['TRIMESTRAL_PLAN_ALREADY_EXISTS', 409, 'already_exists'],
       ['ANNUAL_PLAN_REQUIRED', 409, 'annual_plan_required'],
+      ['ANNUAL_PLAN_NOT_TERMINATED', 409, 'annual_plan_not_terminated'],
       ['SURVEY_NOT_CLOSED', 409, 'survey_not_closed'],
       ['SURVEY_NOT_FOUND', 404, 'survey_not_found'],
       ['TRIMESTRAL_PLAN_NOT_EDITABLE', 409, 'not_editable'],

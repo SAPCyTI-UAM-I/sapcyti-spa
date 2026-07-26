@@ -3,7 +3,7 @@ import {
   mockApiError,
   mockSpringBootNotFound,
 } from '../../../core/errors/testing/mock-api-error.util';
-import { mapCatalogError } from './catalog-error.util';
+import { mapCatalogError, professorDeactivationConflict } from './catalog-error.util';
 
 describe('mapCatalogError', () => {
   it('maps legacy mock conflict codes', () => {
@@ -94,4 +94,24 @@ describe('mapCatalogError', () => {
       'duplicate_employee',
     );
   });
+
+  it('extracts the structured professor deactivation blockers', () => {
+    const conflict = professorDeactivationConflict(
+      new HttpErrorResponse({
+        status: 409,
+        error: {
+          error: 'PROFESSOR_HAS_ACTIVE_ASSIGNMENTS',
+          message: 'blocked',
+          hasTutorOrAdvisorAssignments: true,
+          openGroupAssignments: [
+            { planId: 3, term: '26I', ueaId: 7, clave: '2156027', grupo: 'CO43' },
+          ],
+        },
+      }),
+    );
+
+    expect(conflict?.hasTutorOrAdvisorAssignments).toBe(true);
+    expect(conflict?.openGroupAssignments[0]?.term).toBe('26I');
+  });
 });
+import { HttpErrorResponse } from '@angular/common/http';

@@ -44,6 +44,22 @@ export function isValidCell(value: string | null | undefined): boolean {
   return /^[0-9]+$/.test(v) && Number(v) > 0;
 }
 
+/**
+ * Groups and quota are one atomic configuration: both empty means "not offered";
+ * otherwise both values must be a positive integer or `*`.
+ */
+export function isValidCellPair(
+  groups: string | null | undefined,
+  quota: string | null | undefined,
+): boolean {
+  const normalizedGroups = groups?.trim() ?? '';
+  const normalizedQuota = quota?.trim() ?? '';
+  if (!normalizedGroups && !normalizedQuota) {
+    return true;
+  }
+  return !!normalizedGroups && !!normalizedQuota && isValidCell(groups) && isValidCell(quota);
+}
+
 /** Click cycle for an editable program mark cell: empty → X → O → X/O → empty. */
 export function cycleMark(current: AnnualPlanMark | undefined): AnnualPlanMark | undefined {
   switch (current) {

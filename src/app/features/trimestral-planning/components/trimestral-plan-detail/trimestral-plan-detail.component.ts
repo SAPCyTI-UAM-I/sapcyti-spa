@@ -8,6 +8,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -36,6 +37,7 @@ import { TrimestralPlanEditorComponent } from '../trimestral-plan-editor/trimest
   host: ROUTED_PAGE_HOST,
   imports: [
     RouterLink,
+    DatePipe,
     TranslatePipe,
     Button,
     Dialog,
@@ -71,7 +73,30 @@ export class TrimestralPlanDetailComponent implements OnInit {
 
   readonly editable = computed(() => {
     const current = this.plan();
-    return current !== null && isEditable(current.status);
+    return (
+      current !== null &&
+      isEditable(current.status) &&
+      current.prerequisites.surveyClosed &&
+      current.prerequisites.annualPlanTerminated
+    );
+  });
+
+  readonly draft = computed(() => this.plan()?.status === 'BORRADOR');
+  readonly prerequisitesMet = computed(() => {
+    const prerequisites = this.plan()?.prerequisites;
+    return !!prerequisites?.surveyClosed && !!prerequisites.annualPlanTerminated;
+  });
+  readonly dirty = computed(() => this.editor()?.hasUnsavedChanges() ?? false);
+
+  /** Both plan statuses are exportable, but stale local edits and prerequisites block it. */
+  readonly canExport = computed(() => {
+    const current = this.plan();
+    return (
+      current !== null &&
+      this.prerequisitesMet() &&
+      (current.status === 'BORRADOR' || current.status === 'TERMINADA') &&
+      !this.dirty()
+    );
   });
 
   readonly statusTagSeverity = statusTagSeverity;
@@ -112,11 +137,9 @@ export class TrimestralPlanDetailComponent implements OnInit {
     };
   }
 
-  /**
-   * Terminar recarga el plan y reconstruye el formulario, así que unas ediciones sin
-   * guardar se perderían en silencio. Se confirma antes en vez de bloquear.
-   */
+  /** Terminar is blocked until every local edit has been persisted. */
   finish(): void {
+    if (!this.prerequisitesMet()) return;
     if (this.editor()?.hasUnsavedChanges()) {
       this.showUnsavedDialog.set(true);
       return;
@@ -124,15 +147,19 @@ export class TrimestralPlanDetailComponent implements OnInit {
     this.changeStatus('TERMINADA');
   }
 
-  confirmFinishDiscardingChanges(): void {
-    this.showUnsavedDialog.set(false);
-    this.changeStatus('TERMINADA');
+  /**
+   * Only a plan that has actually been exported needs the delivered-Excel warning.
+   * `exportedAt` is historical and is intentionally preserved when the plan is reopened.
+   */
+  backToDraft(): void {
+    if (!this.prerequisitesMet()) return;
+    if (this.plan()?.exportedAt) {
+      this.showBackToDraftDialog.set(true);
+      return;
+    }
+    this.changeStatus('BORRADOR');
   }
 
-  /**
-   * Back to BORRADOR is confirmed in the client: the backend does not block it, but an
-   * already delivered Excel stops matching the plan (HU-59).
-   */
   confirmBackToDraft(): void {
     this.showBackToDraftDialog.set(false);
     this.changeStatus('BORRADOR');
@@ -140,7 +167,7 @@ export class TrimestralPlanDetailComponent implements OnInit {
 
   confirmRegenerate(): void {
     this.showRegenerateDialog.set(false);
-    if (this.regenerating()) return;
+    if (!this.editable() || this.regenerating()) return;
 
     this.regenerating.set(true);
     this.actionError.set(null);
@@ -157,7 +184,7 @@ export class TrimestralPlanDetailComponent implements OnInit {
   }
 
   downloadExcel(): void {
-    if (this.exporting()) return;
+    if (!this.canExport() || this.exporting()) return;
 
     this.exporting.set(true);
     this.actionError.set(null);
@@ -168,7 +195,11 @@ export class TrimestralPlanDetailComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (blob) => this.triggerDownload(blob),
+        next: (blob) => {
+          this.triggerDownload(blob);
+          // Export returns bytes. Reload so the response model receives the new exportedAt.
+          this.load();
+        },
         error: (err) => this.actionError.set(mapTrimestralPlanError(err)),
       });
   }

@@ -12,6 +12,9 @@
     <app-group-card
       [form]="groups.at(index)"
       [students]="studentsByIndex()[index] ?? []"
+      [warnings]="plan().warnings"
+      [ueaGroupCount]="groupCount(groups.at(index).controls.ueaId.value)"
+      [groupLimitExceeded]="groupLimitViolationIndices().includes(index)"
       [editable]="editable()"
       [submitted]="submitted()"
       (removeGroup)="removeGroup(index)"
@@ -22,7 +25,7 @@
     <p-message severity="error" [text]="saveError | domainError: errorScope" />
   }
 
-  @if (submitted() && groups.invalid) {
+  @if (submitted() && (groups.invalid || hasLimitViolations())) {
     <p-message severity="error" [text]="'TRIMESTRAL_PLANNING.DETAIL.INVALID_GROUPS' | translate" />
   }
 

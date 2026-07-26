@@ -31,7 +31,6 @@
                   ' · ' +
                   ('TRIMESTRAL_PLANNING.GROUP.START' | translate)
                 "
-                [attr.disabled]="editable() ? null : ''"
               />
             </td>
           }
@@ -51,9 +50,16 @@
                   ' · ' +
                   ('TRIMESTRAL_PLANNING.GROUP.END' | translate)
                 "
-                [attr.disabled]="editable() ? null : ''"
               />
-              @if (day.errors?.['startAfterEnd']) {
+              @if (day.errors?.['labTimeRequired']) {
+                <span class="text-caption text-error block">
+                  {{ 'TRIMESTRAL_PLANNING.GROUP.LAB_TIME_REQUIRED' | translate }}
+                </span>
+              } @else if (day.errors?.['incompleteRange']) {
+                <span class="text-caption text-error block">
+                  {{ 'TRIMESTRAL_PLANNING.GROUP.TIME_RANGE_REQUIRED' | translate }}
+                </span>
+              } @else if (day.errors?.['startAfterEnd']) {
                 <span class="text-caption text-error block">
                   {{ 'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END' | translate }}
                 </span>
@@ -70,7 +76,6 @@
               <p-checkbox
                 formControlName="lab"
                 [binary]="true"
-                [disabled]="!editable()"
                 [ariaLabel]="
                   ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
                   ' · ' +

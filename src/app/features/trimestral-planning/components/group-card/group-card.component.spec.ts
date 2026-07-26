@@ -19,6 +19,7 @@ const group: TrimestralGroup = {
   tipoUea: 'OBLIGATORIA',
   grupo: 'CO43',
   cupo: '15',
+  maxGroups: '2',
   professors: [],
   schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
   students: [student(1), student(2), student(3)],
@@ -37,11 +38,12 @@ function student(studentId: number): GroupStudent {
 
 @Component({
   imports: [GroupCardComponent],
-  template: `<app-group-card [form]="form" [students]="students()" />`,
+  template: `<app-group-card [form]="form" [students]="students()" [warnings]="warnings()" />`,
 })
 class HostComponent {
   readonly form: GroupFormGroup = buildGroupFormGroup(new FormBuilder().nonNullable, group);
   readonly students = signal<GroupStudent[]>([student(1), student(2), student(3)]);
+  readonly warnings = signal([{ code: 'STUDENT_INACTIVE' as const, enrollmentId: 'A2' }]);
 }
 
 describe('GroupCardComponent', () => {
@@ -95,6 +97,14 @@ describe('GroupCardComponent', () => {
     const { card } = await setup();
 
     expect(card.tipoUea()).toBe('OBLIGATORIA');
+  });
+
+  it('shows the annual maximum and an actionable inactive-student warning', async () => {
+    const { fixture, card } = await setup();
+
+    expect(card.maxGroups()).toBe('2');
+    expect(card.studentInactive(student(2))).toBe(true);
+    expect(fixture.nativeElement.querySelector('[data-testid="inactive-student"]')).not.toBeNull();
   });
 
   // HU-59 — la tabla de alumnos agrega por typeahead y quita por fila.

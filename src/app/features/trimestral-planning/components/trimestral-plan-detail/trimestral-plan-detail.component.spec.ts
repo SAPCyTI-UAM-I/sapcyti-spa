@@ -22,8 +22,12 @@ function plan(
     status,
     surveyId: 1,
     outdated: false,
+    outdatedReasons: [],
+    prerequisites: { surveyClosed: true, annualPlanTerminated: true },
+    exportedAt: null,
     warnings: [],
     blankStudents: [],
+    unassignedDemand: [],
     groups: [],
     ...overrides,
   };
@@ -89,7 +93,7 @@ describe('TrimestralPlanDetailComponent', () => {
     expect(component.editable()).toBe(false);
   });
 
-  it('does not finish silently when the editor has unsaved group changes', async () => {
+  it('blocks finishing until unsaved group changes are saved', async () => {
     const { fixture, component, stub } = await setup({
       get: vi.fn(() =>
         of(
@@ -103,6 +107,7 @@ describe('TrimestralPlanDetailComponent', () => {
                 tipoUea: 'OBLIGATORIA',
                 grupo: 'CO43',
                 cupo: '15',
+                maxGroups: '2',
                 professors: [],
                 schedule: SCHEDULE_DAYS.map((day) => ({
                   day,
@@ -123,14 +128,15 @@ describe('TrimestralPlanDetailComponent', () => {
       .componentInstance as TrimestralPlanEditorComponent;
     editor.groups.at(0).controls.grupo.setValue('CO43X');
     expect(editor.hasUnsavedChanges()).toBe(true);
+    expect(component.canExport()).toBe(false);
 
     component.finish();
 
     expect(stub.changeStatus).not.toHaveBeenCalled();
     expect(component.showUnsavedDialog()).toBe(true);
-
-    component.confirmFinishDiscardingChanges();
-    expect(stub.changeStatus).toHaveBeenCalledWith(1, { status: 'TERMINADA' });
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="confirm-finish-unsaved"]'),
+    ).toBeNull();
   });
 
   it('only regenerates after the confirmation dialog', async () => {
@@ -150,13 +156,97 @@ describe('TrimestralPlanDetailComponent', () => {
     Object.assign(globalThis.URL, { createObjectURL, revokeObjectURL });
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(vi.fn());
 
-    const { component, stub } = await setup();
+    const get = vi.fn(() => of(plan('TERMINADA', { exportedAt: '2026-07-21T20:00:00Z' })));
+    const { fixture, component, stub } = await setup({ get });
+    expect(fixture.nativeElement.querySelector('[data-testid="last-exported"]')).not.toBeNull();
     component.downloadExcel();
 
     expect(stub.export).toHaveBeenCalledWith(1);
+    // The byte endpoint cannot return exportedAt, so detail is refreshed after download.
+    expect(get).toHaveBeenCalledTimes(2);
     expect(createObjectURL).toHaveBeenCalled();
     expect(revokeObjectURL).toHaveBeenCalled();
     click.mockRestore();
+  });
+
+  it('allows exporting a saved BORRADOR plan', async () => {
+    const { fixture, component } = await setup();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="download-excel"]')).not.toBeNull();
+    expect(component.canExport()).toBe(true);
+  });
+
+  it('switches to read-only and explains unmet prerequisites', async () => {
+    const { fixture, component } = await setup({
+      get: vi.fn(() =>
+        of(
+          plan('BORRADOR', {
+            prerequisites: { surveyClosed: false, annualPlanTerminated: true },
+            outdated: true,
+            outdatedReasons: ['SURVEY_REOPENED'],
+          }),
+        ),
+      ),
+    });
+
+    expect(component.editable()).toBe(false);
+    expect(component.canExport()).toBe(false);
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="prerequisite-blockers"]'),
+    ).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain(
+      'TRIMESTRAL_PLANNING.OUTDATED_REASONS.SURVEY_REOPENED',
+    );
+  });
+
+  it('renders unassigned demand independently from blank enrollments', async () => {
+    const { fixture } = await setup({
+      get: vi.fn(() =>
+        of(
+          plan('BORRADOR', {
+            unassignedDemand: [
+              {
+                studentId: 8,
+                enrollmentId: '2200000008',
+                fullName: 'Ana Pérez',
+                academicTerm: 'III',
+                ueaId: 7,
+                clave: '2156027',
+                nombre: 'INTELIGENCIA ARTIFICIAL',
+                reason: 'GROUP_LIMIT_REACHED',
+              },
+            ],
+          }),
+        ),
+      ),
+    });
+
+    expect(fixture.nativeElement.querySelector('[data-testid="unassigned-demand"]')).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('2200000008');
+  });
+
+  it('returns directly to BORRADOR if the plan has never been exported', async () => {
+    const { component, stub } = await setup({
+      get: vi.fn(() => of(plan('TERMINADA', { exportedAt: null }))),
+    });
+
+    component.backToDraft();
+
+    expect(component.showBackToDraftDialog()).toBe(false);
+    expect(stub.changeStatus).toHaveBeenCalledWith(1, { status: 'BORRADOR' });
+  });
+
+  it('warns before reopening a plan that has already been exported', async () => {
+    const { component, stub } = await setup({
+      get: vi.fn(() => of(plan('TERMINADA', { exportedAt: '2026-07-21T20:00:00Z' }))),
+    });
+
+    component.backToDraft();
+
+    expect(component.showBackToDraftDialog()).toBe(true);
+    expect(stub.changeStatus).not.toHaveBeenCalled();
+    component.confirmBackToDraft();
+    expect(stub.changeStatus).toHaveBeenCalledWith(1, { status: 'BORRADOR' });
   });
 
   it('maps a not-editable conflict to its domain key', async () => {

@@ -42,17 +42,21 @@ export type GroupFormGroup = FormGroup<{
   tipoUea: FormControl<string>;
   grupo: FormControl<string>;
   cupo: FormControl<string>;
+  maxGroups: FormControl<string>;
   professorIds: FormControl<number[]>;
   schedule: FormArray<ScheduleFormGroup>;
   students: FormArray<StudentFormGroup>;
 }>;
 
-/** A day is invalid when it has both ends and start is after end. */
+/** A day is either empty or a complete, strictly increasing start/end range. */
 export function startBeforeEndValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('start')?.value as string;
   const end = group.get('end')?.value as string;
-  if (!start || !end) return null;
-  return start <= end ? null : { startAfterEnd: true };
+  const lab = group.get('lab')?.value as boolean;
+  if (lab && (!start || !end)) return { labTimeRequired: true };
+  if (!start && !end) return null;
+  if (!start || !end) return { incompleteRange: true };
+  return start < end ? null : { startAfterEnd: true };
 }
 
 export function buildStudentRow(
@@ -100,6 +104,7 @@ export function buildGroupFormGroup(
     tipoUea: fb.control(group.tipoUea),
     grupo: fb.control(group.grupo ?? '', [Validators.maxLength(10)]),
     cupo: fb.control(group.cupo ?? '', [Validators.pattern(CUPO_PATTERN)]),
+    maxGroups: fb.control(group.maxGroups ?? ''),
     professorIds: fb.control(group.professors.map((professor) => professor.professorId)),
     schedule: fb.array(
       SCHEDULE_DAYS.map((day) =>
@@ -129,6 +134,7 @@ export function emptyGroup(uea: UeaCatalogItem): TrimestralGroup {
     tipoUea: uea.tipo,
     grupo: null,
     cupo: null,
+    maxGroups: null,
     professors: [],
     schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
     students: [],

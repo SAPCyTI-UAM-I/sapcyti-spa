@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injector, inject, Injectable } from '@angular/core';
 
 import { PageResponse } from '../../../models';
@@ -212,7 +213,23 @@ export class ProfessorMockStore {
 
     const programStore = this.injector.get(StudentProgramMockStore);
     if (programStore.hasActiveAssignment(professorId)) {
-      throw mockConflict('PROFESSOR_HAS_ACTIVE_ASSIGNMENTS');
+      throw new HttpErrorResponse({
+        status: 409,
+        error: {
+          error: 'PROFESSOR_HAS_ACTIVE_ASSIGNMENTS',
+          message: 'Professor has active tutor/advisor or open-group assignments',
+          hasTutorOrAdvisorAssignments: true,
+          openGroupAssignments: [
+            {
+              planId: 1,
+              term: '26I',
+              ueaId: 1,
+              clave: '2156024',
+              grupo: 'CO43',
+            },
+          ],
+        },
+      });
     }
 
     const updated: ProfessorCatalogItem = { ...current, active: false };

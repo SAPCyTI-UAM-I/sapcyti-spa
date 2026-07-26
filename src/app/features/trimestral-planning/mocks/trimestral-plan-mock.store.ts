@@ -22,6 +22,7 @@ import {
   TrimestralGroup,
   TrimestralPlanDetail,
   TrimestralPlanSummary,
+  UnassignedDemand,
   UeaCatalogItem,
 } from '../../../models';
 import {
@@ -224,6 +225,9 @@ export class TrimestralPlanMockStore {
       status: 'BORRADOR',
       surveyId: 1,
       outdated: false,
+      outdatedReasons: [],
+      prerequisites: { surveyClosed: true, annualPlanTerminated: true },
+      exportedAt: null,
       ...buildFromSurvey(SEED_SURVEYS.find((s) => s.id === 1)!, () => this.nextGroupId++),
     },
     seedFinished25P(),
@@ -281,6 +285,9 @@ export class TrimestralPlanMockStore {
       status: 'BORRADOR',
       surveyId: survey.id,
       outdated: false,
+      outdatedReasons: [],
+      prerequisites: { surveyClosed: true, annualPlanTerminated: true },
+      exportedAt: null,
       ...buildFromSurvey(survey, () => this.nextGroupId++),
     };
     this.plans.push(plan);
@@ -300,7 +307,7 @@ export class TrimestralPlanMockStore {
     Object.assign(
       plan,
       buildFromSurvey(survey, () => this.nextGroupId++),
-      { outdated: false },
+      { outdated: false, outdatedReasons: [] },
     );
     return clone(plan);
   }
@@ -309,24 +316,52 @@ export class TrimestralPlanMockStore {
 
   saveGroups(id: number, request: SaveTrimestralPlanRequest): TrimestralPlanDetail {
     const plan = this.requireEditable(id);
+    const previousGroups = clone(plan.groups);
+    const seenStudentsByUea = new Map<number, Set<number>>();
 
     const groups: TrimestralGroup[] = request.groups.map((update) => {
       const uea = UEA_CATALOG_SEED.find((u) => u.id === update.ueaId);
       if (!uea) {
         throw mockApiError({ status: 404, message: `UEA ${update.ueaId} no existe` });
       }
+      const previous = plan.groups.find(
+        (group) => group.id === update.id && group.ueaId === update.ueaId,
+      );
+      const annualSettings =
+        previous ??
+        plan.groups.find((group) => group.ueaId === update.ueaId) ??
+        seedAnnualSettings(update.ueaId);
+      const seenProfessorIds = new Set<number>();
       const professors: GroupProfessor[] = update.professorIds.map((professorId) => {
+        if (!seenProfessorIds.add(professorId)) {
+          throw mockApiError({ status: 400, message: `Profesor ${professorId} está repetido` });
+        }
         const professor = PROFESSORS_SEED.find((p) => p.id === professorId);
-        if (!professor) {
+        const previousProfessor = previous?.professors.find(
+          (assigned) => assigned.professorId === professorId,
+        );
+        if (!professor || (!professor.active && !previousProfessor)) {
           throw mockApiError({ status: 404, message: `Profesor ${professorId} no existe` });
         }
+        // An inactive professor cannot be newly assigned, but an existing assignment keeps
+        // its original snapshot so unrelated group edits remain saveable.
+        if (!professor.active) return { ...previousProfessor! };
         return {
           professorId: professor.id,
           employeeNumber: professor.employeeNumber,
           professorName: `${professor.firstName} ${professor.firstLastName}`,
         };
       });
-      const previous = plan.groups.find((g) => g.id === update.id);
+      const seenStudents = seenStudentsByUea.get(update.ueaId) ?? new Set<number>();
+      for (const member of update.students) {
+        if (!seenStudents.add(member.studentId)) {
+          throw mockApiError({
+            status: 400,
+            message: `Alumno ${member.studentId} está repetido para la UEA ${update.ueaId}`,
+          });
+        }
+      }
+      seenStudentsByUea.set(update.ueaId, seenStudents);
 
       return {
         id: update.id ?? this.nextGroupId++,
@@ -336,6 +371,7 @@ export class TrimestralPlanMockStore {
         tipoUea: uea.tipo,
         grupo: update.grupo,
         cupo: update.cupo,
+        maxGroups: annualSettings?.maxGroups ?? null,
         professors,
         schedule: update.schedule,
         // `source`/`academicTerm` are snapshots the API never accepts on write: keep the
@@ -350,7 +386,32 @@ export class TrimestralPlanMockStore {
       };
     });
 
+    for (const group of groups) {
+      if (!hasRoom(group, group.cupo, 0)) {
+        throw mockApiError({
+          status: 400,
+          error: 'GROUP_CAPACITY_EXCEEDED',
+          message: `El grupo ${group.grupo ?? group.clave} rebasa su cupo`,
+        });
+      }
+    }
+    const groupsByUea = new Map<number, TrimestralGroup[]>();
+    for (const group of groups) {
+      groupsByUea.set(group.ueaId, [...(groupsByUea.get(group.ueaId) ?? []), group]);
+    }
+    for (const sameUea of groupsByUea.values()) {
+      const maxGroups = sameUea[0]?.maxGroups;
+      if (maxGroups && maxGroups !== '*' && sameUea.length > Number(maxGroups)) {
+        throw mockApiError({
+          status: 400,
+          error: 'GROUP_LIMIT_REACHED',
+          message: `La UEA ${sameUea[0]?.clave} rebasa el máximo de grupos`,
+        });
+      }
+    }
+
     plan.groups = groups;
+    plan.unassignedDemand = this.reconcileUnassigned(plan, previousGroups);
     plan.blankStudents = this.recomputeBlanks(plan);
     plan.warnings = this.recomputeWarnings(plan);
     return clone(plan);
@@ -358,6 +419,7 @@ export class TrimestralPlanMockStore {
 
   changeStatus(id: number, request: ChangeTrimestralPlanStatusRequest): TrimestralPlanDetail {
     const plan = this.requirePlan(id);
+    this.requirePrerequisites(plan);
     if (plan.status === request.status) {
       throw mockApiError({
         status: 409,
@@ -374,6 +436,8 @@ export class TrimestralPlanMockStore {
 
   export(id: number): Blob {
     const plan = this.requirePlan(id);
+    this.requirePrerequisites(plan);
+    plan.exportedAt = new Date().toISOString();
     // ponytail: el mock no arma un xlsx real; el backend lo genera con Apache POI (HU-60).
     return new Blob([`PCYTI ${plan.term} (mock stub)`], { type: 'text/plain' });
   }
@@ -458,6 +522,36 @@ export class TrimestralPlanMockStore {
     });
   }
 
+  private reconcileUnassigned(
+    plan: TrimestralPlanDetail,
+    previousGroups: readonly TrimestralGroup[],
+  ): UnassignedDemand[] {
+    const assigned = new Set(
+      plan.groups.flatMap((group) =>
+        group.students.map((student) => `${group.ueaId}:${student.studentId}`),
+      ),
+    );
+    const demand = plan.unassignedDemand.filter(
+      (item) => !assigned.has(`${item.ueaId}:${item.studentId}`),
+    );
+
+    for (const group of previousGroups) {
+      for (const student of group.students) {
+        const key = `${group.ueaId}:${student.studentId}`;
+        if (assigned.has(key)) continue;
+        demand.push(
+          toUnassigned(
+            { id: group.ueaId, clave: group.clave, nombre: group.nombre },
+            student,
+            'MANUALLY_UNASSIGNED',
+          ),
+        );
+      }
+    }
+
+    return [...new Map(demand.map((item) => [`${item.ueaId}:${item.studentId}`, item])).values()];
+  }
+
   /** Warnings are recomputed on every write, never on read (HU-58 note 2). */
   private recomputeWarnings(plan: TrimestralPlanDetail): PlanWarning[] {
     // Los avisos de generación no son recalculables desde los grupos —la encuesta ya no se
@@ -494,6 +588,7 @@ export class TrimestralPlanMockStore {
       status: plan.status,
       surveyId: plan.surveyId,
       outdated: plan.outdated,
+      exportedAt: plan.exportedAt,
       groupCount: plan.groups.length,
       blankCount: plan.blankStudents.length,
     };
@@ -520,7 +615,25 @@ export class TrimestralPlanMockStore {
         message: 'La planeación terminada no puede editarse; regrésala a borrador.',
       });
     }
+    this.requirePrerequisites(plan);
     return plan;
+  }
+
+  private requirePrerequisites(plan: TrimestralPlanDetail): void {
+    if (!plan.prerequisites.surveyClosed) {
+      throw mockApiError({
+        status: 409,
+        error: 'SURVEY_NOT_CLOSED',
+        message: 'La encuesta debe estar cerrada.',
+      });
+    }
+    if (!plan.prerequisites.annualPlanTerminated) {
+      throw mockApiError({
+        status: 409,
+        error: 'ANNUAL_PLAN_NOT_TERMINATED',
+        message: 'La planeación anual debe estar terminada.',
+      });
+    }
   }
 }
 
@@ -532,7 +645,7 @@ export class TrimestralPlanMockStore {
 function buildFromSurvey(
   survey: SeedSurvey,
   allocateGroupId: () => number,
-): Pick<TrimestralPlanDetail, 'groups' | 'blankStudents' | 'warnings'> {
+): Pick<TrimestralPlanDetail, 'groups' | 'unassignedDemand' | 'blankStudents' | 'warnings'> {
   const warnings: PlanWarning[] = [];
   // «Sin respuestas» incluye la encuesta que solo recibió inscripciones en blanco: en
   // ambos casos el plan se crea sin filas de UEA (HU-58).
@@ -541,6 +654,7 @@ function buildFromSurvey(
   }
 
   const groups: TrimestralGroup[] = [];
+  const unassignedDemand: UnassignedDemand[] = [];
   const enrolled = survey.responses
     .filter((r) => r.mode === 'ENROLL_UEAS')
     .sort((a, b) => {
@@ -557,19 +671,12 @@ function buildFromSurvey(
     if (!student.active) {
       warnings.push({ code: 'STUDENT_INACTIVE', enrollmentId: student.enrollmentId });
     }
-    const baseGroup = baseGroupForTerm(response.academicTerm);
 
     for (const ueaId of response.ueaIds) {
       const uea = UEA_CATALOG_SEED.find((u) => u.id === ueaId);
       if (!uea) continue;
       if (!uea.active) {
         warnings.push({ code: 'UEA_DEACTIVATED', clave: uea.clave });
-        continue;
-      }
-
-      const cupo = seedQuotaFor(uea.id);
-      if (cupo === null) {
-        warnings.push({ code: 'UEA_NO_QUOTA', clave: uea.clave });
       }
 
       const groupStudent: GroupStudent = {
@@ -580,17 +687,33 @@ function buildFromSurvey(
         academicTerm: response.academicTerm,
         obs: null,
       };
+      const annual = seedAnnualSettings(uea.id);
+      if (!annual) {
+        unassignedDemand.push(toUnassigned(uea, groupStudent, 'UEA_NOT_OFFERED'));
+        continue;
+      }
+      const baseGroup =
+        uea.tipoFormacion === 'INVESTIGACION'
+          ? (baseGroupForTerm(response.academicTerm) ?? 'CO43')
+          : 'CO43';
 
-      // Grupos ya creados para la misma UEA y la misma letra base. Sin letra (trimestres
-      // X–XII) comparten el grupo sin letra en vez de abrir uno por alumno.
       const siblings = groups.filter(
-        (g) =>
-          g.ueaId === uea.id &&
-          (baseGroup === null ? g.grupo === null : (g.grupo ?? '').startsWith(baseGroup)),
+        (group) => group.ueaId === uea.id && (group.grupo ?? '').startsWith(baseGroup),
       );
-      const open = siblings.find((g) => hasRoom(g, cupo));
+      const ueaGroups = groups.filter((group) => group.ueaId === uea.id);
+      const open = siblings.find((group) => hasRoom(group, annual.cupo));
       if (open) {
         open.students.push(groupStudent);
+        continue;
+      }
+
+      if (annual.maxGroups !== '*' && ueaGroups.length >= Number(annual.maxGroups)) {
+        unassignedDemand.push(toUnassigned(uea, groupStudent, 'GROUP_LIMIT_REACHED'));
+        continue;
+      }
+      // Base + A..Z = 27 distinct names. Never generate the character after Z.
+      if (siblings.length >= 27) {
+        unassignedDemand.push(toUnassigned(uea, groupStudent, 'GROUP_SUFFIX_LIMIT'));
         continue;
       }
 
@@ -600,8 +723,9 @@ function buildFromSurvey(
         clave: uea.clave,
         nombre: uea.nombre,
         tipoUea: uea.tipo,
-        grupo: baseGroup && groupWithSuffix(baseGroup, siblings.length),
-        cupo,
+        grupo: groupWithSuffix(baseGroup, siblings.length),
+        cupo: annual.cupo,
+        maxGroups: annual.maxGroups,
         professors: [],
         schedule: emptySchedule(),
         students: [groupStudent],
@@ -625,7 +749,12 @@ function buildFromSurvey(
         : [];
     });
 
-  return { groups, blankStudents, warnings: dedupeWarnings(warnings) };
+  return {
+    groups,
+    unassignedDemand,
+    blankStudents,
+    warnings: dedupeWarnings(warnings),
+  };
 }
 
 /** Snapshots (`source`, `academicTerm`) survive a save; a brand-new id is a MANUAL add. */
@@ -634,6 +763,13 @@ function toGroupStudent(member: SaveGroupStudentRequest, previous?: GroupStudent
   const student = findStudent(member.studentId);
   if (!student) {
     throw mockApiError({ status: 404, message: `Alumno ${member.studentId} no existe` });
+  }
+  if (!student.active) {
+    throw mockApiError({
+      status: 409,
+      error: 'STUDENT_INACTIVE',
+      message: `Alumno ${student.enrollmentId} está inactivo`,
+    });
   }
   return {
     studentId: student.id,
@@ -650,10 +786,30 @@ function toGroupStudent(member: SaveGroupStudentRequest, previous?: GroupStudent
  * generated plan carries a `UEA_NO_QUOTA` warning, and the research UEAs get cupo 1 so
  * the A/B suffix rule is exercised.
  */
-function seedQuotaFor(ueaId: number): string | null {
+function seedAnnualSettings(ueaId: number): { maxGroups: string; cupo: string } | null {
   if (ueaId === 2) return null;
   const uea = UEA_CATALOG_SEED.find((u) => u.id === ueaId);
-  return uea?.tipoFormacion === 'INVESTIGACION' ? '1' : '15';
+  if (!uea) return null;
+  return uea.tipoFormacion === 'INVESTIGACION'
+    ? { maxGroups: '*', cupo: '1' }
+    : { maxGroups: '2', cupo: '15' };
+}
+
+function toUnassigned(
+  uea: Pick<UeaCatalogItem, 'id' | 'clave' | 'nombre'>,
+  student: GroupStudent,
+  reason: UnassignedDemand['reason'],
+): UnassignedDemand {
+  return {
+    ueaId: uea.id,
+    clave: uea.clave,
+    nombre: uea.nombre,
+    studentId: student.studentId,
+    enrollmentId: student.enrollmentId,
+    fullName: student.fullName,
+    academicTerm: student.academicTerm,
+    reason,
+  };
 }
 
 /** `*` means unlimited; a null cupo never blocks (it only warns). */
@@ -683,8 +839,12 @@ function seedFinished25P(): TrimestralPlanDetail {
     status: 'TERMINADA',
     surveyId: 0,
     outdated: false,
+    outdatedReasons: [],
+    prerequisites: { surveyClosed: true, annualPlanTerminated: true },
+    exportedAt: '2026-04-20T18:00:00Z',
     warnings: [],
     blankStudents: [],
+    unassignedDemand: [],
     groups: [
       {
         id: 200,
@@ -694,6 +854,7 @@ function seedFinished25P(): TrimestralPlanDetail {
         tipoUea: uea.tipo,
         grupo: 'CO43',
         cupo: '15',
+        maxGroups: '2',
         professors: [{ professorId: 1, employeeNumber: '40001', professorName: 'Rafaela Blanco' }],
         schedule: SCHEDULE_DAYS.map((day) => ({
           day,
@@ -730,8 +891,12 @@ function seedOutdated25I(): TrimestralPlanDetail {
     status: 'BORRADOR',
     surveyId: 6,
     outdated: true,
+    outdatedReasons: ['SURVEY_REOPENED'],
+    prerequisites: { surveyClosed: false, annualPlanTerminated: true },
+    exportedAt: null,
     warnings: [{ code: 'PROFESSOR_INACTIVE', employeeNumber: '40004', groupId: 300 }],
     blankStudents: [],
+    unassignedDemand: [],
     groups: [
       {
         id: 300,
@@ -741,6 +906,7 @@ function seedOutdated25I(): TrimestralPlanDetail {
         tipoUea: uea.tipo,
         grupo: 'CQ43',
         cupo: '15',
+        maxGroups: '2',
         professors: [{ professorId: 4, employeeNumber: '40004', professorName: 'Ernesto Salas' }],
         schedule: emptySchedule(),
         students: [
