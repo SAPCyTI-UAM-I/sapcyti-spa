@@ -425,18 +425,13 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.occupancySeverityFor(0)).toBe('full');
   });
 
-  it('normalizes a typed time on blur and flags what it cannot parse', async () => {
+  it('flags a stored time that does not match the contract format', async () => {
     const { component } = await setup();
     const monday = component.groups.at(0).controls.schedule.at(0);
 
-    monday.controls.start.setValue('930');
-    component.onTimeBlur(0, 0, 'start');
-    expect(monday.controls.start.value).toBe('09:30');
-
     monday.controls.end.setValue('25:00');
     monday.controls.end.markAsDirty();
-    component.onTimeBlur(0, 0, 'end');
-    expect(monday.controls.end.value).toBe('25:00');
+
     expect(component.scheduleCellInvalid(0, 0, 'end')).toBe(true);
     expect(component.scheduleCellError(0, 0, 'end')).toBe(
       'TRIMESTRAL_PLANNING.GROUP.TIME_FORMAT_INVALID',

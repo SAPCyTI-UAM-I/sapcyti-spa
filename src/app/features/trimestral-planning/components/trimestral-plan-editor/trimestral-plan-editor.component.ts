@@ -40,7 +40,6 @@ import {
   buildSaveGroupsRequest,
   emptyGroup,
   GroupFormGroup,
-  normalizeTimeInput,
 } from '../../utils/group-form.util';
 import { claveHeaderPositions } from '../../utils/group-ordering.util';
 import { nextGroupLetter } from '../../utils/group-letter.util';
@@ -392,15 +391,6 @@ export class TrimestralPlanEditorComponent {
     if (day.errors?.['incompleteRange']) return 'TRIMESTRAL_PLANNING.GROUP.TIME_RANGE_REQUIRED';
     if (day.errors?.['startAfterEnd']) return 'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END';
     return '';
-  }
-
-  /** `930` → `09:30` al salir del campo; lo que no se entiende lo marca el validador. */
-  onTimeBlur(index: number, dayIndex: number, field: 'start' | 'end'): void {
-    const control = this.groups.at(index).controls.schedule.at(dayIndex).controls[field];
-    const normalized = normalizeTimeInput(control.value);
-    if (normalized !== control.value) {
-      control.setValue(normalized);
-    }
   }
 
   // ─── Celda de alumnos ───

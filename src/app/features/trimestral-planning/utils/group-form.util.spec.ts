@@ -7,7 +7,6 @@ import {
   emptyGroup,
   hasScheduleCapture,
   hasScheduleDayCapture,
-  normalizeTimeInput,
   startBeforeEndValidator,
   timeFormatValidator,
 } from './group-form.util';
@@ -201,17 +200,5 @@ describe('group-form.util', () => {
 
     expect(startBeforeEndValidator(monday)).toBeNull();
     expect(monday.controls.start.errors).toEqual({ timeFormat: true });
-  });
-
-  it('completes a typed time to HH:mm and leaves the unparseable alone', () => {
-    expect(normalizeTimeInput('930')).toBe('09:30');
-    expect(normalizeTimeInput('0930')).toBe('09:30');
-    expect(normalizeTimeInput('9:30')).toBe('09:30');
-    expect(normalizeTimeInput(' 18:00 ')).toBe('18:00');
-    expect(normalizeTimeInput('')).toBe('');
-    expect(normalizeTimeInput(null)).toBe('');
-    // Se dejan tal cual para que el validador los marque, no se inventa una hora.
-    expect(normalizeTimeInput('25:00')).toBe('25:00');
-    expect(normalizeTimeInput('nueve')).toBe('nueve');
   });
 });

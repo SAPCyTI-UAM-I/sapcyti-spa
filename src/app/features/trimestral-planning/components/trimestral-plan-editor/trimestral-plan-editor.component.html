@@ -292,12 +292,14 @@
               @for (day of groups.at(index).controls.schedule.controls; track day; let d = $index) {
                 <td class="border-outline p-xs border text-center" [formGroup]="day">
                   @if (editable()) {
+                    <!--
+                      Widget nativo, igual que el sondeo: el valor siempre es `HH:mm` de 24 h,
+                      que es lo que espera el contrato. Si lo pinta con a. m./p. m. lo decide
+                      el idioma del navegador, no la aplicación.
+                    -->
                     <input
-                      type="text"
-                      inputmode="numeric"
-                      maxlength="5"
-                      placeholder="09:30"
-                      class="border-outline focus:border-primary px-xs w-16 rounded border bg-transparent py-[2px] text-center outline-none"
+                      type="time"
+                      class="border-outline focus:border-primary px-xs w-28 rounded border bg-transparent py-[2px] text-center outline-none"
                       [class.border-error]="scheduleCellInvalid(index, d, 'start')"
                       [attr.title]="scheduleCellError(index, d, 'start') | translate"
                       [attr.aria-label]="
@@ -306,7 +308,6 @@
                         ('TRIMESTRAL_PLANNING.GROUP.START' | translate)
                       "
                       formControlName="start"
-                      (blur)="onTimeBlur(index, d, 'start')"
                       data-testid="time-input"
                     />
                   } @else {
@@ -316,11 +317,8 @@
                 <td class="border-outline p-xs border text-center" [formGroup]="day">
                   @if (editable()) {
                     <input
-                      type="text"
-                      inputmode="numeric"
-                      maxlength="5"
-                      placeholder="11:00"
-                      class="border-outline focus:border-primary px-xs w-16 rounded border bg-transparent py-[2px] text-center outline-none"
+                      type="time"
+                      class="border-outline focus:border-primary px-xs w-28 rounded border bg-transparent py-[2px] text-center outline-none"
                       [class.border-error]="scheduleCellInvalid(index, d, 'end')"
                       [attr.title]="scheduleCellError(index, d, 'end') | translate"
                       [attr.aria-label]="
@@ -329,7 +327,6 @@
                         ('TRIMESTRAL_PLANNING.GROUP.END' | translate)
                       "
                       formControlName="end"
-                      (blur)="onTimeBlur(index, d, 'end')"
                       data-testid="time-input"
                     />
                   } @else {

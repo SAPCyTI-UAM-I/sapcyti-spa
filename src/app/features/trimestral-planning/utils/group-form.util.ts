@@ -65,28 +65,13 @@ export function hasScheduleCapture(schedule: FormArray<ScheduleFormGroup>): bool
 const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 /**
- * La hora se captura a mano, así que el formato hay que validarlo: antes lo garantizaba
- * el widget (primero `<input type="time">`, luego un select de rejilla).
+ * El widget nativo no deja teclear una hora inválida, pero el formato también llega desde
+ * el servidor y el backend lo rechaza con este mismo patrón.
  */
 export function timeFormatValidator(control: AbstractControl): ValidationErrors | null {
   const value = (control.value as string | null)?.trim() ?? '';
   if (!value) return null;
   return TIME_PATTERN.test(value) ? null : { timeFormat: true };
-}
-
-/**
- * `930`, `0930` y `9:30` se completan a `09:30` al salir del campo. Lo que no se puede
- * interpretar se deja intacto para que `timeFormatValidator` lo marque.
- */
-export function normalizeTimeInput(raw: string | null): string {
-  const value = raw?.trim() ?? '';
-  if (!value) return '';
-
-  const match = /^(\d{1,2}):?(\d{2})$/.exec(value);
-  if (!match) return value;
-
-  const [, hours, minutes] = match;
-  return `${hours!.padStart(2, '0')}:${minutes}`;
 }
 
 /** A day is either empty or a complete, strictly increasing start/end range. */
