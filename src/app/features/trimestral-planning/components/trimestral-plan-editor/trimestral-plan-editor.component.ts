@@ -11,6 +11,7 @@ import {
   input,
   output,
   signal,
+  Signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
@@ -70,6 +71,18 @@ import {
   TrimestralPlanError,
 } from '../../utils/trimestral-plan-error.util';
 import { isEditable } from '../../utils/trimestral-plan-status.util';
+
+/**
+ * Computed atado al formulario. Centraliza el `revision()` que antes había que recordar en
+ * cada miembro: olvidarlo no rompía ningún test, solo dejaba un valor que no se refrescaba
+ * —de ahí la bandera de límite que se quedaba pegada al quitar un grupo—.
+ */
+function fromForm<T>(revision: Signal<number>, compute: () => T): Signal<T> {
+  return computed(() => {
+    revision();
+    return compute();
+  });
+}
 
 /** Constantes: el vacío también necesita identidad estable para no redibujar la celda. */
 const EMPTY_IDS: readonly number[] = [];
@@ -190,15 +203,13 @@ export class TrimestralPlanEditorComponent {
   });
 
   /** Las dos reglas que dependen del resto de los grupos; la lógica vive en el util. */
-  readonly overCapacityIndices = computed(() => {
-    this.revision();
-    return overCapacityIndices(this.groups.controls);
-  });
+  readonly overCapacityIndices = fromForm(this.revision, () =>
+    overCapacityIndices(this.groups.controls),
+  );
 
-  readonly overGroupLimitIndices = computed(() => {
-    this.revision();
-    return overGroupLimitIndices(this.groups.controls);
-  });
+  readonly overGroupLimitIndices = fromForm(this.revision, () =>
+    overGroupLimitIndices(this.groups.controls),
+  );
 
   readonly exceedsAnnualLimits = computed(
     () => this.overCapacityIndices().length > 0 || this.overGroupLimitIndices().length > 0,
@@ -212,11 +223,8 @@ export class TrimestralPlanEditorComponent {
    */
   readonly problemGroupIndices = computed(() => new Set(this.issues().map((issue) => issue.index)));
 
-  readonly filteredOrder = computed(() => {
+  readonly filteredOrder = fromForm(this.revision, () => {
     const filters = this.filterValue();
-    // Group code, membership, professors and schedule are editable FormControls.
-    this.revision();
-
     const problems = this.problemGroupIndices();
     return this.order().filter((index) =>
       matchesGroupFilters(
@@ -248,10 +256,7 @@ export class TrimestralPlanEditorComponent {
    * Cada regla rota, dicha en concreto y con su grupo. «Hay valores inválidos» obligaba a
    * recorrer 25 filas × 5 días buscando el borde rojo.
    */
-  readonly issues = computed(() => {
-    this.revision();
-    return collectGroupIssues(this.groups.controls);
-  });
+  readonly issues = fromForm(this.revision, () => collectGroupIssues(this.groups.controls));
 
   /**
    * Al abrir el plan no se acusa nada: los problemas se muestran en cuanto se edita algo
@@ -276,8 +281,7 @@ export class TrimestralPlanEditorComponent {
    * `pinProfessors` mantiene fijas, así que un profesor dado de baja pero ya asignado
    * sigue apareciendo.
    */
-  private readonly professorNamesByIndex = computed<readonly string[]>(() => {
-    this.revision();
+  private readonly professorNamesByIndex = fromForm<readonly string[]>(this.revision, () => {
     // Solo el nombre: el NEMP ya vive en su propia columna, repetirlo es ruido.
     this.people.professors();
     return this.groups.controls.map((group) =>
@@ -300,8 +304,7 @@ export class TrimestralPlanEditorComponent {
    * en cada ciclo de detección y devolver un arreglo nuevo cada vez hacía que PrimeNG
    * viera un modelo distinto, volviera a marcar para revisar y el ciclo no terminara.
    */
-  private readonly membersByIndex = computed<readonly GroupStudent[][]>(() => {
-    this.revision();
+  private readonly membersByIndex = fromForm<readonly GroupStudent[][]>(this.revision, () => {
     const snapshots = this.studentsByIndex();
     return this.groups.controls.map((group, index) =>
       group.controls.students.controls.map((row) => {
@@ -314,10 +317,9 @@ export class TrimestralPlanEditorComponent {
     );
   });
 
-  private readonly studentIdsByIndex = computed<readonly number[][]>(() => {
-    this.revision();
-    return this.groups.controls.map(studentIds);
-  });
+  private readonly studentIdsByIndex = fromForm<readonly number[][]>(this.revision, () =>
+    this.groups.controls.map(studentIds),
+  );
 
   membersFor(index: number): readonly GroupStudent[] {
     return this.membersByIndex()[index] ?? EMPTY_MEMBERS;
@@ -329,6 +331,11 @@ export class TrimestralPlanEditorComponent {
       .filter(Boolean)
       .join(' · ');
   }
+
+  /*
+   * Los métodos de abajo también leen `revision()`: la plantilla es un contexto reactivo,
+   * así que leerlo ahí es lo que hace que la celda se repinte al teclear.
+   */
 
   occupancyFor(index: number): string {
     this.revision();
