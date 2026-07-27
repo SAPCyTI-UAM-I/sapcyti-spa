@@ -1,4 +1,4 @@
-import { GroupFormGroup } from './group-form.util';
+import { GROUP_CODE_MAX_LENGTH, GroupFormGroup, memberCount } from './group-form.util';
 import { quotaLimit } from './occupancy.util';
 
 /**
@@ -27,7 +27,7 @@ const NO_PARAMS: Readonly<Record<string, string | number>> = {};
 export function overCapacityIndices(groups: readonly GroupFormGroup[]): number[] {
   return groups.flatMap((group, index) => {
     const limit = quotaLimit(group.controls.cupo.value);
-    return limit !== null && group.controls.students.length > limit ? [index] : [];
+    return limit !== null && memberCount(group) > limit ? [index] : [];
   });
 }
 
@@ -64,7 +64,7 @@ export function collectGroupIssues(groups: readonly GroupFormGroup[]): GroupIssu
     });
 
     if (group.controls.grupo.errors?.['maxlength']) {
-      issues.push(at('GRUPO_TOO_LONG', '', { max: 10 }));
+      issues.push(at('GRUPO_TOO_LONG', '', { max: GROUP_CODE_MAX_LENGTH }));
     }
     if (group.controls.cupo.errors?.['pattern']) {
       issues.push(at('CUPO_FORMAT', '', { cupo: group.controls.cupo.value }));
@@ -72,7 +72,7 @@ export function collectGroupIssues(groups: readonly GroupFormGroup[]): GroupIssu
     if (capacity.has(index)) {
       issues.push(
         at('OVER_CAPACITY', '', {
-          students: group.controls.students.length,
+          students: memberCount(group),
           cupo: group.controls.cupo.value,
         }),
       );

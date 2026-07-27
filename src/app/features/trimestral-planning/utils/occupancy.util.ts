@@ -1,4 +1,4 @@
-import { GroupFormGroup, hasScheduleCapture } from './group-form.util';
+import { GroupFormGroup, hasProfessors, hasScheduleCapture } from './group-form.util';
 
 export type OccupancySeverity = 'ok' | 'full' | 'over';
 
@@ -34,7 +34,7 @@ export function occupancySeverity(cupo: string, memberCount: number): OccupancyS
 export function isGroupIncomplete(group: GroupFormGroup): boolean {
   return (
     !group.controls.grupo.value.trim() ||
-    group.controls.professorIds.value.length === 0 ||
+    !hasProfessors(group) ||
     !hasScheduleCapture(group.controls.schedule)
   );
 }

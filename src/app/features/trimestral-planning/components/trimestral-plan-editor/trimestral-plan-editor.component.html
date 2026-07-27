@@ -239,7 +239,7 @@
                     class="border-outline focus:border-primary px-xs w-20 rounded border bg-transparent py-[2px] text-center outline-none"
                     [class.border-error]="cellInvalid(index, 'grupo')"
                     formControlName="grupo"
-                    maxlength="10"
+                    [attr.maxlength]="groupCodeMaxLength"
                     placeholder="CO43"
                     [attr.aria-label]="'TRIMESTRAL_PLANNING.GROUP.GRUPO' | translate"
                   />

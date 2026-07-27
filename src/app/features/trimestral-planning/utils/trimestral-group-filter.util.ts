@@ -1,5 +1,5 @@
 import type { I18nSelectOption } from '../../../shared/components';
-import { GroupFormGroup, hasScheduleCapture } from './group-form.util';
+import { GroupFormGroup, hasProfessors, hasScheduleCapture, memberCount } from './group-form.util';
 import { isGroupIncomplete } from './occupancy.util';
 
 export type GroupFilterState =
@@ -71,11 +71,11 @@ function matchesState(
 ): boolean {
   switch (state) {
     case 'WITH_STUDENTS':
-      return group.controls.students.length > 0;
+      return memberCount(group) > 0;
     case 'WITHOUT_STUDENTS':
-      return group.controls.students.length === 0;
+      return memberCount(group) === 0;
     case 'WITHOUT_PROFESSORS':
-      return group.controls.professorIds.value.length === 0;
+      return !hasProfessors(group);
     case 'WITHOUT_SCHEDULE':
       return !hasScheduleCapture(group.controls.schedule);
     case 'INCOMPLETE':

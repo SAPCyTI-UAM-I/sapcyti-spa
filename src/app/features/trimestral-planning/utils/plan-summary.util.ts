@@ -1,4 +1,4 @@
-import { GroupFormGroup } from './group-form.util';
+import { GroupFormGroup, memberCount } from './group-form.util';
 import { isGroupIncomplete } from './occupancy.util';
 
 export interface PlanSummaryCounts {
@@ -23,7 +23,7 @@ export function computePlanSummary(
 ): PlanSummaryCounts {
   return {
     groups: groups.length,
-    assignedStudents: groups.reduce((total, group) => total + group.controls.students.length, 0),
+    assignedStudents: groups.reduce((total, group) => total + memberCount(group), 0),
     unassignedStudents: pendingStudents,
     incompleteGroups: groups.filter(isGroupIncomplete).length,
     groupsWithProblems: violatingIndices.size,

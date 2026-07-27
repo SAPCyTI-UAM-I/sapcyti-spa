@@ -19,6 +19,9 @@ import {
 } from '../../../models';
 import { QUOTA_PATTERN } from '../../../shared/utils/quota.util';
 
+/** Largo de la letra de grupo (CO43, CR43A…): validador, mensaje y campo lo comparten. */
+export const GROUP_CODE_MAX_LENGTH = 10;
+
 export type ScheduleFormGroup = FormGroup<{
   day: FormControl<ScheduleDay>;
   start: FormControl<string>;
@@ -56,6 +59,24 @@ export function hasScheduleDayCapture(day: ScheduleFormGroup): boolean {
 
 export function hasScheduleCapture(schedule: FormArray<ScheduleFormGroup>): boolean {
   return schedule.controls.some(hasScheduleDayCapture);
+}
+
+/*
+ * Lecturas de un grupo. Existen para que filtros, resumen, ocupación y problemas no
+ * tengan que saber que los alumnos son un `FormArray` de `FormGroup`: si el formulario
+ * cambia de forma, se arregla aquí y no en cinco archivos.
+ */
+
+export function memberCount(group: GroupFormGroup): number {
+  return group.controls.students.length;
+}
+
+export function studentIds(group: GroupFormGroup): number[] {
+  return group.controls.students.controls.map((row) => row.controls.studentId.value);
+}
+
+export function hasProfessors(group: GroupFormGroup): boolean {
+  return group.controls.professorIds.value.length > 0;
 }
 
 /**
@@ -146,7 +167,7 @@ export function buildGroupFormGroup(
     clave: fb.control(group.clave),
     nombre: fb.control(group.nombre),
     tipoUea: fb.control(group.tipoUea),
-    grupo: fb.control(group.grupo ?? '', [Validators.maxLength(10)]),
+    grupo: fb.control(group.grupo ?? '', [Validators.maxLength(GROUP_CODE_MAX_LENGTH)]),
     cupo: fb.control(group.cupo ?? '', [Validators.pattern(QUOTA_PATTERN)]),
     maxGroups: fb.control(group.maxGroups ?? ''),
     professorIds: fb.control(group.professors.map((professor) => professor.professorId)),

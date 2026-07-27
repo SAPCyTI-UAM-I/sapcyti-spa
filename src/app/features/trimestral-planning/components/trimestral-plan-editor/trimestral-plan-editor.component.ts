@@ -39,7 +39,10 @@ import {
   buildGroupFormGroup,
   buildSaveGroupsRequest,
   emptyGroup,
+  GROUP_CODE_MAX_LENGTH,
   GroupFormGroup,
+  memberCount,
+  studentIds,
 } from '../../utils/group-form.util';
 import { claveHeaderPositions } from '../../utils/group-ordering.util';
 import {
@@ -260,6 +263,8 @@ export class TrimestralPlanEditorComponent {
 
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
 
+  readonly groupCodeMaxLength = GROUP_CODE_MAX_LENGTH;
+
   /** Columnas del formato oficial; se usa para el colspan del divisor por UEA. */
   readonly scheduleDays = SCHEDULE_DAYS;
   readonly totalColumns = 10 + SCHEDULE_DAYS.length * 3;
@@ -311,9 +316,7 @@ export class TrimestralPlanEditorComponent {
 
   private readonly studentIdsByIndex = computed<readonly number[][]>(() => {
     this.revision();
-    return this.groups.controls.map((group) =>
-      group.controls.students.controls.map((row) => row.controls.studentId.value),
-    );
+    return this.groups.controls.map(studentIds);
   });
 
   membersFor(index: number): readonly GroupStudent[] {
@@ -330,13 +333,13 @@ export class TrimestralPlanEditorComponent {
   occupancyFor(index: number): string {
     this.revision();
     const group = this.groups.at(index);
-    return occupancyLabel(group.controls.cupo.value, group.controls.students.length);
+    return occupancyLabel(group.controls.cupo.value, memberCount(group));
   }
 
   occupancySeverityFor(index: number): OccupancySeverity {
     this.revision();
     const group = this.groups.at(index);
-    return occupancySeverity(group.controls.cupo.value, group.controls.students.length);
+    return occupancySeverity(group.controls.cupo.value, memberCount(group));
   }
 
   incompleteFor(index: number): boolean {
