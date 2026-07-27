@@ -42,7 +42,12 @@ import {
   GroupFormGroup,
 } from '../../utils/group-form.util';
 import { claveHeaderPositions } from '../../utils/group-ordering.util';
-import { collectGroupIssues, GroupIssue } from '../../utils/plan-issues.util';
+import {
+  collectGroupIssues,
+  GroupIssue,
+  overCapacityIndices,
+  overGroupLimitIndices,
+} from '../../utils/plan-issues.util';
 import { nextGroupLetter } from '../../utils/group-letter.util';
 import {
   isGroupIncomplete,
@@ -178,35 +183,19 @@ export class TrimestralPlanEditorComponent {
     );
   });
 
-  readonly capacityViolationIndices = computed(() => {
+  /** Las dos reglas que dependen del resto de los grupos; la lógica vive en el util. */
+  readonly overCapacityIndices = computed(() => {
     this.revision();
-    return this.groups.controls.flatMap((group, index) => {
-      const cupo = group.controls.cupo.value.trim();
-      if (!cupo || cupo === '*') return [];
-      const limit = Number(cupo);
-      return Number.isInteger(limit) && group.controls.students.length > limit ? [index] : [];
-    });
+    return overCapacityIndices(this.groups.controls);
   });
 
-  readonly groupLimitViolationIndices = computed(() => {
+  readonly overGroupLimitIndices = computed(() => {
     this.revision();
-    const counts = new Map<number, number>();
-    for (const group of this.groups.controls) {
-      counts.set(group.controls.ueaId.value, (counts.get(group.controls.ueaId.value) ?? 0) + 1);
-    }
-    return this.groups.controls.flatMap((group, index) => {
-      const maxGroups = group.controls.maxGroups.value.trim();
-      if (!maxGroups || maxGroups === '*') return [];
-      const limit = Number(maxGroups);
-      return Number.isInteger(limit) && (counts.get(group.controls.ueaId.value) ?? 0) > limit
-        ? [index]
-        : [];
-    });
+    return overGroupLimitIndices(this.groups.controls);
   });
 
   readonly hasLimitViolations = computed(
-    () =>
-      this.capacityViolationIndices().length > 0 || this.groupLimitViolationIndices().length > 0,
+    () => this.overCapacityIndices().length > 0 || this.overGroupLimitIndices().length > 0,
   );
 
   /**
@@ -255,11 +244,7 @@ export class TrimestralPlanEditorComponent {
    */
   readonly issues = computed(() => {
     this.revision();
-    return collectGroupIssues(
-      this.groups.controls,
-      this.capacityViolationIndices(),
-      this.groupLimitViolationIndices(),
-    );
+    return collectGroupIssues(this.groups.controls);
   });
 
   /**

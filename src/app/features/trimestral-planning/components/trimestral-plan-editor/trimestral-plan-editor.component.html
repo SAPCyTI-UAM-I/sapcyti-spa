@@ -260,7 +260,7 @@
                 } @else {
                   <span>{{ groups.at(index).controls.grupo.value || '—' }}</span>
                 }
-                @if (groupLimitViolationIndices().includes(index)) {
+                @if (overGroupLimitIndices().includes(index)) {
                   <i
                     class="pi pi-exclamation-triangle text-error ml-xs"
                     [attr.title]="'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT_EXCEEDED' | translate"

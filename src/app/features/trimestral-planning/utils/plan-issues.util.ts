@@ -1,4 +1,5 @@
 import { GroupFormGroup } from './group-form.util';
+import { quotaLimit } from './occupancy.util';
 
 /**
  * Un problema concreto que impide guardar, ya localizado en su grupo. Se guarda la clave
@@ -20,18 +21,37 @@ const SCOPE = 'TRIMESTRAL_PLANNING.ISSUES.';
 const NO_PARAMS: Readonly<Record<string, string | number>> = {};
 
 /**
- * Reúne todo lo que bloquea el guardado en una lista legible. Los índices de violación
- * llegan calculados desde el editor: son reglas entre grupos (cupo y máximo de la
- * planeación anual), no del `FormGroup`, y ya se usan para filtrar y marcar filas.
+ * Grupos con más alumnos que el cupo autorizado. Es una regla del plan y no del
+ * `FormGroup`: el cupo lo fija la planeación anual y el editor no lo deja teclear.
  */
-export function collectGroupIssues(
-  groups: readonly GroupFormGroup[],
-  capacityViolations: readonly number[],
-  groupLimitViolations: readonly number[],
-): GroupIssue[] {
+export function overCapacityIndices(groups: readonly GroupFormGroup[]): number[] {
+  return groups.flatMap((group, index) => {
+    const limit = quotaLimit(group.controls.cupo.value);
+    return limit !== null && group.controls.students.length > limit ? [index] : [];
+  });
+}
+
+/** Grupos que rebasan el número de grupos que la planeación anual abrió para su UEA. */
+export function overGroupLimitIndices(groups: readonly GroupFormGroup[]): number[] {
+  const counts = new Map<number, number>();
+  for (const group of groups) {
+    counts.set(group.controls.ueaId.value, (counts.get(group.controls.ueaId.value) ?? 0) + 1);
+  }
+  return groups.flatMap((group, index) => {
+    const limit = quotaLimit(group.controls.maxGroups.value);
+    return limit !== null && (counts.get(group.controls.ueaId.value) ?? 0) > limit ? [index] : [];
+  });
+}
+
+/**
+ * Reúne todo lo que bloquea el guardado en una lista legible: los errores del formulario y
+ * las dos reglas que dependen del resto de los grupos. Las calcula aquí en vez de
+ * recibirlas para que la lista no pueda quedar incompleta por un llamador olvidadizo.
+ */
+export function collectGroupIssues(groups: readonly GroupFormGroup[]): GroupIssue[] {
   const issues: GroupIssue[] = [];
-  const capacity = new Set(capacityViolations);
-  const limits = new Set(groupLimitViolations);
+  const capacity = new Set(overCapacityIndices(groups));
+  const limits = new Set(overGroupLimitIndices(groups));
 
   groups.forEach((group, index) => {
     const at = (key: string, dayKey = '', params = NO_PARAMS): GroupIssue => ({

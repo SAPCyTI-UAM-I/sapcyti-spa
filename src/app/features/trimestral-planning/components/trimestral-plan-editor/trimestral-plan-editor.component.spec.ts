@@ -208,14 +208,14 @@ describe('TrimestralPlanEditorComponent', () => {
     // El plan anual permite 2 grupos de la UEA 1; con el que ya existe, el tercero sobra.
     component.addGroup(1);
     component.addGroup(1);
-    expect(component.groupLimitViolationIndices().length).toBeGreaterThan(0);
+    expect(component.overGroupLimitIndices().length).toBeGreaterThan(0);
     expect(component.hasLimitViolations()).toBe(true);
 
     const extra = component.groups.at(component.groups.length - 1);
     component.requestRemoveGroup(extra);
     component.confirmRemoveGroup();
 
-    expect(component.groupLimitViolationIndices()).toEqual([]);
+    expect(component.overGroupLimitIndices()).toEqual([]);
     expect(component.hasLimitViolations()).toBe(false);
     expect(component.problemGroupIndices().size).toBe(0);
   });
@@ -225,11 +225,11 @@ describe('TrimestralPlanEditorComponent', () => {
     const group = component.groups.at(0);
     group.controls.cupo.setValue('1');
     group.controls.students.push(buildStudentRow(new FormBuilder().nonNullable, 3));
-    expect(component.capacityViolationIndices()).toEqual([0]);
+    expect(component.overCapacityIndices()).toEqual([0]);
 
     group.controls.students.removeAt(1);
 
-    expect(component.capacityViolationIndices()).toEqual([]);
+    expect(component.overCapacityIndices()).toEqual([]);
   });
 
   it('proposes the next group letter when adding a second group for a UEA', async () => {
