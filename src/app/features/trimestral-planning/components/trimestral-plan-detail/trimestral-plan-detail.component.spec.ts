@@ -7,51 +7,17 @@ import { MessageService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 
 import { mockApiError } from '../../../../core/errors/testing/mock-api-error.util';
-import { SCHEDULE_DAYS, TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
+import { TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
+import { trimestralGroup, trimestralPlanDetail } from '../../testing/trimestral-fixtures';
 import { TrimestralPlanEditorComponent } from '../trimestral-plan-editor/trimestral-plan-editor.component';
 import { TrimestralPlanDetailComponent } from './trimestral-plan-detail.component';
 
-function plan(
-  status: TrimestralPlanStatus = 'BORRADOR',
-  overrides: Partial<TrimestralPlanDetail> = {},
-): TrimestralPlanDetail {
-  return {
-    id: 1,
-    term: '26I',
-    status,
-    surveyId: 1,
-    outdated: false,
-    outdatedReasons: [],
-    prerequisites: { surveyClosed: true, annualPlanTerminated: true },
-    exportedAt: null,
-    warnings: [],
-    blankStudents: [],
-    unassignedDemand: [],
-    groups: [],
-    ...overrides,
-  };
-}
+const plan = trimestralPlanDetail;
 
 /** Un grupo real, para los casos que necesitan tocar el formulario del editor. */
 function planWithGroup(status: TrimestralPlanStatus = 'BORRADOR'): TrimestralPlanDetail {
-  return plan(status, {
-    groups: [
-      {
-        id: 10,
-        ueaId: 1,
-        clave: '2156024',
-        nombre: 'REDES',
-        tipoUea: 'OBLIGATORIA',
-        grupo: 'CO43',
-        cupo: '15',
-        maxGroups: '2',
-        professors: [],
-        schedule: SCHEDULE_DAYS.map((day) => ({ day, start: null, end: null, lab: false })),
-        students: [],
-      },
-    ],
-  });
+  return plan(status, { groups: [trimestralGroup()] });
 }
 
 describe('TrimestralPlanDetailComponent', () => {
