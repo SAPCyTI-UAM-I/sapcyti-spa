@@ -209,14 +209,14 @@ describe('TrimestralPlanEditorComponent', () => {
     component.addGroup(1);
     component.addGroup(1);
     expect(component.overGroupLimitIndices().length).toBeGreaterThan(0);
-    expect(component.hasLimitViolations()).toBe(true);
+    expect(component.exceedsAnnualLimits()).toBe(true);
 
     const extra = component.groups.at(component.groups.length - 1);
     component.requestRemoveGroup(extra);
     component.confirmRemoveGroup();
 
     expect(component.overGroupLimitIndices()).toEqual([]);
-    expect(component.hasLimitViolations()).toBe(false);
+    expect(component.exceedsAnnualLimits()).toBe(false);
     expect(component.problemGroupIndices().size).toBe(0);
   });
 
@@ -445,7 +445,7 @@ describe('TrimestralPlanEditorComponent', () => {
     const { component } = await setup();
     component.groups.at(0).controls.schedule.at(2).patchValue({ end: '10:00' });
 
-    component.filters.patchValue({ state: 'HAS_VIOLATIONS' });
+    component.filters.patchValue({ state: 'HAS_PROBLEMS' });
 
     expect(component.problemGroupIndices()).toEqual(new Set([0]));
     expect(component.filteredOrder()).toEqual([0]);
@@ -553,7 +553,7 @@ describe('TrimestralPlanEditorComponent', () => {
     component.groups
       .at(0)
       .controls.students.push(buildStudentRow(new FormBuilder().nonNullable, 3));
-    component.filters.patchValue({ state: 'HAS_VIOLATIONS' });
+    component.filters.patchValue({ state: 'HAS_PROBLEMS' });
     fixture.detectChanges();
 
     expect(component.filteredOrder()).toEqual([0]);
@@ -568,7 +568,7 @@ describe('TrimestralPlanEditorComponent', () => {
 
     component.save();
 
-    expect(component.hasLimitViolations()).toBe(true);
+    expect(component.exceedsAnnualLimits()).toBe(true);
     expect(saveGroups).not.toHaveBeenCalled();
   });
 

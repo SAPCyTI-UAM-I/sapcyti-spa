@@ -250,7 +250,7 @@
                   <i
                     class="pi pi-exclamation-triangle text-error ml-xs"
                     [attr.title]="'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT_EXCEEDED' | translate"
-                    data-testid="group-limit-violation"
+                    data-testid="over-group-limit"
                   ></i>
                 }
                 <!-- Quitar el grupo vive en su celda de identidad, no en una columna aparte. -->
@@ -391,7 +391,7 @@
                     <i
                       class="pi pi-exclamation-triangle text-error mt-sm shrink-0"
                       [attr.title]="'TRIMESTRAL_PLANNING.GROUP.OVER_CAPACITY' | translate"
-                      data-testid="capacity-violation"
+                      data-testid="over-capacity"
                     ></i>
                   }
                   @if (editable()) {

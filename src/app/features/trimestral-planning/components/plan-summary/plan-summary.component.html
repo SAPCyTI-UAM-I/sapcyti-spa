@@ -31,8 +31,8 @@
     <button
       type="button"
       class="border-error-border bg-error-container text-on-error-container gap-sm px-md py-sm focus-visible:ring-focus-ring inline-flex cursor-pointer items-center rounded-xl border focus-visible:ring-2 focus-visible:outline-none"
-      (click)="applyFilter.emit('HAS_VIOLATIONS')"
-      data-testid="summary-chip-HAS_VIOLATIONS"
+      (click)="applyFilter.emit('HAS_PROBLEMS')"
+      data-testid="summary-chip-HAS_PROBLEMS"
     >
       <i class="pi pi-exclamation-triangle text-lg" aria-hidden="true"></i>
       <span class="text-h1 leading-none font-bold">{{ counts().groupsWithProblems }}</span>

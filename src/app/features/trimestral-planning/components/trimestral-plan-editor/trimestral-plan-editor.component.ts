@@ -200,7 +200,7 @@ export class TrimestralPlanEditorComponent {
     return overGroupLimitIndices(this.groups.controls);
   });
 
-  readonly hasLimitViolations = computed(
+  readonly exceedsAnnualLimits = computed(
     () => this.overCapacityIndices().length > 0 || this.overGroupLimitIndices().length > 0,
   );
 
@@ -565,7 +565,7 @@ export class TrimestralPlanEditorComponent {
     if (!this.editable() || this.saving()) {
       return;
     }
-    if (this.groups.invalid || this.hasLimitViolations()) {
+    if (this.groups.invalid || this.exceedsAnnualLimits()) {
       this.revealInvalidGroups();
       return;
     }

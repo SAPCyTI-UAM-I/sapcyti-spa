@@ -957,7 +957,7 @@
       "ALL_GROUPS": "All groups",
       "ALL_TYPES": "All types",
       "CLEAR": "Clear filters",
-      "HAS_VIOLATIONS": "With problems",
+      "HAS_PROBLEMS": "With problems",
       "INCOMPLETE": "Incomplete",
       "NO_RESULTS": "No group matches the search and filters.",
       "RESULTS": "{{visible}} of {{total}} groups",

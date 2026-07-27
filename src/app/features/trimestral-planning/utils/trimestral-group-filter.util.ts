@@ -9,7 +9,7 @@ export type GroupFilterState =
   | 'WITHOUT_PROFESSORS'
   | 'WITHOUT_SCHEDULE'
   | 'INCOMPLETE'
-  | 'HAS_VIOLATIONS';
+  | 'HAS_PROBLEMS';
 
 export interface TrimestralGroupFilters {
   readonly search: string;
@@ -25,7 +25,7 @@ export const UEA_TYPE_FILTERS: I18nSelectOption[] = [
 
 export const GROUP_STATE_FILTERS: I18nSelectOption<GroupFilterState>[] = [
   { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.ALL_GROUPS', value: '' },
-  { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.HAS_VIOLATIONS', value: 'HAS_VIOLATIONS' },
+  { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.HAS_PROBLEMS', value: 'HAS_PROBLEMS' },
   { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.INCOMPLETE', value: 'INCOMPLETE' },
   { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.WITH_STUDENTS', value: 'WITH_STUDENTS' },
   { labelKey: 'TRIMESTRAL_PLANNING.FILTERS.WITHOUT_STUDENTS', value: 'WITHOUT_STUDENTS' },
@@ -43,14 +43,14 @@ function normalize(value: string): string {
 }
 
 /**
- * `hasViolation` llega ya resuelto: sobrecupo y exceso de grupos dependen del resto
+ * `hasProblem` llega ya resuelto: sobrecupo y exceso de grupos dependen del resto
  * de los grupos, así que no se pueden deducir del `GroupFormGroup` aislado y esta
  * función seguiría siendo pura solo si el llamador hace ese cálculo.
  */
 export function matchesGroupFilters(
   group: GroupFormGroup,
   filters: TrimestralGroupFilters,
-  hasViolation = false,
+  hasProblem = false,
 ): boolean {
   const search = normalize(filters.search);
   const searchable = normalize(
@@ -60,14 +60,14 @@ export function matchesGroupFilters(
   return (
     (!search || searchable.includes(search)) &&
     (!filters.ueaType || group.controls.tipoUea.value === filters.ueaType) &&
-    matchesState(group, filters.state, hasViolation)
+    matchesState(group, filters.state, hasProblem)
   );
 }
 
 function matchesState(
   group: GroupFormGroup,
   state: GroupFilterState,
-  hasViolation: boolean,
+  hasProblem: boolean,
 ): boolean {
   switch (state) {
     case 'WITH_STUDENTS':
@@ -80,8 +80,8 @@ function matchesState(
       return !hasScheduleCapture(group.controls.schedule);
     case 'INCOMPLETE':
       return isGroupIncomplete(group);
-    case 'HAS_VIOLATIONS':
-      return hasViolation;
+    case 'HAS_PROBLEMS':
+      return hasProblem;
     default:
       return true;
   }
