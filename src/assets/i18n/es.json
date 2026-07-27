@@ -985,7 +985,6 @@
       "GRUPO": "Grupo",
       "INACTIVE_STUDENT": "Alumno inactivo: puede permanecer, pero no moverse ni reponerse",
       "LAB": "LAB",
-      "LAB_TIME_REQUIRED": "LAB requiere hora de inicio y fin.",
       "MATRICULA": "Matrícula",
       "NAME": "Nombre",
       "NO_STUDENTS": "Este grupo todavía no tiene alumnos asignados.",
@@ -995,10 +994,7 @@
       "SEARCH_STUDENT": "Buscar por matrícula o nombre…",
       "SEARCH_UEA": "Buscar UEA por clave o nombre…",
       "START": "Inicio",
-      "START_AFTER_END": "La hora de inicio debe ser anterior a la de fin.",
-      "STUDENT_NOTE": "Nota",
-      "TIME_FORMAT_INVALID": "Usa el formato de 24 horas HH:mm, por ejemplo 09:30.",
-      "TIME_RANGE_REQUIRED": "Captura juntas la hora de inicio y la hora de fin, o deja ambas vacías."
+      "STUDENT_NOTE": "Nota"
     },
     "ISSUES": {
       "CUPO_FORMAT": "El cupo «{{cupo}}» no es válido: escribe un número entero o *.",

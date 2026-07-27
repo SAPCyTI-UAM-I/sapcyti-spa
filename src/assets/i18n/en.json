@@ -985,7 +985,6 @@
       "GRUPO": "Group",
       "INACTIVE_STUDENT": "Inactive student: may remain, but cannot be moved or restored",
       "LAB": "LAB",
-      "LAB_TIME_REQUIRED": "LAB requires both start and end times.",
       "MATRICULA": "Enrollment ID",
       "NAME": "Name",
       "NO_STUDENTS": "This group has no assigned students yet.",
@@ -995,10 +994,7 @@
       "SEARCH_STUDENT": "Search by enrollment ID or name…",
       "SEARCH_UEA": "Search UEA by key or name…",
       "START": "Start",
-      "START_AFTER_END": "The start time must be earlier than the end time.",
-      "STUDENT_NOTE": "Note",
-      "TIME_FORMAT_INVALID": "Use 24-hour format HH:mm, for example 09:30.",
-      "TIME_RANGE_REQUIRED": "Enter both start and end times, or leave both empty."
+      "STUDENT_NOTE": "Note"
     },
     "ISSUES": {
       "CUPO_FORMAT": "Quota “{{cupo}}” is not valid: enter a whole number or *.",

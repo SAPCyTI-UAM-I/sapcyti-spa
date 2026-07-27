@@ -77,21 +77,7 @@
               {{ issue.clave }} ·
               {{ issue.grupo || ('TRIMESTRAL_PLANNING.ISSUES.NO_GROUP_CODE' | translate) }}
             </button>
-            <span>
-              {{
-                issue.key
-                  | translate
-                    : {
-                        day: issue.dayKey | translate,
-                        start: issue.params['start'],
-                        end: issue.params['end'],
-                        value: issue.params['value'],
-                        cupo: issue.params['cupo'],
-                        students: issue.params['students'],
-                        max: issue.params['max'],
-                      }
-              }}
-            </span>
+            <span>{{ issueLabel(issue) }}</span>
           </li>
         }
       </ul>
@@ -345,7 +331,7 @@
                       type="time"
                       class="border-outline focus:border-primary px-xs w-28 rounded border bg-transparent py-[2px] text-center outline-none"
                       [class.border-error]="scheduleCellInvalid(index, d, 'start')"
-                      [attr.title]="scheduleCellError(index, d, 'start') | translate"
+                      [attr.title]="cellIssueLabel(index, d)"
                       [attr.aria-label]="
                         ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
                         ' · ' +
@@ -364,7 +350,7 @@
                       type="time"
                       class="border-outline focus:border-primary px-xs w-28 rounded border bg-transparent py-[2px] text-center outline-none"
                       [class.border-error]="scheduleCellInvalid(index, d, 'end')"
-                      [attr.title]="scheduleCellError(index, d, 'end') | translate"
+                      [attr.title]="cellIssueLabel(index, d)"
                       [attr.aria-label]="
                         ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
                         ' · ' +

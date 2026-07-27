@@ -481,9 +481,9 @@ describe('TrimestralPlanEditorComponent', () => {
     monday.controls.end.markAsDirty();
 
     expect(component.scheduleCellInvalid(0, 0, 'end')).toBe(true);
-    expect(component.scheduleCellError(0, 0, 'end')).toBe(
-      'TRIMESTRAL_PLANNING.GROUP.TIME_FORMAT_INVALID',
-    );
+    // El tooltip dice lo mismo que el panel: día + mensaje, un solo vocabulario.
+    expect(component.cellIssueLabel(0, 0)).toContain('TRIMESTRAL_PLANNING.ISSUES.TIME_FORMAT');
+    expect(component.cellIssueLabel(0, 0)).toContain('TRIMESTRAL_PLANNING.DAYS.LUN');
   });
 
   it('reports the range error on the day, not the format one', async () => {
@@ -494,9 +494,7 @@ describe('TrimestralPlanEditorComponent', () => {
     monday.controls.start.markAsDirty();
 
     expect(component.scheduleCellInvalid(0, 0, 'start')).toBe(true);
-    expect(component.scheduleCellError(0, 0, 'start')).toBe(
-      'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END',
-    );
+    expect(component.cellIssueLabel(0, 0)).toContain('TRIMESTRAL_PLANNING.ISSUES.START_AFTER_END');
   });
 
   it('adds and removes student rows without touching the server snapshots', async () => {

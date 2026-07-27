@@ -171,6 +171,9 @@ export class TrimestralPlanEditorComponent {
    */
   readonly revision = signal(0);
 
+  /** Mismo patrón que `breadcrumb`: refresca los textos compuestos con `instant`. */
+  private readonly lang = toSignal(this.translate.onLangChange, { initialValue: null });
+
   /** El cupo lo fija el plan anual del año del trimestre; la tarjeta enlaza ahí. */
   readonly annualPlanYear = computed(() => termYear(this.plan().term));
 
@@ -390,17 +393,27 @@ export class TrimestralPlanEditorComponent {
     );
   }
 
-  /** Clave i18n del problema de un día, para el `title` de la celda. */
-  scheduleCellError(index: number, dayIndex: number, field: 'start' | 'end'): string {
-    this.revision();
+  /**
+   * Texto de un problema, para el panel y para el `title` de la celda. Ambos decían las
+   * mismas cuatro reglas con dos juegos de claves i18n que ya habían empezado a divergir.
+   *
+   * `instant` en vez del pipe porque el mensaje se compone con el día; el patrón (y la
+   * señal de idioma que lo mantiene vivo al cambiar ES/EN) sale de `breadcrumb`.
+   */
+  issueLabel(issue: GroupIssue): string {
+    this.lang();
+    const message = this.translate.instant(issue.key, issue.params) as string;
+    return issue.dayKey ? `${this.translate.instant(issue.dayKey)} · ${message}` : message;
+  }
+
+  /** Mensaje del día que ocupa una celda de horario; vacío si ese día está bien. */
+  cellIssueLabel(index: number, dayIndex: number): string {
     const day = this.groups.at(index).controls.schedule.at(dayIndex);
-    if (day.controls[field].errors?.['timeFormat']) {
-      return 'TRIMESTRAL_PLANNING.GROUP.TIME_FORMAT_INVALID';
-    }
-    if (day.errors?.['labTimeRequired']) return 'TRIMESTRAL_PLANNING.GROUP.LAB_TIME_REQUIRED';
-    if (day.errors?.['incompleteRange']) return 'TRIMESTRAL_PLANNING.GROUP.TIME_RANGE_REQUIRED';
-    if (day.errors?.['startAfterEnd']) return 'TRIMESTRAL_PLANNING.GROUP.START_AFTER_END';
-    return '';
+    const dayKey = 'TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value;
+    const issue = this.issues().find(
+      (candidate) => candidate.index === index && candidate.dayKey === dayKey,
+    );
+    return issue ? this.issueLabel(issue) : '';
   }
 
   // ─── Celda de alumnos ───
