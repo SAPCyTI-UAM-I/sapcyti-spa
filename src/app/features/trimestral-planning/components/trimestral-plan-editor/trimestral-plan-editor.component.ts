@@ -407,13 +407,16 @@ export class TrimestralPlanEditorComponent {
    * Texto de un problema, para el panel y para el `title` de la celda. Ambos decían las
    * mismas cuatro reglas con dos juegos de claves i18n que ya habían empezado a divergir.
    *
-   * `instant` en vez del pipe porque el mensaje se compone con el día; el patrón (y la
-   * señal de idioma que lo mantiene vivo al cambiar ES/EN) sale de `breadcrumb`.
+   * El día es un parámetro más del mensaje, no un prefijo: las frases lo colocan donde
+   * toca en cada idioma. `instant` en vez del pipe porque hay que traducirlo antes de
+   * interpolarlo; la señal de idioma que mantiene esto vivo sale de `breadcrumb`.
    */
   issueLabel(issue: GroupIssue): string {
     this.lang();
-    const message = this.translate.instant(issue.key, issue.params) as string;
-    return issue.dayKey ? `${this.translate.instant(issue.dayKey)} · ${message}` : message;
+    const params = issue.dayKey
+      ? { ...issue.params, day: this.translate.instant(issue.dayKey) as string }
+      : issue.params;
+    return this.translate.instant(issue.key, params) as string;
   }
 
   /** Mensaje del día que ocupa una celda de horario; vacío si ese día está bien. */

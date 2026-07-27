@@ -2,9 +2,11 @@ import { TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
+
+import es from '../../../../../assets/i18n/es.json';
 
 import { TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
@@ -444,6 +446,26 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.showIssues()).toBe(true);
   });
 
+  /**
+   * Con el catálogo real cargado: componer el día por fuera dejaba el `{{day}}` del
+   * mensaje sin interpolar, y el panel mostraba «Lunes · {{day}} empieza a las 10:00».
+   */
+  it('interpolates every placeholder of the message it shows', async () => {
+    const detail = plan();
+    detail.groups[0]!.schedule[0]!.end = '10:00';
+    const { component } = await setup(detail);
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('es', es);
+    translate.use('es');
+
+    const [issue] = component.issues();
+    const label = component.issueLabel(issue!);
+
+    expect(label).not.toContain('{{');
+    expect(label).toContain('Lunes');
+    expect(label).toContain('10:00');
+  });
+
   it('flags a stored time that does not match the contract format', async () => {
     const { component } = await setup();
     const monday = component.groups.at(0).controls.schedule.at(0);
@@ -454,7 +476,6 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(component.scheduleCellInvalid(0, 0, 'end')).toBe(true);
     // El tooltip dice lo mismo que el panel: día + mensaje, un solo vocabulario.
     expect(component.cellIssueLabel(0, 0)).toContain('TRIMESTRAL_PLANNING.ISSUES.TIME_FORMAT');
-    expect(component.cellIssueLabel(0, 0)).toContain('TRIMESTRAL_PLANNING.DAYS.LUN');
   });
 
   it('reports the range error on the day, not the format one', async () => {
