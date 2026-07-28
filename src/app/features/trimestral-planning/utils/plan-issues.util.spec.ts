@@ -83,6 +83,47 @@ describe('collectGroupIssues', () => {
     ]);
   });
 
+  /** Nadie cursa dos veces la misma UEA; el backend lo rechaza con un 400 sin detalle. */
+  it('marks both groups when a student sits in two groups of the same UEA', () => {
+    const shared = groupStudent({ studentId: 5 });
+    const first = buildGroupFormGroup(fb, trimestralGroup({ students: [shared] }));
+    const second = buildGroupFormGroup(
+      fb,
+      trimestralGroup({ grupo: 'CO43A', maxGroups: '2', students: [shared] }),
+    );
+
+    expect(collectGroupIssues([first, second])).toMatchObject([
+      { index: 0, key: 'TRIMESTRAL_PLANNING.ISSUES.DUPLICATE_STUDENT' },
+      { index: 1, key: 'TRIMESTRAL_PLANNING.ISSUES.DUPLICATE_STUDENT' },
+    ]);
+  });
+
+  it('counts how many students repeat, and says it in plural', () => {
+    const students = [groupStudent({ studentId: 5 }), groupStudent({ studentId: 6 })];
+    const first = buildGroupFormGroup(fb, trimestralGroup({ students }));
+    const second = buildGroupFormGroup(
+      fb,
+      trimestralGroup({ grupo: 'CO43A', maxGroups: '2', students }),
+    );
+
+    expect(collectGroupIssues([first, second])[0]).toMatchObject({
+      key: 'TRIMESTRAL_PLANNING.ISSUES.DUPLICATE_STUDENTS',
+      params: { students: 2 },
+    });
+  });
+
+  /** Lo normal: el mismo alumno cursa varias UEAs. Marcarlo sería el falso positivo caro. */
+  it('leaves alone a student enrolled in groups of different UEAs', () => {
+    const shared = groupStudent({ studentId: 5 });
+    const redes = buildGroupFormGroup(fb, trimestralGroup({ students: [shared] }));
+    const ia = buildGroupFormGroup(
+      fb,
+      trimestralGroup({ ueaId: 7, clave: '2156027', grupo: 'CO44', students: [shared] }),
+    );
+
+    expect(collectGroupIssues([redes, ia])).toEqual([]);
+  });
+
   it('treats `*` and an empty quota as no limit at all', () => {
     const open = buildGroupFormGroup(fb, trimestralGroup({ cupo: '*', maxGroups: '*' }));
     const undefinedQuota = buildGroupFormGroup(

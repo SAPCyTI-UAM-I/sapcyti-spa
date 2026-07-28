@@ -1000,6 +1000,8 @@
     },
     "ISSUES": {
       "CUPO_FORMAT": "Quota “{{cupo}}” is not valid: enter a whole number or *.",
+      "DUPLICATE_STUDENT": "A student in this group is also in another group of this UEA: keep them in one group only.",
+      "DUPLICATE_STUDENTS": "{{students}} students in this group are also in another group of this UEA: keep each one in a single group.",
       "GO_TO_GROUP": "Filter the table by this UEA and jump to the group",
       "GROUP_LIMIT": "The annual plan authorizes {{max}} groups for this UEA and there are already more: remove one of the groups.",
       "GRUPO_TOO_LONG": "The group code cannot be longer than {{max}} characters.",

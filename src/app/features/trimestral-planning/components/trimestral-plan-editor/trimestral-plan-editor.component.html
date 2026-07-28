@@ -213,7 +213,7 @@
             <tr
               class="hover:bg-table-row-hover"
               [formGroup]="groups.at(index)"
-              [attr.data-invalid]="groups.at(index).invalid"
+              [attr.data-invalid]="problemGroupIndices().has(index)"
               [attr.data-group-index]="index"
               data-testid="trimestral-group-row"
             >

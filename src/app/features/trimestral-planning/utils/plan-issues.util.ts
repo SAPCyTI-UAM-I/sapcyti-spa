@@ -1,4 +1,4 @@
-import { GROUP_CODE_MAX_LENGTH, GroupFormGroup, memberCount } from './group-form.util';
+import { GROUP_CODE_MAX_LENGTH, GroupFormGroup, memberCount, studentIds } from './group-form.util';
 import { quotaLimit } from './occupancy.util';
 
 /**
@@ -44,14 +44,41 @@ export function overGroupLimitIndices(groups: readonly GroupFormGroup[]): number
 }
 
 /**
+ * Cuántos alumnos de cada grupo están además en otro grupo de la misma UEA. Nadie puede
+ * cursar dos veces la misma UEA y el backend lo rechaza al guardar
+ * (`TrimestralGroupRebuilder`), pero solo se llega aquí a mano: la generación desde la
+ * encuesta no puede producirlo (una respuesta por alumno, sin UEAs repetidas).
+ *
+ * Se cuenta por asiento (UEA, alumno) y se marcan **todos** los grupos implicados: de cuál
+ * sobra lo decide quien coordina, así que el panel tiene que llevar a los dos.
+ */
+function duplicatedStudentCounts(groups: readonly GroupFormGroup[]): number[] {
+  const seatKey = (group: GroupFormGroup, studentId: number) =>
+    `${group.controls.ueaId.value}|${studentId}`;
+  const seats = new Map<string, number>();
+  for (const group of groups) {
+    for (const studentId of studentIds(group)) {
+      const key = seatKey(group, studentId);
+      seats.set(key, (seats.get(key) ?? 0) + 1);
+    }
+  }
+  return groups.map(
+    (group) =>
+      studentIds(group).filter((studentId) => (seats.get(seatKey(group, studentId)) ?? 0) > 1)
+        .length,
+  );
+}
+
+/**
  * Reúne todo lo que bloquea el guardado en una lista legible: los errores del formulario y
- * las dos reglas que dependen del resto de los grupos. Las calcula aquí en vez de
+ * las reglas que dependen del resto de los grupos. Las calcula aquí en vez de
  * recibirlas para que la lista no pueda quedar incompleta por un llamador olvidadizo.
  */
 export function collectGroupIssues(groups: readonly GroupFormGroup[]): GroupIssue[] {
   const issues: GroupIssue[] = [];
   const capacity = new Set(overCapacityIndices(groups));
   const limits = new Set(overGroupLimitIndices(groups));
+  const duplicated = duplicatedStudentCounts(groups);
 
   groups.forEach((group, index) => {
     const at = (key: string, dayKey = '', params = NO_PARAMS): GroupIssue => ({
@@ -79,6 +106,14 @@ export function collectGroupIssues(groups: readonly GroupFormGroup[]): GroupIssu
     }
     if (limits.has(index)) {
       issues.push(at('GROUP_LIMIT', '', { max: group.controls.maxGroups.value }));
+    }
+    // Singular y plural son frases distintas, como MISSING_START/MISSING_END: el idioma no
+    // se arregla con «alumno(s)» y aquí no hay pluralización.
+    const repeated = duplicated[index] ?? 0;
+    if (repeated === 1) {
+      issues.push(at('DUPLICATE_STUDENT'));
+    } else if (repeated > 1) {
+      issues.push(at('DUPLICATE_STUDENTS', '', { students: repeated }));
     }
 
     for (const day of group.controls.schedule.controls) {

@@ -1000,6 +1000,8 @@
     },
     "ISSUES": {
       "CUPO_FORMAT": "El cupo «{{cupo}}» no es válido: escribe un número entero o *.",
+      "DUPLICATE_STUDENT": "Un alumno de este grupo también está en otro grupo de esta UEA: déjalo en uno solo.",
+      "DUPLICATE_STUDENTS": "{{students}} alumnos de este grupo también están en otro grupo de esta UEA: deja a cada uno en un solo grupo.",
       "GO_TO_GROUP": "Filtrar la tabla por esta UEA e ir al grupo",
       "GROUP_LIMIT": "La planeación anual autoriza {{max}} grupos para esta UEA y ya hay más: quita uno de los grupos.",
       "GRUPO_TOO_LONG": "La letra de grupo no puede pasar de {{max}} caracteres.",

@@ -573,6 +573,23 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(saveGroups).not.toHaveBeenCalled();
   });
 
+  // Solo se llega a mano (la encuesta no repite alumno por UEA), y antes el servidor lo
+  // rechazaba con un 400 sin detalle y la captura se perdía.
+  it('blocks the save when the same student sits in two groups of a UEA', async () => {
+    const { component, fixture, saveGroups } = await setup();
+    component.addGroup(1);
+    component.groups
+      .at(1)
+      .controls.students.push(buildStudentRow(new FormBuilder().nonNullable, 5));
+    fixture.detectChanges();
+
+    component.save();
+
+    expect(saveGroups).not.toHaveBeenCalled();
+    // Los dos grupos quedan señalados: de cuál sobra lo decide quien coordina.
+    expect([...component.problemGroupIndices()]).toEqual([0, 1]);
+  });
+
   it('saves the full set of groups and emits the returned detail', async () => {
     const saveGroups = vi.fn(() => of(plan()));
     const { component, fixture, messages } = await setup(plan(), saveGroups);

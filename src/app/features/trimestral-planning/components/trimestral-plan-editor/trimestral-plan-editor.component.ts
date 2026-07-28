@@ -578,7 +578,10 @@ export class TrimestralPlanEditorComponent {
     if (!this.editable() || this.saving()) {
       return;
     }
-    if (this.groups.invalid || this.exceedsAnnualLimits()) {
+    // El panel es la guarda: era `groups.invalid || exceedsAnnualLimits()`, que son las
+    // mismas fuentes que lee `collectGroupIssues`. Preguntándole a la lista, toda regla
+    // nueva bloquea sola y no puede quedar un problema anunciado que sí deje guardar.
+    if (this.issues().length > 0) {
       this.revealInvalidGroups();
       return;
     }
