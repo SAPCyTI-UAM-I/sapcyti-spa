@@ -948,7 +948,9 @@
       "invalid_transition": "Invalid status transition.",
       "not_editable": "A finished plan cannot be edited; move it back to draft.",
       "not_found": "Trimestral plan not found.",
+      "professor_unavailable": "An assigned professor is no longer available (deactivated): remove them from the group to save.",
       "server": "Something went wrong. Please try again.",
+      "student_unavailable": "An assigned student is no longer available (deactivated): remove them from the group to save.",
       "survey_not_closed": "A plan can only be generated from a closed survey.",
       "survey_not_found": "The selected survey does not exist.",
       "validation": "Please check the values you entered."

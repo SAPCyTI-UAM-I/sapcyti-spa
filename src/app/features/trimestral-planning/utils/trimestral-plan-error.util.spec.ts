@@ -18,6 +18,24 @@ describe('mapTrimestralPlanError', () => {
     }
   });
 
+  // Guardar con alguien dado de baja da 404, y decir «no se encontró la planeación» manda
+  // a buscar donde no es: el 404 solo cae en `not_found` cuando no nombra a una persona.
+  it('tells a deactivated professor or student apart from a missing plan', () => {
+    expect(
+      mapTrimestralPlanError(
+        mockApiError({ status: 404, error: 'NOT_FOUND', message: 'Professor not found' }),
+      ),
+    ).toBe('professor_unavailable');
+    expect(
+      mapTrimestralPlanError(
+        mockApiError({ status: 404, error: 'NOT_FOUND', message: 'Student not found' }),
+      ),
+    ).toBe('student_unavailable');
+    expect(
+      mapTrimestralPlanError(mockApiError({ status: 404, error: 'TRIMESTRAL_PLAN_NOT_FOUND' })),
+    ).toBe('not_found');
+  });
+
   it('falls back to status-based keys', () => {
     expect(mapTrimestralPlanError(mockApiError({ status: 404, error: 'WHATEVER' }))).toBe(
       'not_found',

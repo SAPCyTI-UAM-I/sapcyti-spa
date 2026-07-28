@@ -1,6 +1,8 @@
+import { BACKEND_MESSAGES } from '../../../core/errors/constants/backend-messages';
 import {
   createDomainErrorMapper,
   matchCode,
+  matchNotFound,
   matchStatus,
 } from '../../../core/errors/utils/create-domain-error-mapper.util';
 
@@ -14,6 +16,8 @@ export type TrimestralPlanError =
   | 'survey_not_found'
   | 'not_editable'
   | 'invalid_transition'
+  | 'professor_unavailable'
+  | 'student_unavailable'
   | 'not_found'
   | 'validation'
   | 'server';
@@ -30,6 +34,19 @@ export const mapTrimestralPlanError = createDomainErrorMapper<TrimestralPlanErro
     { match: matchCode('SURVEY_NOT_FOUND'), key: 'survey_not_found' },
     { match: matchCode('TRIMESTRAL_PLAN_NOT_EDITABLE'), key: 'not_editable' },
     { match: matchCode('INVALID_STATUS_TRANSITION'), key: 'invalid_transition' },
+    /*
+     * Guardar con un profesor o un alumno dado de baja también devuelve 404, y el genérico
+     * decía «no se encontró la planeación», que es falso y manda a buscar donde no es.
+     * Van antes que `matchStatus(404)`, que se queda para el plan inexistente.
+     */
+    {
+      match: matchNotFound(BACKEND_MESSAGES.ACADEMIC.PROFESSOR_NOT_FOUND),
+      key: 'professor_unavailable',
+    },
+    {
+      match: matchNotFound(BACKEND_MESSAGES.ACADEMIC.STUDENT_NOT_FOUND),
+      key: 'student_unavailable',
+    },
     { match: matchStatus(404), key: 'not_found' },
     { match: matchStatus(400), key: 'validation' },
   ],

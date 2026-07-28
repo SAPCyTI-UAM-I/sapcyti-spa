@@ -22,6 +22,12 @@ import { QUOTA_PATTERN } from '../../../shared/utils/quota.util';
 /** Largo de la letra de grupo (CO43, CR43A…): validador, mensaje y campo lo comparten. */
 export const GROUP_CODE_MAX_LENGTH = 10;
 
+/**
+ * Largo de la nota por alumno (`GroupStudent.OBS_MAX_LENGTH`). Sin tope en el campo, una
+ * nota más larga solo se descubría al guardar, con el 400 genérico y la captura perdida.
+ */
+export const STUDENT_NOTE_MAX_LENGTH = 255;
+
 export type ScheduleFormGroup = FormGroup<{
   day: FormControl<ScheduleDay>;
   start: FormControl<string>;

@@ -948,7 +948,9 @@
       "invalid_transition": "Transición de estado no válida.",
       "not_editable": "La planeación terminada no puede editarse; regrésala a borrador.",
       "not_found": "No se encontró la planeación trimestral.",
+      "professor_unavailable": "Un profesor asignado ya no está disponible (fue dado de baja): quítalo del grupo para poder guardar.",
       "server": "Ocurrió un error inesperado. Intenta de nuevo.",
+      "student_unavailable": "Un alumno asignado ya no está disponible (fue dado de baja): quítalo del grupo para poder guardar.",
       "survey_not_closed": "La planeación solo se genera desde una encuesta cerrada.",
       "survey_not_found": "No existe la encuesta seleccionada.",
       "validation": "Revisa los datos capturados."

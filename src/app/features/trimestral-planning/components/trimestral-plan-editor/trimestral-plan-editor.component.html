@@ -457,6 +457,7 @@
                           formControlName="obs"
                           class="h-8 w-full"
                           [readonly]="!editable()"
+                          [attr.maxlength]="studentNoteMaxLength"
                           [attr.aria-label]="
                             member.fullName +
                             ' · ' +

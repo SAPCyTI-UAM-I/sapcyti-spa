@@ -347,6 +347,15 @@ describe('TrimestralPlanEditorComponent', () => {
     expect(rows.at(1).controls.obs.value).toBe('');
   });
 
+  // La columna guarda 255 caracteres: sin el tope en el campo, la nota larga solo se
+  // descubría al guardar, con el 400 genérico y toda la captura perdida.
+  it('caps the student note at the length the column accepts', async () => {
+    const { fixture } = await setup();
+
+    const note = fixture.nativeElement.querySelector('[data-testid="student-note"]');
+    expect(note.getAttribute('maxlength')).toBe('255');
+  });
+
   /**
    * La plantilla lee esto en cada ciclo de detección. Si devolviera un arreglo nuevo,
    * PrimeNG vería un modelo distinto, volvería a marcar para revisar y la página se

@@ -43,6 +43,7 @@ import {
   GROUP_CODE_MAX_LENGTH,
   GroupFormGroup,
   memberCount,
+  STUDENT_NOTE_MAX_LENGTH,
   studentIds,
 } from '../../utils/group-form.util';
 import { claveHeaderPositions } from '../../utils/group-ordering.util';
@@ -269,6 +270,8 @@ export class TrimestralPlanEditorComponent {
   readonly errorScope = TRIMESTRAL_PLAN_ERROR_I18N_SCOPE;
 
   readonly groupCodeMaxLength = GROUP_CODE_MAX_LENGTH;
+
+  readonly studentNoteMaxLength = STUDENT_NOTE_MAX_LENGTH;
 
   /** Columnas del formato oficial; se usa para el colspan del divisor por UEA. */
   readonly scheduleDays = SCHEDULE_DAYS;
