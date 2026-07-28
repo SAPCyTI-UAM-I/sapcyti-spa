@@ -3,6 +3,7 @@ import {
   buildSaveEntriesRequest,
   cycleMark,
   isValidCell,
+  isValidCellPair,
   PROGRAM_CODES,
 } from './annual-plan-cell.util';
 
@@ -16,12 +17,31 @@ describe('isValidCell', () => {
     expect(isValidCell('15')).toBe(true);
   });
 
-  it('rejects zero, negatives, decimals and non-numeric', () => {
+  it('rejects zero, leading zeroes, negatives, decimals and non-numeric', () => {
     expect(isValidCell('0')).toBe(false);
+    expect(isValidCell('012')).toBe(false);
     expect(isValidCell('-1')).toBe(false);
     expect(isValidCell('1.5')).toBe(false);
     expect(isValidCell('abc')).toBe(false);
     expect(isValidCell('1*')).toBe(false);
+  });
+});
+
+describe('isValidCellPair', () => {
+  it('accepts an empty pair and complete positive or wildcard pairs', () => {
+    expect(isValidCellPair(null, null)).toBe(true);
+    expect(isValidCellPair('', '  ')).toBe(true);
+    expect(isValidCellPair('1', '15')).toBe(true);
+    expect(isValidCellPair('*', '1')).toBe(true);
+    expect(isValidCellPair('2', '*')).toBe(true);
+    expect(isValidCellPair('*', '*')).toBe(true);
+  });
+
+  it('rejects incomplete pairs and zero values', () => {
+    expect(isValidCellPair('1', null)).toBe(false);
+    expect(isValidCellPair(null, '15')).toBe(false);
+    expect(isValidCellPair('0', '15')).toBe(false);
+    expect(isValidCellPair('1', '0')).toBe(false);
   });
 });
 

@@ -1,0 +1,580 @@
+<div class="gap-md flex flex-col">
+  @if (groups.length === 0) {
+    <p class="text-body-md text-text-secondary">
+      {{ 'TRIMESTRAL_PLANNING.DETAIL.NO_GROUPS' | translate }}
+    </p>
+  } @else {
+    <div
+      class="border-outline bg-surface p-md gap-md grid items-center rounded-xl border md:grid-cols-[minmax(16rem,1fr)_12rem_14rem_auto]"
+      [formGroup]="filters"
+      data-testid="group-filters"
+    >
+      <input
+        pInputText
+        formControlName="search"
+        class="min-w-0"
+        [placeholder]="'TRIMESTRAL_PLANNING.FILTERS.SEARCH' | translate"
+        data-testid="group-search"
+      />
+      <app-i18n-select
+        controlName="ueaType"
+        [options]="ueaTypeFilters"
+        [placeholder]="'TRIMESTRAL_PLANNING.FILTERS.UEA_TYPE' | translate"
+      />
+      <app-i18n-select
+        controlName="state"
+        [options]="groupStateFilters"
+        [placeholder]="'TRIMESTRAL_PLANNING.FILTERS.STATE' | translate"
+      />
+      <div class="gap-xs flex items-center justify-end">
+        <span class="text-caption text-text-secondary whitespace-nowrap" data-testid="filter-count">
+          {{
+            'TRIMESTRAL_PLANNING.FILTERS.RESULTS'
+              | translate: { visible: filteredOrder().length, total: groups.length }
+          }}
+        </span>
+        <p-button
+          type="button"
+          severity="secondary"
+          variant="outlined"
+          icon="pi pi-filter-slash"
+          [disabled]="!filtersActive()"
+          [ariaLabel]="'TRIMESTRAL_PLANNING.FILTERS.CLEAR' | translate"
+          (onClick)="clearFilters()"
+          data-testid="clear-group-filters"
+        />
+      </div>
+    </div>
+  }
+
+  @if (error(); as saveError) {
+    <p-message severity="error" [text]="saveError | domainError: errorScope" />
+  }
+
+  <!--
+    Un problema por renglón, dicho en concreto y con el grupo al que pertenece: en una
+    tabla de 25 columnas, «hay valores inválidos» obliga a buscar el borde rojo a mano.
+  -->
+  @if (showIssues()) {
+    <section
+      class="border-error-border bg-error-container p-md gap-sm flex flex-col rounded-xl border"
+      data-testid="plan-issues"
+    >
+      <h2 class="text-h3 text-on-error-container gap-xs flex items-center">
+        <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+        {{ 'TRIMESTRAL_PLANNING.ISSUES.TITLE' | translate: { count: issues().length } }}
+      </h2>
+      <ul class="gap-xs flex flex-col">
+        @for (issue of issues(); track $index) {
+          <li class="text-body-md gap-xs flex flex-wrap items-baseline">
+            <button
+              type="button"
+              class="text-primary hover:text-primary-hover focus-visible:ring-primary cursor-pointer rounded font-medium whitespace-nowrap underline underline-offset-2 focus-visible:ring-2 focus-visible:outline-none"
+              [attr.title]="'TRIMESTRAL_PLANNING.ISSUES.GO_TO_GROUP' | translate"
+              (click)="focusGroup(issue)"
+              data-testid="issue-link"
+            >
+              {{ issue.clave }} ·
+              {{ issue.grupo || ('TRIMESTRAL_PLANNING.ISSUES.NO_GROUP_CODE' | translate) }}
+            </button>
+            <span>{{ issueLabel(issue) }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (groups.length > 0) {
+    <!--
+      Tabla del formato oficial, una fila por grupo. Encabezado de dos niveles: la fila 1
+      lleva altura fija (h-9) y todas sus celdas whitespace-nowrap, así el `top-9` de la
+      fila 2 es determinista en rem y no hay que medir nada en JS. Mismo patrón que
+      `annual-plan-grid`, que es el precedente del repo.
+
+      DIV y TRIM no se muestran: son constantes del plan (CBI y el trimestre del título).
+      La vista previa del Excel sí las conserva, que es donde importa la fidelidad.
+    -->
+    <div class="border-outline max-h-[70vh] overflow-auto rounded-xl border">
+      <table class="text-body-md w-max border-collapse" data-testid="trimestral-plan-table">
+        <thead>
+          <tr class="text-label-md h-9">
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-28 border text-left whitespace-nowrap"
+              rowspan="2"
+            >
+              {{ 'TRIMESTRAL_PLANNING.GRID.CVEUEA' | translate }}
+            </th>
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-56 border text-left whitespace-nowrap"
+              rowspan="2"
+            >
+              {{ 'TRIMESTRAL_PLANNING.GRID.UEA' | translate }}
+            </th>
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-28 border text-left whitespace-nowrap"
+              rowspan="2"
+            >
+              {{ 'TRIMESTRAL_PLANNING.GRID.TIPO_UEA' | translate }}
+            </th>
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-28 border whitespace-nowrap md:left-0"
+              rowspan="2"
+            >
+              {{ 'TRIMESTRAL_PLANNING.GROUP.GRUPO' | translate }}
+            </th>
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-20 border whitespace-nowrap"
+              rowspan="2"
+            >
+              {{ 'TRIMESTRAL_PLANNING.GROUP.CUPO' | translate }}
+            </th>
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-56 border text-left whitespace-nowrap"
+              rowspan="2"
+            >
+              {{ 'TRIMESTRAL_PLANNING.GRID.NEMP' | translate }}
+            </th>
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-48 border text-left whitespace-nowrap"
+              rowspan="2"
+            >
+              {{ 'TRIMESTRAL_PLANNING.GRID.PROF' | translate }}
+            </th>
+            @for (day of scheduleDays; track day) {
+              <th
+                class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 border whitespace-nowrap"
+                colspan="3"
+              >
+                {{ 'TRIMESTRAL_PLANNING.DAYS.' + day | translate }}
+              </th>
+            }
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-64 border text-left whitespace-nowrap"
+              rowspan="2"
+            >
+              {{ 'TRIMESTRAL_PLANNING.GROUP.MATRICULA' | translate }}
+            </th>
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-64 border text-left whitespace-nowrap"
+              rowspan="2"
+            >
+              {{ 'TRIMESTRAL_PLANNING.GROUP.NAME' | translate }}
+            </th>
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-56 border text-left whitespace-nowrap"
+              rowspan="2"
+            >
+              {{ 'TRIMESTRAL_PLANNING.GROUP.STUDENT_NOTE' | translate }}
+            </th>
+          </tr>
+          <tr class="text-caption text-text-secondary h-9">
+            @for (day of scheduleDays; track day) {
+              <th
+                class="bg-surface-subtle border-outline p-sm sticky top-9 z-30 w-20 border whitespace-nowrap"
+              >
+                {{ 'TRIMESTRAL_PLANNING.GROUP.START' | translate }}
+              </th>
+              <th
+                class="bg-surface-subtle border-outline p-sm sticky top-9 z-30 w-20 border whitespace-nowrap"
+              >
+                {{ 'TRIMESTRAL_PLANNING.GROUP.END' | translate }}
+              </th>
+              <th
+                class="bg-surface-subtle border-outline p-sm sticky top-9 z-30 w-14 border whitespace-nowrap"
+              >
+                {{ 'TRIMESTRAL_PLANNING.GROUP.LAB' | translate }}
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (index of filteredOrder(); track groups.at(index); let position = $index) {
+            <!-- Una UEA con varias letras (CR43, CR43A…) se lee como un bloque. -->
+            @if (claveHeaders().has(position)) {
+              <tr>
+                <td
+                  class="bg-surface-subtle border-outline text-label-md text-text-primary py-sm sticky top-18 z-20 border"
+                  [attr.colspan]="totalColumns"
+                  data-testid="clave-header"
+                >
+                  <!--
+                    La fila abarca las 25 columnas, así que su texto se iría con el scroll
+                    horizontal. Pegarlo por dentro lo deja sobre la columna fija de grupo,
+                    que es la referencia de dónde estás capturando.
+                  -->
+                  <span class="px-sm block w-fit md:sticky md:left-0">
+                    {{ groups.at(index).controls.clave.value }} ·
+                    {{ groups.at(index).controls.nombre.value }}
+                  </span>
+                </td>
+              </tr>
+            }
+
+            <tr
+              class="hover:bg-table-row-hover"
+              [formGroup]="groups.at(index)"
+              [attr.data-invalid]="problemGroupIndices().has(index)"
+              [attr.data-group-index]="index"
+              data-testid="trimestral-group-row"
+            >
+              <td class="border-outline p-sm border font-medium whitespace-nowrap">
+                {{ groups.at(index).controls.clave.value }}
+              </td>
+              <td
+                class="border-outline p-sm max-w-56 border"
+                [attr.title]="groups.at(index).controls.nombre.value"
+              >
+                <span class="block truncate">{{ groups.at(index).controls.nombre.value }}</span>
+              </td>
+              <td class="border-outline p-sm border whitespace-nowrap">
+                {{ groups.at(index).controls.tipoUea.value }}
+              </td>
+
+              <td
+                class="bg-surface border-outline p-xs z-10 border text-center md:sticky md:left-0"
+              >
+                @if (editable()) {
+                  <input
+                    type="text"
+                    class="border-outline focus:border-primary px-xs w-20 rounded border bg-transparent py-[2px] text-center outline-none"
+                    [class.border-error]="cellInvalid(index, 'grupo')"
+                    formControlName="grupo"
+                    [attr.maxlength]="groupCodeMaxLength"
+                    placeholder="CO43"
+                    [attr.aria-label]="'TRIMESTRAL_PLANNING.GROUP.GRUPO' | translate"
+                  />
+                } @else {
+                  <span>{{ groups.at(index).controls.grupo.value || '—' }}</span>
+                }
+                @if (overGroupLimitIndices().includes(index)) {
+                  <i
+                    class="pi pi-exclamation-triangle text-error ml-xs"
+                    [attr.title]="'TRIMESTRAL_PLANNING.GROUP.GROUP_LIMIT_EXCEEDED' | translate"
+                    data-testid="over-group-limit"
+                  ></i>
+                }
+                <!-- Quitar el grupo vive en su celda de identidad, no en una columna aparte. -->
+                @if (editable()) {
+                  <p-button
+                    type="button"
+                    severity="danger"
+                    variant="text"
+                    icon="pi pi-trash"
+                    [ariaLabel]="'TRIMESTRAL_PLANNING.ACTIONS.REMOVE_GROUP' | translate"
+                    [attr.title]="'TRIMESTRAL_PLANNING.ACTIONS.REMOVE_GROUP' | translate"
+                    (onClick)="requestRemoveGroup(groups.at(index))"
+                    data-testid="request-remove-group"
+                  />
+                }
+              </td>
+
+              <!--
+                El cupo no se captura: el backend rechaza cualquier valor distinto al de
+                la planeación anual, así que solo producía un 400 al guardar.
+              -->
+              <td class="border-outline p-sm border text-center whitespace-nowrap">
+                <span data-testid="group-cupo">{{
+                  groups.at(index).controls.cupo.value || '—'
+                }}</span>
+                @if (annualPlanYear(); as year) {
+                  <a
+                    class="text-primary ml-xs"
+                    [routerLink]="['/annual-planning', year]"
+                    [attr.title]="
+                      'TRIMESTRAL_PLANNING.GROUP.CUPO_SOURCE_LINK' | translate: { year }
+                    "
+                    data-testid="cupo-source-link"
+                  >
+                    <i class="pi pi-external-link text-caption" aria-hidden="true"></i>
+                  </a>
+                }
+              </td>
+
+              <td class="border-outline p-xs w-56 border">
+                @if (editable()) {
+                  <!-- appendTo="body": el contenedor tiene scroll y cabeceras sticky. -->
+                  <p-multiselect
+                    formControlName="professorIds"
+                    appendTo="body"
+                    [options]="professorOptions()"
+                    optionLabel="label"
+                    optionValue="value"
+                    [filter]="true"
+                    [showClear]="true"
+                    [fluid]="true"
+                    [loading]="professorsLoading()"
+                    [maxSelectedLabels]="1"
+                    [placeholder]="'TRIMESTRAL_PLANNING.GROUP.SEARCH_PROFESSOR' | translate"
+                    [ariaLabel]="'TRIMESTRAL_PLANNING.GRID.NEMP' | translate"
+                    (onFilter)="onProfessorFilter($event)"
+                    data-testid="professor-select"
+                  />
+                } @else {
+                  <span class="block truncate">{{ professorNames(index) || '—' }}</span>
+                }
+              </td>
+              <td class="border-outline p-sm max-w-48 border" [attr.title]="professorNames(index)">
+                <span class="block truncate" data-testid="professor-names">
+                  {{ professorNames(index) || '—' }}
+                </span>
+              </td>
+
+              @for (day of groups.at(index).controls.schedule.controls; track day; let d = $index) {
+                <td class="border-outline p-xs border text-center" [formGroup]="day">
+                  @if (editable()) {
+                    <!--
+                      Widget nativo, igual que el sondeo: el valor siempre es `HH:mm` de 24 h,
+                      que es lo que espera el contrato. Si lo pinta con a. m./p. m. lo decide
+                      el idioma del navegador, no la aplicación.
+                    -->
+                    <input
+                      type="time"
+                      class="border-outline focus:border-primary px-xs w-28 rounded border bg-transparent py-[2px] text-center outline-none"
+                      [class.border-error]="scheduleCellInvalid(index, d, 'start')"
+                      [attr.title]="cellIssueLabel(index, d)"
+                      [attr.aria-label]="
+                        ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
+                        ' · ' +
+                        ('TRIMESTRAL_PLANNING.GROUP.START' | translate)
+                      "
+                      formControlName="start"
+                      data-testid="time-input"
+                    />
+                  } @else {
+                    <span>{{ day.controls.start.value || '—' }}</span>
+                  }
+                </td>
+                <td class="border-outline p-xs border text-center" [formGroup]="day">
+                  @if (editable()) {
+                    <input
+                      type="time"
+                      class="border-outline focus:border-primary px-xs w-28 rounded border bg-transparent py-[2px] text-center outline-none"
+                      [class.border-error]="scheduleCellInvalid(index, d, 'end')"
+                      [attr.title]="cellIssueLabel(index, d)"
+                      [attr.aria-label]="
+                        ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
+                        ' · ' +
+                        ('TRIMESTRAL_PLANNING.GROUP.END' | translate)
+                      "
+                      formControlName="end"
+                      data-testid="time-input"
+                    />
+                  } @else {
+                    <span>{{ day.controls.end.value || '—' }}</span>
+                  }
+                </td>
+                <td class="border-outline p-xs border text-center" [formGroup]="day">
+                  <p-checkbox
+                    formControlName="lab"
+                    [binary]="true"
+                    [ariaLabel]="
+                      ('TRIMESTRAL_PLANNING.DAYS.' + day.controls.day.value | translate) +
+                      ' · ' +
+                      ('TRIMESTRAL_PLANNING.GROUP.LAB' | translate)
+                    "
+                    data-testid="lab-checkbox"
+                  />
+                </td>
+              }
+
+              <td class="border-outline p-xs w-72 border align-top">
+                <div class="gap-xs flex items-start">
+                  <span
+                    class="text-caption px-sm py-xs mt-xs shrink-0 rounded-lg font-semibold"
+                    [class]="occupancyChipClass(index)"
+                    [attr.title]="'TRIMESTRAL_PLANNING.GROUP.OCCUPANCY' | translate"
+                    data-testid="group-occupancy"
+                  >
+                    {{ occupancyFor(index) }}
+                  </span>
+                  @if (occupancySeverityFor(index) === 'over') {
+                    <i
+                      class="pi pi-exclamation-triangle text-error mt-sm shrink-0"
+                      [attr.title]="'TRIMESTRAL_PLANNING.GROUP.OVER_CAPACITY' | translate"
+                      data-testid="over-capacity"
+                    ></i>
+                  }
+                  @if (editable()) {
+                    <p-multiselect
+                      class="min-w-0 flex-1"
+                      appendTo="body"
+                      [ngModel]="selectedStudentIds(index)"
+                      [ngModelOptions]="{ standalone: true }"
+                      [options]="studentOptions()"
+                      optionLabel="label"
+                      optionValue="value"
+                      [filter]="true"
+                      [fluid]="true"
+                      [loading]="studentsLoading()"
+                      [maxSelectedLabels]="1"
+                      [placeholder]="'TRIMESTRAL_PLANNING.GROUP.SEARCH_STUDENT' | translate"
+                      [ariaLabel]="'TRIMESTRAL_PLANNING.GROUP.MATRICULA' | translate"
+                      (onFilter)="onStudentFilter($event)"
+                      (ngModelChange)="onStudentsChange(index, $event)"
+                      data-testid="student-select"
+                    />
+                  }
+                </div>
+              </td>
+
+              <!--
+                Nombre y observación crecen en paralelo, un renglón por alumno, para que
+                cada nota quede junto al alumno al que pertenece.
+              -->
+              <td class="border-outline p-sm w-64 border align-top">
+                @if (membersFor(index).length === 0) {
+                  <span class="text-caption text-text-secondary" data-testid="empty-group-students">
+                    {{ 'TRIMESTRAL_PLANNING.GROUP.NO_STUDENTS' | translate }}
+                  </span>
+                } @else {
+                  <ul class="gap-xs flex flex-col" data-testid="student-names">
+                    @for (member of membersFor(index); track member.studentId) {
+                      <li
+                        class="gap-xs flex h-8 min-w-0 items-center"
+                        [attr.title]="member.fullName"
+                      >
+                        <span class="truncate">{{ member.fullName }}</span>
+                        @if (studentInactive(index, member)) {
+                          <i
+                            class="pi pi-exclamation-triangle text-warning shrink-0"
+                            [attr.title]="'TRIMESTRAL_PLANNING.GROUP.INACTIVE_STUDENT' | translate"
+                            data-testid="inactive-student"
+                          ></i>
+                        }
+                      </li>
+                    }
+                  </ul>
+                }
+              </td>
+
+              <td class="border-outline p-sm w-56 border align-top" formArrayName="students">
+                @if (membersFor(index).length > 0) {
+                  <ul class="gap-xs flex flex-col">
+                    @for (member of membersFor(index); track member.studentId; let row = $index) {
+                      <li class="h-8" [formGroupName]="row">
+                        <input
+                          pInputText
+                          formControlName="obs"
+                          class="h-8 w-full"
+                          [readonly]="!editable()"
+                          [attr.maxlength]="studentNoteMaxLength"
+                          [attr.aria-label]="
+                            member.fullName +
+                            ' · ' +
+                            ('TRIMESTRAL_PLANNING.GROUP.STUDENT_NOTE' | translate)
+                          "
+                          data-testid="student-note"
+                        />
+                      </li>
+                    }
+                  </ul>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td
+                class="text-text-secondary p-lg text-center"
+                [attr.colspan]="totalColumns"
+                data-testid="no-filtered-groups"
+              >
+                {{ 'TRIMESTRAL_PLANNING.FILTERS.NO_RESULTS' | translate }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (editable()) {
+    <!-- HU-59: agregar un grupo/UEA que la encuesta no generó -->
+    <div
+      class="border-outline bg-surface-subtle p-md gap-md flex flex-wrap items-center rounded-xl border border-dashed"
+    >
+      <span
+        class="bg-primary-container text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+        aria-hidden="true"
+      >
+        <i class="pi pi-plus"></i>
+      </span>
+      <div class="mr-auto">
+        <p class="text-body-md font-semibold">
+          {{ 'TRIMESTRAL_PLANNING.ACTIONS.ADD_GROUP' | translate }}
+        </p>
+        <p class="text-caption text-text-secondary">
+          {{ 'TRIMESTRAL_PLANNING.ACTIONS.ADD_GROUP_HINT' | translate }}
+        </p>
+      </div>
+      <!-- El valor se limpia tras agregar: si no, volver a elegir la misma UEA no
+           emitiría cambio y no se podría crear un segundo grupo (HU-57, cupo 1). -->
+      <p-select
+        class="min-w-[18rem]"
+        [ngModel]="ueaPick()"
+        [ngModelOptions]="{ standalone: true }"
+        [options]="ueaOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [filter]="true"
+        [loading]="ueasLoading()"
+        [placeholder]="'TRIMESTRAL_PLANNING.GROUP.SEARCH_UEA' | translate"
+        (onFilter)="onUeaFilter($event)"
+        (ngModelChange)="addGroup($event)"
+        data-testid="add-group-uea"
+      />
+    </div>
+  }
+</div>
+
+<p-dialog
+  [visible]="pendingRemoval() !== null"
+  [modal]="true"
+  [style]="{ width: '32rem' }"
+  [header]="'TRIMESTRAL_PLANNING.REMOVE_GROUP.TITLE' | translate"
+  (visibleChange)="onRemoveDialogVisibleChange($event)"
+>
+  @if (pendingRemoval(); as pending) {
+    <div class="gap-md flex flex-col">
+      <p class="text-body-md">
+        {{
+          'TRIMESTRAL_PLANNING.REMOVE_GROUP.MESSAGE'
+            | translate
+              : {
+                  group: pending.controls.grupo.value || '—',
+                  clave: pending.controls.clave.value,
+                  name: pending.controls.nombre.value,
+                }
+        }}
+      </p>
+      @if (pending.controls.students.length > 0) {
+        <p-message
+          severity="warn"
+          [text]="
+            'TRIMESTRAL_PLANNING.REMOVE_GROUP.STUDENTS'
+              | translate: { count: pending.controls.students.length }
+          "
+          data-testid="remove-group-students-warning"
+        />
+      }
+      <p class="text-caption text-text-secondary">
+        {{ 'TRIMESTRAL_PLANNING.REMOVE_GROUP.HINT' | translate }}
+      </p>
+    </div>
+  }
+
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      variant="outlined"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="cancelRemoveGroup()"
+    />
+    <p-button
+      severity="danger"
+      icon="pi pi-trash"
+      [label]="'TRIMESTRAL_PLANNING.ACTIONS.REMOVE_GROUP' | translate"
+      (onClick)="confirmRemoveGroup()"
+      data-testid="confirm-remove-group"
+    />
+  </ng-template>
+</p-dialog>

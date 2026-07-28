@@ -37,3 +37,19 @@ export interface ProfessorCatalogQuery {
   search?: string;
   active?: boolean;
 }
+
+export interface ProfessorOpenGroupAssignment {
+  planId: number;
+  term: string;
+  ueaId: number;
+  clave: string;
+  grupo: string;
+}
+
+/** Structured 409 body returned when a professor still has active assignments. */
+export interface ProfessorDeactivationConflict {
+  error: string;
+  message: string;
+  hasTutorOrAdvisorAssignments: boolean;
+  openGroupAssignments: ProfessorOpenGroupAssignment[];
+}

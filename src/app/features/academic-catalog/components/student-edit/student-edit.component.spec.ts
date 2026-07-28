@@ -31,6 +31,7 @@ const sampleStudentDetail: StudentDetailResponse = {
   lastDegreeObtained: 'LICENCIATURA',
   programType: 'MAESTRIA',
   admissionDate: '2025-09-01',
+  admissionTerm: '25O',
   active: true,
   program: {
     id: 100,

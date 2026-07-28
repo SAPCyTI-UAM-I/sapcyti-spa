@@ -1,4 +1,6 @@
+import type { SurveyMode } from './enrollment-survey.model';
 import type { StudentProgramResponse } from './student-program.model';
+import type { DaySchedule, GroupProfessor } from './trimestral-plan.model';
 
 export type ProgramType = 'MAESTRIA' | 'DOCTORADO';
 
@@ -21,16 +23,20 @@ export interface RegisterStudentRequest {
   lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
+  /** HU-56: trimestre de ingreso, opcional. Formato `AA[OIP]`, ej. `26O`. */
+  admissionTerm?: string;
   lineOfKnowledge?: string;
   researchArea?: string;
   tutorId?: number | null;
   advisorIds?: number[];
 }
 
-export interface StudentCatalogItem extends RegisterStudentRequest {
+export interface StudentCatalogItem extends Omit<RegisterStudentRequest, 'admissionTerm'> {
   id: number;
   userId: number;
   active: boolean;
+  /** HU-56: opcional; los alumnos cargados antes del campo no lo tienen. */
+  admissionTerm: string | null;
 }
 
 export interface RegisterStudentResponse extends StudentCatalogItem {
@@ -58,10 +64,45 @@ export interface UpdateStudentRequest {
   lastDegreeObtained: DegreeLevel;
   programType: ProgramType;
   admissionDate: string;
+  /** Opcional (HU-56); vacío/omitido limpia el dato en este PUT de reemplazo completo. */
+  admissionTerm?: string;
   active: boolean;
 }
 
 export interface StudentDetailResponse extends StudentCatalogItem {
   /** Programa académico único del alumno. */
   program: StudentProgramResponse;
+}
+
+/** HU-61: `PENDING` = todavía no hay planeación TERMINADA de ese trimestre. */
+export type EnrollmentHistoryPlanStatus = 'PENDING' | 'TERMINADA';
+
+/** Clave i18n de la nota de la entrada; null cuando no hay nada que aclarar. */
+export type EnrollmentHistoryNote = 'PENDING' | 'MANUAL_NOT_SURVEYED';
+
+export type EnrollmentHistoryUeaStatus = 'PENDING' | 'ASSIGNED' | 'REMOVED_FROM_FINAL_PLAN';
+
+export interface EnrollmentHistoryUea {
+  clave: string;
+  nombre: string;
+  status: EnrollmentHistoryUeaStatus;
+  /** Letra de grupo; null mientras `planStatus` es PENDING o en inscripción en blanco. */
+  grupo: string | null;
+  /** Ordered professor snapshots; research groups can have co-directors. */
+  professors: GroupProfessor[];
+  schedule: DaySchedule[] | null;
+}
+
+/**
+ * HU-61 — una entrada por trimestre en que el alumno respondió la encuesta o fue
+ * agregado a una planeación TERMINADA. Solo lectura: nunca muestra letras provisionales.
+ */
+export interface EnrollmentHistoryEntry {
+  term: string;
+  /** I..XII declarado en la encuesta; null si lo agregaron a mano. */
+  academicTermSelected: string | null;
+  mode: SurveyMode | null;
+  planStatus: EnrollmentHistoryPlanStatus;
+  note: EnrollmentHistoryNote | null;
+  ueas: EnrollmentHistoryUea[];
 }

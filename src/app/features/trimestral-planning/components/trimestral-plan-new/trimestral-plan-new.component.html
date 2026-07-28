@@ -1,0 +1,80 @@
+<section class="gap-lg flex flex-col">
+  <div class="gap-xs flex flex-col">
+    <h1 class="text-h2">{{ 'TRIMESTRAL_PLANNING.NEW.TITLE' | translate }}</h1>
+    <p class="text-body-md text-text-secondary">
+      {{ 'TRIMESTRAL_PLANNING.NEW.SUBTITLE' | translate }}
+    </p>
+  </div>
+
+  <div class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+    <app-load-state
+      [loading]="loading()"
+      [error]="loadError()"
+      [empty]="closedSurveys().length === 0"
+      emptyMessage="TRIMESTRAL_PLANNING.NEW.NO_CLOSED_SURVEYS"
+      errorMessage="TRIMESTRAL_PLANNING.STATES.LOAD_ERROR"
+      (retry)="load()"
+    >
+      <fieldset class="gap-sm flex flex-col">
+        <legend class="text-body-md pb-sm font-medium">
+          {{ 'TRIMESTRAL_PLANNING.NEW.PICK_SURVEY' | translate }}
+        </legend>
+        @for (survey of closedSurveys(); track survey.id) {
+          <label
+            class="border-outline p-md gap-sm hover:bg-table-row-hover flex cursor-pointer items-center rounded-xl border"
+            [class.border-primary]="selectedId() === survey.id"
+          >
+            <input
+              type="radio"
+              name="surveyId"
+              [value]="survey.id"
+              [checked]="selectedId() === survey.id"
+              (change)="select(survey.id)"
+              [attr.data-testid]="'survey-option-' + survey.id"
+            />
+            <span class="text-body-md font-medium">{{ survey.term }}</span>
+            <span class="text-caption text-text-secondary">
+              {{ 'TRIMESTRAL_PLANNING.NEW.RESPONSES' | translate: { count: survey.responseCount } }}
+            </span>
+            @if (hasPlan(survey)) {
+              <span class="text-caption text-text-secondary italic">
+                {{ 'TRIMESTRAL_PLANNING.NEW.ALREADY_PLANNED' | translate }}
+              </span>
+            }
+          </label>
+        }
+      </fieldset>
+    </app-load-state>
+
+    <!-- HU-58: evitar generar la vieja por error -->
+    @if (staleSelection(); as newestTerm) {
+      <p-message
+        severity="warn"
+        data-testid="stale-selection-warning"
+        [text]="'TRIMESTRAL_PLANNING.NEW.NEWER_PENDING' | translate: { term: newestTerm }"
+      />
+    }
+
+    @if (error(); as planError) {
+      <p-message severity="error" [text]="planError | domainError: errorScope" />
+    }
+
+    <div class="gap-sm flex flex-wrap">
+      <p-button
+        [label]="'TRIMESTRAL_PLANNING.ACTIONS.GENERATE' | translate"
+        icon="pi pi-cog"
+        [disabled]="selectedId() === null"
+        [loading]="generating()"
+        (onClick)="generate()"
+        data-testid="generate-plan"
+      />
+      <p-button
+        severity="secondary"
+        variant="outlined"
+        icon="pi pi-arrow-left"
+        [label]="'COMMON.ACTIONS.BACK' | translate"
+        routerLink="/trimestral-planning"
+      />
+    </div>
+  </div>
+</section>

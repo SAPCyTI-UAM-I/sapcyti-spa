@@ -7,12 +7,17 @@ import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
 import {
+  EnrollmentHistoryEntry,
   getLineOfKnowledgeLabelKey,
   getResearchAreaLabelKey,
   StudentDetailResponse,
 } from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { CatalogTagComponent, CopyableTextComponent } from '../../../../shared/components';
+import {
+  CatalogTagComponent,
+  CopyableTextComponent,
+  LoadStateComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
 import { formatProfessorName } from '../../utils/professor-display.util';
@@ -35,6 +40,7 @@ import {
     DomainErrorMessagePipe,
     CopyableTextComponent,
     CatalogTagComponent,
+    LoadStateComponent,
   ],
   templateUrl: './student-detail.component.html',
 })
@@ -50,6 +56,11 @@ export class StudentDetailComponent {
   readonly error = signal<CatalogError | null>(null);
   readonly student = signal<StudentDetailResponse | null>(null);
 
+  /** HU-61 — histórico de UEAs y grupos por trimestre; solo lectura. */
+  readonly history = signal<EnrollmentHistoryEntry[]>([]);
+  readonly historyLoading = signal(true);
+  readonly historyError = signal(false);
+
   readonly formatProfessorName = formatProfessorName;
   readonly getLineOfKnowledgeLabelKey = getLineOfKnowledgeLabelKey;
   readonly getResearchAreaLabelKey = getResearchAreaLabelKey;
@@ -59,6 +70,7 @@ export class StudentDetailComponent {
 
   constructor() {
     this.load();
+    this.loadHistory();
   }
 
   backToCatalog(): void {
@@ -77,6 +89,29 @@ export class StudentDetailComponent {
     const first = current.firstName?.trim().charAt(0) ?? '';
     const last = current.firstLastName?.trim().charAt(0) ?? '';
     return `${first}${last}`.toUpperCase();
+  }
+
+  loadHistory(): void {
+    if (!Number.isInteger(this.studentId)) {
+      this.historyLoading.set(false);
+      return;
+    }
+
+    this.historyLoading.set(true);
+    this.historyError.set(false);
+    this.service
+      .getEnrollmentHistory(this.studentId)
+      .pipe(
+        finalize(() => this.historyLoading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (entries) => this.history.set(entries),
+        error: () => {
+          this.history.set([]);
+          this.historyError.set(true);
+        },
+      });
   }
 
   private load(): void {

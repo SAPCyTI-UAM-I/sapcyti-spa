@@ -40,6 +40,7 @@ import {
   CellField,
   cycleMark,
   isValidCell,
+  isValidCellPair,
   PROGRAM_CODES,
 } from '../../utils/annual-plan-cell.util';
 import {
@@ -51,6 +52,21 @@ import {
 /** Marks a group/quota cell invalid when it is not empty, `"*"` or a positive int. */
 function cellValidator(control: AbstractControl): ValidationErrors | null {
   return isValidCell(control.value) ? null : { invalidCell: true };
+}
+
+const TERM_CELL_PAIRS: readonly [groups: CellField, quota: CellField][] = [
+  ['gruposI', 'cupoI'],
+  ['gruposP', 'cupoP'],
+  ['gruposO', 'cupoO'],
+];
+
+function rowPairsValidator(control: AbstractControl): ValidationErrors | null {
+  const row = control as FormGroup;
+  const invalidPairs = TERM_CELL_PAIRS.filter(
+    ([groups, quota]) =>
+      !isValidCellPair(row.controls[groups]?.value as string, row.controls[quota]?.value as string),
+  ).map(([groups]) => groups.replace('grupos', ''));
+  return invalidPairs.length > 0 ? { invalidPairs } : null;
 }
 
 /**
@@ -148,7 +164,7 @@ export class AnnualPlanGridComponent {
       const controls = Object.fromEntries(
         CELL_FIELDS.map((field) => [field, this.fb.control(entry[field] ?? '', cellValidator)]),
       ) as Record<CellField, FormControl<string>>;
-      this.rows.push(this.fb.group(controls));
+      this.rows.push(this.fb.group(controls, { validators: rowPairsValidator }));
     }
     this.marks.set(plan.entries.map((entry) => ({ ...entry.marks })));
     this.submitted.set(false);
@@ -161,7 +177,13 @@ export class AnnualPlanGridComponent {
 
   cellInvalid(index: number, name: string): boolean {
     this.revision();
-    return this.submitted() && !!this.rowGroup(index).get(name)?.invalid;
+    if (!this.submitted()) {
+      return false;
+    }
+    const row = this.rowGroup(index);
+    const term = name.replace(/^(grupos|cupo)/, '');
+    const invalidPair = (row.errors?.['invalidPairs'] as string[] | undefined)?.includes(term);
+    return !!row.get(name)?.invalid || !!invalidPair;
   }
 
   markAt(index: number, code: ProgramCode): AnnualPlanMark | undefined {

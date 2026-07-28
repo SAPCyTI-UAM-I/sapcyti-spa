@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { fromMockStore } from '../../../core/mocks/from-mock-store.util';
 import { PageResponse } from '../../../models';
 import {
+  EnrollmentHistoryEntry,
   RegisterStudentRequest,
   RegisterStudentResponse,
   StudentCatalogItem,
@@ -33,6 +34,10 @@ export class StudentMockRepository implements StudentRepository {
       ...this.mockStore.getStudent(studentId),
       program: this.programMockStore.getProgramForStudent(studentId),
     }));
+  }
+
+  getEnrollmentHistory(studentId: number): Observable<EnrollmentHistoryEntry[]> {
+    return fromMockStore(() => this.mockStore.getEnrollmentHistory(studentId));
   }
 
   updateStudent(studentId: number, request: UpdateStudentRequest): Observable<StudentCatalogItem> {

@@ -18,7 +18,11 @@ import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
-import { ProfessorDetailResponse, ProfessorType } from '../../../../models';
+import {
+  ProfessorDeactivationConflict,
+  ProfessorDetailResponse,
+  ProfessorType,
+} from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { FieldErrorComponent, I18nSelectComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
@@ -30,6 +34,7 @@ import {
   CATALOG_ERROR_I18N_SCOPE,
   CatalogError,
   mapProfessorError,
+  professorDeactivationConflict,
 } from '../../utils/catalog-error.util';
 import {
   applyProfessorEditLockRules,
@@ -75,6 +80,7 @@ export class ProfessorEditComponent implements OnInit {
   readonly submitted = signal(false);
   readonly error = signal<CatalogError | null>(null);
   readonly deactivateError = signal<CatalogError | null>(null);
+  readonly deactivateConflict = signal<ProfessorDeactivationConflict | null>(null);
   readonly restoreError = signal<CatalogError | null>(null);
   readonly professor = signal<ProfessorDetailResponse | null>(null);
   readonly showDeactivateDialog = signal(false);
@@ -146,6 +152,7 @@ export class ProfessorEditComponent implements OnInit {
 
   openDeactivateDialog(): void {
     this.deactivateError.set(null);
+    this.deactivateConflict.set(null);
     this.showDeactivateDialog.set(true);
   }
 
@@ -155,6 +162,7 @@ export class ProfessorEditComponent implements OnInit {
     }
     this.showDeactivateDialog.set(false);
     this.deactivateError.set(null);
+    this.deactivateConflict.set(null);
   }
 
   confirmDeactivate(): void {
@@ -176,7 +184,10 @@ export class ProfessorEditComponent implements OnInit {
             life: TOAST_LIFE.DEFAULT,
           });
         },
-        error: (err) => this.deactivateError.set(mapProfessorError(err)),
+        error: (err) => {
+          this.deactivateError.set(mapProfessorError(err));
+          this.deactivateConflict.set(professorDeactivationConflict(err));
+        },
       });
   }
 

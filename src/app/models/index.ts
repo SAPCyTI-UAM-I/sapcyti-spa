@@ -10,5 +10,6 @@ export * from './professor.model';
 export * from './role-type.model';
 export * from './student.model';
 export * from './student-program.model';
+export * from './trimestral-plan.model';
 export * from './research-catalog.model';
 export * from './uea.model';

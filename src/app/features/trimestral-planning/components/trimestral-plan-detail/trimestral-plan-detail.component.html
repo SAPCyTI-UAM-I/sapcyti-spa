@@ -1,0 +1,269 @@
+<section class="gap-lg flex flex-col">
+  <app-load-state
+    [loading]="loading()"
+    [error]="loadError()"
+    [empty]="false"
+    emptyMessage="TRIMESTRAL_PLANNING.LIST.EMPTY"
+    errorMessage="TRIMESTRAL_PLANNING.STATES.LOAD_ERROR"
+    (retry)="load()"
+  >
+    @if (plan(); as current) {
+      <div class="gap-lg flex flex-col">
+        <header
+          class="gap-md flex flex-col justify-between xl:flex-row xl:items-start"
+          data-testid="plan-page-header"
+        >
+          <div class="gap-md flex min-w-0 items-center">
+            <p-button
+              severity="secondary"
+              variant="text"
+              icon="pi pi-arrow-left"
+              [rounded]="true"
+              [ariaLabel]="'COMMON.ACTIONS.BACK' | translate"
+              routerLink="/trimestral-planning"
+            />
+            <div class="gap-xs flex min-w-0 flex-col">
+              <div class="gap-sm flex flex-wrap items-center">
+                <h1 class="text-h2 text-primary font-bold">
+                  {{ 'TRIMESTRAL_PLANNING.DETAIL.TITLE' | translate: { term: current.term } }}
+                </h1>
+                <app-catalog-tag
+                  [value]="'TRIMESTRAL_PLANNING.STATUS.' + current.status | translate"
+                  [severity]="statusTagSeverity(current.status)"
+                />
+                @if (current.outdated) {
+                  <app-catalog-tag
+                    [value]="'TRIMESTRAL_PLANNING.DETAIL.OUTDATED' | translate"
+                    severity="warn"
+                  />
+                }
+              </div>
+              @if (current.exportedAt) {
+                <span class="text-caption text-text-secondary" data-testid="last-exported">
+                  <i class="pi pi-file-excel mr-xs text-success" aria-hidden="true"></i>
+                  {{
+                    'TRIMESTRAL_PLANNING.DETAIL.LAST_EXPORTED'
+                      | translate: { date: (current.exportedAt | date: 'medium') }
+                  }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="gap-sm flex flex-wrap">
+            @if (draft()) {
+              <p-button
+                [label]="'TRIMESTRAL_PLANNING.ACTIONS.SAVE' | translate"
+                icon="pi pi-save"
+                [loading]="editor()?.saving() ?? false"
+                [disabled]="!editable()"
+                (onClick)="editor()?.save()"
+                data-testid="save-groups"
+              />
+              <p-button
+                severity="secondary"
+                variant="outlined"
+                icon="pi pi-refresh"
+                [label]="'TRIMESTRAL_PLANNING.ACTIONS.REGENERATE' | translate"
+                [loading]="regenerating()"
+                [disabled]="!editable()"
+                (onClick)="showRegenerateDialog.set(true)"
+                data-testid="regenerate-plan"
+              />
+              <p-button
+                severity="secondary"
+                icon="pi pi-check"
+                variant="outlined"
+                [label]="'TRIMESTRAL_PLANNING.ACTIONS.FINISH' | translate"
+                [loading]="changingStatus()"
+                [disabled]="!editable() || dirty()"
+                (onClick)="finish()"
+                data-testid="finish-plan"
+              />
+            } @else {
+              <p-button
+                severity="secondary"
+                variant="outlined"
+                icon="pi pi-undo"
+                [label]="'TRIMESTRAL_PLANNING.ACTIONS.BACK_TO_DRAFT' | translate"
+                [loading]="changingStatus()"
+                [disabled]="!prerequisitesMet()"
+                (onClick)="backToDraft()"
+                data-testid="back-to-draft"
+              />
+            }
+            <p-button
+              severity="secondary"
+              variant="outlined"
+              [label]="'TRIMESTRAL_PLANNING.ACTIONS.DOWNLOAD' | translate"
+              icon="pi pi-download"
+              [loading]="exporting()"
+              [disabled]="!canExport()"
+              (onClick)="downloadExcel()"
+              data-testid="download-excel"
+            />
+          </div>
+        </header>
+
+        @if (actionError(); as planError) {
+          <p-message severity="error" [text]="planError | domainError: errorScope" />
+        }
+
+        <!--
+          Prerrequisitos y desactualización responden la misma pregunta («por qué este
+          plan no opera del todo»), así que se leen como un solo bloque.
+        -->
+        @if (!prerequisitesMet() || current.outdatedReasons.length > 0) {
+          <section class="gap-xs flex flex-col" data-testid="prerequisite-blockers">
+            <h2 class="text-h3">{{ 'TRIMESTRAL_PLANNING.DETAIL.PLAN_STATE' | translate }}</h2>
+            @if (!prerequisitesMet()) {
+              <p-message
+                severity="warn"
+                [text]="'TRIMESTRAL_PLANNING.PREREQUISITES.READ_ONLY' | translate"
+              />
+            }
+            <ul class="pl-lg text-body-md list-disc">
+              @if (!current.prerequisites.surveyClosed) {
+                <li>{{ 'TRIMESTRAL_PLANNING.PREREQUISITES.SURVEY_NOT_CLOSED' | translate }}</li>
+              }
+              @if (!current.prerequisites.annualPlanTerminated) {
+                <li>
+                  {{ 'TRIMESTRAL_PLANNING.PREREQUISITES.ANNUAL_NOT_TERMINATED' | translate }}
+                </li>
+              }
+              @for (reason of current.outdatedReasons; track reason) {
+                <li>{{ 'TRIMESTRAL_PLANNING.OUTDATED_REASONS.' + reason | translate }}</li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (summary(); as counts) {
+          <app-plan-summary [counts]="counts" (applyFilter)="applyFilter($event)" />
+        }
+
+        @if (hasPending()) {
+          <app-plan-pending
+            [blankStudents]="current.blankStudents"
+            [unassignedDemand]="current.unassignedDemand"
+            [editable]="editable()"
+            [groupOptions]="groupOptions()"
+            (assign)="onAssign($event)"
+            (createGroupForUea)="onCreateGroupForUea($event)"
+          />
+        }
+
+        @if (dirty()) {
+          <p class="text-caption text-warning" data-testid="dirty-export-hint">
+            {{ 'TRIMESTRAL_PLANNING.DETAIL.SAVE_BEFORE_EXPORT' | translate }}
+          </p>
+        }
+
+        <!--
+          Colapsados: son informativos, no accionables, y apilados empujaban los grupos
+          fuera de la pantalla. Lo accionable vive en el encabezado de cada grupo.
+        -->
+        @if (current.warnings.length > 0) {
+          <details class="border-outline rounded-lg border" data-testid="plan-warnings">
+            <summary class="p-sm text-body-md text-warning gap-xs flex cursor-pointer items-center">
+              <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+              {{
+                'TRIMESTRAL_PLANNING.DETAIL.WARNING_COUNT'
+                  | translate: { count: current.warnings.length }
+              }}
+            </summary>
+            <ul class="p-sm gap-xs flex flex-col pt-0">
+              @for (warning of current.warnings; track $index) {
+                <li class="text-body-md">
+                  {{
+                    'TRIMESTRAL_PLANNING.WARNINGS.' + warning.code
+                      | translate: warningParams(warning)
+                  }}
+                </li>
+              }
+            </ul>
+          </details>
+        }
+
+        <!-- Grupos: editables en BORRADOR, solo lectura en TERMINADA -->
+        <app-trimestral-plan-editor [plan]="current" (saved)="onSaved($event)" />
+      </div>
+    }
+  </app-load-state>
+</section>
+
+<p-dialog
+  [visible]="showRegenerateDialog()"
+  (visibleChange)="showRegenerateDialog.set($event)"
+  [modal]="true"
+  [header]="'TRIMESTRAL_PLANNING.ACTIONS.REGENERATE' | translate"
+>
+  <p class="text-body-md">
+    {{ 'TRIMESTRAL_PLANNING.DETAIL.REGENERATE_WARNING' | translate }}
+  </p>
+
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      variant="outlined"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="showRegenerateDialog.set(false)"
+    />
+    <p-button
+      [label]="'TRIMESTRAL_PLANNING.ACTIONS.REGENERATE' | translate"
+      (onClick)="confirmRegenerate()"
+      data-testid="confirm-regenerate"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [visible]="showUnsavedDialog()"
+  (visibleChange)="showUnsavedDialog.set($event)"
+  [modal]="true"
+  [header]="'TRIMESTRAL_PLANNING.ACTIONS.FINISH' | translate"
+>
+  <p class="text-body-md">
+    {{ 'TRIMESTRAL_PLANNING.DETAIL.UNSAVED_WARNING' | translate }}
+  </p>
+
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      variant="outlined"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="showUnsavedDialog.set(false)"
+    />
+    <p-button
+      icon="pi pi-save"
+      [label]="'TRIMESTRAL_PLANNING.ACTIONS.SAVE_AND_FINISH' | translate"
+      (onClick)="saveAndFinish()"
+      data-testid="confirm-finish-unsaved"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [visible]="showBackToDraftDialog()"
+  (visibleChange)="showBackToDraftDialog.set($event)"
+  [modal]="true"
+  [header]="'TRIMESTRAL_PLANNING.ACTIONS.BACK_TO_DRAFT' | translate"
+>
+  <p class="text-body-md">
+    {{ 'TRIMESTRAL_PLANNING.DETAIL.BACK_TO_DRAFT_WARNING' | translate }}
+  </p>
+
+  <ng-template #footer>
+    <p-button
+      severity="secondary"
+      variant="outlined"
+      [label]="'COMMON.ACTIONS.CANCEL' | translate"
+      (onClick)="showBackToDraftDialog.set(false)"
+    />
+    <p-button
+      [label]="'TRIMESTRAL_PLANNING.ACTIONS.BACK_TO_DRAFT' | translate"
+      (onClick)="confirmBackToDraft()"
+      data-testid="confirm-back-to-draft"
+    />
+  </ng-template>
+</p-dialog>

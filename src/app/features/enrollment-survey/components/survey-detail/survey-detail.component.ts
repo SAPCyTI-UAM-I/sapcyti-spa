@@ -52,6 +52,8 @@ export class SurveyDetailComponent implements OnInit {
   readonly survey = signal<SurveyResponse | null>(null);
   readonly summary = signal<SurveyResultsSummary | null>(null);
   readonly rows = signal<UeaDemandRow[]>([]);
+  /** HU-42 — respondieron en blanco: cuentan como respuesta pero no generan demanda. */
+  readonly blankStudents = signal<InterestedStudent[]>([]);
   readonly loading = signal(false);
   readonly loadError = signal(false);
 
@@ -82,16 +84,18 @@ export class SurveyDetailComponent implements OnInit {
       survey: this.service.getSurvey(this.surveyId),
       summary: this.service.getResultsSummary(this.surveyId),
       rows: this.service.getResultsUeas(this.surveyId),
+      blanks: this.service.getResultsBlankStudents(this.surveyId),
     })
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: ({ survey, summary, rows }) => {
+        next: ({ survey, summary, rows, blanks }) => {
           this.survey.set(survey);
           this.summary.set(summary);
           this.rows.set(rows);
+          this.blankStudents.set(blanks);
         },
         error: () => this.loadError.set(true),
       });

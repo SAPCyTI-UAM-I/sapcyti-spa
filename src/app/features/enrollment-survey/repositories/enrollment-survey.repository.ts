@@ -35,6 +35,8 @@ export interface EnrollmentSurveyRepository {
   getResultsSummary(id: number): Observable<SurveyResultsSummary>;
   getResultsUeas(id: number, sort?: UeaDemandSort): Observable<UeaDemandRow[]>;
   getResultsUeaStudents(id: number, ueaId: number): Observable<InterestedStudent[]>;
+  /** Alumnos que respondieron inscripción en blanco (no aparecen en la demanda por UEA). */
+  getResultsBlankStudents(id: number): Observable<InterestedStudent[]>;
 }
 
 export const ENROLLMENT_SURVEY_REPOSITORY = new InjectionToken<EnrollmentSurveyRepository>(

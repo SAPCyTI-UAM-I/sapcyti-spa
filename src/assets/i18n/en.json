@@ -41,6 +41,7 @@
     "FIELDS": {
       "ACTIVE": "Student status",
       "ADMISSION_DATE": "Admission date",
+      "ADMISSION_TERM": "Admission term",
       "BIRTH_DATE": "Birth date",
       "COMMISSION_MEMBER": "Commission member",
       "EMAIL": "Email",
@@ -63,6 +64,19 @@
       "PROGRAM_TYPE": "Program type",
       "STATUS": "Status"
     },
+    "HISTORY": {
+      "BLANK": "Blank enrollment: no UEAs and no group.",
+      "DECLARED_TERM": "Declared term: {{term}}",
+      "EMPTY": "This student has no enrollment history yet.",
+      "MANUAL_NOT_SURVEYED": "Did not answer the survey; added during planning",
+      "PENDING": "Trimestral plan pending",
+      "TITLE": "Enrollment history",
+      "UEA_STATUS": {
+        "ASSIGNED": "Assigned",
+        "PENDING": "Pending",
+        "REMOVED_FROM_FINAL_PLAN": "Removed from final plan"
+      }
+    },
     "PAGINATION": {
       "TOTAL": "Total"
     },
@@ -79,7 +93,10 @@
         "ACTION": "Deactivate",
         "CONFIRM_MESSAGE": "The professor will no longer be available for new assignments and will not be able to sign in. Their academic history will be preserved.",
         "CONFIRM_TITLE": "Confirm professor deactivation",
-        "SUCCESS": "Professor deactivated successfully."
+        "OPEN_GROUP": "{{term}} · {{clave}} · group {{grupo}}",
+        "OPEN_GROUPS_TITLE": "Remove the professor from these open groups:",
+        "SUCCESS": "Professor deactivated successfully.",
+        "TUTOR_OR_ADVISOR_BLOCKER": "The professor still has active tutor or advisor assignments that must be reassigned."
       },
       "DETAIL": {
         "CHANGE_PASSWORD": "Change password",
@@ -213,6 +230,7 @@
         "CHANGE_PASSWORD": "Change password",
         "CONTACT_SECTION": "Contact information",
         "EDIT_ACTION": "Edit information",
+        "NO_ADMISSION_TERM": "No admission term",
         "NO_ADVISORS": "No advisors assigned",
         "NO_GRADUATION_DATE": "No graduation date",
         "NO_TUTOR": "No tutor assigned",
@@ -376,44 +394,6 @@
         "GROUPS": "No. of groups",
         "TITLE": "Activated subjects"
       }
-    },
-    "PLAN_QUARTERLY": {
-      "CHANGE_TERM": "Change term",
-      "COLUMNS": {
-        "ACTIONS": "Actions",
-        "CAPACITY": "Capacity",
-        "EMPLOYEE_NUMBER": "Employee number",
-        "GROUP": "Group",
-        "KEY": "Key",
-        "PROFESSOR": "Professor",
-        "SUBJECT": "Subject"
-      },
-      "CONTINUE": "Continue",
-      "CURRENT_TERM": "Current term is",
-      "EDIT_DIALOG": {
-        "CAPACITY": "Capacity",
-        "DAYS": "Days",
-        "END_TIME": "End time",
-        "GROUP": "Group",
-        "GROUP_PLACEHOLDER": "Type the group (e.g. CO33)",
-        "PROFESSOR_PLACEHOLDER": "Select professor(s)",
-        "PROFESSORS": "Professor(s)",
-        "RESELECT_NOTE": "If you change professors, re-select all who teach the class.",
-        "SINGLE_STUDENT": "Is it for a single student?",
-        "START_TIME": "Start time",
-        "STUDENT": "Student",
-        "STUDENT_PLACEHOLDER": "Select a student",
-        "TITLE": "Edit subject"
-      },
-      "EMPTY": "There are no subjects for the selected term.",
-      "MODIFY_SUBJECTS": "Modify plan subjects",
-      "SEARCH_PROFESSOR": "Search by professor, key or subject",
-      "SUBTITLE": "Define schedules, professors, groups and capacities for the term.",
-      "TERM_HEADER": "Term",
-      "TERM_LABEL": "Term",
-      "TERM_PLACEHOLDER": "Select a term",
-      "TITLE": "Edit quarterly plan",
-      "VIEW_FULL_PLAN": "View full plan"
     },
     "TERM_STATUS": {
       "EDITED": "Edited",
@@ -758,6 +738,7 @@
       "CLOSE": "Close now",
       "DELETE": "Delete",
       "EDIT": "Edit",
+      "GENERATE_TRIMESTRAL": "Generate trimestral plan",
       "REOPEN": "Reopen"
     },
     "BREADCRUMB": {
@@ -780,6 +761,7 @@
       "survey_not_active": "The survey is not active.",
       "survey_not_deletable": "Only a scheduled survey with no responses can be deleted.",
       "survey_not_found": "There is no survey for that term.",
+      "survey_reopen_blocked_terminated_plan": "This survey cannot be reopened: the trimestral plan for that term is already finished.",
       "survey_reopen_dates_invalid": "To reopen the survey, the closing date must be in the future.",
       "survey_window_overlaps": "Another survey is already active or scheduled in that period.",
       "uea_not_available": "One or more selected UEAs are no longer available. Update your selection.",
@@ -849,11 +831,15 @@
       "UEAS_TITLE": "Available UEAs"
     },
     "RESULTS": {
+      "BLANK_STAT": "Blank",
+      "BLANKS_HINT": "These students answered without choosing UEAs; they add no demand.",
+      "BLANKS_TITLE": "Blank enrollment",
       "COL_CLAVE": "Code",
       "COL_CREDITOS": "Credits",
       "COL_DEMAND": "Responses",
       "COL_FORMACION": "Training type",
       "COL_NOMBRE": "Name",
+      "EMPTY_ALL_BLANK": "All responses were blank enrollment; there is no UEA demand.",
       "EMPTY_NO_RESPONSES": "This survey has no responses yet.",
       "NO_STUDENTS": "No student selected this UEA.",
       "RESPONDED": "Responded",
@@ -889,7 +875,7 @@
       "ENROLLMENT_STATUS": "Process status",
       "HOME": "Home",
       "PLAN_ANNUAL": "Annual planning",
-      "PLAN_QUARTERLY": "Edit quarterly plan",
+      "PLAN_TRIMESTRAL": "Trimestral planning",
       "PRESENTATIONS": "Presentations",
       "PROFESSORS": "Professors",
       "STUDENTS": "Students",
@@ -916,6 +902,188 @@
       "NOTIFICATIONS": "Notifications",
       "SEARCH_PLACEHOLDER": "Search students, professors, records…",
       "TITLE": "SAPCyTI"
+    }
+  },
+  "TRIMESTRAL_PLANNING": {
+    "ACTIONS": {
+      "ADD_GROUP": "Add group",
+      "ADD_GROUP_HINT": "Select a UEA to create another group in this plan.",
+      "BACK_TO_DRAFT": "Back to draft",
+      "DOWNLOAD": "Download Excel",
+      "FINISH": "Finish",
+      "GENERATE": "Generate plan",
+      "REGENERATE": "Regenerate",
+      "REMOVE_GROUP": "Remove group",
+      "SAVE": "Save groups",
+      "SAVE_AND_FINISH": "Save and finish"
+    },
+    "DAYS": {
+      "JUE": "Thursday",
+      "LUN": "Monday",
+      "MAR": "Tuesday",
+      "MIE": "Wednesday",
+      "VIE": "Friday"
+    },
+    "DETAIL": {
+      "BACK_TO_DRAFT_WARNING": "The Excel file you already delivered will stop matching this plan. Move it back to draft?",
+      "BLANKS": "Blank enrollment",
+      "BLANKS_HINT": "These students have no group or letter and are not included in the Excel file.",
+      "BREADCRUMB": "Plan",
+      "LAST_EXPORTED": "Last Excel generated: {{date}}",
+      "LEAVE_UNSAVED_CONFIRM": "There are unsaved group changes. Leave and lose them?",
+      "NO_GROUPS": "This plan has no groups.",
+      "OUTDATED": "Outdated",
+      "PLAN_STATE": "Plan state",
+      "REGENERATE_WARNING": "Regenerating discards every manual edit and rebuilds the plan from the survey.",
+      "SAVE_BEFORE_EXPORT": "Save local changes before generating the Excel file.",
+      "SAVED": "Groups saved",
+      "TITLE": "Trimestral plan {{term}}",
+      "UNSAVED_WARNING": "You have unsaved group changes. Save them before finishing the plan.",
+      "WARNING_COUNT": "{{count}} generation warnings"
+    },
+    "ERRORS": {
+      "already_exists": "A plan already exists for that term.",
+      "annual_plan_not_terminated": "The annual plan must be finished before working on the trimestral plan.",
+      "annual_plan_required": "There is no annual plan for that term's year; create it first.",
+      "invalid_transition": "Invalid status transition.",
+      "not_editable": "A finished plan cannot be edited; move it back to draft.",
+      "not_found": "Trimestral plan not found.",
+      "professor_unavailable": "An assigned professor is no longer available (deactivated): remove them from the group to save.",
+      "server": "Something went wrong. Please try again.",
+      "student_unavailable": "An assigned student is no longer available (deactivated): remove them from the group to save.",
+      "survey_not_closed": "A plan can only be generated from a closed survey.",
+      "survey_not_found": "The selected survey does not exist.",
+      "validation": "Please check the values you entered."
+    },
+    "FILTERS": {
+      "ALL_GROUPS": "All groups",
+      "ALL_TYPES": "All types",
+      "CLEAR": "Clear filters",
+      "HAS_PROBLEMS": "With problems",
+      "INCOMPLETE": "Incomplete",
+      "NO_RESULTS": "No group matches the search and filters.",
+      "RESULTS": "{{visible}} of {{total}} groups",
+      "SEARCH": "Search by group, UEA key, or UEA name…",
+      "STATE": "Group situation",
+      "UEA_TYPE": "UEA type",
+      "WITH_STUDENTS": "With students",
+      "WITHOUT_PROFESSORS": "Without instructors",
+      "WITHOUT_SCHEDULE": "Without schedule",
+      "WITHOUT_STUDENTS": "Without students"
+    },
+    "GRID": {
+      "CVEUEA": "Key",
+      "NEMP": "NEMP",
+      "PROF": "Instructors",
+      "TIPO_UEA": "UEA type",
+      "UEA": "UEA"
+    },
+    "GROUP": {
+      "CUPO": "Quota",
+      "CUPO_SOURCE_LINK": "Set by the {{year}} annual plan",
+      "DECLARED_TERM": "term {{term}}",
+      "END": "End",
+      "GROUP_LIMIT_EXCEEDED": "Exceeds the annual-plan group limit",
+      "GRUPO": "Group",
+      "INACTIVE_STUDENT": "Inactive student: may remain, but cannot be moved or restored",
+      "LAB": "LAB",
+      "MATRICULA": "Enrollment ID",
+      "NAME": "Name",
+      "NO_STUDENTS": "This group has no assigned students yet.",
+      "OCCUPANCY": "Enrolled students / capacity",
+      "OVER_CAPACITY": "Over quota",
+      "SEARCH_PROFESSOR": "Search by employee number or name…",
+      "SEARCH_STUDENT": "Search by enrollment ID or name…",
+      "SEARCH_UEA": "Search UEA by key or name…",
+      "START": "Start",
+      "STUDENT_NOTE": "Note"
+    },
+    "ISSUES": {
+      "CUPO_FORMAT": "Quota “{{cupo}}” is not valid: enter a whole number or *.",
+      "DUPLICATE_STUDENT": "A student in this group is also in another group of this UEA: keep them in one group only.",
+      "DUPLICATE_STUDENTS": "{{students}} students in this group are also in another group of this UEA: keep each one in a single group.",
+      "GO_TO_GROUP": "Filter the table by this UEA and jump to the group",
+      "GROUP_LIMIT": "The annual plan authorizes {{max}} groups for this UEA and there are already more: remove one of the groups.",
+      "GRUPO_TOO_LONG": "The group code cannot be longer than {{max}} characters.",
+      "LAB_TIME_REQUIRED": "{{day}} is marked as a lab but is missing its start or end time.",
+      "MISSING_END": "{{day}} starts at {{start}} but has no end time.",
+      "MISSING_START": "{{day}} ends at {{end}} but has no start time.",
+      "NO_GROUP_CODE": "no group code",
+      "OVER_CAPACITY": "It has {{students}} students and the authorized quota is {{cupo}}: remove students or move them to another group.",
+      "START_AFTER_END": "{{day}} starts at {{start}} and ends at {{end}}: a class cannot end before it begins.",
+      "TIME_FORMAT": "{{day}} has the time “{{value}}”, which is not in 24-hour HH:mm format.",
+      "TITLE": "Fix these {{count}} problems before saving"
+    },
+    "LIST": {
+      "BLANKS": "Blank",
+      "EMPTY": "There are no trimestral plans yet.",
+      "GROUPS": "Groups",
+      "NEW": "Generate plan",
+      "STATUS": "Status",
+      "SUBTITLE": "One plan per term, generated from the closed survey.",
+      "TERM": "Term",
+      "TITLE": "Trimestral planning"
+    },
+    "NEW": {
+      "ALREADY_PLANNED": "already planned",
+      "NEWER_PENDING": "There is a more recent closed survey ({{term}}) with no plan yet. Make sure this is the one you meant to generate.",
+      "NO_CLOSED_SURVEYS": "There are no closed surveys to generate a plan from.",
+      "PICK_SURVEY": "Choose the survey the plan will be generated from",
+      "RESPONSES": "{{count}} responses",
+      "SUBTITLE": "The plan is generated from the answers of a closed survey.",
+      "TITLE": "Generate trimestral plan"
+    },
+    "OUTDATED_REASONS": {
+      "ANNUAL_PLAN_CHANGED": "The annual-plan offering changed.",
+      "SURVEY_REOPENED": "The survey was reopened after this plan was generated.",
+      "TITLE": "Outdated reasons"
+    },
+    "PENDING": {
+      "ASSIGN": "Assign to group…",
+      "CREATE_GROUP": "Create group",
+      "HINT": "Students with no group and demand that did not fit. None of this is exported to Excel.",
+      "TITLE": "Left to resolve"
+    },
+    "PREREQUISITES": {
+      "ANNUAL_NOT_TERMINATED": "The corresponding annual plan is not finished.",
+      "READ_ONLY": "This plan is read-only until its prerequisites are restored.",
+      "SURVEY_NOT_CLOSED": "The corresponding survey is not closed."
+    },
+    "REMOVE_GROUP": {
+      "HINT": "This change is only sent to the server when you save the plan.",
+      "MESSAGE": "Remove group {{group}} from {{clave}} · {{name}}?",
+      "STUDENTS": "Students that will be unassigned when you save: {{count}}.",
+      "TITLE": "Confirm group removal"
+    },
+    "STATES": {
+      "LOAD_ERROR": "The information could not be loaded."
+    },
+    "STATUS": {
+      "BORRADOR": "Draft",
+      "TERMINADA": "Finished"
+    },
+    "SUMMARY": {
+      "ASSIGNED": "placed enrolments",
+      "GROUPS": "groups",
+      "INCOMPLETE": "incomplete",
+      "UNASSIGNED": "unassigned",
+      "WITH_PROBLEMS": "with problems"
+    },
+    "UNASSIGNED": {
+      "REASONS": {
+        "GROUP_LIMIT_REACHED": "The maximum number of groups was reached.",
+        "GROUP_SUFFIX_LIMIT": "Group suffixes A–Z were exhausted.",
+        "MANUALLY_UNASSIGNED": "The student was manually removed from the group.",
+        "UEA_NOT_OFFERED": "The UEA is not offered in this term."
+      },
+      "TITLE": "Unassigned demand"
+    },
+    "WARNINGS": {
+      "CUPO_EXCEEDED": "A group exceeds its defined quota.",
+      "NO_RESPONSES": "The survey has no responses; the plan was generated without UEAs.",
+      "PROFESSOR_INACTIVE": "The assigned professor ({{employeeNumber}}) is inactive.",
+      "STUDENT_INACTIVE": "Student {{enrollmentId}} was deactivated after answering.",
+      "UEA_DEACTIVATED": "UEA {{clave}} was deactivated from the catalog after being chosen."
     }
   }
 }

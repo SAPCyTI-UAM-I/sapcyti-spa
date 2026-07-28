@@ -72,4 +72,8 @@ export class EnrollmentSurveyService {
   getResultsUeaStudents(id: number, ueaId: number): Observable<InterestedStudent[]> {
     return this.repository.getResultsUeaStudents(id, ueaId);
   }
+
+  getResultsBlankStudents(id: number): Observable<InterestedStudent[]> {
+    return this.repository.getResultsBlankStudents(id);
+  }
 }

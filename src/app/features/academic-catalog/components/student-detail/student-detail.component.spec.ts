@@ -28,6 +28,7 @@ const mockResponse: StudentDetailResponse = {
   lastDegreeObtained: 'LICENCIATURA',
   programType: 'MAESTRIA',
   admissionDate: '2025-09-01',
+  admissionTerm: '25O',
   active: true,
   program: {
     id: 100,
@@ -43,9 +44,16 @@ const mockResponse: StudentDetailResponse = {
 };
 
 describe('StudentDetailComponent', () => {
-  async function setup(studentId = '1', throwErr = false) {
+  async function setup(
+    studentId = '1',
+    throwErr = false,
+    getEnrollmentHistory?: ReturnType<typeof vi.fn>,
+    overrides: Partial<StudentDetailResponse> = {},
+  ) {
     const getStudent = vi.fn(() =>
-      throwErr ? throwError(() => new HttpErrorResponse({ status: 404 })) : of(mockResponse),
+      throwErr
+        ? throwError(() => new HttpErrorResponse({ status: 404 }))
+        : of({ ...mockResponse, ...overrides }),
     );
 
     await TestBed.configureTestingModule({
@@ -62,7 +70,13 @@ describe('StudentDetailComponent', () => {
             },
           },
         },
-        { provide: StudentService, useValue: { getStudent } },
+        {
+          provide: StudentService,
+          useValue: {
+            getStudent,
+            getEnrollmentHistory: getEnrollmentHistory ?? vi.fn(() => of([])),
+          },
+        },
         MessageService,
       ],
     }).compileComponents();
@@ -119,5 +133,113 @@ describe('StudentDetailComponent', () => {
 
     expect(getStudent).not.toHaveBeenCalled();
     expect(fixture.componentInstance.error()).toBe('reference_not_found');
+  });
+  it('shows the enrollment history, hiding letters while the plan is PENDING (HU-61)', async () => {
+    const history = vi.fn(() =>
+      of([
+        {
+          term: '26I',
+          academicTermSelected: 'III',
+          mode: 'ENROLL_UEAS' as const,
+          planStatus: 'PENDING' as const,
+          note: 'PENDING' as const,
+          ueas: [
+            {
+              status: 'PENDING' as const,
+              clave: '2156024',
+              nombre: 'REDES',
+              grupo: null,
+              professors: [],
+              schedule: null,
+            },
+          ],
+        },
+      ]),
+    );
+    const { fixture } = await setup('1', false, history);
+    fixture.detectChanges();
+
+    expect(history).toHaveBeenCalledWith(1);
+    expect(fixture.componentInstance.history()).toHaveLength(1);
+    // Sin plan TERMINADA no se pinta ninguna letra de grupo.
+    expect(fixture.nativeElement.textContent).not.toContain('CO43');
+  });
+
+  it('shows every co-director in a finished enrollment-history group', async () => {
+    const history = vi.fn(() =>
+      of([
+        {
+          term: '25P',
+          academicTermSelected: 'IV',
+          mode: 'ENROLL_UEAS' as const,
+          planStatus: 'TERMINADA' as const,
+          note: null,
+          ueas: [
+            {
+              status: 'ASSIGNED' as const,
+              clave: '2156047',
+              nombre: 'PROYECTO DE INVESTIGACIÓN',
+              grupo: 'CR43',
+              professors: [
+                { professorId: 8, employeeNumber: '40008', professorName: 'Rafaela Blanco' },
+                { professorId: 9, employeeNumber: '40009', professorName: 'Elena Soto' },
+              ],
+              schedule: null,
+            },
+          ],
+        },
+      ]),
+    );
+    const { fixture } = await setup('1', false, history);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Rafaela Blanco');
+    expect(fixture.nativeElement.textContent).toContain('Elena Soto');
+  });
+
+  it('keeps a requested UEA that was removed from the final plan', async () => {
+    const history = vi.fn(() =>
+      of([
+        {
+          term: '25P',
+          academicTermSelected: 'IV',
+          mode: 'ENROLL_UEAS' as const,
+          planStatus: 'TERMINADA' as const,
+          note: null,
+          ueas: [
+            {
+              status: 'REMOVED_FROM_FINAL_PLAN' as const,
+              clave: '2156040',
+              nombre: 'TEMAS SELECTOS',
+              grupo: null,
+              professors: [],
+              schedule: null,
+            },
+          ],
+        },
+      ]),
+    );
+    const { fixture } = await setup('1', false, history);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('2156040');
+    expect(fixture.nativeElement.textContent).not.toContain('CO43');
+  });
+
+  it('shows a historical student without admission term, with no error (HU-56)', async () => {
+    const { fixture } = await setup('1', false, undefined, { admissionTerm: null });
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.error()).toBeNull();
+    expect(fixture.componentInstance.student()?.admissionTerm).toBeNull();
+  });
+
+  it('flags a history load error without breaking the rest of the detail', async () => {
+    const history = vi.fn(() => throwError(() => new HttpErrorResponse({ status: 500 })));
+    const { fixture } = await setup('1', false, history);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.historyError()).toBe(true);
+    expect(fixture.componentInstance.student()).toEqual(mockResponse);
   });
 });

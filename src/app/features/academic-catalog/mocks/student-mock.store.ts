@@ -1,6 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 
-import { PageResponse } from '../../../models';
+import { EnrollmentHistoryEntry, PageResponse } from '../../../models';
+import {
+  ENROLLED_STUDENTS_SEED,
+  seedToCatalogItem,
+} from '../../../shared/mocks/enrolled-students.mock-data';
 import {
   RegisterStudentRequest,
   RegisterStudentResponse,
@@ -22,62 +26,8 @@ import { StudentProgramMockStore } from './student-program-mock.store';
 export class StudentMockStore {
   private readonly programMockStore = inject(StudentProgramMockStore);
 
-  private students: StudentCatalogItem[] = [
-    {
-      id: 1,
-      userId: 101,
-      enrollmentId: '223300456',
-      email: 'ana.garcia@uam.mx',
-      graduateProgramId: 1,
-      firstName: 'Ana',
-      firstLastName: 'García',
-      secondLastName: 'López',
-      nationality: 'Mexicana',
-      birthDate: '1998-04-12',
-      phone: '5512345678',
-      phoneExtension: '101',
-      undergraduateDegree: 'Computación',
-      lastDegreeObtained: 'LICENCIATURA',
-      programType: 'MAESTRIA',
-      admissionDate: '2025-09-01',
-      active: true,
-    },
-    {
-      id: 2,
-      userId: 102,
-      enrollmentId: '223300457',
-      email: 'roberto.jimenez@uam.mx',
-      graduateProgramId: 1,
-      firstName: 'Roberto',
-      firstLastName: 'Jiménez',
-      nationality: 'Mexicana',
-      birthDate: '1996-07-22',
-      phone: '5587654321',
-      undergraduateDegree: 'Matemáticas',
-      lastDegreeObtained: 'LICENCIATURA',
-      programType: 'DOCTORADO',
-      admissionDate: '2024-09-01',
-      active: false,
-    },
-    {
-      id: 3,
-      userId: 103,
-      enrollmentId: '223300458',
-      email: 'maria.lopez@uam.mx',
-      graduateProgramId: 1,
-      firstName: 'María',
-      firstLastName: 'López',
-      secondLastName: 'Hernández',
-      nationality: 'Mexicana',
-      birthDate: '1997-03-08',
-      phone: '5599887766',
-      undergraduateDegree: 'Computación',
-      lastDegreeObtained: 'MAESTRIA',
-      programType: 'MAESTRIA',
-      admissionDate: '2023-09-01',
-      active: true,
-    },
-  ];
+  // Padrón compartido: el catálogo, el sondeo y la planeación describen a la misma gente.
+  private students: StudentCatalogItem[] = ENROLLED_STUDENTS_SEED.map(seedToCatalogItem);
 
   listStudents(query: StudentCatalogQuery): PageResponse<StudentCatalogItem> {
     const search = normalizeSearch(query.search ?? '');
@@ -104,6 +54,16 @@ export class StudentMockStore {
     return student;
   }
 
+  /**
+   * HU-61 — histórico por trimestre. `PENDING` (plan sin terminar) nunca expone letra,
+   * profesor ni horario: el histórico jamás enseña asignaciones provisionales.
+   * Sin historia devuelve `[]`, no un 404.
+   */
+  getEnrollmentHistory(studentId: number): EnrollmentHistoryEntry[] {
+    this.getStudent(studentId);
+    return structuredClone(ENROLLMENT_HISTORY_SEED[studentId] ?? []);
+  }
+
   updateStudent(studentId: number, body: UpdateStudentRequest): StudentCatalogItem {
     const index = this.students.findIndex((s) => s.id === studentId);
     if (index < 0) {
@@ -125,6 +85,8 @@ export class StudentMockStore {
       ...body,
       secondLastName: body.secondLastName?.trim() || undefined,
       phoneExtension: body.phoneExtension?.trim() || undefined,
+      // PUT is a full replacement: blank/omitted clears the optional value, like the API.
+      admissionTerm: body.admissionTerm ?? null,
     };
 
     this.students = [...this.students.slice(0, index), updated, ...this.students.slice(index + 1)];
@@ -146,6 +108,8 @@ export class StudentMockStore {
 
     const student: StudentCatalogItem = {
       ...request,
+      // Opcional (HU-56): sin capturar se guarda null, como los alumnos históricos.
+      admissionTerm: request.admissionTerm ?? null,
       id: nextId(this.students),
       userId: 100 + nextId(this.students),
       active: true,
@@ -159,3 +123,86 @@ export class StudentMockStore {
     return this.students.some((student) => student.userId === userId);
   }
 }
+
+/**
+ * Histórico sembrado por alumno (HU-61). Cubre los tres casos de la spec: trimestre
+ * TERMINADO con letra/profesor/horario, trimestre PENDING sin asignaciones, y alumno
+ * agregado a mano que no respondió la encuesta.
+ */
+const ENROLLMENT_HISTORY_SEED: Record<number, EnrollmentHistoryEntry[]> = {
+  1: [
+    {
+      term: '26I',
+      academicTermSelected: 'III',
+      mode: 'ENROLL_UEAS',
+      planStatus: 'PENDING',
+      note: 'PENDING',
+      ueas: [
+        {
+          status: 'PENDING',
+          clave: '2156024',
+          nombre: 'REDES Y PROTOCOLOS DE COMUNICACIONES',
+          grupo: null,
+          professors: [],
+          schedule: null,
+        },
+      ],
+    },
+    {
+      term: '25P',
+      academicTermSelected: 'II',
+      mode: 'ENROLL_UEAS',
+      planStatus: 'TERMINADA',
+      note: null,
+      ueas: [
+        {
+          status: 'ASSIGNED',
+          clave: '2156027',
+          nombre: 'INTELIGENCIA ARTIFICIAL',
+          grupo: 'CP43',
+          professors: [
+            { professorId: 1, employeeNumber: '40001', professorName: 'Rafaela Blanco' },
+            { professorId: 2, employeeNumber: '40002', professorName: 'Elena Soto' },
+          ],
+          schedule: [
+            { day: 'LUN', start: '08:30', end: '10:00', lab: false },
+            { day: 'MAR', start: null, end: null, lab: false },
+            { day: 'MIE', start: '08:30', end: '10:00', lab: true },
+            { day: 'JUE', start: null, end: null, lab: false },
+            { day: 'VIE', start: null, end: null, lab: false },
+          ],
+        },
+        {
+          status: 'REMOVED_FROM_FINAL_PLAN',
+          clave: '2156040',
+          nombre: 'TEMAS SELECTOS DE CÓMPUTO',
+          grupo: null,
+          professors: [],
+          schedule: null,
+        },
+      ],
+    },
+  ],
+  2: [
+    {
+      term: '25P',
+      academicTermSelected: null,
+      mode: null,
+      planStatus: 'TERMINADA',
+      note: 'MANUAL_NOT_SURVEYED',
+      ueas: [
+        {
+          status: 'ASSIGNED',
+          clave: '2156038',
+          nombre: 'ALGORITMOS DISTRIBUIDOS',
+          grupo: 'CO43',
+          professors: [
+            { professorId: 3, employeeNumber: '40003', professorName: 'Humberto Cedillo' },
+          ],
+          schedule: null,
+        },
+      ],
+    },
+  ],
+  // El alumno 3 no tiene historia: el detalle muestra el estado vacío.
+};

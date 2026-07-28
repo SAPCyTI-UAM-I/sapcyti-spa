@@ -93,6 +93,8 @@ export interface SurveyResultsSummary {
   eligibleCount: number;
   respondedCount: number;
   pendingCount: number;
+  /** Respuestas en modo BLANK: cuentan como respondidas pero no generan demanda de UEAs. */
+  blankCount: number;
 }
 
 export interface UeaDemandRow {

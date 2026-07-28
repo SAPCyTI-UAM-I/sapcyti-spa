@@ -41,6 +41,7 @@
     "FIELDS": {
       "ACTIVE": "Estado del alumno",
       "ADMISSION_DATE": "Fecha de ingreso",
+      "ADMISSION_TERM": "Trimestre de ingreso",
       "BIRTH_DATE": "Fecha de nacimiento",
       "COMMISSION_MEMBER": "Miembro de comisión",
       "EMAIL": "Correo electrónico",
@@ -63,6 +64,19 @@
       "PROGRAM_TYPE": "Tipo de programa",
       "STATUS": "Estado"
     },
+    "HISTORY": {
+      "BLANK": "Inscripción en blanco: sin UEAs ni grupo.",
+      "DECLARED_TERM": "Trimestre declarado: {{term}}",
+      "EMPTY": "El alumno aún no tiene historial de inscripción.",
+      "MANUAL_NOT_SURVEYED": "No respondió la encuesta; agregado en la planeación",
+      "PENDING": "Plan trimestral pendiente",
+      "TITLE": "Historial de inscripción",
+      "UEA_STATUS": {
+        "ASSIGNED": "Asignada",
+        "PENDING": "Pendiente",
+        "REMOVED_FROM_FINAL_PLAN": "Retirada del plan final"
+      }
+    },
     "PAGINATION": {
       "TOTAL": "Total"
     },
@@ -79,7 +93,10 @@
         "ACTION": "Dar de baja",
         "CONFIRM_MESSAGE": "El profesor dejará de estar disponible para nuevas asignaciones y no podrá iniciar sesión. Esta acción conserva su historial académico.",
         "CONFIRM_TITLE": "Confirmar baja del profesor",
-        "SUCCESS": "Profesor dado de baja correctamente."
+        "OPEN_GROUP": "{{term}} · {{clave}} · grupo {{grupo}}",
+        "OPEN_GROUPS_TITLE": "Debe retirar al profesor de estos grupos abiertos:",
+        "SUCCESS": "Profesor dado de baja correctamente.",
+        "TUTOR_OR_ADVISOR_BLOCKER": "El profesor conserva tutorías o asesorías activas que deben reasignarse."
       },
       "DETAIL": {
         "CHANGE_PASSWORD": "Cambiar contraseña",
@@ -213,6 +230,7 @@
         "CHANGE_PASSWORD": "Cambiar contraseña",
         "CONTACT_SECTION": "Información de contacto",
         "EDIT_ACTION": "Editar información",
+        "NO_ADMISSION_TERM": "Sin trimestre de ingreso",
         "NO_ADVISORS": "Sin asesores asignados",
         "NO_GRADUATION_DATE": "Sin fecha de egreso",
         "NO_TUTOR": "Sin tutor asignado",
@@ -376,44 +394,6 @@
         "GROUPS": "Nº de grupos",
         "TITLE": "Materias activadas"
       }
-    },
-    "PLAN_QUARTERLY": {
-      "CHANGE_TERM": "Cambiar trimestre",
-      "COLUMNS": {
-        "ACTIONS": "Acciones",
-        "CAPACITY": "Cupo",
-        "EMPLOYEE_NUMBER": "Número de empleado",
-        "GROUP": "Grupo",
-        "KEY": "Clave",
-        "PROFESSOR": "Profesor",
-        "SUBJECT": "Materia"
-      },
-      "CONTINUE": "Continuar",
-      "CURRENT_TERM": "Trimestre actual es",
-      "EDIT_DIALOG": {
-        "CAPACITY": "Cupo",
-        "DAYS": "Días",
-        "END_TIME": "Hora de fin",
-        "GROUP": "Grupo",
-        "GROUP_PLACEHOLDER": "Escribe el grupo (ej. CO33)",
-        "PROFESSOR_PLACEHOLDER": "Selecciona profesor(es)",
-        "PROFESSORS": "Profesor(es)",
-        "RESELECT_NOTE": "Si vas a cambiar los profesores, selecciona de nuevo todos los que imparten la clase.",
-        "SINGLE_STUDENT": "¿Es para un solo alumno?",
-        "START_TIME": "Hora de inicio",
-        "STUDENT": "Alumno",
-        "STUDENT_PLACEHOLDER": "Selecciona un alumno",
-        "TITLE": "Editar materia"
-      },
-      "EMPTY": "No hay materias para el trimestre seleccionado.",
-      "MODIFY_SUBJECTS": "Modificar materias del plan",
-      "SEARCH_PROFESSOR": "Buscar por profesor, clave o materia",
-      "SUBTITLE": "Define horarios, profesores, grupos y cupos del trimestre.",
-      "TERM_HEADER": "Trimestre",
-      "TERM_LABEL": "Trimestre",
-      "TERM_PLACEHOLDER": "Selecciona un trimestre",
-      "TITLE": "Editar plan trimestral",
-      "VIEW_FULL_PLAN": "Ver plan completo"
     },
     "TERM_STATUS": {
       "EDITED": "Editado",
@@ -758,6 +738,7 @@
       "CLOSE": "Cerrar ahora",
       "DELETE": "Eliminar",
       "EDIT": "Editar",
+      "GENERATE_TRIMESTRAL": "Generar plan trimestral",
       "REOPEN": "Reabrir"
     },
     "BREADCRUMB": {
@@ -780,6 +761,7 @@
       "survey_not_active": "El sondeo no está activo.",
       "survey_not_deletable": "Solo puede eliminarse un sondeo programado sin respuestas.",
       "survey_not_found": "No existe un sondeo para ese trimestre.",
+      "survey_reopen_blocked_terminated_plan": "No puedes reabrir la encuesta: la planeación trimestral de ese trimestre ya está terminada.",
       "survey_reopen_dates_invalid": "Para reabrir el sondeo, la fecha de cierre debe ser futura.",
       "survey_window_overlaps": "Ya existe un sondeo activo o programado en ese periodo.",
       "uea_not_available": "Una o más UEA seleccionadas ya no están disponibles. Actualiza tu selección.",
@@ -849,11 +831,15 @@
       "UEAS_TITLE": "UEAs disponibles"
     },
     "RESULTS": {
+      "BLANK_STAT": "En blanco",
+      "BLANKS_HINT": "Estos alumnos respondieron sin elegir UEAs; no generan demanda.",
+      "BLANKS_TITLE": "Inscripción en blanco",
       "COL_CLAVE": "Clave",
       "COL_CREDITOS": "Créditos",
       "COL_DEMAND": "Respuestas",
       "COL_FORMACION": "Tipo de formación",
       "COL_NOMBRE": "Nombre",
+      "EMPTY_ALL_BLANK": "Todas las respuestas fueron inscripción en blanco; no hay demanda de UEAs.",
       "EMPTY_NO_RESPONSES": "Este sondeo aún no tiene respuestas.",
       "NO_STUDENTS": "Ningún alumno seleccionó esta UEA.",
       "RESPONDED": "Respondieron",
@@ -866,7 +852,7 @@
     },
     "STATUS": {
       "ACTIVO": "Activo",
-      "CERRADO": "Cerrado",
+      "CERRADO": "Cerrada",
       "PROGRAMADO": "Programado"
     }
   },
@@ -889,7 +875,7 @@
       "ENROLLMENT_STATUS": "Estados del proceso",
       "HOME": "Inicio",
       "PLAN_ANNUAL": "Planeación anual",
-      "PLAN_QUARTERLY": "Editar plan trimestral",
+      "PLAN_TRIMESTRAL": "Planeación trimestral",
       "PRESENTATIONS": "Ponencias",
       "PROFESSORS": "Profesores",
       "STUDENTS": "Alumnos",
@@ -916,6 +902,188 @@
       "NOTIFICATIONS": "Notificaciones",
       "SEARCH_PLACEHOLDER": "Buscar alumnos, profesores, matrículas…",
       "TITLE": "SAPCyTI"
+    }
+  },
+  "TRIMESTRAL_PLANNING": {
+    "ACTIONS": {
+      "ADD_GROUP": "Agregar grupo",
+      "ADD_GROUP_HINT": "Selecciona una UEA para crear otro grupo en esta planeación.",
+      "BACK_TO_DRAFT": "Regresar a borrador",
+      "DOWNLOAD": "Descargar Excel",
+      "FINISH": "Terminar",
+      "GENERATE": "Generar planeación",
+      "REGENERATE": "Regenerar",
+      "REMOVE_GROUP": "Quitar grupo",
+      "SAVE": "Guardar grupos",
+      "SAVE_AND_FINISH": "Guardar y terminar"
+    },
+    "DAYS": {
+      "JUE": "Jueves",
+      "LUN": "Lunes",
+      "MAR": "Martes",
+      "MIE": "Miércoles",
+      "VIE": "Viernes"
+    },
+    "DETAIL": {
+      "BACK_TO_DRAFT_WARNING": "El Excel que ya entregaste dejará de coincidir con la planeación. ¿Regresar a borrador?",
+      "BLANKS": "Inscripción en blanco",
+      "BLANKS_HINT": "Estos alumnos no tienen grupo ni letra y no se incluyen en el Excel.",
+      "BREADCRUMB": "Planeación",
+      "LAST_EXPORTED": "Último Excel generado: {{date}}",
+      "LEAVE_UNSAVED_CONFIRM": "Hay cambios sin guardar en los grupos. ¿Salir y perderlos?",
+      "NO_GROUPS": "La planeación no tiene grupos.",
+      "OUTDATED": "Desactualizado",
+      "PLAN_STATE": "Estado del plan",
+      "REGENERATE_WARNING": "Regenerar descarta todas las ediciones manuales y reconstruye la planeación desde la encuesta.",
+      "SAVE_BEFORE_EXPORT": "Guarda los cambios locales antes de generar el Excel.",
+      "SAVED": "Grupos guardados",
+      "TITLE": "Planeación trimestral {{term}}",
+      "UNSAVED_WARNING": "Tienes cambios en los grupos sin guardar. Guárdalos antes de terminar la planeación.",
+      "WARNING_COUNT": "{{count}} avisos de generación"
+    },
+    "ERRORS": {
+      "already_exists": "Ya existe una planeación para ese trimestre.",
+      "annual_plan_not_terminated": "La planeación anual debe estar terminada para trabajar en la trimestral.",
+      "annual_plan_required": "No hay planeación anual para el año de ese trimestre; créala primero.",
+      "invalid_transition": "Transición de estado no válida.",
+      "not_editable": "La planeación terminada no puede editarse; regrésala a borrador.",
+      "not_found": "No se encontró la planeación trimestral.",
+      "professor_unavailable": "Un profesor asignado ya no está disponible (fue dado de baja): quítalo del grupo para poder guardar.",
+      "server": "Ocurrió un error inesperado. Intenta de nuevo.",
+      "student_unavailable": "Un alumno asignado ya no está disponible (fue dado de baja): quítalo del grupo para poder guardar.",
+      "survey_not_closed": "La planeación solo se genera desde una encuesta cerrada.",
+      "survey_not_found": "No existe la encuesta seleccionada.",
+      "validation": "Revisa los datos capturados."
+    },
+    "FILTERS": {
+      "ALL_GROUPS": "Todos los grupos",
+      "ALL_TYPES": "Todos los tipos",
+      "CLEAR": "Limpiar filtros",
+      "HAS_PROBLEMS": "Con problemas",
+      "INCOMPLETE": "Incompletos",
+      "NO_RESULTS": "Ningún grupo coincide con la búsqueda y los filtros.",
+      "RESULTS": "{{visible}} de {{total}} grupos",
+      "SEARCH": "Buscar por grupo, clave o nombre de UEA…",
+      "STATE": "Situación del grupo",
+      "UEA_TYPE": "Tipo de UEA",
+      "WITH_STUDENTS": "Con alumnos",
+      "WITHOUT_PROFESSORS": "Sin profesores",
+      "WITHOUT_SCHEDULE": "Sin horario",
+      "WITHOUT_STUDENTS": "Sin alumnos"
+    },
+    "GRID": {
+      "CVEUEA": "Clave",
+      "NEMP": "NEMP",
+      "PROF": "Profesores",
+      "TIPO_UEA": "Tipo de UEA",
+      "UEA": "UEA"
+    },
+    "GROUP": {
+      "CUPO": "Cupo",
+      "CUPO_SOURCE_LINK": "Definido en la planeación anual {{year}}",
+      "DECLARED_TERM": "trim. {{term}}",
+      "END": "Fin",
+      "GROUP_LIMIT_EXCEEDED": "Rebasa el máximo de grupos de la planeación anual",
+      "GRUPO": "Grupo",
+      "INACTIVE_STUDENT": "Alumno inactivo: puede permanecer, pero no moverse ni reponerse",
+      "LAB": "LAB",
+      "MATRICULA": "Matrícula",
+      "NAME": "Nombre",
+      "NO_STUDENTS": "Este grupo todavía no tiene alumnos asignados.",
+      "OCCUPANCY": "Alumnos inscritos / cupo",
+      "OVER_CAPACITY": "Rebasa el cupo",
+      "SEARCH_PROFESSOR": "Buscar por NEMP o nombre…",
+      "SEARCH_STUDENT": "Buscar por matrícula o nombre…",
+      "SEARCH_UEA": "Buscar UEA por clave o nombre…",
+      "START": "Inicio",
+      "STUDENT_NOTE": "Nota"
+    },
+    "ISSUES": {
+      "CUPO_FORMAT": "El cupo «{{cupo}}» no es válido: escribe un número entero o *.",
+      "DUPLICATE_STUDENT": "Un alumno de este grupo también está en otro grupo de esta UEA: déjalo en uno solo.",
+      "DUPLICATE_STUDENTS": "{{students}} alumnos de este grupo también están en otro grupo de esta UEA: deja a cada uno en un solo grupo.",
+      "GO_TO_GROUP": "Filtrar la tabla por esta UEA e ir al grupo",
+      "GROUP_LIMIT": "La planeación anual autoriza {{max}} grupos para esta UEA y ya hay más: quita uno de los grupos.",
+      "GRUPO_TOO_LONG": "La letra de grupo no puede pasar de {{max}} caracteres.",
+      "LAB_TIME_REQUIRED": "{{day}} está marcado como laboratorio, pero le falta la hora de inicio o la de fin.",
+      "MISSING_END": "{{day}} empieza a las {{start}} pero no tiene hora de fin.",
+      "MISSING_START": "{{day}} termina a las {{end}} pero no tiene hora de inicio.",
+      "NO_GROUP_CODE": "sin letra de grupo",
+      "OVER_CAPACITY": "Tiene {{students}} alumnos y el cupo autorizado es {{cupo}}: quita alumnos o pásalos a otro grupo.",
+      "START_AFTER_END": "{{day}} empieza a las {{start}} y termina a las {{end}}: la clase no puede terminar antes de empezar.",
+      "TIME_FORMAT": "{{day}} tiene la hora «{{value}}», que no es del formato de 24 horas HH:mm.",
+      "TITLE": "Corrige estos {{count}} problemas para poder guardar"
+    },
+    "LIST": {
+      "BLANKS": "En blanco",
+      "EMPTY": "Aún no hay planeaciones trimestrales.",
+      "GROUPS": "Grupos",
+      "NEW": "Generar planeación",
+      "STATUS": "Estado",
+      "SUBTITLE": "Una planeación por trimestre, generada desde la encuesta cerrada.",
+      "TERM": "Trimestre",
+      "TITLE": "Planeación trimestral"
+    },
+    "NEW": {
+      "ALREADY_PLANNED": "ya tiene planeación",
+      "NEWER_PENDING": "Hay una encuesta cerrada más reciente ({{term}}) que todavía no tiene planeación. Verifica que sea esta la que quieres generar.",
+      "NO_CLOSED_SURVEYS": "No hay encuestas cerradas de las cuales generar una planeación.",
+      "PICK_SURVEY": "Elige la encuesta de la que se generará la planeación",
+      "RESPONSES": "{{count}} respuestas",
+      "SUBTITLE": "La planeación se genera a partir de las respuestas de una encuesta cerrada.",
+      "TITLE": "Generar planeación trimestral"
+    },
+    "OUTDATED_REASONS": {
+      "ANNUAL_PLAN_CHANGED": "Cambió la oferta de la planeación anual.",
+      "SURVEY_REOPENED": "La encuesta fue reabierta después de generar esta planeación.",
+      "TITLE": "Motivos de desactualización"
+    },
+    "PENDING": {
+      "ASSIGN": "Asignar a grupo…",
+      "CREATE_GROUP": "Crear grupo",
+      "HINT": "Alumnos sin grupo y demanda que no cupo. Nada de esto se exporta al Excel.",
+      "TITLE": "Pendientes por resolver"
+    },
+    "PREREQUISITES": {
+      "ANNUAL_NOT_TERMINATED": "La planeación anual correspondiente no está terminada.",
+      "READ_ONLY": "La planeación está disponible sólo para consulta hasta restaurar los prerrequisitos.",
+      "SURVEY_NOT_CLOSED": "La encuesta correspondiente no está cerrada."
+    },
+    "REMOVE_GROUP": {
+      "HINT": "El cambio sólo se enviará al servidor cuando guardes la planeación.",
+      "MESSAGE": "¿Quieres quitar el grupo {{group}} de {{clave}} · {{name}}?",
+      "STUDENTS": "Alumnos que quedarán sin asignar al guardar: {{count}}.",
+      "TITLE": "Confirmar eliminación de grupo"
+    },
+    "STATES": {
+      "LOAD_ERROR": "No se pudo cargar la información."
+    },
+    "STATUS": {
+      "BORRADOR": "Borrador",
+      "TERMINADA": "Terminada"
+    },
+    "SUMMARY": {
+      "ASSIGNED": "inscripciones colocadas",
+      "GROUPS": "grupos",
+      "INCOMPLETE": "incompletos",
+      "UNASSIGNED": "sin asignar",
+      "WITH_PROBLEMS": "con problemas"
+    },
+    "UNASSIGNED": {
+      "REASONS": {
+        "GROUP_LIMIT_REACHED": "Se alcanzó el máximo de grupos.",
+        "GROUP_SUFFIX_LIMIT": "Se agotaron los sufijos de grupo A–Z.",
+        "MANUALLY_UNASSIGNED": "El alumno fue retirado manualmente de su grupo.",
+        "UEA_NOT_OFFERED": "La UEA no está ofertada en este trimestre."
+      },
+      "TITLE": "Demanda sin asignar"
+    },
+    "WARNINGS": {
+      "CUPO_EXCEEDED": "Un grupo rebasa el cupo definido.",
+      "NO_RESPONSES": "La encuesta no tiene respuestas; se generó un plan sin UEAs.",
+      "PROFESSOR_INACTIVE": "El profesor asignado ({{employeeNumber}}) está dado de baja.",
+      "STUDENT_INACTIVE": "El alumno {{enrollmentId}} fue dado de baja después de responder.",
+      "UEA_DEACTIVATED": "La UEA {{clave}} fue desactivada del catálogo después de elegirse."
     }
   }
 }

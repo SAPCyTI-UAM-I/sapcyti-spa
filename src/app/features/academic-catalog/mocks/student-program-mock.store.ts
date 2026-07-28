@@ -9,53 +9,44 @@ import {
   StudentProgramSummary,
   UpdateStudentProgramRequest,
 } from '../../../models';
+import { ENROLLED_STUDENTS_SEED } from '../../../shared/mocks/enrolled-students.mock-data';
 import { mockBadRequest, nextId } from './catalog-mock.util';
 import { ProfessorMockStore } from './professor-mock.store';
 import { validateProgramCatalogFields } from '../utils/student-program-form.util';
+
+/** Datos de programa que no salen del padrón; solo para que el detalle no se vea vacío. */
+const PROGRAM_EXTRAS: Record<number, Partial<StudentProgramResponse>> = {
+  1: { tutorId: 10 },
+  3: {
+    lineOfKnowledge: 'Ciencias e Ingeniería de la Computación',
+    researchArea: 'Inteligencia artificial',
+    tutorId: 10,
+    advisorIds: [12],
+  },
+};
 
 @Injectable({ providedIn: 'root' })
 export class StudentProgramMockStore {
   private readonly professorStore = inject(ProfessorMockStore);
 
-  private programs: StudentProgramResponse[] = [
-    {
-      id: 100,
-      studentId: 1,
-      graduateProgramId: 1,
-      enrollmentId: '223300456',
-      programType: 'MAESTRIA',
-      admissionDate: '2025-09-01',
-      status: 'ACTIVO',
-      tutorId: 10,
-      advisorIds: [],
-      advisors: [],
-    },
-    {
-      id: 101,
-      studentId: 2,
-      graduateProgramId: 1,
-      enrollmentId: '223300457',
-      programType: 'DOCTORADO',
-      admissionDate: '2024-09-01',
-      status: 'ACTIVO',
-      lineOfKnowledge: 'Ciencias e Ingeniería de la Computación',
-      researchArea: 'Inteligencia artificial',
-      tutorId: 10,
-      advisorIds: [12],
-      advisors: [],
-    },
-    {
-      id: 102,
-      studentId: 3,
-      graduateProgramId: 1,
-      enrollmentId: '223300458',
-      programType: 'MAESTRIA',
-      admissionDate: '2023-09-01',
-      status: 'ACTIVO',
-      advisorIds: [],
-      advisors: [],
-    },
-  ];
+  /**
+   * Un programa por alumno del padrón compartido. Se deriva del seed en vez de listarse a
+   * mano porque cada alumno del catálogo **debe** tener programa: `getProgramForStudent`
+   * lanza 404 si falta, y el detalle del alumno no abre.
+   */
+  private programs: StudentProgramResponse[] = ENROLLED_STUDENTS_SEED.map((student, index) => ({
+    id: 100 + index,
+    studentId: student.id,
+    graduateProgramId: 1,
+    enrollmentId: student.enrollmentId,
+    programType: student.programType,
+    admissionDate: student.admissionDate,
+    status: student.active ? 'ACTIVO' : 'BAJA',
+    withdrawalReason: student.active ? undefined : 'Baja por abandono de estudios',
+    advisors: [],
+    advisorIds: [],
+    ...PROGRAM_EXTRAS[student.id],
+  }));
 
   listPrograms(studentId: number): StudentProgramSummary[] {
     return this.programs

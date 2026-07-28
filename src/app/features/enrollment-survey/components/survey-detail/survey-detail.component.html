@@ -20,6 +20,16 @@
             />
           </div>
           <div class="gap-sm flex flex-wrap">
+            <!-- HU-58: solo preselecciona la encuesta en el módulo trimestral; no genera nada. -->
+            @if (survey.status === 'CERRADO') {
+              <p-button
+                icon="pi pi-cog"
+                data-testid="survey-action-generate-trimestral"
+                [label]="'ENROLLMENT_SURVEY.ACTIONS.GENERATE_TRIMESTRAL' | translate"
+                [routerLink]="['/trimestral-planning', 'new']"
+                [queryParams]="{ surveyId }"
+              />
+            }
             <p-button
               icon="pi pi-pencil"
               data-testid="survey-action-edit"
@@ -92,15 +102,29 @@
               {{ 'ENROLLMENT_SURVEY.RESULTS.TITLE' | translate }}
             </h2>
             @if (summary(); as summary) {
-              <div
-                class="bg-primary-container text-primary gap-sm px-md py-sm inline-flex items-center rounded-xl"
-                data-testid="responded-stat"
-              >
-                <i class="pi pi-check-circle text-lg"></i>
-                <span class="text-h1 leading-none font-bold">{{ summary.respondedCount }}</span>
-                <span class="text-body-md">
-                  {{ 'ENROLLMENT_SURVEY.RESULTS.RESPONDED' | translate }}
-                </span>
+              <div class="gap-sm flex flex-wrap items-center">
+                <div
+                  class="bg-primary-container text-primary gap-sm px-md py-sm inline-flex items-center rounded-xl"
+                  data-testid="responded-stat"
+                >
+                  <i class="pi pi-check-circle text-lg"></i>
+                  <span class="text-h1 leading-none font-bold">{{ summary.respondedCount }}</span>
+                  <span class="text-body-md">
+                    {{ 'ENROLLMENT_SURVEY.RESULTS.RESPONDED' | translate }}
+                  </span>
+                </div>
+                @if (summary.blankCount > 0) {
+                  <div
+                    class="bg-surface-subtle text-text-secondary gap-sm px-md py-sm inline-flex items-center rounded-xl"
+                    data-testid="blank-stat"
+                  >
+                    <i class="pi pi-minus-circle text-lg"></i>
+                    <span class="text-h1 leading-none font-bold">{{ summary.blankCount }}</span>
+                    <span class="text-body-md">
+                      {{ 'ENROLLMENT_SURVEY.RESULTS.BLANK_STAT' | translate }}
+                    </span>
+                  </div>
+                }
               </div>
             }
           </div>
@@ -114,84 +138,118 @@
               <p>{{ 'ENROLLMENT_SURVEY.RESULTS.EMPTY_NO_RESPONSES' | translate }}</p>
             </div>
           } @else {
-            <div class="border-outline overflow-hidden rounded-xl border">
-              <div class="md:overflow-x-auto">
-                <table class="block w-full border-collapse md:table md:min-w-[42rem]">
-                  <thead class="bg-table-header hidden text-left md:table-header-group">
-                    <tr>
-                      <th class="p-md">
-                        {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CLAVE' | translate }}
-                      </th>
-                      <th class="p-md">
-                        {{ 'ENROLLMENT_SURVEY.RESULTS.COL_NOMBRE' | translate }}
-                      </th>
-                      <th class="p-md">
-                        {{ 'ENROLLMENT_SURVEY.RESULTS.COL_FORMACION' | translate }}
-                      </th>
-                      <th class="p-md text-right">
-                        {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CREDITOS' | translate }}
-                      </th>
-                      <th class="p-md text-right" [attr.aria-sort]="ariaSort()">
-                        <button
-                          type="button"
-                          class="gap-xs ml-auto flex items-center"
-                          (click)="toggleSort()"
-                        >
-                          {{ 'ENROLLMENT_SURVEY.RESULTS.COL_DEMAND' | translate }}
-                          <i class="pi {{ sortIcon() }} text-[10px]"></i>
-                        </button>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
-                    @for (row of orderedRows(); track row.ueaId) {
-                      <tr
-                        class="hover:bg-table-row-hover p-md gap-md md:border-outline grid cursor-pointer grid-cols-2 md:table-row md:border-t"
-                        [attr.data-testid]="'demand-row-' + row.ueaId"
-                        (click)="openStudents(row)"
-                      >
-                        <td class="md:p-md text-primary font-semibold md:table-cell">
-                          <span
-                            class="text-caption text-text-secondary block font-normal md:hidden"
+            <!-- Respondieron pero nadie eligió UEAs: sin esta nota la tabla vacía parece bug. -->
+            @if (orderedRows().length === 0) {
+              <p class="text-body-md text-text-secondary" data-testid="results-all-blank">
+                {{ 'ENROLLMENT_SURVEY.RESULTS.EMPTY_ALL_BLANK' | translate }}
+              </p>
+            } @else {
+              <div class="border-outline overflow-hidden rounded-xl border">
+                <div class="md:overflow-x-auto">
+                  <table class="block w-full border-collapse md:table md:min-w-[42rem]">
+                    <thead class="bg-table-header hidden text-left md:table-header-group">
+                      <tr>
+                        <th class="p-md">
+                          {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CLAVE' | translate }}
+                        </th>
+                        <th class="p-md">
+                          {{ 'ENROLLMENT_SURVEY.RESULTS.COL_NOMBRE' | translate }}
+                        </th>
+                        <th class="p-md">
+                          {{ 'ENROLLMENT_SURVEY.RESULTS.COL_FORMACION' | translate }}
+                        </th>
+                        <th class="p-md text-right">
+                          {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CREDITOS' | translate }}
+                        </th>
+                        <th class="p-md text-right" [attr.aria-sort]="ariaSort()">
+                          <button
+                            type="button"
+                            class="gap-xs ml-auto flex items-center"
+                            (click)="toggleSort()"
                           >
-                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CLAVE' | translate }}
-                          </span>
-                          {{ row.clave }}
-                        </td>
-                        <td class="md:p-md col-span-2 md:table-cell">
-                          <span class="text-caption text-text-secondary block md:hidden">
-                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_NOMBRE' | translate }}
-                          </span>
-                          {{ row.nombre }}
-                        </td>
-                        <td class="md:p-md md:table-cell">
-                          <span class="text-caption text-text-secondary block md:hidden">
-                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_FORMACION' | translate }}
-                          </span>
-                          {{ row.tipoFormacion }}
-                        </td>
-                        <td class="md:p-md md:table-cell md:text-right">
-                          <span class="text-caption text-text-secondary block md:hidden">
-                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CREDITOS' | translate }}
-                          </span>
-                          {{ row.creditos }}
-                        </td>
-                        <td class="md:p-md md:table-cell md:text-right">
-                          <span class="text-caption text-text-secondary block md:hidden">
                             {{ 'ENROLLMENT_SURVEY.RESULTS.COL_DEMAND' | translate }}
-                          </span>
-                          <span
-                            class="bg-primary-container text-primary px-sm py-xs inline-block min-w-[2rem] rounded-full text-center font-semibold"
-                          >
-                            {{ row.totalResponses }}
-                          </span>
-                        </td>
+                            <i class="pi {{ sortIcon() }} text-[10px]"></i>
+                          </button>
+                        </th>
                       </tr>
-                    }
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+                      @for (row of orderedRows(); track row.ueaId) {
+                        <tr
+                          class="hover:bg-table-row-hover p-md gap-md md:border-outline grid cursor-pointer grid-cols-2 md:table-row md:border-t"
+                          [attr.data-testid]="'demand-row-' + row.ueaId"
+                          (click)="openStudents(row)"
+                        >
+                          <td class="md:p-md text-primary font-semibold md:table-cell">
+                            <span
+                              class="text-caption text-text-secondary block font-normal md:hidden"
+                            >
+                              {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CLAVE' | translate }}
+                            </span>
+                            {{ row.clave }}
+                          </td>
+                          <td class="md:p-md col-span-2 md:table-cell">
+                            <span class="text-caption text-text-secondary block md:hidden">
+                              {{ 'ENROLLMENT_SURVEY.RESULTS.COL_NOMBRE' | translate }}
+                            </span>
+                            {{ row.nombre }}
+                          </td>
+                          <td class="md:p-md md:table-cell">
+                            <span class="text-caption text-text-secondary block md:hidden">
+                              {{ 'ENROLLMENT_SURVEY.RESULTS.COL_FORMACION' | translate }}
+                            </span>
+                            {{ row.tipoFormacion }}
+                          </td>
+                          <td class="md:p-md md:table-cell md:text-right">
+                            <span class="text-caption text-text-secondary block md:hidden">
+                              {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CREDITOS' | translate }}
+                            </span>
+                            {{ row.creditos }}
+                          </td>
+                          <td class="md:p-md md:table-cell md:text-right">
+                            <span class="text-caption text-text-secondary block md:hidden">
+                              {{ 'ENROLLMENT_SURVEY.RESULTS.COL_DEMAND' | translate }}
+                            </span>
+                            <span
+                              class="bg-primary-container text-primary px-sm py-xs inline-block min-w-[2rem] rounded-full text-center font-semibold"
+                            >
+                              {{ row.totalResponses }}
+                            </span>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
+            }
+
+            <!-- HU-42 — alumnos en blanco listados debajo de la demanda por UEA. -->
+            @if (blankStudents().length > 0) {
+              <div class="border-outline rounded-xl border" data-testid="blank-students">
+                <h3 class="text-body-md p-md pb-0 font-medium">
+                  {{ 'ENROLLMENT_SURVEY.RESULTS.BLANKS_TITLE' | translate }}
+                  <span class="text-caption text-text-secondary font-normal">
+                    · {{ blankStudents().length }}
+                  </span>
+                </h3>
+                <p class="px-md text-caption text-text-secondary">
+                  {{ 'ENROLLMENT_SURVEY.RESULTS.BLANKS_HINT' | translate }}
+                </p>
+                <ul class="p-md gap-xs flex flex-col">
+                  @for (student of blankStudents(); track student.enrollmentId) {
+                    <li class="text-body-md">
+                      {{ student.fullName }}
+                      <span class="text-caption text-text-secondary">
+                        · {{ student.enrollmentId }} ·
+                        {{ 'ENROLLMENT_SURVEY.RESULTS.TRIMESTER' | translate }}
+                        {{ student.academicTerm }}
+                      </span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
           }
         </div>
       </div>

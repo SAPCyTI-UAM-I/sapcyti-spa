@@ -110,4 +110,11 @@ export class EnrollmentSurveyHttpRepository implements EnrollmentSurveyRepositor
       { withCredentials: true },
     );
   }
+
+  getResultsBlankStudents(id: number): Observable<InterestedStudent[]> {
+    return this.http.get<InterestedStudent[]>(
+      API_ENDPOINTS.enrollmentSurveyResultsBlankStudents(id),
+      { withCredentials: true },
+    );
+  }
 }

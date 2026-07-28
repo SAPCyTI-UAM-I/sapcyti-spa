@@ -27,6 +27,7 @@ const sampleStudent: StudentCatalogItem = {
   lastDegreeObtained: 'LICENCIATURA',
   programType: 'MAESTRIA',
   admissionDate: '2025-09-01',
+  admissionTerm: '25O',
 };
 
 function buildStudentPage(

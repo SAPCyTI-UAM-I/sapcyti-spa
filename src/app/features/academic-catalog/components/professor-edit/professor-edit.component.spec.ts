@@ -109,8 +109,18 @@ describe('ProfessorEditComponent', () => {
           new HttpErrorResponse({
             status: 409,
             error: {
-              error: 'CONFLICT',
-              message: 'Professor is tutor or advisor of an active student program',
+              error: 'PROFESSOR_HAS_ACTIVE_ASSIGNMENTS',
+              message: 'Professor has active assignments',
+              hasTutorOrAdvisorAssignments: true,
+              openGroupAssignments: [
+                {
+                  planId: 8,
+                  term: '26I',
+                  ueaId: 4,
+                  clave: '2156024',
+                  grupo: 'CO43',
+                },
+              ],
             },
           }),
       ),
@@ -148,6 +158,11 @@ describe('ProfessorEditComponent', () => {
     await fixture.whenStable();
 
     expect(fixture.componentInstance.deactivateError()).toBe('professor_has_active_assignments');
+    expect(fixture.componentInstance.deactivateConflict()?.hasTutorOrAdvisorAssignments).toBe(true);
+    expect(fixture.componentInstance.deactivateConflict()?.openGroupAssignments).toHaveLength(1);
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="deactivation-conflict-details"]'),
+    ).not.toBeNull();
   });
 
   it('reactivates an inactive professor from the edit actions', async () => {

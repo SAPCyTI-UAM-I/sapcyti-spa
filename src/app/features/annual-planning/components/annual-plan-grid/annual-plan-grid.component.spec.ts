@@ -101,6 +101,16 @@ describe('AnnualPlanGridComponent', () => {
     expect(fixture.componentInstance.showInvalidMessage()).toBe(true);
   });
 
+  it('marks both cells and blocks saving when a groups/quota pair is incomplete', async () => {
+    const { fixture, saveEntries } = await setup(planFixture());
+    fixture.componentInstance.rowGroup(0).patchValue({ gruposP: '2', cupoP: '' });
+    fixture.componentInstance.save();
+
+    expect(saveEntries).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.cellInvalid(0, 'gruposP')).toBe(true);
+    expect(fixture.componentInstance.cellInvalid(0, 'cupoP')).toBe(true);
+  });
+
   it('saves valid entries and emits the updated plan', async () => {
     const plan = planFixture();
     const { fixture, saveEntries } = await setup(plan);
