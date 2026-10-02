@@ -45,14 +45,6 @@ const COORDINATOR_CARDS: DashboardCard[] = [
     linkRoute: '/enrollment/advisor-approval',
     tone: 'warning',
   },
-  {
-    icon: 'pi pi-print',
-    value: 3,
-    labelKey: 'DASHBOARD.CARDS.FORMATS_READY',
-    linkKey: 'DASHBOARD.CARDS.FORMATS_LINK',
-    linkRoute: '/enrollment/form-pdf',
-    tone: 'info',
-  },
 ];
 
 const STUDENT_CARDS: DashboardCard[] = [
@@ -86,25 +78,9 @@ const PROFESSOR_CARDS: DashboardCard[] = [
 ];
 
 const ASSISTANT_CARDS: DashboardCard[] = [
-  {
-    icon: 'pi pi-print',
-    value: 6,
-    labelKey: 'DASHBOARD.CARDS.SUPPORT_FORMATS',
-    linkKey: 'DASHBOARD.CARDS.SUPPORT_FORMATS_LINK',
-    linkRoute: '/enrollment/form-pdf',
-    tone: 'primary',
-  },
 ];
 
 const PRESENTATION_CARDS: DashboardCard[] = [
-  {
-    icon: 'pi pi-microphone',
-    value: '26-I',
-    labelKey: 'DASHBOARD.CARDS.PRESENTATIONS',
-    linkKey: 'DASHBOARD.CARDS.PRESENTATIONS_LINK',
-    linkRoute: '/presentations',
-    tone: 'primary',
-  },
 ];
 
 export const DASHBOARD_CARDS_BY_ROLE: Record<RoleType, DashboardCard[]> = {
