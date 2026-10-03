@@ -26,8 +26,7 @@ Mapa físico: [`repository-map.md`](./repository-map.md).
 | Listado catálogo (alumno/profesor/UEA) | `features/academic-catalog/` | golden: `professor-list/`; bases `catalog-*.base.ts` |
 | Pantalla UEA | **`academic-catalog`** (no offering) | rutas `ueas` en `academic-catalog.routes.ts` |
 | Inicio inscripción / horarios | `features/academic-offering/components/enrollment-start/` | — |
-| Inscripción asesor/PDF/estado | `features/enrollment/` | stub placeholder — no inventar dominio |
-| Presentaciones | `features/presentations/` | stub placeholder |
+| Inscripción asesor | `features/enrollment/` | stub placeholder — solo visto bueno de asesor |
 | Sondeo | `features/enrollment-survey/` | repos + components del feature |
 | Plan anual | `features/annual-planning/` | — |
 | Plan trimestral | `features/trimestral-planning/` | fixtures en `testing/` |

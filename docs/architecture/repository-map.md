@@ -45,9 +45,8 @@ Vista mínima del SPA Angular. No inventar módulos fuera de esta lista.
 | `annual-planning` | Plan anual (lista/detalle/grid/wizard) |
 | `auth` | Login y recuperación |
 | `dashboard` | Home por rol |
-| `enrollment` | **Solo placeholders** |
+| `enrollment` | Solo placeholder (aprobación asesor) |
 | `enrollment-survey` | Sondeo (lista/form/detalle/respuesta) |
-| `presentations` | **Solo placeholder** |
 | `trimestral-planning` | Plan trimestral (+ `testing/` fixtures) |
 
 ## Ruido — no explorar por defecto
