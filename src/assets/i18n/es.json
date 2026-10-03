@@ -586,11 +586,8 @@
   },
   "BREADCRUMB": {
     "ADVISOR_APPROVAL": "Aprobaciones",
-    "FORM_PDF": "Formato",
     "NEW": "Nuevo",
-    "PASSWORD": "Contraseña",
-    "STATUS": "Estados",
-    "TERMS": "Trimestres"
+    "PASSWORD": "Contraseña"
   },
   "COMMON": {
     "ACTIONS": {
@@ -640,29 +637,19 @@
   },
   "DASHBOARD": {
     "CARDS": {
-      "ACTIVE_TERM": "Proceso activo",
-      "ACTIVE_TERM_BADGE": "En inscripción",
-      "FORMATS_LINK": "Imprimir formatos",
-      "FORMATS_READY": "alumnos con UEAs aprobadas",
-      "MANAGE_LINK": "Gestionar",
       "MY_ADVISEES": "alumnos asesorados",
       "MY_ADVISEES_LINK": "Ver alumnos",
       "MY_ENROLLMENT": "Estado de mi inscripción",
-      "MY_ENROLLMENT_LINK": "Ver inscripción",
       "PENDING_APPROVAL": "UEAs esperando aprobación del asesor",
       "PENDING_LINK": "Revisar pendientes",
       "PENDING_REVIEWS": "selecciones de UEAs esperando aprobación",
       "PENDING_REVIEWS_LINK": "Revisar ahora",
-      "PRESENTATIONS": "Ponencias",
-      "PRESENTATIONS_LINK": "Ver ponencias",
       "STUDENTS_COUNT": "alumnos registrados",
-      "STUDENTS_LINK": "Ver alumnos",
-      "SUPPORT_FORMATS": "alumnos listos para generar PDF",
-      "SUPPORT_FORMATS_LINK": "Generar formatos"
+      "STUDENTS_LINK": "Ver alumnos"
     },
     "HOME": {
       "ASSISTANT": {
-        "SUBTITLE": "",
+        "SUBTITLE": "Bienvenido al panel de asistencia técnica.",
         "TITLE": "Inicio"
       },
       "COORDINATOR": {
@@ -675,7 +662,7 @@
         "TITLE": "Inicio"
       },
       "SPEAKER": {
-        "SUBTITLE": "Consulte y gestione sus ponencias.",
+        "SUBTITLE": "Bienvenido al portal de ponentes.",
         "TITLE": "Inicio"
       },
       "STUDENT": {
@@ -683,7 +670,7 @@
         "TITLE": "Inicio"
       },
       "SYSTEM_ADMIN": {
-        "SUBTITLE": "Supervise la configuración global y las ponencias del sistema.",
+        "SUBTITLE": "Supervise la configuración global del sistema.",
         "TITLE": "Inicio"
       }
     },
@@ -702,7 +689,6 @@
       "ACTIVITY_TITLE": "Actividad Reciente"
     },
     "STUDENT": {
-      "ACTION": "Ir a inscripción",
       "APPROVED": "Aprobado",
       "ENROLLMENT_TITLE": "Mi inscripción — Trimestre 26-I",
       "FUTURE_STATES": "Referencia Visual de Estados Futuros",
@@ -719,18 +705,6 @@
     "ADVISOR_APPROVAL": {
       "MESSAGE": "Módulo de aprobación — próximamente",
       "TITLE": "Aprobar elección de UEAs"
-    },
-    "FORM_PDF": {
-      "MESSAGE": "Generación de formatos — próximamente",
-      "TITLE": "Formato de inscripción (PDF)"
-    },
-    "STATUS": {
-      "MESSAGE": "Seguimiento de estados — próximamente",
-      "TITLE": "Estados del proceso"
-    },
-    "TERMS": {
-      "MESSAGE": "Gestión de trimestres — próximamente",
-      "TITLE": "Trimestres y oferta académica"
     }
   },
   "ENROLLMENT_SURVEY": {
@@ -856,12 +830,6 @@
       "PROGRAMADO": "Programado"
     }
   },
-  "PRESENTATIONS": {
-    "PLACEHOLDER": {
-      "MESSAGE": "Módulo de ponencias — próximamente",
-      "TITLE": "Ponencias"
-    }
-  },
   "SHELL": {
     "BRAND": {
       "SUBTITLE": "PCyTI — UAM",
@@ -870,27 +838,21 @@
     "MENU": {
       "ADVISOR_APPROVAL": "Aprobar elección de UEAs",
       "CHANGE_PASSWORD": "Cambiar contraseña",
-      "ENROLLMENT_FORM_PDF": "Formato de inscripción (PDF)",
       "ENROLLMENT_START": "Iniciar inscripción",
-      "ENROLLMENT_STATUS": "Estados del proceso",
       "HOME": "Inicio",
       "PLAN_ANNUAL": "Planeación anual",
       "PLAN_TRIMESTRAL": "Planeación trimestral",
-      "PRESENTATIONS": "Ponencias",
       "PROFESSORS": "Profesores",
       "STUDENTS": "Alumnos",
       "SURVEY": "Encuesta",
       "SURVEY_CONFIG": "Encuesta de inscripción",
-      "TERMS_OFFER": "Trimestres y oferta académica",
       "UEAS": "Catálogo de UEAs"
     },
     "SECTIONS": {
       "ACADEMIC_MANAGEMENT": "Gestión académica",
       "ENROLLMENT": "Inscripción",
-      "ENROLLMENT_PROCESS": "Proceso de inscripción",
       "MAIN": "Principal",
-      "PLANNING": "Planeación y oferta",
-      "PRESENTATIONS": "Ponencias"
+      "PLANNING": "Planeación y oferta"
     },
     "SIDEBAR": {
       "COLLAPSE": "Contraer menú",

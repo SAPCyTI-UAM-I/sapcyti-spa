@@ -586,11 +586,8 @@
   },
   "BREADCRUMB": {
     "ADVISOR_APPROVAL": "Approvals",
-    "FORM_PDF": "Form",
     "NEW": "New",
-    "PASSWORD": "Password",
-    "STATUS": "Status",
-    "TERMS": "Terms"
+    "PASSWORD": "Password"
   },
   "COMMON": {
     "ACTIONS": {
@@ -640,29 +637,19 @@
   },
   "DASHBOARD": {
     "CARDS": {
-      "ACTIVE_TERM": "Active process",
-      "ACTIVE_TERM_BADGE": "Enrolling",
-      "FORMATS_LINK": "Print forms",
-      "FORMATS_READY": "students with approved UEAs",
-      "MANAGE_LINK": "Manage",
       "MY_ADVISEES": "advised students",
       "MY_ADVISEES_LINK": "View students",
       "MY_ENROLLMENT": "My enrollment status",
-      "MY_ENROLLMENT_LINK": "View enrollment",
       "PENDING_APPROVAL": "UEAs awaiting advisor approval",
       "PENDING_LINK": "Review pending",
       "PENDING_REVIEWS": "UEA selections awaiting approval",
       "PENDING_REVIEWS_LINK": "Review now",
-      "PRESENTATIONS": "Presentations",
-      "PRESENTATIONS_LINK": "View presentations",
       "STUDENTS_COUNT": "registered students",
-      "STUDENTS_LINK": "View students",
-      "SUPPORT_FORMATS": "students ready to generate PDF",
-      "SUPPORT_FORMATS_LINK": "Generate forms"
+      "STUDENTS_LINK": "View students"
     },
     "HOME": {
       "ASSISTANT": {
-        "SUBTITLE": "",
+        "SUBTITLE": "Welcome to the assistant panel.",
         "TITLE": "Home"
       },
       "COORDINATOR": {
@@ -675,7 +662,7 @@
         "TITLE": "Home"
       },
       "SPEAKER": {
-        "SUBTITLE": "Review and manage your presentations.",
+        "SUBTITLE": "Welcome to the speaker portal.",
         "TITLE": "Home"
       },
       "STUDENT": {
@@ -683,7 +670,7 @@
         "TITLE": "Home"
       },
       "SYSTEM_ADMIN": {
-        "SUBTITLE": "Oversee global configuration and system presentations.",
+        "SUBTITLE": "Oversee global system configuration.",
         "TITLE": "Home"
       }
     },
@@ -702,7 +689,6 @@
       "ACTIVITY_TITLE": "Recent Activity"
     },
     "STUDENT": {
-      "ACTION": "Go to enrollment",
       "APPROVED": "Approved",
       "ENROLLMENT_TITLE": "My enrollment — Term 26-I",
       "FUTURE_STATES": "Visual Reference of Future States",
@@ -719,18 +705,6 @@
     "ADVISOR_APPROVAL": {
       "MESSAGE": "Advisor approval module — coming soon",
       "TITLE": "Approve course selection"
-    },
-    "FORM_PDF": {
-      "MESSAGE": "Form generation — coming soon",
-      "TITLE": "Enrollment form (PDF)"
-    },
-    "STATUS": {
-      "MESSAGE": "Status tracking — coming soon",
-      "TITLE": "Process status"
-    },
-    "TERMS": {
-      "MESSAGE": "Term management — coming soon",
-      "TITLE": "Terms and academic offer"
     }
   },
   "ENROLLMENT_SURVEY": {
@@ -856,12 +830,6 @@
       "PROGRAMADO": "Scheduled"
     }
   },
-  "PRESENTATIONS": {
-    "PLACEHOLDER": {
-      "MESSAGE": "Presentations module — coming soon",
-      "TITLE": "Presentations"
-    }
-  },
   "SHELL": {
     "BRAND": {
       "SUBTITLE": "PCyTI — UAM",
@@ -870,27 +838,21 @@
     "MENU": {
       "ADVISOR_APPROVAL": "Approve course selection",
       "CHANGE_PASSWORD": "Change password",
-      "ENROLLMENT_FORM_PDF": "Enrollment form (PDF)",
       "ENROLLMENT_START": "Start enrollment",
-      "ENROLLMENT_STATUS": "Process status",
       "HOME": "Home",
       "PLAN_ANNUAL": "Annual planning",
       "PLAN_TRIMESTRAL": "Trimestral planning",
-      "PRESENTATIONS": "Presentations",
       "PROFESSORS": "Professors",
       "STUDENTS": "Students",
       "SURVEY": "Survey",
       "SURVEY_CONFIG": "Enrollment survey",
-      "TERMS_OFFER": "Terms and academic offer",
       "UEAS": "Course Catalog (UEAs)"
     },
     "SECTIONS": {
       "ACADEMIC_MANAGEMENT": "Academic management",
       "ENROLLMENT": "Enrollment",
-      "ENROLLMENT_PROCESS": "Enrollment process",
       "MAIN": "Main",
-      "PLANNING": "Planning & offer",
-      "PRESENTATIONS": "Presentations"
+      "PLANNING": "Planning & offer"
     },
     "SIDEBAR": {
       "COLLAPSE": "Collapse menu",
