@@ -24,7 +24,7 @@ SPA Angular 21 + TypeScript strict + PrimeNG + Tailwind. Gestor: **pnpm** (`pack
 1. Lee este L0.
 2. UI: abre **solo §0** de `.cursor/conventions.md` (no el archivo entero; no uses `conventions.md` raíz como sustituto).
 3. Si tocas `core/` o `academic-catalog/`, lee la nota de área (fuera de `src`): `docs/agent-context/core.md` o `docs/agent-context/academic-catalog.md`.
-4. Elige el skill en `.agents/skills/` (pantalla, i18n, endpoint, test, explorar).
+4. Elige el skill en `.agents/skills/` (pantalla, i18n, endpoint, test, explorar, eliminar).
 5. Copia el componente más cercano del mismo feature + su `*.spec.ts`.
 6. Ejemplo dorado verificado: `src/app/features/academic-catalog/components/professor-list/`.
 7. HTTP → `API_ENDPOINTS`. Índices: `docs/architecture/index.md`.
@@ -53,7 +53,7 @@ SPA Angular 21 + TypeScript strict + PrimeNG + Tailwind. Gestor: **pnpm** (`pack
 - Texto visible solo por i18n (`es` + `en`).
 - Standalone, `OnPush`, estado con signals; formularios reactivos (`NonNullableFormBuilder`).
 - UEAs viven en `academic-catalog`, no en `academic-offering`.
-- `enrollment` y `presentations` son placeholders.
+- `enrollment` es solo placeholder (aprobación de asesor).
 
 ## Definition of done
 
