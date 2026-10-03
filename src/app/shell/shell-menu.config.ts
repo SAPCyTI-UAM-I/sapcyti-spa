@@ -26,13 +26,6 @@ const HOME_LINK = {
   icon: 'pi pi-home',
 } as const;
 
-const PRESENTATIONS_LINK = {
-  id: 'presentations',
-  labelKey: 'SHELL.MENU.PRESENTATIONS',
-  route: '/presentations',
-  icon: 'pi pi-microphone',
-} as const;
-
 const STUDENT_NAV: ShellNavigation = {
   home: HOME_LINK,
   sections: [],
@@ -58,18 +51,12 @@ const PROFESSOR_NAV: ShellNavigation = {
 
 const ASSISTANT_NAV: ShellNavigation = {
   home: HOME_LINK,
-  sections: [   ],
+  sections: [],
 };
 
 const SPEAKER_NAV: ShellNavigation = {
   home: HOME_LINK,
-  sections: [
-    {
-      id: 'speaker-presentations',
-      labelKey: 'SHELL.SECTIONS.PRESENTATIONS',
-      items: [PRESENTATIONS_LINK],
-    },
-  ],
+  sections: [],
 };
 
 const COORDINATOR_NAV: ShellNavigation = {
@@ -134,7 +121,7 @@ const COORDINATOR_NAV: ShellNavigation = {
 
 const SYSTEM_ADMIN_NAV: ShellNavigation = {
   home: HOME_LINK,
-  sections: [  ],
+  sections: [],
 };
 
 const NAV_BY_ROLE: Record<ShellMenuRole, ShellNavigation> = {
