@@ -32,13 +32,4 @@ export const ENROLLMENT_ROUTES: Routes = [
     ROUTE_PERMISSIONS.advisorApproval,
     'BREADCRUMB.ADVISOR_APPROVAL',
   ),
-
-  placeholderRoute(
-    'terms',
-    'ENROLLMENT.TERMS.TITLE',
-    'ENROLLMENT.TERMS.MESSAGE',
-    ROUTE_PERMISSIONS.enrollmentTerms,
-    'BREADCRUMB.TERMS',
-  ),
-
 ];

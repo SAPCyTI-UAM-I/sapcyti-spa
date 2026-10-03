@@ -8,7 +8,6 @@ export const ROUTE_PERMISSIONS = {
   dashboard: ['SYSTEM_ADMIN', 'COORDINATOR', 'ASSISTANT', 'PROFESSOR', 'STUDENT', 'SPEAKER'],
   enrollment: ['COORDINATOR', 'PROFESSOR', 'STUDENT'],
   advisorApproval: ['PROFESSOR'],
-  enrollmentTerms: ['COORDINATOR'],
   academicCatalog: ['COORDINATOR'],
   academicOffering: ['COORDINATOR'],
   annualPlanning: ['COORDINATOR'],
