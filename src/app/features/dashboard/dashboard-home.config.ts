@@ -29,15 +29,6 @@ const COORDINATOR_CARDS: DashboardCard[] = [
     tone: 'primary',
   },
   {
-    icon: 'pi pi-user-plus',
-    value: 'Trimestre 26-I',
-    labelKey: 'DASHBOARD.CARDS.ACTIVE_TERM',
-    badgeKey: 'DASHBOARD.CARDS.ACTIVE_TERM_BADGE',
-    linkKey: 'DASHBOARD.CARDS.MANAGE_LINK',
-    linkRoute: '/enrollment/terms',
-    tone: 'secondary',
-  },
-  {
     icon: 'pi pi-clock',
     value: 8,
     labelKey: 'DASHBOARD.CARDS.PENDING_APPROVAL',
@@ -52,8 +43,6 @@ const STUDENT_CARDS: DashboardCard[] = [
     icon: 'pi pi-bookmark',
     value: 'Trimestre 26-I',
     labelKey: 'DASHBOARD.CARDS.MY_ENROLLMENT',
-    linkKey: 'DASHBOARD.CARDS.MY_ENROLLMENT_LINK',
-    linkRoute: '/enrollment',
     tone: 'primary',
   },
 ];
@@ -77,17 +66,13 @@ const PROFESSOR_CARDS: DashboardCard[] = [
   },
 ];
 
-const ASSISTANT_CARDS: DashboardCard[] = [
-];
-
-const PRESENTATION_CARDS: DashboardCard[] = [
-];
+const EMPTY_CARDS: DashboardCard[] = [];
 
 export const DASHBOARD_CARDS_BY_ROLE: Record<RoleType, DashboardCard[]> = {
   COORDINATOR: COORDINATOR_CARDS,
   STUDENT: STUDENT_CARDS,
   PROFESSOR: PROFESSOR_CARDS,
-  ASSISTANT: ASSISTANT_CARDS,
-  SPEAKER: PRESENTATION_CARDS,
-  SYSTEM_ADMIN: PRESENTATION_CARDS,
+  ASSISTANT: EMPTY_CARDS,
+  SPEAKER: EMPTY_CARDS,
+  SYSTEM_ADMIN: EMPTY_CARDS,
 };
