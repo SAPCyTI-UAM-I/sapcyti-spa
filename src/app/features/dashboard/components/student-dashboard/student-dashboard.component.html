@@ -21,7 +21,11 @@
             </h2>
             <div class="gap-sm flex flex-wrap items-center">
               <app-catalog-tag
-                [value]="data.programType"
+                [value]="
+                  data.programType === 'MAESTRIA' || data.programType === 'DOCTORADO'
+                    ? ('ACADEMIC_CATALOG.PROGRAM_TYPES.' + data.programType | translate)
+                    : data.programType
+                "
                 [severity]="programSeverity(data.programType)"
               />
               <span class="gap-xs text-text-secondary text-body-md inline-flex items-center">

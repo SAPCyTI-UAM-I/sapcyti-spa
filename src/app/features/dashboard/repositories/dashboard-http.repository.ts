@@ -4,7 +4,7 @@ import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
 import { AuthStateService } from '../../../core/auth/auth.service';
-import { PageResponse, StudentDetailResponse } from '../../../models';
+import { PageResponse, StudentDetailResponse, StudentSurveyForm } from '../../../models';
 import {
   CoordinatorDashboardMetrics,
   ProfessorDashboardData,
@@ -18,29 +18,13 @@ interface SurveyApiItem {
   opensAt: string;
   closesAt: string;
   status: string;
+  responseCount?: number;
   totalResponses?: number;
 }
 
 interface AnnualPlanApiItem {
   year: number;
   status: string;
-}
-
-interface ActiveSurveyApiResponse {
-  id: number;
-  term: string;
-  startsAt?: string;
-  endsAt?: string;
-  opensAt?: string;
-  closesAt?: string;
-  status: string;
-  fullName?: string;
-  enrollmentId?: string;
-  programType?: string;
-  hasResponded?: boolean;
-  myResponse?: {
-    selections?: unknown[];
-  } | null;
 }
 
 @Injectable()
@@ -94,7 +78,7 @@ export class DashboardHttpRepository implements DashboardRepository {
                 opensAt: activeSurvey.opensAt,
                 closesAt: activeSurvey.closesAt,
                 status: activeSurvey.status,
-                totalResponses: activeSurvey.totalResponses,
+                totalResponses: activeSurvey.totalResponses ?? activeSurvey.responseCount,
               }
             : null,
           latestAnnualPlanYear: latestPlan?.year ?? null,
@@ -113,7 +97,7 @@ export class DashboardHttpRepository implements DashboardRepository {
       .pipe(catchError(() => of(null)));
 
     const survey$ = this.http
-      .get<ActiveSurveyApiResponse>(API_ENDPOINTS.enrollmentSurveyActive, {
+      .get<StudentSurveyForm>(API_ENDPOINTS.enrollmentSurveyActive, {
         withCredentials: true,
       })
       .pipe(catchError(() => of(null)));
@@ -124,27 +108,29 @@ export class DashboardHttpRepository implements DashboardRepository {
         if (student) {
           studentName =
             `${student.firstName} ${student.firstLastName} ${student.secondLastName ?? ''}`.trim();
-        } else if (survey?.fullName) {
-          studentName = survey.fullName;
+        } else if (survey?.student.fullName) {
+          studentName = survey.student.fullName;
         } else if (user?.email) {
           studentName = user.email.split('@')[0] ?? 'Estudiante';
         }
 
-        const enrollmentId = student?.enrollmentId ?? survey?.enrollmentId ?? '—';
-        const programType = student?.programType ?? survey?.programType ?? 'Posgrado';
+        const enrollmentId = student?.enrollmentId ?? survey?.student.enrollmentId ?? '—';
+        const programType = student?.programType ?? survey?.student.programType ?? 'Posgrado';
+        const active = survey?.survey;
 
         return {
           studentName,
           enrollmentId,
           programType,
-          activeSurvey: survey
+          activeSurvey: active
             ? {
-                id: survey.id,
-                term: survey.term,
-                opensAt: survey.startsAt ?? survey.opensAt ?? '',
-                closesAt: survey.endsAt ?? survey.closesAt ?? '',
-                hasResponded: survey.hasResponded ?? Boolean(survey.myResponse),
-                selectedUeasCount: survey.myResponse?.selections?.length ?? 0,
+                id: active.id,
+                term: active.term,
+                opensAt: active.opensAt,
+                closesAt: active.closesAt,
+                hasResponded: survey?.myResponse != null,
+                selectedUeasCount:
+                  survey?.myResponse?.totalUeas ?? survey?.myResponse?.ueaIds.length ?? 0,
               }
             : null,
         };
