@@ -132,7 +132,7 @@ flowchart TD
     B --> C["3. Redactar clave en es.json y en.json en Sentence case"]
     C --> D["4. Usar en template con parámetros exactos si tiene llaves"]
     D --> E["5. Ejecutar pnpm run i18n:sync"]
-    E --> F["6. Ejecutar pnpm run i18n:check"]
+    E --> F["6. Ejecutar test unitario i18n-parity.spec.ts"]
     F --> G["7. Ejecutar pnpm run lint"]
 ```
 
@@ -144,12 +144,14 @@ flowchart TD
    pnpm run i18n:sync
    ```
    *(Ordena alfabéticamente las claves y actualiza los tipos en `i18n-keys.generated.ts`)*.
-5. **Verificar y auditar**:
+5. **Verificar con prueba unitaria y linter**:
    ```bash
-   pnpm run i18n:check
+   # 1. Prueba unitaria formal de paridad y calidad en Vitest
+   pnpm exec ng test --no-watch --include=src/app/core/i18n/i18n-parity.spec.ts
+
+   # 2. Linter completo (ESLint + Prettier + validación estática + escaneo de plantillas)
    pnpm run lint
    ```
-   *(El script automatizado verificará paridad, capitalización, consistencia de parámetros y referencias en plantillas)*.
 
 ---
 
@@ -172,7 +174,26 @@ flowchart TD
 
 | Comando | Función |
 |---|---|
+| `pnpm exec ng test --no-watch --include=src/app/core/i18n/i18n-parity.spec.ts` | **Prueba unitaria formal (Vitest)**: evalúa paridad 1:1, cadenas no vacías, parámetros `{{param}}` y Sentence case. |
 | `pnpm run i18n:check` | Valida paridad de claves, reglas de capitalización, consistencia de placeholders y escaneo de templates. |
 | `pnpm run i18n:verify` | Escanea plantillas `.html` y componentes `.ts` buscando claves rotas o sintaxis de pipes sin paréntesis. |
 | `pnpm run i18n:sync` | Ordena alfabéticamente los JSON y regenera el archivo de tipos TypeScript `i18n-keys.generated.ts`. |
 | `pnpm run lint` | Ejecuta ESLint, Prettier y `i18n:check` en cadena. |
+
+---
+
+## 8. Suite Unitaria Canónica: `src/app/core/i18n/i18n-parity.spec.ts`
+
+El proyecto cuenta con una prueba unitaria automatizada en [`src/app/core/i18n/i18n-parity.spec.ts`](src/app/core/i18n/i18n-parity.spec.ts) que se ejecuta en el runner de pruebas (Vitest / Angular). Realiza las siguientes aserciones críticas:
+
+1. **Paridad simétrica estricta 1:1**: Falla con error descriptivo si una clave existe en `es.json` pero falta en `en.json`, o viceversa.
+2. **Cero traducciones vacías**: Asegura que ningún valor sea una cadena en blanco.
+3. **Consistencia de parámetros interpolados**: Falla si los identificadores `{param}` en `es.json` difieren de los de `en.json`.
+4. **Cumplimiento de Sentence Case**: Falla si alguna clave inicia en minúscula (fuera de la whitelist de correos `AUTH.*.EMAIL_PLACEHOLDER`).
+
+**Regla de oro para cualquier agente:** Antes de completar cualquier tarea que toque textos o plantillas, ejecuta:
+```bash
+pnpm exec ng test --no-watch --include=src/app/core/i18n/i18n-parity.spec.ts
+```
+y confirma que las 4 pruebas pasen en verde.
+
