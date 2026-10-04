@@ -117,17 +117,16 @@ export const CATALOG_TAG_SEVERITY = {
     inactive: 'secondary',
   },
   programStatus: {
-    EN_INVESTIGACION: 'info',
     EGRESADO: 'info',
+    EN_INVESTIGACION: 'success',
     BAJA: 'warn',
     SUSPENSION: 'warn',
-    ACTIVO: 'success',
   },
 } as const satisfies {
   programType: Record<'MAESTRIA' | 'DOCTORADO', CatalogTagSeverity>;
   studentAccountStatus: Record<'active' | 'inactive', CatalogTagSeverity>;
   programStatus: Record<
-    'EN_INVESTIGACION' | 'EGRESADO' | 'BAJA' | 'SUSPENSION' | 'ACTIVO',
+    'EGRESADO' | 'EN_INVESTIGACION' | 'BAJA' | 'SUSPENSION',
     CatalogTagSeverity
   >;
 };

@@ -199,7 +199,6 @@
         "WITHDRAWAL_REASON": "Motivo de baja"
       },
       "STATUS": {
-        "ACTIVO": "Activo",
         "BAJA": "Baja",
         "EGRESADO": "Egresado",
         "EN_INVESTIGACION": "En investigación",

@@ -40,7 +40,7 @@ const sampleStudentDetail: StudentDetailResponse = {
     enrollmentId: '223300456',
     programType: 'MAESTRIA',
     admissionDate: '2025-09-01',
-    status: 'ACTIVO',
+    status: 'EN_INVESTIGACION',
     advisorIds: [],
     advisors: [],
   },
@@ -138,7 +138,7 @@ describe('StudentEditComponent', () => {
     expect(getStudent).toHaveBeenCalledWith(1);
     expect(listProfessors).toHaveBeenCalled();
     expect(fixture.componentInstance.form.controls.firstName.value).toBe('Ana');
-    expect(fixture.componentInstance.form.controls.status.value).toBe('ACTIVO');
+    expect(fixture.componentInstance.form.controls.status.value).toBe('EN_INVESTIGACION');
   });
 
   it('validates the form: firstName is required', async () => {

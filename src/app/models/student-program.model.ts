@@ -1,6 +1,7 @@
 import type { ProgramType } from './student.model';
 
-export type ProgramStatus = 'EN_INVESTIGACION' | 'EGRESADO' | 'BAJA' | 'SUSPENSION' | 'ACTIVO';
+/** Ciclo de vida del programa; espejo de `ProgramStatus` en el backend (SPEC-037). */
+export type ProgramStatus = 'EGRESADO' | 'EN_INVESTIGACION' | 'BAJA' | 'SUSPENSION';
 
 export interface ProfessorReference {
   id: number;

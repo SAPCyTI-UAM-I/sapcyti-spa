@@ -26,7 +26,7 @@ const baseFormValue: StudentEditFormValue = {
   admissionTerm: ' 25o ',
   active: true,
   graduationDate: '   ',
-  status: 'ACTIVO',
+  status: 'EN_INVESTIGACION',
   withdrawalReason: ' irrelevante ',
   lineOfKnowledge: '',
   researchArea: '',
@@ -51,7 +51,7 @@ describe('student-program-form validators', () => {
 
   it('allows empty withdrawal reason when status is not BAJA', () => {
     const group = new FormGroup({
-      status: new FormControl('ACTIVO'),
+      status: new FormControl('EN_INVESTIGACION'),
       withdrawalReason: new FormControl(''),
     });
 

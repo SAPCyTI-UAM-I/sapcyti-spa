@@ -199,7 +199,6 @@
         "WITHDRAWAL_REASON": "Withdrawal reason"
       },
       "STATUS": {
-        "ACTIVO": "Active",
         "BAJA": "Withdrawn",
         "EGRESADO": "Graduated",
         "EN_INVESTIGACION": "In research",
