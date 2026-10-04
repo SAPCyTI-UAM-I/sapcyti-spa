@@ -497,9 +497,15 @@
       "ERROR_INVALID_CREDENTIALS": "Credenciales inválidas. Verifique su correo y contraseña.",
       "ERROR_REQUIRED": "Este campo es obligatorio",
       "FOOTER": {
-        "COPYRIGHT": "© 2026 SAPCyTI — Portal Académico Institucional",
+        "COPYRIGHT": "© 2026 SAPCyTI",
         "PRIVACY": "Privacidad",
         "SUPPORT": "Soporte",
+        "SUPPORT_BANNER": {
+          "CLOSE": "Cerrar",
+          "COPY": "Copiar correo",
+          "MESSAGE": "Para dudas, asistencia o incidencias de acceso, contacta al equipo de soporte mediante:",
+          "TITLE": "Soporte técnico"
+        },
         "TERMS": "Términos"
       },
       "FORGOT_PASSWORD": "¿Olvidó su contraseña?",
