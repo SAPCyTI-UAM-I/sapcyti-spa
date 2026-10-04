@@ -52,7 +52,7 @@ SPA Angular 21 + TypeScript strict + PrimeNG + Tailwind. Gestor: **pnpm** (`pack
 - PrimeNG primero; UI propia solo en `shared/components/` si no hay equivalente.
 - Texto visible solo por i18n (`es` + `en`).
 - Standalone, `OnPush`, estado con signals; formularios reactivos (`NonNullableFormBuilder`).
-- UEAs viven en `academic-catalog`, no en `academic-offering`.
+- UEAs viven en `academic-catalog`.
 - `enrollment` es solo placeholder (aprobación de asesor).
 
 ## Definition of done

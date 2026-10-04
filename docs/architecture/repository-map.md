@@ -40,7 +40,6 @@ Vista mínima del SPA Angular. No inventar módulos fuera de esta lista.
 | Feature | Qué hay |
 |---------|---------|
 | `academic-catalog` | Alumnos, profesores, UEAs, bases de listado/alta |
-| `academic-offering` | Solo `enrollment-start` (HU-06) |
 | `account` | Cambio de contraseña |
 | `annual-planning` | Plan anual (lista/detalle/grid/wizard) |
 | `auth` | Login y recuperación |
