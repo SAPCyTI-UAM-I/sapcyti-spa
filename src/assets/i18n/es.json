@@ -578,16 +578,25 @@
     }
   },
   "DASHBOARD": {
-    "CARDS": {
-      "MY_ADVISEES": "alumnos asesorados",
-      "MY_ADVISEES_LINK": "Ver alumnos",
-      "MY_ENROLLMENT": "Estado de mi inscripción",
-      "PENDING_APPROVAL": "UEAs esperando aprobación del asesor",
-      "PENDING_LINK": "Revisar pendientes",
-      "PENDING_REVIEWS": "selecciones de UEAs esperando aprobación",
-      "PENDING_REVIEWS_LINK": "Revisar ahora",
+    "COORDINATOR": {
+      "ANNUAL_PLANNING": "Planeación anual",
+      "CONFIGURE_SURVEY": "Configurar sondeo",
+      "NO_ACTIVE_SURVEY": "No hay sondeo de UEAs activo actualmente.",
+      "PROFESSORS_COUNT": "profesores registrados",
+      "QUICK_ACTIONS_TITLE": "Acciones rápidas",
+      "REGISTER_PROFESSOR": "Registrar profesor",
+      "REGISTER_STUDENT": "Registrar alumno",
       "STUDENTS_COUNT": "alumnos registrados",
-      "STUDENTS_LINK": "Ver alumnos"
+      "SURVEY_CLOSES": "Cierre: {{date}}",
+      "SURVEY_RESPONSES": "{{count}} respuestas recibidas",
+      "SURVEY_TERM": "Trimestre {{term}}",
+      "SURVEY_TITLE": "Sondeo de UEAs en curso",
+      "SURVEY_VIEW_RESULTS": "Ver resultados",
+      "TRIMESTRAL_PLANNING": "Planeación trimestral",
+      "UEAS_COUNT": "UEAs en catálogo",
+      "VIEW_PROFESSORS": "Ver profesores",
+      "VIEW_STUDENTS": "Ver alumnos",
+      "VIEW_UEAS": "Ver catálogo"
     },
     "HOME": {
       "ASSISTANT": {
@@ -598,9 +607,10 @@
         "SUBTITLE": "Bienvenido al Panel de Gestión Académica.",
         "TITLE": "Inicio"
       },
+      "GENERIC": "Panel principal del sistema.",
       "PLACEHOLDER": "Contenido del panel según su rol — próximamente.",
       "PROFESSOR": {
-        "SUBTITLE": "Resumen de alumnos asesorados e inscripciones pendientes.",
+        "SUBTITLE": "Bienvenido a su panel de información docente.",
         "TITLE": "Inicio"
       },
       "SPEAKER": {
@@ -608,7 +618,7 @@
         "TITLE": "Inicio"
       },
       "STUDENT": {
-        "SUBTITLE": "Consulte el estado de su inscripción trimestral.",
+        "SUBTITLE": "Consulte su estado académico y sondeos vigentes.",
         "TITLE": "Inicio"
       },
       "SYSTEM_ADMIN": {
@@ -621,26 +631,28 @@
       "TITLE": "Inicio"
     },
     "PROFESSOR": {
-      "ACTIVITY_1": "Ana García envió su selección de UEAs para el trimestre 23-O.",
-      "ACTIVITY_1_TIME": "Hace 2 horas",
-      "ACTIVITY_2": "La selección de Roberto Jiménez fue aprobada correctamente.",
-      "ACTIVITY_2_TIME": "Ayer, 14:30",
-      "ACTIVITY_3": "Sistema: Se han subido los nuevos lineamientos de inscripción.",
-      "ACTIVITY_3_TIME": "Hace 2 días",
-      "ACTIVITY_ACTION": "Ver detalle",
-      "ACTIVITY_TITLE": "Actividad Reciente"
+      "ACCOUNT_SECURITY": "Seguridad y contraseña",
+      "CYCLE_DESC": "El periodo de planeación académica y sondeo se encuentra en proceso. Las actividades de revisión y asesoría se habilitarán conforme al calendario institucional.",
+      "CYCLE_TITLE": "Estado del ciclo académico",
+      "WELCOME_DESC": "Bienvenido al portal del Posgrado en Ciencias y Tecnologías de la Información.",
+      "WELCOME_TITLE": "Panel docente"
     },
     "STUDENT": {
-      "APPROVED": "Aprobado",
-      "ENROLLMENT_TITLE": "Mi inscripción — Trimestre 26-I",
-      "FUTURE_STATES": "Referencia Visual de Estados Futuros",
-      "NAME": "Juan Pérez García",
-      "PENDING_REVIEW": "Pendiente de revisión",
-      "PHASE_2": "Fase 2",
-      "PHASE_3": "Fase 3",
-      "REGISTRATION": "Matrícula: 223300456",
-      "STATUS": "Selección pendiente",
-      "STATUS_MESSAGE": "Seleccione sus UEAs y envíe su elección al asesor para continuar con su proceso."
+      "ACCOUNT_SECURITY": "Cambiar mi contraseña",
+      "ENROLLMENT_ID_LABEL": "Matrícula",
+      "FULL_NAME_LABEL": "Nombre completo",
+      "IDENTITY_TITLE": "Datos del alumno",
+      "NO_ACTIVE_PROCESS": "No hay procesos activos en este momento.",
+      "NO_ACTIVE_PROCESS_DESC": "No se encuentran encuestas de inscripción abiertas. Le notificaremos cuando inicie el próximo periodo.",
+      "PROGRAM_LABEL": "Programa",
+      "SURVEY_COMPLETED_DESC": "Su selección de UEAs ha sido registrada exitosamente. Puede consultar o actualizar sus materias antes del cierre del periodo.",
+      "SURVEY_COMPLETED_TITLE": "Encuesta enviada — Trimestre {{term}}",
+      "SURVEY_DEADLINE": "Fecha límite: {{date}}",
+      "SURVEY_PENDING_DESC": "La encuesta de inscripción para el trimestre {{term}} se encuentra disponible. Participe seleccionando las UEAs de su interés antes de la fecha límite.",
+      "SURVEY_PENDING_TITLE": "Encuesta disponible — Trimestre {{term}}",
+      "SURVEY_RESPOND_ACTION": "Responder encuesta",
+      "SURVEY_TITLE": "Sondeo de inscripción trimestral",
+      "SURVEY_VIEW_ACTION": "Consultar mi respuesta"
     }
   },
   "ENROLLMENT": {

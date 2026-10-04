@@ -1,0 +1,146 @@
+<app-load-state [loading]="loading()" [error]="error()" (retry)="reload()" emptyMessage="">
+  @if (studentData(); as data) {
+    <!-- Tarjeta de Identidad del Alumno -->
+    <section class="bg-surface border-outline p-lg gap-md flex min-w-0 flex-col rounded-xl border">
+      <div class="border-surface-subtle pb-sm flex min-w-0 items-center justify-between border-b">
+        <h2 class="text-h3 text-on-surface font-h3 gap-sm flex items-center font-bold">
+          <i class="pi pi-id-card text-primary text-[20px]" aria-hidden="true"></i>
+          {{ 'DASHBOARD.STUDENT.IDENTITY_TITLE' | translate }}
+        </h2>
+      </div>
+
+      <div class="gap-md grid min-w-0 grid-cols-1 sm:grid-cols-3">
+        <div class="gap-xxs flex flex-col">
+          <span class="text-caption text-text-tertiary font-caption">
+            {{ 'DASHBOARD.STUDENT.FULL_NAME_LABEL' | translate }}
+          </span>
+          <span class="text-headline-sm text-on-surface font-headline-sm font-semibold">
+            {{ data.studentName }}
+          </span>
+        </div>
+
+        <div class="gap-xxs flex flex-col">
+          <span class="text-caption text-text-tertiary font-caption">
+            {{ 'DASHBOARD.STUDENT.ENROLLMENT_ID_LABEL' | translate }}
+          </span>
+          <span class="text-body-md text-on-surface font-body-md font-medium">
+            {{ data.enrollmentId }}
+          </span>
+        </div>
+
+        <div class="gap-xxs flex flex-col">
+          <span class="text-caption text-text-tertiary font-caption">
+            {{ 'DASHBOARD.STUDENT.PROGRAM_LABEL' | translate }}
+          </span>
+          <span class="text-body-md text-on-surface font-body-md font-medium">
+            {{ data.programType }}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Estado del Sondeo Trimestral -->
+    @if (data.activeSurvey; as survey) {
+      @if (!survey.hasResponded) {
+        <!-- Sondeo disponible sin responder (Acción prioritaria) -->
+        <section
+          class="border-primary/40 bg-primary/5 p-lg gap-md mt-lg flex min-w-0 flex-col items-start justify-between rounded-xl border md:flex-row md:items-center"
+        >
+          <div class="gap-xs flex min-w-0 flex-col">
+            <div class="gap-sm flex items-center">
+              <span
+                class="bg-primary/20 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+              >
+                <i class="pi pi-list-check text-[18px]" aria-hidden="true"></i>
+              </span>
+              <h3 class="text-h3 text-on-surface font-h3 font-bold">
+                {{ 'DASHBOARD.STUDENT.SURVEY_PENDING_TITLE' | translate: { term: survey.term } }}
+              </h3>
+            </div>
+            <p class="text-body-md text-text-secondary font-body-md mt-xs">
+              {{ 'DASHBOARD.STUDENT.SURVEY_PENDING_DESC' | translate: { term: survey.term } }}
+            </p>
+            @if (survey.closesAt) {
+              <span
+                class="text-caption text-text-tertiary font-caption gap-xs mt-xs flex items-center"
+              >
+                <i class="pi pi-calendar text-[14px]" aria-hidden="true"></i>
+                {{
+                  'DASHBOARD.STUDENT.SURVEY_DEADLINE'
+                    | translate: { date: (survey.closesAt | date: 'dd/MM/yyyy') }
+                }}
+              </span>
+            }
+          </div>
+
+          <a
+            routerLink="/enrollment-survey/respond"
+            class="bg-primary text-on-primary hover:bg-primary-hover text-label-md font-label-md px-md py-sm gap-xs inline-flex shrink-0 items-center rounded-lg font-semibold transition-colors"
+          >
+            {{ 'DASHBOARD.STUDENT.SURVEY_RESPOND_ACTION' | translate }}
+            <i class="pi pi-arrow-right text-[14px]" aria-hidden="true"></i>
+          </a>
+        </section>
+      } @else {
+        <!-- Sondeo respondido con éxito -->
+        <section
+          class="border-success/40 bg-success/5 p-lg gap-md mt-lg flex min-w-0 flex-col items-start justify-between rounded-xl border md:flex-row md:items-center"
+        >
+          <div class="gap-xs flex min-w-0 flex-col">
+            <div class="gap-sm flex items-center">
+              <span
+                class="bg-success/20 text-success flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+              >
+                <i class="pi pi-check-circle text-[18px]" aria-hidden="true"></i>
+              </span>
+              <h3 class="text-h3 text-on-surface font-h3 font-bold">
+                {{ 'DASHBOARD.STUDENT.SURVEY_COMPLETED_TITLE' | translate: { term: survey.term } }}
+              </h3>
+            </div>
+            <p class="text-body-md text-text-secondary font-body-md mt-xs">
+              {{ 'DASHBOARD.STUDENT.SURVEY_COMPLETED_DESC' | translate }}
+            </p>
+          </div>
+
+          <a
+            routerLink="/enrollment-survey/respond"
+            class="border-success/40 text-success hover:bg-success/10 text-label-md font-label-md px-md py-sm gap-xs inline-flex shrink-0 items-center rounded-lg border font-semibold transition-colors"
+          >
+            {{ 'DASHBOARD.STUDENT.SURVEY_VIEW_ACTION' | translate }}
+            <i class="pi pi-arrow-right text-[14px]" aria-hidden="true"></i>
+          </a>
+        </section>
+      }
+    } @else {
+      <!-- Sin procesos activos -->
+      <section
+        class="bg-surface border-outline p-lg gap-md mt-lg flex min-w-0 items-start rounded-xl border"
+      >
+        <span
+          class="bg-surface-subtle text-text-tertiary mt-xs flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+        >
+          <i class="pi pi-calendar-times text-[20px]" aria-hidden="true"></i>
+        </span>
+        <div class="gap-xs flex min-w-0 flex-col">
+          <h3 class="text-headline-sm text-on-surface font-headline-sm font-semibold">
+            {{ 'DASHBOARD.STUDENT.NO_ACTIVE_PROCESS' | translate }}
+          </h3>
+          <p class="text-body-md text-text-secondary font-body-md">
+            {{ 'DASHBOARD.STUDENT.NO_ACTIVE_PROCESS_DESC' | translate }}
+          </p>
+        </div>
+      </section>
+    }
+
+    <!-- Accesos Rápidos -->
+    <div class="mt-lg flex justify-end">
+      <a
+        routerLink="/account/password"
+        class="text-text-secondary hover:text-primary text-body-md font-body-md gap-xs inline-flex items-center transition-colors"
+      >
+        <i class="pi pi-lock text-[14px]" aria-hidden="true"></i>
+        <span>{{ 'DASHBOARD.STUDENT.ACCOUNT_SECURITY' | translate }}</span>
+      </a>
+    </div>
+  }
+</app-load-state>

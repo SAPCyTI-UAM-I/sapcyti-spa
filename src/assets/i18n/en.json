@@ -578,16 +578,25 @@
     }
   },
   "DASHBOARD": {
-    "CARDS": {
-      "MY_ADVISEES": "advised students",
-      "MY_ADVISEES_LINK": "View students",
-      "MY_ENROLLMENT": "My enrollment status",
-      "PENDING_APPROVAL": "UEAs awaiting advisor approval",
-      "PENDING_LINK": "Review pending",
-      "PENDING_REVIEWS": "UEA selections awaiting approval",
-      "PENDING_REVIEWS_LINK": "Review now",
+    "COORDINATOR": {
+      "ANNUAL_PLANNING": "Annual planning",
+      "CONFIGURE_SURVEY": "Configure survey",
+      "NO_ACTIVE_SURVEY": "No active UEA survey at this time.",
+      "PROFESSORS_COUNT": "registered professors",
+      "QUICK_ACTIONS_TITLE": "Quick actions",
+      "REGISTER_PROFESSOR": "Register professor",
+      "REGISTER_STUDENT": "Register student",
       "STUDENTS_COUNT": "registered students",
-      "STUDENTS_LINK": "View students"
+      "SURVEY_CLOSES": "Deadline: {{date}}",
+      "SURVEY_RESPONSES": "{{count}} responses received",
+      "SURVEY_TERM": "Term {{term}}",
+      "SURVEY_TITLE": "Active UEA Survey",
+      "SURVEY_VIEW_RESULTS": "View results",
+      "TRIMESTRAL_PLANNING": "Trimestral planning",
+      "UEAS_COUNT": "UEAs in catalog",
+      "VIEW_PROFESSORS": "View professors",
+      "VIEW_STUDENTS": "View students",
+      "VIEW_UEAS": "View catalog"
     },
     "HOME": {
       "ASSISTANT": {
@@ -598,9 +607,10 @@
         "SUBTITLE": "Welcome to the Academic Management Panel.",
         "TITLE": "Home"
       },
+      "GENERIC": "Main system dashboard.",
       "PLACEHOLDER": "Role-based dashboard content — coming soon.",
       "PROFESSOR": {
-        "SUBTITLE": "Summary of advised students and pending enrollments.",
+        "SUBTITLE": "Welcome to your faculty information panel.",
         "TITLE": "Home"
       },
       "SPEAKER": {
@@ -608,7 +618,7 @@
         "TITLE": "Home"
       },
       "STUDENT": {
-        "SUBTITLE": "Review the status of your term enrollment.",
+        "SUBTITLE": "Check your academic status and active surveys.",
         "TITLE": "Home"
       },
       "SYSTEM_ADMIN": {
@@ -621,26 +631,28 @@
       "TITLE": "Home"
     },
     "PROFESSOR": {
-      "ACTIVITY_1": "Ana García submitted her UEA selection for term 23-O.",
-      "ACTIVITY_1_TIME": "2 hours ago",
-      "ACTIVITY_2": "Roberto Jiménez's selection was approved successfully.",
-      "ACTIVITY_2_TIME": "Yesterday, 14:30",
-      "ACTIVITY_3": "System: New enrollment guidelines have been uploaded.",
-      "ACTIVITY_3_TIME": "2 days ago",
-      "ACTIVITY_ACTION": "View detail",
-      "ACTIVITY_TITLE": "Recent Activity"
+      "ACCOUNT_SECURITY": "Security & password",
+      "CYCLE_DESC": "The academic planning and survey period is underway. Advising and review activities will be enabled following the institutional calendar.",
+      "CYCLE_TITLE": "Academic cycle status",
+      "WELCOME_DESC": "Welcome to the Graduate Information and Communication Technologies portal.",
+      "WELCOME_TITLE": "Faculty panel"
     },
     "STUDENT": {
-      "APPROVED": "Approved",
-      "ENROLLMENT_TITLE": "My enrollment — Term 26-I",
-      "FUTURE_STATES": "Visual Reference of Future States",
-      "NAME": "Juan Pérez García",
-      "PENDING_REVIEW": "Pending review",
-      "PHASE_2": "Phase 2",
-      "PHASE_3": "Phase 3",
-      "REGISTRATION": "ID: 223300456",
-      "STATUS": "Selection pending",
-      "STATUS_MESSAGE": "Select your UEAs and submit your choice to your advisor to continue the process."
+      "ACCOUNT_SECURITY": "Change password",
+      "ENROLLMENT_ID_LABEL": "Student ID",
+      "FULL_NAME_LABEL": "Full name",
+      "IDENTITY_TITLE": "Student information",
+      "NO_ACTIVE_PROCESS": "No active processes at this time.",
+      "NO_ACTIVE_PROCESS_DESC": "There are no enrollment surveys open right now. You will be notified when the next period begins.",
+      "PROGRAM_LABEL": "Program",
+      "SURVEY_COMPLETED_DESC": "Your UEA selection has been successfully recorded. You may review or update your chosen subjects before the period closes.",
+      "SURVEY_COMPLETED_TITLE": "Survey submitted — Term {{term}}",
+      "SURVEY_DEADLINE": "Deadline: {{date}}",
+      "SURVEY_PENDING_DESC": "The enrollment survey for term {{term}} is now available. Participate by selecting your preferred UEAs before the deadline.",
+      "SURVEY_PENDING_TITLE": "Survey available — Term {{term}}",
+      "SURVEY_RESPOND_ACTION": "Take survey",
+      "SURVEY_TITLE": "Quarterly enrollment survey",
+      "SURVEY_VIEW_ACTION": "View my response"
     }
   },
   "ENROLLMENT": {
