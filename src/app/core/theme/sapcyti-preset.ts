@@ -14,6 +14,14 @@ export const SapcytiPreset = definePreset(Lara, {
     },
   },
   components: {
+    button: {
+      root: {
+        borderRadius: '{border.radius.lg}',
+        paddingX: '0.75rem',
+        paddingY: '0.4375rem',
+        iconOnlyWidth: '2.25rem',
+      },
+    },
     badge: {
       root: {
         borderRadius: '{border.radius.full}',

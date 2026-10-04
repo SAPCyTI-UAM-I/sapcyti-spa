@@ -126,3 +126,15 @@ export const CATALOG_TAG_SEVERITY = {
   studentAccountStatus: Record<'active' | 'inactive', CatalogTagSeverity>;
   programStatus: Record<'ACTIVO' | 'BAJA' | 'EGRESADO', CatalogTagSeverity>;
 };
+
+/**
+ * Standard dimensions for interactive controls (buttons, inputs, icon buttons).
+ * Height: 36px (compact standard), iconButton: 36x36px, radius: 8px.
+ */
+export const CONTROL_DIMENSIONS = {
+  buttonMinHeight: '36px',
+  iconButtonSize: '36px',
+  buttonPaddingX: '12px',
+  buttonPaddingY: '7px',
+  borderRadius: '8px',
+} as const;
