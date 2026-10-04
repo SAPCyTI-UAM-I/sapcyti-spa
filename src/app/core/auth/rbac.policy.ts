@@ -6,20 +6,16 @@ import { RoleType } from '../../models';
  */
 export const ROUTE_PERMISSIONS = {
   dashboard: ['SYSTEM_ADMIN', 'COORDINATOR', 'ASSISTANT', 'PROFESSOR', 'STUDENT', 'SPEAKER'],
-  enrollment: ['COORDINATOR', 'ASSISTANT', 'PROFESSOR', 'STUDENT'],
+  enrollment: ['COORDINATOR', 'PROFESSOR', 'STUDENT'],
   advisorApproval: ['PROFESSOR'],
-  enrollmentFormPdf: ['COORDINATOR', 'ASSISTANT'],
-  enrollmentTerms: ['COORDINATOR'],
-  enrollmentStatus: ['COORDINATOR'],
   academicCatalog: ['COORDINATOR'],
-  academicOffering: ['COORDINATOR'],
   annualPlanning: ['COORDINATOR'],
   trimestralPlanning: ['COORDINATOR'],
   enrollmentSurvey: ['COORDINATOR'],
   enrollmentSurveyResponse: ['STUDENT'],
+  studentProfile: ['STUDENT'],
   account: ['SYSTEM_ADMIN', 'COORDINATOR', 'ASSISTANT', 'PROFESSOR', 'STUDENT', 'SPEAKER'],
   passwordAdministration: ['COORDINATOR'],
-  presentations: ['SYSTEM_ADMIN', 'COORDINATOR', 'SPEAKER'],
 } as const satisfies Record<string, readonly RoleType[]>;
 
 export type RoutePermissionKey = keyof typeof ROUTE_PERMISSIONS;

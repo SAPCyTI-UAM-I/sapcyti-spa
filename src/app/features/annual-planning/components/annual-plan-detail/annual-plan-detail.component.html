@@ -14,24 +14,19 @@
     @if (plan(); as plan) {
       <div class="gap-lg flex flex-col">
         <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
-          <div class="gap-sm flex flex-wrap items-center">
-            <h1 class="text-h2 text-primary font-bold">
-              {{ 'ANNUAL_PLANNING.DETAIL.TITLE' | translate }} {{ plan.year }}
-            </h1>
-            <app-catalog-tag
-              [value]="'ANNUAL_PLANNING.STATUS.' + plan.status | translate"
-              [severity]="statusTagSeverity(plan.status)"
-            />
-          </div>
-
-          <div class="gap-sm flex flex-wrap">
-            <p-button
-              severity="secondary"
-              variant="outlined"
-              icon="pi pi-arrow-left"
-              [label]="'COMMON.ACTIONS.BACK' | translate"
-              routerLink="/annual-planning"
-            />
+          <div class="gap-md flex min-w-0 items-start sm:items-center">
+            <app-back-button routerLink="/annual-planning" />
+            <div class="gap-xs flex min-w-0 flex-col">
+              <div class="gap-sm flex flex-wrap items-center">
+                <h1 class="text-h2 text-primary font-bold break-words">
+                  {{ 'ANNUAL_PLANNING.DETAIL.TITLE' | translate }} {{ plan.year }}
+                </h1>
+                <app-catalog-tag
+                  [value]="'ANNUAL_PLANNING.STATUS.' + plan.status | translate"
+                  [severity]="statusTagSeverity(plan.status)"
+                />
+              </div>
+            </div>
           </div>
         </header>
 

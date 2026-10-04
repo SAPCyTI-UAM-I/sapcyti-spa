@@ -34,5 +34,5 @@ Puedes nombrar: archivo a editar, spec a correr, qué **no** cargarás.
 ## Common mistakes
 
 - Empezar por conventions completo o por todos los features.
-- Tratar placeholders (`enrollment`, `presentations`) como dominio implementado.
-- Buscar UEAs en `academic-offering`.
+- Tratar placeholders (`enrollment`) como dominio implementado.
+- Buscar UEAs fuera de `academic-catalog`.

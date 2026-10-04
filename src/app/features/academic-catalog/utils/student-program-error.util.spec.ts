@@ -99,7 +99,7 @@ describe('student-program-error util', () => {
       admissionDate: new FormControl('2025-09-01'),
       graduationDate: new FormControl('2025-01-01'),
       advisorIds: new FormControl([10, 10]),
-      status: new FormControl('ACTIVO'),
+      status: new FormControl('EN_INVESTIGACION'),
       withdrawalReason: new FormControl(''),
     });
 

@@ -18,6 +18,13 @@ export const ACCOUNT_ROUTES: Routes = [
     data: { roles: ROUTE_PERMISSIONS.account, breadcrumb: 'BREADCRUMB.PASSWORD' },
   },
   {
+    path: 'profile',
+    loadComponent: () =>
+      import('./student-profile/student-profile.component').then((m) => m.StudentProfileComponent),
+    canActivate: [authGuard],
+    data: { roles: ROUTE_PERMISSIONS.studentProfile, breadcrumb: 'BREADCRUMB.PROFILE' },
+  },
+  {
     path: 'users/:userId/password',
     loadComponent: () =>
       import('./password-change/password-change.component').then((m) => m.PasswordChangeComponent),

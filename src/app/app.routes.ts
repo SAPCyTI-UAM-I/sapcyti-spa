@@ -39,17 +39,6 @@ export const routes: Routes = [
         },
       },
       {
-        path: 'academic-offering',
-        loadChildren: () =>
-          import('./features/academic-offering/academic-offering.routes').then(
-            (m) => m.ACADEMIC_OFFERING_ROUTES,
-          ),
-        canActivate: [authGuard],
-        data: {
-          roles: ROUTE_PERMISSIONS.academicOffering,
-        },
-      },
-      {
         path: 'annual-planning',
         loadChildren: () =>
           import('./features/annual-planning/annual-planning.routes').then(
@@ -91,18 +80,6 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: {
           roles: ROUTE_PERMISSIONS.account,
-        },
-      },
-      {
-        path: 'presentations',
-        loadChildren: () =>
-          import('./features/presentations/presentations.routes').then(
-            (m) => m.PRESENTATIONS_ROUTES,
-          ),
-        canActivate: [authGuard],
-        data: {
-          roles: ROUTE_PERMISSIONS.presentations,
-          breadcrumb: 'SHELL.MENU.PRESENTATIONS',
         },
       },
       {

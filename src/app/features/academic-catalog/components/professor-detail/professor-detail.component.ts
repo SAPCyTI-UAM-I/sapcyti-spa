@@ -8,7 +8,11 @@ import { finalize } from 'rxjs';
 
 import { ProfessorDetailResponse } from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { CatalogTagComponent, CopyableTextComponent } from '../../../../shared/components';
+import {
+  BackButtonComponent,
+  CatalogTagComponent,
+  CopyableTextComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { ProfessorService } from '../../services/professor.service';
 import { activeTagSeverity } from '../../utils/catalog-tag.util';
@@ -28,6 +32,7 @@ import {
     Button,
     Message,
     DomainErrorMessagePipe,
+    BackButtonComponent,
     CopyableTextComponent,
     CatalogTagComponent,
   ],

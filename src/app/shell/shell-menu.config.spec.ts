@@ -1,14 +1,14 @@
 import { getShellNavigation, resolveShellMenuRole } from './shell-menu.config';
 
 describe('shell-menu.config', () => {
-  it('returns presentations navigation for SYSTEM_ADMIN', () => {
+  it('does not expose presentations navigation for SYSTEM_ADMIN', () => {
     expect(resolveShellMenuRole('SYSTEM_ADMIN')).toBe('SYSTEM_ADMIN');
-    expect(getShellNavigation('SYSTEM_ADMIN')?.sections[0]?.items[0]?.route).toBe('/presentations');
+    expect(getShellNavigation('SYSTEM_ADMIN')?.sections).toEqual([]);
   });
 
-  it('returns presentations navigation for SPEAKER', () => {
+  it('does not expose presentations navigation for SPEAKER', () => {
     expect(resolveShellMenuRole('SPEAKER')).toBe('SPEAKER');
-    expect(getShellNavigation('SPEAKER')?.sections[0]?.items[0]?.route).toBe('/presentations');
+    expect(getShellNavigation('SPEAKER')?.sections).toEqual([]);
   });
 
   it('does not expose the removed enrollment landing in the student menu', () => {
@@ -27,5 +27,6 @@ describe('shell-menu.config', () => {
       section.items.map((item) => item.route),
     );
     expect(routes).not.toContain('/account/password');
+    expect(routes).not.toContain('/academic-offering/enrollment-start');
   });
 });

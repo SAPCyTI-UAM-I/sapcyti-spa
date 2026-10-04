@@ -25,6 +25,7 @@
       "file_format_invalid": "Invalid file format, please use the provided template.",
       "graduate_program_not_found": "The requested graduate program was not found.",
       "invalid_type_change": "An internal professor cannot become external.",
+      "load_failed": "Could not load the information.",
       "nemp_immutable": "The employee number cannot be changed.",
       "professor_already_active": "The professor is already active.",
       "professor_already_inactive": "The professor is already inactive.",
@@ -198,9 +199,10 @@
         "WITHDRAWAL_REASON": "Withdrawal reason"
       },
       "STATUS": {
-        "ACTIVO": "Active",
         "BAJA": "Withdrawn",
-        "EGRESADO": "Graduated"
+        "EGRESADO": "Graduated",
+        "EN_INVESTIGACION": "In research",
+        "SUSPENSION": "Suspended"
       },
       "TOAST": {
         "SAVED": "Program updated successfully."
@@ -350,64 +352,6 @@
       "STEP_3": "Confirmation"
     }
   },
-  "ACADEMIC_OFFERING": {
-    "ENROLLMENT_START": {
-      "ACCEPT": "Accept",
-      "CHOOSE": "Choose file",
-      "CSV_HINT": "Only .csv files with schedules and draw dates.",
-      "CSV_TITLE": "Read the CSV",
-      "ERRORS": {
-        "INVALID_FORMAT": "Invalid file format."
-      },
-      "NO_FILE": "No file selected",
-      "PROCESS_HINT": "Once started, students will see the selected term's subjects.",
-      "PROCESS_TITLE": "Start the enrollment process",
-      "SUBTITLE": "Select the term to start enrollment; uploading the CSV is optional.",
-      "SUCCESS": "Enrollment process started. Students can now see the term's subjects.",
-      "TERM_LABEL": "Term",
-      "TERM_PLACEHOLDER": "Select a term (e.g. 16I)",
-      "TITLE": "Start enrollment process",
-      "UPLOAD": "Upload"
-    },
-    "PLAN_ANNUAL": {
-      "ALREADY_EDITED": "The quarterly plans for this year were already edited.",
-      "COLUMNS": {
-        "ACTIONS": "Actions",
-        "STATUS": "Status",
-        "TERM": "Term"
-      },
-      "EDIT_DIALOG": {
-        "CAPACITY": "Capacity per group",
-        "ENABLE": "Enable",
-        "GROUPS": "Number of groups",
-        "KEY": "Key",
-        "SELECT_UEAS": "Select the UEAs planned for term {{code}}",
-        "SELECTED_SUBJECTS": "Selected subjects",
-        "SUBJECT": "Subject",
-        "TITLE": "Edit preliminary quarterly plan"
-      },
-      "LIST_EMPTY": "There are no registered annual plans.",
-      "SUBTITLE": "Consult and edit the graduate annual plans.",
-      "TITLE": "Annual planning",
-      "VIEW": {
-        "CAPACITY": "Capacity",
-        "GROUPS": "No. of groups",
-        "TITLE": "Activated subjects"
-      }
-    },
-    "TERM_STATUS": {
-      "EDITED": "Edited",
-      "IN_ENROLLMENT": "In enrollment",
-      "PRELIMINARY": "Preliminary"
-    },
-    "WEEKDAYS": {
-      "FRI": "Friday",
-      "MON": "Monday",
-      "THU": "Thursday",
-      "TUE": "Tuesday",
-      "WED": "Wednesday"
-    }
-  },
   "ACCOUNT": {
     "PASSWORD": {
       "ADMIN_ACTION": "Change password",
@@ -427,6 +371,10 @@
       "SUBMIT": "Change password",
       "SUCCESS": "The password was updated.",
       "TARGET_USER": "Target user"
+    },
+    "PROFILE": {
+      "BACK": "Back to dashboard",
+      "TITLE": "My profile"
     }
   },
   "ANNUAL_PLANNING": {
@@ -465,7 +413,7 @@
     },
     "GRID": {
       "CLAVE": "Key",
-      "EMPTY": "empty",
+      "EMPTY": "Empty",
       "GROUPS": "Groups",
       "INVALID_CELLS": "Some cells have invalid values. Fix them before saving.",
       "MODALITY": "Modality",
@@ -549,9 +497,15 @@
       "ERROR_INVALID_CREDENTIALS": "Invalid credentials. Please check your email and password.",
       "ERROR_REQUIRED": "This field is required",
       "FOOTER": {
-        "COPYRIGHT": "© 2026 SAPCyTI — Institutional Academic Portal",
+        "COPYRIGHT": "© 2026 SAPCyTI",
         "PRIVACY": "Privacy",
         "SUPPORT": "Support",
+        "SUPPORT_BANNER": {
+          "CLOSE": "Close",
+          "COPY": "Copy email",
+          "MESSAGE": "For questions, assistance, or access issues, please contact the support team at:",
+          "TITLE": "Technical Support"
+        },
         "TERMS": "Terms"
       },
       "FORGOT_PASSWORD": "Forgot your password?",
@@ -586,11 +540,9 @@
   },
   "BREADCRUMB": {
     "ADVISOR_APPROVAL": "Approvals",
-    "FORM_PDF": "Form",
     "NEW": "New",
     "PASSWORD": "Password",
-    "STATUS": "Status",
-    "TERMS": "Terms"
+    "PROFILE": "Profile"
   },
   "COMMON": {
     "ACTIONS": {
@@ -639,51 +591,51 @@
     }
   },
   "DASHBOARD": {
-    "CARDS": {
-      "ACTIVE_TERM": "Active process",
-      "ACTIVE_TERM_BADGE": "Enrolling",
-      "FORMATS_LINK": "Print forms",
-      "FORMATS_READY": "students with approved UEAs",
-      "MANAGE_LINK": "Manage",
-      "MY_ADVISEES": "advised students",
-      "MY_ADVISEES_LINK": "View students",
-      "MY_ENROLLMENT": "My enrollment status",
-      "MY_ENROLLMENT_LINK": "View enrollment",
-      "PENDING_APPROVAL": "UEAs awaiting advisor approval",
-      "PENDING_LINK": "Review pending",
-      "PENDING_REVIEWS": "UEA selections awaiting approval",
-      "PENDING_REVIEWS_LINK": "Review now",
-      "PRESENTATIONS": "Presentations",
-      "PRESENTATIONS_LINK": "View presentations",
-      "STUDENTS_COUNT": "registered students",
-      "STUDENTS_LINK": "View students",
-      "SUPPORT_FORMATS": "students ready to generate PDF",
-      "SUPPORT_FORMATS_LINK": "Generate forms"
+    "COORDINATOR": {
+      "ANNUAL_PLANNING": "Annual planning",
+      "CONFIGURE_SURVEY": "Configure survey",
+      "NO_ACTIVE_SURVEY": "No active UEA survey at this time.",
+      "PROFESSORS_COUNT": "Registered professors",
+      "QUICK_ACTIONS_TITLE": "Quick actions",
+      "REGISTER_PROFESSOR": "Register professor",
+      "REGISTER_STUDENT": "Register student",
+      "STUDENTS_COUNT": "Registered students",
+      "SURVEY_CLOSES": "Deadline: {{date}}",
+      "SURVEY_RESPONSES": "{{count}} responses received",
+      "SURVEY_TERM": "Term {{term}}",
+      "SURVEY_TITLE": "Active UEA Survey",
+      "SURVEY_VIEW_RESULTS": "View results",
+      "TRIMESTRAL_PLANNING": "Trimestral planning",
+      "UEAS_COUNT": "UEAs in catalog",
+      "VIEW_PROFESSORS": "View professors",
+      "VIEW_STUDENTS": "View students",
+      "VIEW_UEAS": "View catalog"
     },
     "HOME": {
       "ASSISTANT": {
-        "SUBTITLE": "Enrollment forms ready to generate.",
+        "SUBTITLE": "Welcome to the assistant panel.",
         "TITLE": "Home"
       },
       "COORDINATOR": {
         "SUBTITLE": "Welcome to the Academic Management Panel.",
         "TITLE": "Home"
       },
+      "GENERIC": "Main system dashboard.",
       "PLACEHOLDER": "Role-based dashboard content — coming soon.",
       "PROFESSOR": {
-        "SUBTITLE": "Summary of advised students and pending enrollments.",
+        "SUBTITLE": "Welcome to your faculty information panel.",
         "TITLE": "Home"
       },
       "SPEAKER": {
-        "SUBTITLE": "Review and manage your presentations.",
+        "SUBTITLE": "Welcome to the speaker portal.",
         "TITLE": "Home"
       },
       "STUDENT": {
-        "SUBTITLE": "Review the status of your term enrollment.",
+        "SUBTITLE": "Check your academic status and active surveys.",
         "TITLE": "Home"
       },
       "SYSTEM_ADMIN": {
-        "SUBTITLE": "Oversee global configuration and system presentations.",
+        "SUBTITLE": "Oversee global system configuration.",
         "TITLE": "Home"
       }
     },
@@ -692,45 +644,34 @@
       "TITLE": "Home"
     },
     "PROFESSOR": {
-      "ACTIVITY_1": "Ana García submitted her UEA selection for term 23-O.",
-      "ACTIVITY_1_TIME": "2 hours ago",
-      "ACTIVITY_2": "Roberto Jiménez's selection was approved successfully.",
-      "ACTIVITY_2_TIME": "Yesterday, 14:30",
-      "ACTIVITY_3": "System: New enrollment guidelines have been uploaded.",
-      "ACTIVITY_3_TIME": "2 days ago",
-      "ACTIVITY_ACTION": "View detail",
-      "ACTIVITY_TITLE": "Recent Activity"
+      "ACCOUNT_SECURITY": "Security & password",
+      "CYCLE_DESC": "The academic planning and survey period is underway. Advising and review activities will be enabled following the institutional calendar.",
+      "CYCLE_TITLE": "Academic cycle status",
+      "WELCOME_DESC": "Welcome to the Graduate Information and Communication Technologies portal.",
+      "WELCOME_TITLE": "Faculty panel"
     },
     "STUDENT": {
-      "ACTION": "Go to enrollment",
-      "APPROVED": "Approved",
-      "ENROLLMENT_TITLE": "My enrollment — Term 26-I",
-      "FUTURE_STATES": "Visual Reference of Future States",
-      "NAME": "Juan Pérez García",
-      "PENDING_REVIEW": "Pending review",
-      "PHASE_2": "Phase 2",
-      "PHASE_3": "Phase 3",
-      "REGISTRATION": "ID: 223300456",
-      "STATUS": "Selection pending",
-      "STATUS_MESSAGE": "Select your UEAs and submit your choice to your advisor to continue the process."
+      "ACCOUNT_SECURITY": "Change password",
+      "ENROLLMENT_ID_LABEL": "Student ID",
+      "FULL_NAME_LABEL": "Full name",
+      "IDENTITY_TITLE": "Student information",
+      "NO_ACTIVE_PROCESS": "No active processes at this time.",
+      "NO_ACTIVE_PROCESS_DESC": "There are no enrollment surveys open right now. You will be notified when the next period begins.",
+      "PROGRAM_LABEL": "Program",
+      "SURVEY_COMPLETED_DESC": "Your UEA selection has been successfully recorded. You may review or update your chosen subjects before the period closes.",
+      "SURVEY_COMPLETED_TITLE": "Survey submitted — Term {{term}}",
+      "SURVEY_DEADLINE": "Deadline: {{date}}",
+      "SURVEY_PENDING_DESC": "The enrollment survey for term {{term}} is now available. Participate by selecting your preferred UEAs before the deadline.",
+      "SURVEY_PENDING_TITLE": "Survey available — Term {{term}}",
+      "SURVEY_RESPOND_ACTION": "Take survey",
+      "SURVEY_TITLE": "Quarterly enrollment survey",
+      "SURVEY_VIEW_ACTION": "View my response"
     }
   },
   "ENROLLMENT": {
     "ADVISOR_APPROVAL": {
       "MESSAGE": "Advisor approval module — coming soon",
       "TITLE": "Approve course selection"
-    },
-    "FORM_PDF": {
-      "MESSAGE": "Form generation — coming soon",
-      "TITLE": "Enrollment form (PDF)"
-    },
-    "STATUS": {
-      "MESSAGE": "Status tracking — coming soon",
-      "TITLE": "Process status"
-    },
-    "TERMS": {
-      "MESSAGE": "Term management — coming soon",
-      "TITLE": "Terms and academic offer"
     }
   },
   "ENROLLMENT_SURVEY": {
@@ -807,7 +748,7 @@
       "ADD": "Add UEA",
       "BLANK_NOTE": "You cannot select UEAs when \"blank enrollment\" is chosen.",
       "CLOSED_NO_RESPONSE": "You did not submit a response for this survey.",
-      "CREDITS": "credits",
+      "CREDITS": "Credits",
       "EMPTY_AVAILABLE": "No UEAs match your search.",
       "EMPTY_SELECTED": "You haven't added any UEA yet.",
       "MODE": "Response",
@@ -856,12 +797,6 @@
       "PROGRAMADO": "Scheduled"
     }
   },
-  "PRESENTATIONS": {
-    "PLACEHOLDER": {
-      "MESSAGE": "Presentations module — coming soon",
-      "TITLE": "Presentations"
-    }
-  },
   "SHELL": {
     "BRAND": {
       "SUBTITLE": "PCyTI — UAM",
@@ -870,27 +805,21 @@
     "MENU": {
       "ADVISOR_APPROVAL": "Approve course selection",
       "CHANGE_PASSWORD": "Change password",
-      "ENROLLMENT_FORM_PDF": "Enrollment form (PDF)",
-      "ENROLLMENT_START": "Start enrollment",
-      "ENROLLMENT_STATUS": "Process status",
       "HOME": "Home",
       "PLAN_ANNUAL": "Annual planning",
       "PLAN_TRIMESTRAL": "Trimestral planning",
-      "PRESENTATIONS": "Presentations",
       "PROFESSORS": "Professors",
+      "PROFILE": "Profile",
       "STUDENTS": "Students",
       "SURVEY": "Survey",
       "SURVEY_CONFIG": "Enrollment survey",
-      "TERMS_OFFER": "Terms and academic offer",
       "UEAS": "Course Catalog (UEAs)"
     },
     "SECTIONS": {
       "ACADEMIC_MANAGEMENT": "Academic management",
       "ENROLLMENT": "Enrollment",
-      "ENROLLMENT_PROCESS": "Enrollment process",
       "MAIN": "Main",
-      "PLANNING": "Planning & offer",
-      "PRESENTATIONS": "Presentations"
+      "PLANNING": "Planning & offer"
     },
     "SIDEBAR": {
       "COLLAPSE": "Collapse menu",
@@ -981,7 +910,7 @@
     "GROUP": {
       "CUPO": "Quota",
       "CUPO_SOURCE_LINK": "Set by the {{year}} annual plan",
-      "DECLARED_TERM": "term {{term}}",
+      "DECLARED_TERM": "Term {{term}}",
       "END": "End",
       "GROUP_LIMIT_EXCEEDED": "Exceeds the annual-plan group limit",
       "GRUPO": "Group",
@@ -1008,7 +937,7 @@
       "LAB_TIME_REQUIRED": "{{day}} is marked as a lab but is missing its start or end time.",
       "MISSING_END": "{{day}} starts at {{start}} but has no end time.",
       "MISSING_START": "{{day}} ends at {{end}} but has no start time.",
-      "NO_GROUP_CODE": "no group code",
+      "NO_GROUP_CODE": "No group code",
       "OVER_CAPACITY": "It has {{students}} students and the authorized quota is {{cupo}}: remove students or move them to another group.",
       "START_AFTER_END": "{{day}} starts at {{start}} and ends at {{end}}: a class cannot end before it begins.",
       "TIME_FORMAT": "{{day}} has the time “{{value}}”, which is not in 24-hour HH:mm format.",
@@ -1025,7 +954,7 @@
       "TITLE": "Trimestral planning"
     },
     "NEW": {
-      "ALREADY_PLANNED": "already planned",
+      "ALREADY_PLANNED": "Already planned",
       "NEWER_PENDING": "There is a more recent closed survey ({{term}}) with no plan yet. Make sure this is the one you meant to generate.",
       "NO_CLOSED_SURVEYS": "There are no closed surveys to generate a plan from.",
       "PICK_SURVEY": "Choose the survey the plan will be generated from",
@@ -1063,11 +992,11 @@
       "TERMINADA": "Finished"
     },
     "SUMMARY": {
-      "ASSIGNED": "placed enrolments",
-      "GROUPS": "groups",
-      "INCOMPLETE": "incomplete",
-      "UNASSIGNED": "unassigned",
-      "WITH_PROBLEMS": "with problems"
+      "ASSIGNED": "Placed enrolments",
+      "GROUPS": "Groups",
+      "INCOMPLETE": "Incomplete",
+      "UNASSIGNED": "Unassigned",
+      "WITH_PROBLEMS": "With problems"
     },
     "UNASSIGNED": {
       "REASONS": {

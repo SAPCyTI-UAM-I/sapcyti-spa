@@ -44,7 +44,7 @@ Estado inicial medido en rama `chore/agents-md`. Objetivo: mínimo contexto sufi
 
 | Campo | Detalle |
 |-------|---------|
-| **Problem** | UEAs viven en `academic-catalog`; `academic-offering` solo tiene `enrollment-start`; `enrollment` y `presentations` son placeholders. |
+| **Problem** | UEAs viven en `academic-catalog`; `enrollment` es placeholder (`academic-offering` y `presentations` fueron eliminados). |
 | **Evidence** | Rutas y carpetas reales bajo `src/app/features/`. |
 | **Impact** | Agente busca pantallas UEA en offering o implementa enrollment real donde hay stub. |
 | **Token impact** | Medium |

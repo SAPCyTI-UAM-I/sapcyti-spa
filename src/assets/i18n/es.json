@@ -25,6 +25,7 @@
       "file_format_invalid": "Formato de archivo inválido, utilice la plantilla proporcionada.",
       "graduate_program_not_found": "No se encontró el programa de posgrado solicitado.",
       "invalid_type_change": "Un profesor interno no puede cambiar a externo.",
+      "load_failed": "No se pudo cargar la información.",
       "nemp_immutable": "El número económico no puede modificarse.",
       "professor_already_active": "El profesor ya está activo.",
       "professor_already_inactive": "El profesor ya está inactivo.",
@@ -198,9 +199,10 @@
         "WITHDRAWAL_REASON": "Motivo de baja"
       },
       "STATUS": {
-        "ACTIVO": "Activo",
         "BAJA": "Baja",
-        "EGRESADO": "Egresado"
+        "EGRESADO": "Egresado",
+        "EN_INVESTIGACION": "En investigación",
+        "SUSPENSION": "Suspensión"
       },
       "TOAST": {
         "SAVED": "Programa actualizado correctamente."
@@ -350,64 +352,6 @@
       "STEP_3": "Confirmación"
     }
   },
-  "ACADEMIC_OFFERING": {
-    "ENROLLMENT_START": {
-      "ACCEPT": "Aceptar",
-      "CHOOSE": "Elegir archivo",
-      "CSV_HINT": "Solo archivos .csv con horarios y fechas de sorteo.",
-      "CSV_TITLE": "Iniciar la lectura del CSV",
-      "ERRORS": {
-        "INVALID_FORMAT": "Formato de archivo no válido."
-      },
-      "NO_FILE": "Ningún archivo seleccionado",
-      "PROCESS_HINT": "Al iniciar el proceso los alumnos verán las materias del trimestre seleccionado.",
-      "PROCESS_TITLE": "Iniciar el proceso de inscripción",
-      "SUBTITLE": "Selecciona el trimestre para iniciar la inscripción; la carga del CSV es opcional.",
-      "SUCCESS": "Proceso de inscripción iniciado. Los alumnos ya pueden ver las materias del trimestre.",
-      "TERM_LABEL": "Trimestre",
-      "TERM_PLACEHOLDER": "Selecciona un trimestre (ej. 16I)",
-      "TITLE": "Iniciar proceso de inscripción",
-      "UPLOAD": "Cargar"
-    },
-    "PLAN_ANNUAL": {
-      "ALREADY_EDITED": "Los planes trimestrales de este año ya fueron editados previamente.",
-      "COLUMNS": {
-        "ACTIONS": "Acciones",
-        "STATUS": "Estado",
-        "TERM": "Trimestre"
-      },
-      "EDIT_DIALOG": {
-        "CAPACITY": "Cupo por grupo",
-        "ENABLE": "Habilitar",
-        "GROUPS": "Número de grupos",
-        "KEY": "Clave",
-        "SELECT_UEAS": "Seleccione las UEA planeadas para el trimestre {{code}}",
-        "SELECTED_SUBJECTS": "Materias seleccionadas",
-        "SUBJECT": "Materia",
-        "TITLE": "Editar plan trimestral preliminar"
-      },
-      "LIST_EMPTY": "No hay planes anuales registrados.",
-      "SUBTITLE": "Consulta y edita los planes anuales del posgrado.",
-      "TITLE": "Planeación anual",
-      "VIEW": {
-        "CAPACITY": "Cupo",
-        "GROUPS": "Nº de grupos",
-        "TITLE": "Materias activadas"
-      }
-    },
-    "TERM_STATUS": {
-      "EDITED": "Editado",
-      "IN_ENROLLMENT": "En inscripción",
-      "PRELIMINARY": "Preliminar"
-    },
-    "WEEKDAYS": {
-      "FRI": "Viernes",
-      "MON": "Lunes",
-      "THU": "Jueves",
-      "TUE": "Martes",
-      "WED": "Miércoles"
-    }
-  },
   "ACCOUNT": {
     "PASSWORD": {
       "ADMIN_ACTION": "Cambiar contraseña",
@@ -427,6 +371,10 @@
       "SUBMIT": "Cambiar contraseña",
       "SUCCESS": "La contraseña fue actualizada.",
       "TARGET_USER": "Usuario objetivo"
+    },
+    "PROFILE": {
+      "BACK": "Regresar al inicio",
+      "TITLE": "Mi perfil"
     }
   },
   "ANNUAL_PLANNING": {
@@ -465,7 +413,7 @@
     },
     "GRID": {
       "CLAVE": "Clave",
-      "EMPTY": "vacío",
+      "EMPTY": "Vacío",
       "GROUPS": "Grupos",
       "INVALID_CELLS": "Hay celdas con valores inválidos. Corrígelas antes de guardar.",
       "MODALITY": "Modalidad",
@@ -549,9 +497,15 @@
       "ERROR_INVALID_CREDENTIALS": "Credenciales inválidas. Verifique su correo y contraseña.",
       "ERROR_REQUIRED": "Este campo es obligatorio",
       "FOOTER": {
-        "COPYRIGHT": "© 2026 SAPCyTI — Portal Académico Institucional",
+        "COPYRIGHT": "© 2026 SAPCyTI",
         "PRIVACY": "Privacidad",
         "SUPPORT": "Soporte",
+        "SUPPORT_BANNER": {
+          "CLOSE": "Cerrar",
+          "COPY": "Copiar correo",
+          "MESSAGE": "Para dudas, asistencia o incidencias de acceso, contacta al equipo de soporte mediante:",
+          "TITLE": "Soporte técnico"
+        },
         "TERMS": "Términos"
       },
       "FORGOT_PASSWORD": "¿Olvidó su contraseña?",
@@ -586,11 +540,9 @@
   },
   "BREADCRUMB": {
     "ADVISOR_APPROVAL": "Aprobaciones",
-    "FORM_PDF": "Formato",
     "NEW": "Nuevo",
     "PASSWORD": "Contraseña",
-    "STATUS": "Estados",
-    "TERMS": "Trimestres"
+    "PROFILE": "Perfil"
   },
   "COMMON": {
     "ACTIONS": {
@@ -639,51 +591,51 @@
     }
   },
   "DASHBOARD": {
-    "CARDS": {
-      "ACTIVE_TERM": "Proceso activo",
-      "ACTIVE_TERM_BADGE": "En inscripción",
-      "FORMATS_LINK": "Imprimir formatos",
-      "FORMATS_READY": "alumnos con UEAs aprobadas",
-      "MANAGE_LINK": "Gestionar",
-      "MY_ADVISEES": "alumnos asesorados",
-      "MY_ADVISEES_LINK": "Ver alumnos",
-      "MY_ENROLLMENT": "Estado de mi inscripción",
-      "MY_ENROLLMENT_LINK": "Ver inscripción",
-      "PENDING_APPROVAL": "UEAs esperando aprobación del asesor",
-      "PENDING_LINK": "Revisar pendientes",
-      "PENDING_REVIEWS": "selecciones de UEAs esperando aprobación",
-      "PENDING_REVIEWS_LINK": "Revisar ahora",
-      "PRESENTATIONS": "Ponencias",
-      "PRESENTATIONS_LINK": "Ver ponencias",
-      "STUDENTS_COUNT": "alumnos registrados",
-      "STUDENTS_LINK": "Ver alumnos",
-      "SUPPORT_FORMATS": "alumnos listos para generar PDF",
-      "SUPPORT_FORMATS_LINK": "Generar formatos"
+    "COORDINATOR": {
+      "ANNUAL_PLANNING": "Planeación anual",
+      "CONFIGURE_SURVEY": "Configurar sondeo",
+      "NO_ACTIVE_SURVEY": "No hay sondeo de UEAs activo actualmente.",
+      "PROFESSORS_COUNT": "Profesores registrados",
+      "QUICK_ACTIONS_TITLE": "Acciones rápidas",
+      "REGISTER_PROFESSOR": "Registrar profesor",
+      "REGISTER_STUDENT": "Registrar alumno",
+      "STUDENTS_COUNT": "Alumnos registrados",
+      "SURVEY_CLOSES": "Cierre: {{date}}",
+      "SURVEY_RESPONSES": "{{count}} respuestas recibidas",
+      "SURVEY_TERM": "Trimestre {{term}}",
+      "SURVEY_TITLE": "Sondeo de UEAs en curso",
+      "SURVEY_VIEW_RESULTS": "Ver resultados",
+      "TRIMESTRAL_PLANNING": "Planeación trimestral",
+      "UEAS_COUNT": "UEAs en catálogo",
+      "VIEW_PROFESSORS": "Ver profesores",
+      "VIEW_STUDENTS": "Ver alumnos",
+      "VIEW_UEAS": "Ver catálogo"
     },
     "HOME": {
       "ASSISTANT": {
-        "SUBTITLE": "Formatos de inscripción listos para generar.",
+        "SUBTITLE": "Bienvenido al panel de asistencia técnica.",
         "TITLE": "Inicio"
       },
       "COORDINATOR": {
         "SUBTITLE": "Bienvenido al Panel de Gestión Académica.",
         "TITLE": "Inicio"
       },
+      "GENERIC": "Panel principal del sistema.",
       "PLACEHOLDER": "Contenido del panel según su rol — próximamente.",
       "PROFESSOR": {
-        "SUBTITLE": "Resumen de alumnos asesorados e inscripciones pendientes.",
+        "SUBTITLE": "Bienvenido a su panel de información docente.",
         "TITLE": "Inicio"
       },
       "SPEAKER": {
-        "SUBTITLE": "Consulte y gestione sus ponencias.",
+        "SUBTITLE": "Bienvenido al portal de ponentes.",
         "TITLE": "Inicio"
       },
       "STUDENT": {
-        "SUBTITLE": "Consulte el estado de su inscripción trimestral.",
+        "SUBTITLE": "Consulte su estado académico y sondeos vigentes.",
         "TITLE": "Inicio"
       },
       "SYSTEM_ADMIN": {
-        "SUBTITLE": "Supervise la configuración global y las ponencias del sistema.",
+        "SUBTITLE": "Supervise la configuración global del sistema.",
         "TITLE": "Inicio"
       }
     },
@@ -692,45 +644,34 @@
       "TITLE": "Inicio"
     },
     "PROFESSOR": {
-      "ACTIVITY_1": "Ana García envió su selección de UEAs para el trimestre 23-O.",
-      "ACTIVITY_1_TIME": "Hace 2 horas",
-      "ACTIVITY_2": "La selección de Roberto Jiménez fue aprobada correctamente.",
-      "ACTIVITY_2_TIME": "Ayer, 14:30",
-      "ACTIVITY_3": "Sistema: Se han subido los nuevos lineamientos de inscripción.",
-      "ACTIVITY_3_TIME": "Hace 2 días",
-      "ACTIVITY_ACTION": "Ver detalle",
-      "ACTIVITY_TITLE": "Actividad Reciente"
+      "ACCOUNT_SECURITY": "Seguridad y contraseña",
+      "CYCLE_DESC": "El periodo de planeación académica y sondeo se encuentra en proceso. Las actividades de revisión y asesoría se habilitarán conforme al calendario institucional.",
+      "CYCLE_TITLE": "Estado del ciclo académico",
+      "WELCOME_DESC": "Bienvenido al portal del Posgrado en Ciencias y Tecnologías de la Información.",
+      "WELCOME_TITLE": "Panel docente"
     },
     "STUDENT": {
-      "ACTION": "Ir a inscripción",
-      "APPROVED": "Aprobado",
-      "ENROLLMENT_TITLE": "Mi inscripción — Trimestre 26-I",
-      "FUTURE_STATES": "Referencia Visual de Estados Futuros",
-      "NAME": "Juan Pérez García",
-      "PENDING_REVIEW": "Pendiente de revisión",
-      "PHASE_2": "Fase 2",
-      "PHASE_3": "Fase 3",
-      "REGISTRATION": "Matrícula: 223300456",
-      "STATUS": "Selección pendiente",
-      "STATUS_MESSAGE": "Seleccione sus UEAs y envíe su elección al asesor para continuar con su proceso."
+      "ACCOUNT_SECURITY": "Cambiar mi contraseña",
+      "ENROLLMENT_ID_LABEL": "Matrícula",
+      "FULL_NAME_LABEL": "Nombre completo",
+      "IDENTITY_TITLE": "Datos del alumno",
+      "NO_ACTIVE_PROCESS": "No hay procesos activos en este momento.",
+      "NO_ACTIVE_PROCESS_DESC": "No se encuentran encuestas de inscripción abiertas. Le notificaremos cuando inicie el próximo periodo.",
+      "PROGRAM_LABEL": "Programa",
+      "SURVEY_COMPLETED_DESC": "Su selección de UEAs ha sido registrada exitosamente. Puede consultar o actualizar sus materias antes del cierre del periodo.",
+      "SURVEY_COMPLETED_TITLE": "Encuesta enviada — Trimestre {{term}}",
+      "SURVEY_DEADLINE": "Fecha límite: {{date}}",
+      "SURVEY_PENDING_DESC": "La encuesta de inscripción para el trimestre {{term}} se encuentra disponible. Participe seleccionando las UEAs de su interés antes de la fecha límite.",
+      "SURVEY_PENDING_TITLE": "Encuesta disponible — Trimestre {{term}}",
+      "SURVEY_RESPOND_ACTION": "Responder encuesta",
+      "SURVEY_TITLE": "Sondeo de inscripción trimestral",
+      "SURVEY_VIEW_ACTION": "Consultar mi respuesta"
     }
   },
   "ENROLLMENT": {
     "ADVISOR_APPROVAL": {
       "MESSAGE": "Módulo de aprobación — próximamente",
       "TITLE": "Aprobar elección de UEAs"
-    },
-    "FORM_PDF": {
-      "MESSAGE": "Generación de formatos — próximamente",
-      "TITLE": "Formato de inscripción (PDF)"
-    },
-    "STATUS": {
-      "MESSAGE": "Seguimiento de estados — próximamente",
-      "TITLE": "Estados del proceso"
-    },
-    "TERMS": {
-      "MESSAGE": "Gestión de trimestres — próximamente",
-      "TITLE": "Trimestres y oferta académica"
     }
   },
   "ENROLLMENT_SURVEY": {
@@ -807,7 +748,7 @@
       "ADD": "Agregar UEA",
       "BLANK_NOTE": "No es posible seleccionar UEAs cuando se elige \"inscripción en blanco\".",
       "CLOSED_NO_RESPONSE": "No registraste una respuesta para este sondeo.",
-      "CREDITS": "créditos",
+      "CREDITS": "Créditos",
       "EMPTY_AVAILABLE": "No hay UEAs que coincidan con tu búsqueda.",
       "EMPTY_SELECTED": "Aún no has agregado ninguna UEA.",
       "MODE": "Respuesta",
@@ -856,12 +797,6 @@
       "PROGRAMADO": "Programado"
     }
   },
-  "PRESENTATIONS": {
-    "PLACEHOLDER": {
-      "MESSAGE": "Módulo de ponencias — próximamente",
-      "TITLE": "Ponencias"
-    }
-  },
   "SHELL": {
     "BRAND": {
       "SUBTITLE": "PCyTI — UAM",
@@ -870,27 +805,21 @@
     "MENU": {
       "ADVISOR_APPROVAL": "Aprobar elección de UEAs",
       "CHANGE_PASSWORD": "Cambiar contraseña",
-      "ENROLLMENT_FORM_PDF": "Formato de inscripción (PDF)",
-      "ENROLLMENT_START": "Iniciar inscripción",
-      "ENROLLMENT_STATUS": "Estados del proceso",
       "HOME": "Inicio",
       "PLAN_ANNUAL": "Planeación anual",
       "PLAN_TRIMESTRAL": "Planeación trimestral",
-      "PRESENTATIONS": "Ponencias",
       "PROFESSORS": "Profesores",
+      "PROFILE": "Perfil",
       "STUDENTS": "Alumnos",
       "SURVEY": "Encuesta",
       "SURVEY_CONFIG": "Encuesta de inscripción",
-      "TERMS_OFFER": "Trimestres y oferta académica",
       "UEAS": "Catálogo de UEAs"
     },
     "SECTIONS": {
       "ACADEMIC_MANAGEMENT": "Gestión académica",
       "ENROLLMENT": "Inscripción",
-      "ENROLLMENT_PROCESS": "Proceso de inscripción",
       "MAIN": "Principal",
-      "PLANNING": "Planeación y oferta",
-      "PRESENTATIONS": "Ponencias"
+      "PLANNING": "Planeación y oferta"
     },
     "SIDEBAR": {
       "COLLAPSE": "Contraer menú",
@@ -981,7 +910,7 @@
     "GROUP": {
       "CUPO": "Cupo",
       "CUPO_SOURCE_LINK": "Definido en la planeación anual {{year}}",
-      "DECLARED_TERM": "trim. {{term}}",
+      "DECLARED_TERM": "Trim. {{term}}",
       "END": "Fin",
       "GROUP_LIMIT_EXCEEDED": "Rebasa el máximo de grupos de la planeación anual",
       "GRUPO": "Grupo",
@@ -1008,7 +937,7 @@
       "LAB_TIME_REQUIRED": "{{day}} está marcado como laboratorio, pero le falta la hora de inicio o la de fin.",
       "MISSING_END": "{{day}} empieza a las {{start}} pero no tiene hora de fin.",
       "MISSING_START": "{{day}} termina a las {{end}} pero no tiene hora de inicio.",
-      "NO_GROUP_CODE": "sin letra de grupo",
+      "NO_GROUP_CODE": "Sin letra de grupo",
       "OVER_CAPACITY": "Tiene {{students}} alumnos y el cupo autorizado es {{cupo}}: quita alumnos o pásalos a otro grupo.",
       "START_AFTER_END": "{{day}} empieza a las {{start}} y termina a las {{end}}: la clase no puede terminar antes de empezar.",
       "TIME_FORMAT": "{{day}} tiene la hora «{{value}}», que no es del formato de 24 horas HH:mm.",
@@ -1025,7 +954,7 @@
       "TITLE": "Planeación trimestral"
     },
     "NEW": {
-      "ALREADY_PLANNED": "ya tiene planeación",
+      "ALREADY_PLANNED": "Ya tiene planeación",
       "NEWER_PENDING": "Hay una encuesta cerrada más reciente ({{term}}) que todavía no tiene planeación. Verifica que sea esta la que quieres generar.",
       "NO_CLOSED_SURVEYS": "No hay encuestas cerradas de las cuales generar una planeación.",
       "PICK_SURVEY": "Elige la encuesta de la que se generará la planeación",
@@ -1063,11 +992,11 @@
       "TERMINADA": "Terminada"
     },
     "SUMMARY": {
-      "ASSIGNED": "inscripciones colocadas",
-      "GROUPS": "grupos",
-      "INCOMPLETE": "incompletos",
-      "UNASSIGNED": "sin asignar",
-      "WITH_PROBLEMS": "con problemas"
+      "ASSIGNED": "Inscripciones colocadas",
+      "GROUPS": "Grupos",
+      "INCOMPLETE": "Incompletos",
+      "UNASSIGNED": "Sin asignar",
+      "WITH_PROBLEMS": "Con problemas"
     },
     "UNASSIGNED": {
       "REASONS": {

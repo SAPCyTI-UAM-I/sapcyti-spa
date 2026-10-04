@@ -26,13 +26,6 @@ const HOME_LINK = {
   icon: 'pi pi-home',
 } as const;
 
-const PRESENTATIONS_LINK = {
-  id: 'presentations',
-  labelKey: 'SHELL.MENU.PRESENTATIONS',
-  route: '/presentations',
-  icon: 'pi pi-microphone',
-} as const;
-
 const STUDENT_NAV: ShellNavigation = {
   home: HOME_LINK,
   sections: [],
@@ -58,31 +51,12 @@ const PROFESSOR_NAV: ShellNavigation = {
 
 const ASSISTANT_NAV: ShellNavigation = {
   home: HOME_LINK,
-  sections: [
-    {
-      id: 'assistant-enrollment',
-      labelKey: 'SHELL.SECTIONS.ENROLLMENT_PROCESS',
-      items: [
-        {
-          id: 'enrollment-form-pdf',
-          labelKey: 'SHELL.MENU.ENROLLMENT_FORM_PDF',
-          route: '/enrollment/form-pdf',
-          icon: 'pi pi-file-pdf',
-        },
-      ],
-    },
-  ],
+  sections: [],
 };
 
 const SPEAKER_NAV: ShellNavigation = {
   home: HOME_LINK,
-  sections: [
-    {
-      id: 'speaker-presentations',
-      labelKey: 'SHELL.SECTIONS.PRESENTATIONS',
-      items: [PRESENTATIONS_LINK],
-    },
-  ],
+  sections: [],
 };
 
 const COORDINATOR_NAV: ShellNavigation = {
@@ -134,55 +108,14 @@ const COORDINATOR_NAV: ShellNavigation = {
           route: '/enrollment-survey',
           icon: 'pi pi-chart-bar',
         },
-        {
-          id: 'enrollment-start',
-          labelKey: 'SHELL.MENU.ENROLLMENT_START',
-          route: '/academic-offering/enrollment-start',
-          icon: 'pi pi-upload',
-        },
       ],
-    },
-    {
-      id: 'coordinator-enrollment',
-      labelKey: 'SHELL.SECTIONS.ENROLLMENT_PROCESS',
-      items: [
-        {
-          id: 'terms-offer',
-          labelKey: 'SHELL.MENU.TERMS_OFFER',
-          route: '/enrollment/terms',
-          icon: 'pi pi-calendar',
-        },
-        {
-          id: 'enrollment-form-pdf',
-          labelKey: 'SHELL.MENU.ENROLLMENT_FORM_PDF',
-          route: '/enrollment/form-pdf',
-          icon: 'pi pi-file-pdf',
-        },
-        {
-          id: 'enrollment-status',
-          labelKey: 'SHELL.MENU.ENROLLMENT_STATUS',
-          route: '/enrollment/status',
-          icon: 'pi pi-list-check',
-        },
-      ],
-    },
-    {
-      id: 'coordinator-presentations',
-      labelKey: 'SHELL.SECTIONS.PRESENTATIONS',
-      items: [PRESENTATIONS_LINK],
     },
   ],
 };
 
 const SYSTEM_ADMIN_NAV: ShellNavigation = {
   home: HOME_LINK,
-  sections: [
-    {
-      id: 'system-admin-presentations',
-      labelKey: 'SHELL.SECTIONS.PRESENTATIONS',
-      items: [PRESENTATIONS_LINK],
-    },
-  ],
+  sections: [],
 };
 
 const NAV_BY_ROLE: Record<ShellMenuRole, ShellNavigation> = {

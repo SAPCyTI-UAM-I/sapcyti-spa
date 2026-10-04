@@ -191,3 +191,22 @@ Posteriormente, podremos ejecutar:
 ```bash
 ng e2e
 ```
+
+## Versionado del sistema
+
+La versión canónica de SAPCyTI está centralizada en `package.json` y se consume en la aplicación a través de `src/app/core/config/app-version.ts` (`APP_VERSION`).
+
+Para incrementar la versión semántica:
+
+```bash
+# Para versiones de corrección (parche, ej. 0.1.0 -> 0.1.1):
+pnpm version patch --no-git-tag-version
+
+# Para nuevas funcionalidades (menor, ej. 0.1.0 -> 0.2.0):
+pnpm version minor --no-git-tag-version
+
+# Para versiones mayores con cambios incompatibles (mayor, ej. 0.1.0 -> 1.0.0):
+pnpm version major --no-git-tag-version
+```
+
+O bien editando directamente el campo `"version"` en `package.json`. La UI (incluyendo la pantalla de inicio de sesión) reflejará el cambio automáticamente.

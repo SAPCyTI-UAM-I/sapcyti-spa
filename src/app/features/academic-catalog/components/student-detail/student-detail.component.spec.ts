@@ -37,7 +37,7 @@ const mockResponse: StudentDetailResponse = {
     enrollmentId: '223300456',
     programType: 'MAESTRIA',
     admissionDate: '2025-09-01',
-    status: 'ACTIVO',
+    status: 'EN_INVESTIGACION',
     advisorIds: [],
     advisors: [],
   },
@@ -49,10 +49,11 @@ describe('StudentDetailComponent', () => {
     throwErr = false,
     getEnrollmentHistory?: ReturnType<typeof vi.fn>,
     overrides: Partial<StudentDetailResponse> = {},
+    customError?: HttpErrorResponse,
   ) {
     const getStudent = vi.fn(() =>
       throwErr
-        ? throwError(() => new HttpErrorResponse({ status: 404 }))
+        ? throwError(() => customError ?? new HttpErrorResponse({ status: 404 }))
         : of({ ...mockResponse, ...overrides }),
     );
 
@@ -101,6 +102,21 @@ describe('StudentDetailComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.error()).toBe('reference_not_found');
+    const message = fixture.debugElement.query(By.css('p-message'));
+    expect(message).toBeTruthy();
+  });
+
+  it('maps 500 server error to load_failed instead of save error', async () => {
+    const { fixture } = await setup(
+      '1',
+      true,
+      undefined,
+      {},
+      new HttpErrorResponse({ status: 500 }),
+    );
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.error()).toBe('load_failed');
     const message = fixture.debugElement.query(By.css('p-message'));
     expect(message).toBeTruthy();
   });

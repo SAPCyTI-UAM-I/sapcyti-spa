@@ -21,7 +21,11 @@ import {
   SurveyResultsSummary,
   UeaDemandRow,
 } from '../../../../models';
-import { CatalogTagComponent, LoadStateComponent } from '../../../../shared/components';
+import {
+  BackButtonComponent,
+  CatalogTagComponent,
+  LoadStateComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { EnrollmentSurveyService } from '../../services/enrollment-survey.service';
 import { statusTagSeverity } from '../../utils/enrollment-survey-status.util';
@@ -37,6 +41,7 @@ import { statusTagSeverity } from '../../utils/enrollment-survey-status.util';
     TranslatePipe,
     Button,
     Dialog,
+    BackButtonComponent,
     CatalogTagComponent,
     LoadStateComponent,
   ],

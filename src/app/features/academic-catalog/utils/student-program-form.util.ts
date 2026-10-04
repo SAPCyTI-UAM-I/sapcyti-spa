@@ -78,7 +78,9 @@ export function buildUpdateStudentProgramRequest(
     researchArea: value.researchArea || undefined,
     status: value.status,
     withdrawalReason:
-      value.status === 'BAJA' ? value.withdrawalReason.trim() || undefined : undefined,
+      value.status === 'BAJA' || value.status === 'SUSPENSION'
+        ? value.withdrawalReason.trim() || undefined
+        : undefined,
     tutorId: value.tutorId,
     advisorIds: value.advisorIds,
   };
@@ -129,7 +131,7 @@ export function withdrawalReasonWhenBajaValidator(): ValidatorFn {
     const status = group.get('status')?.value as string | undefined;
     const withdrawalReason = group.get('withdrawalReason')?.value as string | undefined;
 
-    if (status === 'BAJA' && !withdrawalReason?.trim()) {
+    if ((status === 'BAJA' || status === 'SUSPENSION') && !withdrawalReason?.trim()) {
       return { WITHDRAWAL_REASON_REQUIRED: true };
     }
 

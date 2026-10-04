@@ -24,7 +24,7 @@ SPA Angular 21 + TypeScript strict + PrimeNG + Tailwind. Gestor: **pnpm** (`pack
 1. Lee este L0.
 2. UI: abre **solo §0** de `.cursor/conventions.md` (no el archivo entero; no uses `conventions.md` raíz como sustituto).
 3. Si tocas `core/` o `academic-catalog/`, lee la nota de área (fuera de `src`): `docs/agent-context/core.md` o `docs/agent-context/academic-catalog.md`.
-4. Elige el skill en `.agents/skills/` (pantalla, i18n, endpoint, test, explorar).
+4. Elige el skill en `.agents/skills/` (pantalla, i18n, endpoint, test, explorar, eliminar).
 5. Copia el componente más cercano del mismo feature + su `*.spec.ts`.
 6. Ejemplo dorado verificado: `src/app/features/academic-catalog/components/professor-list/`.
 7. HTTP → `API_ENDPOINTS`. Índices: `docs/architecture/index.md`.
@@ -36,6 +36,7 @@ SPA Angular 21 + TypeScript strict + PrimeNG + Tailwind. Gestor: **pnpm** (`pack
 | Rutas app | `src/app/app.routes.ts` |
 | Endpoints | `src/app/core/api/api-endpoints.ts` |
 | Providers mock/HTTP | `src/app/core/api/data-layer.providers.ts` |
+| Versión sistema | `package.json` / `src/app/core/config/app-version.ts` (`pnpm version patch\|minor`) |
 | Features | `src/app/features/` (ver mapa) |
 | Contexto agente | `docs/agent-context/` |
 
@@ -52,8 +53,8 @@ SPA Angular 21 + TypeScript strict + PrimeNG + Tailwind. Gestor: **pnpm** (`pack
 - PrimeNG primero; UI propia solo en `shared/components/` si no hay equivalente.
 - Texto visible solo por i18n (`es` + `en`).
 - Standalone, `OnPush`, estado con signals; formularios reactivos (`NonNullableFormBuilder`).
-- UEAs viven en `academic-catalog`, no en `academic-offering`.
-- `enrollment` y `presentations` son placeholders.
+- UEAs viven en `academic-catalog`.
+- `enrollment` es solo placeholder (aprobación de asesor).
 
 ## Definition of done
 

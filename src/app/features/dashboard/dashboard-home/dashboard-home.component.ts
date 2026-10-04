@@ -1,19 +1,24 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
 import { resolveShellMenuRole } from '../../../shell/shell-menu.config';
-import { StatCardComponent } from '../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../shared/layout/routed-page-host';
-import { DASHBOARD_CARDS_BY_ROLE } from '../dashboard-home.config';
+import { CoordinatorDashboardComponent } from '../components/coordinator-dashboard/coordinator-dashboard.component';
+import { StudentDashboardComponent } from '../components/student-dashboard/student-dashboard.component';
+import { ProfessorDashboardComponent } from '../components/professor-dashboard/professor-dashboard.component';
 
 @Component({
   selector: 'app-dashboard-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [RouterLink, TranslateModule, StatCardComponent],
+  imports: [
+    TranslateModule,
+    CoordinatorDashboardComponent,
+    StudentDashboardComponent,
+    ProfessorDashboardComponent,
+  ],
   templateUrl: './dashboard-home.component.html',
 })
 export class DashboardHomeComponent {
@@ -33,10 +38,5 @@ export class DashboardHomeComponent {
   readonly subtitleKey = computed(() => {
     const role = this.menuRole();
     return role ? `DASHBOARD.HOME.${role}.SUBTITLE` : 'DASHBOARD.PLACEHOLDER.MESSAGE';
-  });
-
-  readonly cards = computed(() => {
-    const role = this.menuRole();
-    return role ? (DASHBOARD_CARDS_BY_ROLE[role] ?? []) : [];
   });
 }

@@ -32,7 +32,7 @@ import { TOAST_LIFE } from '../../utils/toast.util';
 export class CopyableTextComponent {
   readonly value = input.required<string>();
 
-  private readonly messages = inject(MessageService);
+  private readonly messages = inject(MessageService, { optional: true });
   private readonly translate = inject(TranslateService);
 
   copy(): void {
@@ -41,7 +41,7 @@ export class CopyableTextComponent {
         return;
       }
 
-      this.messages.add({
+      this.messages?.add({
         severity: 'success',
         summary: this.translate.instant('COMMON.CLIPBOARD.COPIED'),
         life: TOAST_LIFE.BRIEF,

@@ -23,7 +23,11 @@ import {
   getApiErrorMessage,
 } from '../../../../core/errors/utils/parse-api-error.util';
 import { UeaCatalogItem } from '../../../../models';
-import { FieldErrorComponent, I18nSelectComponent } from '../../../../shared/components';
+import {
+  BackButtonComponent,
+  FieldErrorComponent,
+  I18nSelectComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { UeaService } from '../../services/uea.service';
@@ -52,6 +56,7 @@ const UEAS_LIST_ROUTE = '/academic-catalog/ueas';
     Dialog,
     InputText,
     Message,
+    BackButtonComponent,
     I18nSelectComponent,
     FieldErrorComponent,
     DomainErrorMessagePipe,

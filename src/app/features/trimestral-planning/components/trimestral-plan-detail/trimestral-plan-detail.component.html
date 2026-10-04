@@ -10,21 +10,14 @@
     @if (plan(); as current) {
       <div class="gap-lg flex flex-col">
         <header
-          class="gap-md flex flex-col justify-between xl:flex-row xl:items-start"
+          class="gap-md flex flex-col justify-between xl:flex-row xl:items-center"
           data-testid="plan-page-header"
         >
-          <div class="gap-md flex min-w-0 items-center">
-            <p-button
-              severity="secondary"
-              variant="text"
-              icon="pi pi-arrow-left"
-              [rounded]="true"
-              [ariaLabel]="'COMMON.ACTIONS.BACK' | translate"
-              routerLink="/trimestral-planning"
-            />
+          <div class="gap-md flex min-w-0 items-start sm:items-center">
+            <app-back-button routerLink="/trimestral-planning" />
             <div class="gap-xs flex min-w-0 flex-col">
               <div class="gap-sm flex flex-wrap items-center">
-                <h1 class="text-h2 text-primary font-bold">
+                <h1 class="text-h2 text-primary font-bold break-words">
                   {{ 'TRIMESTRAL_PLANNING.DETAIL.TITLE' | translate: { term: current.term } }}
                 </h1>
                 <app-catalog-tag
@@ -50,7 +43,7 @@
             </div>
           </div>
 
-          <div class="gap-sm flex flex-wrap">
+          <div class="gap-sm flex flex-wrap xl:flex-nowrap">
             @if (draft()) {
               <p-button
                 [label]="'TRIMESTRAL_PLANNING.ACTIONS.SAVE' | translate"

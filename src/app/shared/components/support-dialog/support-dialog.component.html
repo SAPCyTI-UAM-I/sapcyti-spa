@@ -1,0 +1,47 @@
+<p-dialog
+  [visible]="visible()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+  [header]="'AUTH.LOGIN.FOOTER.SUPPORT_BANNER.TITLE' | translate"
+  data-testid="support-dialog"
+  (visibleChange)="visible.set($event)"
+  (onHide)="onHide()"
+>
+  <div class="gap-md py-sm flex flex-col">
+    <p class="text-body-md text-text-secondary">
+      {{ 'AUTH.LOGIN.FOOTER.SUPPORT_BANNER.MESSAGE' | translate }}
+    </p>
+
+    <div
+      class="bg-surface-subtle border-outline hover:border-primary gap-sm p-md flex items-center justify-between rounded-lg border transition-colors"
+    >
+      <div class="gap-xs flex min-w-0 items-center">
+        <i class="pi pi-envelope text-primary shrink-0" aria-hidden="true"></i>
+        <a
+          [href]="'mailto:' + email()"
+          class="text-body-md text-primary truncate font-semibold hover:underline"
+          data-testid="support-email-link"
+        >
+          {{ email() }}
+        </a>
+      </div>
+      <app-copyable-text [value]="email()">
+        <span class="text-caption text-text-secondary hover:text-primary shrink-0">
+          {{ 'AUTH.LOGIN.FOOTER.SUPPORT_BANNER.COPY' | translate }}
+        </span>
+      </app-copyable-text>
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      data-testid="close-support-dialog"
+      [label]="'AUTH.LOGIN.FOOTER.SUPPORT_BANNER.CLOSE' | translate"
+      severity="secondary"
+      (onClick)="dismiss()"
+    />
+  </ng-template>
+</p-dialog>

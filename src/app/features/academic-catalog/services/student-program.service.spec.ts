@@ -14,7 +14,7 @@ import { StudentProgramService } from './student-program.service';
 
 const updateRequest: UpdateStudentProgramRequest = {
   admissionDate: '2025-09-01',
-  status: 'ACTIVO',
+  status: 'EN_INVESTIGACION',
   tutorId: 10,
   advisorIds: [11],
 };
@@ -115,7 +115,7 @@ describe('StudentProgramService', () => {
       enrollmentId: '223300456',
       programType: 'MAESTRIA',
       admissionDate: '2025-09-01',
-      status: 'ACTIVO',
+      status: 'EN_INVESTIGACION',
       advisorIds: [],
       advisors: [],
     });
@@ -147,7 +147,7 @@ describe('StudentProgramService', () => {
       enrollmentId: '223300456',
       programType: 'MAESTRIA',
       admissionDate: '2025-09-01',
-      status: 'ACTIVO',
+      status: 'EN_INVESTIGACION',
       tutorId: 10,
       advisorIds: [11],
       advisors: [],

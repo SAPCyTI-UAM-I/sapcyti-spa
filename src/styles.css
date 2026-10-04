@@ -73,6 +73,9 @@
   --radius-xl: 12px;
   --radius-full: 9999px;
 
+  --height-control: 36px;
+  --size-icon-control: 36px;
+
   /* PRIMARY scale */
   --color-primary: #1e4d7b;
   --color-primary-hover: #163a5f;
@@ -215,7 +218,8 @@ body {
 }
 
 .p-button {
-  min-height: 40px;
+  min-height: 36px;
+  padding: 0.4375rem 0.75rem;
   border-radius: var(--radius-lg);
   font-family: var(--font-sans);
   font-size: var(--text-label-md);
@@ -227,6 +231,12 @@ body {
     color 160ms ease,
     box-shadow 160ms ease,
     transform 120ms ease;
+}
+
+.p-button.p-button-icon-only {
+  width: 36px;
+  height: 36px;
+  padding: 0;
 }
 
 .p-button:not(.p-button-secondary):not(.p-button-text):not(.p-button-outlined) {
@@ -309,6 +319,15 @@ body {
   border: 1px solid var(--color-warning-border);
   color: var(--color-warning-strong);
   background: var(--color-warning-container);
+}
+
+.p-dialog {
+  max-width: calc(100vw - 2rem);
+}
+
+.p-dialog .p-dialog-footer {
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
 }
 
 .p-avatar {

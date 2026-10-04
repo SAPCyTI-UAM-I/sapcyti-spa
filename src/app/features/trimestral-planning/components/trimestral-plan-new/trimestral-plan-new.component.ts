@@ -16,7 +16,7 @@ import { finalize, forkJoin } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { SurveyResponse, TrimestralPlanSummary } from '../../../../models';
-import { LoadStateComponent } from '../../../../shared/components';
+import { BackButtonComponent, LoadStateComponent } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
 import {
@@ -34,7 +34,15 @@ import { compareTermsDesc } from '../../utils/trimestral-plan-status.util';
   selector: 'app-trimestral-plan-new',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [RouterLink, TranslatePipe, Button, Message, LoadStateComponent, DomainErrorMessagePipe],
+  imports: [
+    RouterLink,
+    TranslatePipe,
+    Button,
+    Message,
+    BackButtonComponent,
+    LoadStateComponent,
+    DomainErrorMessagePipe,
+  ],
   templateUrl: './trimestral-plan-new.component.html',
 })
 export class TrimestralPlanNewComponent implements OnInit {

@@ -97,12 +97,93 @@ function main() {
     process.exit(1);
   }
 
-  console.log(`i18n parity OK (${esKeys.length} keys in es.json and en.json).`);
+  // Check capitalization (Sentence case) and param consistency
+  const capErrors = checkCapitalization(es, en);
+  if (capErrors.length > 0) {
+    console.error(`i18n capitalization check failed (${capErrors.length} errors).`);
+    console.error('All user-facing strings must use Sentence case (initial uppercase letter).');
+    capErrors.forEach((err) => console.error(`  - ${err}`));
+    process.exit(1);
+  }
+
+  const paramErrors = checkParamConsistency(es, en);
+  if (paramErrors.length > 0) {
+    console.error(`i18n parameter consistency check failed (${paramErrors.length} errors).`);
+    paramErrors.forEach((err) => console.error(`  - ${err}`));
+    process.exit(1);
+  }
+
+  console.log(`i18n check OK (${esKeys.length} keys in es.json and en.json, parity, capitalization & params valid).`);
 
   if (shouldWriteTypes) {
     writeTypes(esKeys);
     console.log('Generated', path.relative(ROOT, TYPES_PATH));
   }
+}
+
+const ALLOWED_LOWERCASE_KEYS = new Set([
+  'AUTH.FORGOT_PASSWORD.EMAIL_PLACEHOLDER',
+  'AUTH.LOGIN.EMAIL_PLACEHOLDER',
+]);
+
+const PARAM_REGEX = /\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g;
+
+function checkCapitalization(esObj, enObj) {
+  const errors = [];
+  function traverse(objEs, objEn, prefix = '') {
+    for (const key of Object.keys(objEs)) {
+      const fullKey = prefix ? `${prefix}.${key}` : key;
+      const valEs = objEs[key];
+      const valEn = objEn ? objEn[key] : undefined;
+
+      if (valEs && typeof valEs === 'object' && !Array.isArray(valEs)) {
+        traverse(valEs, valEn || {}, fullKey);
+      } else if (typeof valEs === 'string') {
+        if (ALLOWED_LOWERCASE_KEYS.has(fullKey)) {
+          continue;
+        }
+
+        const trimmedEs = valEs.trim();
+        if (/^[a-zñáéíóú]/.test(trimmedEs)) {
+          errors.push(`[ES] "${fullKey}": "${valEs}" starts with lowercase`);
+        }
+
+        if (typeof valEn === 'string') {
+          const trimmedEn = valEn.trim();
+          if (/^[a-z]/.test(trimmedEn)) {
+            errors.push(`[EN] "${fullKey}": "${valEn}" starts with lowercase`);
+          }
+        }
+      }
+    }
+  }
+  traverse(esObj, enObj);
+  return errors;
+}
+
+function checkParamConsistency(esObj, enObj) {
+  const errors = [];
+  function traverse(objEs, objEn, prefix = '') {
+    for (const key of Object.keys(objEs)) {
+      const fullKey = prefix ? `${prefix}.${key}` : key;
+      const valEs = objEs[key];
+      const valEn = objEn ? objEn[key] : undefined;
+
+      if (valEs && typeof valEs === 'object' && !Array.isArray(valEs)) {
+        traverse(valEs, valEn || {}, fullKey);
+      } else if (typeof valEs === 'string' && typeof valEn === 'string') {
+        const paramsEs = Array.from(valEs.matchAll(PARAM_REGEX), (m) => m[1]).sort();
+        const paramsEn = Array.from(valEn.matchAll(PARAM_REGEX), (m) => m[1]).sort();
+        if (JSON.stringify(paramsEs) !== JSON.stringify(paramsEn)) {
+          errors.push(
+            `"${fullKey}" param mismatch: ES has [${paramsEs.join(', ')}], EN has [${paramsEn.join(', ')}]`,
+          );
+        }
+      }
+    }
+  }
+  traverse(esObj, enObj);
+  return errors;
 }
 
 main();

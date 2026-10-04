@@ -8,6 +8,10 @@ describe('ACCOUNT_ROUTES', () => {
     expect(routeFor('password')?.data?.['roles']).toEqual(ROUTE_PERMISSIONS.account);
   });
 
+  it('restricts profile route to students', () => {
+    expect(routeFor('profile')?.data?.['roles']).toEqual(ROUTE_PERMISSIONS.studentProfile);
+  });
+
   it('restricts administrative mode to coordinators', () => {
     expect(routeFor('users/:userId/password')?.data?.['roles']).toEqual(['COORDINATOR']);
   });

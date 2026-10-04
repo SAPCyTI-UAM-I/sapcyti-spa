@@ -4,8 +4,7 @@ Qué es distinto aquí: concentra alumnos, profesores **y UEAs**. Las bases abst
 
 ## Boundaries
 
-- UEAs: componentes y repos bajo este feature (`components/uea-*`, `repositories/uea*`). No busques CRUD UEA en `academic-offering`.
-- `academic-offering` solo tiene `enrollment-start`.
+- UEAs: componentes y repos bajo este feature (`components/uea-*`, `repositories/uea*`).
 - Bases: `catalog-list.base.ts`, `catalog-registration.base.ts` (+ specs). Extiende; no dupliques paginación/filtros.
 
 ## Navigation

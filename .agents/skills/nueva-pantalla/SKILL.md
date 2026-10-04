@@ -39,7 +39,7 @@ Ejercita el flujo en el navegador si el cambio es visible.
 ## Common mistakes
 
 - Leer conventions completo.
-- Poner UEAs en `academic-offering`.
+- Poner UEAs fuera de `academic-catalog`.
 - Hardcodear strings o URLs.
 - Importar otro feature.
 - Suite completa de tests en cada iteración.

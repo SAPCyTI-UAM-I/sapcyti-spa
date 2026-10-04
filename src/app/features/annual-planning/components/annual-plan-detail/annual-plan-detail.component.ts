@@ -18,7 +18,11 @@ import { finalize } from 'rxjs';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { getApiErrorMessage } from '../../../../core/errors/utils/parse-api-error.util';
 import { AnnualPlanDetail, AnnualPlanStatus, FormatCheckReport } from '../../../../models';
-import { CatalogTagComponent, LoadStateComponent } from '../../../../shared/components';
+import {
+  BackButtonComponent,
+  CatalogTagComponent,
+  LoadStateComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { downloadBlob } from '../../../../shared/utils/download.util';
 import { AnnualPlanService } from '../../services/annual-plan.service';
@@ -51,6 +55,7 @@ interface StatusAction {
     Dialog,
     Message,
     DomainErrorMessagePipe,
+    BackButtonComponent,
     CatalogTagComponent,
     LoadStateComponent,
     AnnualPlanGridComponent,
