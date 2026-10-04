@@ -108,12 +108,6 @@ const COORDINATOR_NAV: ShellNavigation = {
           route: '/enrollment-survey',
           icon: 'pi pi-chart-bar',
         },
-        {
-          id: 'enrollment-start',
-          labelKey: 'SHELL.MENU.ENROLLMENT_START',
-          route: '/academic-offering/enrollment-start',
-          icon: 'pi pi-upload',
-        },
       ],
     },
   ],

@@ -27,5 +27,6 @@ describe('shell-menu.config', () => {
       section.items.map((item) => item.route),
     );
     expect(routes).not.toContain('/account/password');
+    expect(routes).not.toContain('/academic-offering/enrollment-start');
   });
 });
