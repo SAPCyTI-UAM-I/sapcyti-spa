@@ -19,9 +19,9 @@ export { StatCardComponent, type CardTone } from './stat-card/stat-card.componen
 export { StudentProfileCardComponent } from './student-profile-card/student-profile-card.component';
 export { StudentEnrollmentHistoryComponent } from './student-enrollment-history/student-enrollment-history.component';
 export {
-  SupportBannerComponent,
+  SupportDialogComponent,
   DEFAULT_SUPPORT_EMAIL,
-} from './support-banner/support-banner.component';
+} from './support-dialog/support-dialog.component';
 export { TemporaryPasswordDialogComponent } from './temporary-password-dialog/temporary-password-dialog.component';
 export { UserMenuComponent } from './user-menu/user-menu.component';
 export { type UserMenuItem } from './user-menu/user-menu.model';

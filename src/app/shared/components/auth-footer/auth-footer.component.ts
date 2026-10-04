@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { APP_VERSION } from '../../../core/config/app-version';
-import { SupportBannerComponent } from '../support-banner/support-banner.component';
+import { SupportDialogComponent } from '../support-dialog/support-dialog.component';
 
 @Component({
   selector: 'app-auth-footer',
@@ -11,13 +11,9 @@ import { SupportBannerComponent } from '../support-banner/support-banner.compone
   host: {
     class: 'gap-sm flex w-full flex-col items-center',
   },
-  imports: [TranslatePipe, SupportBannerComponent],
+  imports: [TranslatePipe, SupportDialogComponent],
   template: `
-    @if (supportVisible()) {
-      <div class="mb-xs flex w-full justify-center">
-        <app-support-banner [(visible)]="supportVisible" />
-      </div>
-    }
+    <app-support-dialog [(visible)]="supportVisible" />
 
     <div class="gap-md text-body-sm text-text-secondary flex flex-wrap justify-center">
       <span class="text-text-tertiary cursor-default">
@@ -27,7 +23,7 @@ import { SupportBannerComponent } from '../support-banner/support-banner.compone
         type="button"
         class="hover:text-primary cursor-pointer transition-colors hover:underline"
         data-testid="support-button"
-        (click)="toggleSupport()"
+        (click)="openSupport()"
       >
         {{ 'AUTH.LOGIN.FOOTER.SUPPORT' | translate }}
       </button>
@@ -49,7 +45,7 @@ export class AuthFooterComponent {
   readonly appVersion = APP_VERSION;
   readonly supportVisible = signal(false);
 
-  toggleSupport(): void {
-    this.supportVisible.update((visible) => !visible);
+  openSupport(): void {
+    this.supportVisible.set(true);
   }
 }
