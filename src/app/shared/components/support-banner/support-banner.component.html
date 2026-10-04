@@ -1,0 +1,51 @@
+@if (visible()) {
+  <aside
+    class="border-outline bg-surface p-md gap-sm shadow-card flex w-full max-w-md flex-col rounded-xl border text-left"
+    role="region"
+    aria-labelledby="support-banner-title"
+    data-testid="support-banner"
+  >
+    <div class="flex items-center justify-between">
+      <div class="gap-xs flex items-center">
+        <i class="pi pi-question-circle text-primary text-lg" aria-hidden="true"></i>
+        <h3 id="support-banner-title" class="text-h3 text-primary font-bold">
+          {{ 'AUTH.LOGIN.FOOTER.SUPPORT_BANNER.TITLE' | translate }}
+        </h3>
+      </div>
+      <p-button
+        icon="pi pi-times"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        size="small"
+        data-testid="close-support-banner"
+        [attr.aria-label]="'AUTH.LOGIN.FOOTER.SUPPORT_BANNER.CLOSE' | translate"
+        (onClick)="dismiss()"
+      />
+    </div>
+
+    <p class="text-body-sm text-text-secondary">
+      {{ 'AUTH.LOGIN.FOOTER.SUPPORT_BANNER.MESSAGE' | translate }}
+    </p>
+
+    <div
+      class="bg-surface-muted border-outline p-sm gap-xs flex flex-wrap items-center justify-between rounded-lg border"
+    >
+      <div class="gap-xs flex items-center">
+        <i class="pi pi-envelope text-primary shrink-0" aria-hidden="true"></i>
+        <a
+          [href]="'mailto:' + email()"
+          class="text-body-md text-primary font-semibold hover:underline"
+          data-testid="support-email-link"
+        >
+          {{ email() }}
+        </a>
+      </div>
+      <app-copyable-text [value]="email()">
+        <span class="text-caption text-text-secondary hover:text-primary">
+          {{ 'AUTH.LOGIN.FOOTER.SUPPORT_BANNER.COPY' | translate }}
+        </span>
+      </app-copyable-text>
+    </div>
+  </aside>
+}
