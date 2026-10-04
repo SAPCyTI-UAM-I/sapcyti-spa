@@ -19,7 +19,11 @@ import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { PlanWarning, TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
-import { CatalogTagComponent, LoadStateComponent } from '../../../../shared/components';
+import {
+  BackButtonComponent,
+  CatalogTagComponent,
+  LoadStateComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { downloadBlob } from '../../../../shared/utils/download.util';
 import { TrimestralPlanService } from '../../services/trimestral-plan.service';
@@ -52,6 +56,7 @@ import { TrimestralPlanEditorComponent } from '../trimestral-plan-editor/trimest
     Button,
     Dialog,
     Message,
+    BackButtonComponent,
     CatalogTagComponent,
     LoadStateComponent,
     DomainErrorMessagePipe,

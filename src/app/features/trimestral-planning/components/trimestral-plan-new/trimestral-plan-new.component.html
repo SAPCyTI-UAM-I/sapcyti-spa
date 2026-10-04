@@ -1,10 +1,15 @@
 <section class="gap-lg flex flex-col">
-  <div class="gap-xs flex flex-col">
-    <h1 class="text-h2">{{ 'TRIMESTRAL_PLANNING.NEW.TITLE' | translate }}</h1>
-    <p class="text-body-md text-text-secondary">
-      {{ 'TRIMESTRAL_PLANNING.NEW.SUBTITLE' | translate }}
-    </p>
-  </div>
+  <header class="gap-md flex items-start sm:items-center">
+    <app-back-button routerLink="/trimestral-planning" />
+    <div class="gap-xs flex min-w-0 flex-col">
+      <h1 class="text-h2 text-primary font-bold break-words">
+        {{ 'TRIMESTRAL_PLANNING.NEW.TITLE' | translate }}
+      </h1>
+      <p class="text-body-md text-text-secondary">
+        {{ 'TRIMESTRAL_PLANNING.NEW.SUBTITLE' | translate }}
+      </p>
+    </div>
+  </header>
 
   <div class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
     <app-load-state
