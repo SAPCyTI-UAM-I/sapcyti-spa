@@ -257,7 +257,9 @@
               </div>
             </div>
 
-            @if (prog.status === 'BAJA' && prog.withdrawalReason) {
+            @if (
+              (prog.status === 'BAJA' || prog.status === 'SUSPENSION') && prog.withdrawalReason
+            ) {
               <div
                 class="bg-page border-outline/60 px-md py-sm gap-xs flex min-w-0 flex-col rounded-xl border"
               >

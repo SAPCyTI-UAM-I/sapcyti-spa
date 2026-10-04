@@ -17,7 +17,9 @@ describe('catalog-tag.util', () => {
 
   it('maps program status to catalog tag severities', () => {
     expect(programStatusSeverity('ACTIVO')).toBe('success');
-    expect(programStatusSeverity('BAJA')).toBe('warn');
+    expect(programStatusSeverity('EN_INVESTIGACION')).toBe('info');
     expect(programStatusSeverity('EGRESADO')).toBe('info');
+    expect(programStatusSeverity('BAJA')).toBe('warn');
+    expect(programStatusSeverity('SUSPENSION')).toBe('warn');
   });
 });

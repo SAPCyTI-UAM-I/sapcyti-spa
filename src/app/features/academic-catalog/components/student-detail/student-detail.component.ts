@@ -133,7 +133,10 @@ export class StudentDetailComponent {
       )
       .subscribe({
         next: (student) => this.student.set(student),
-        error: (err) => this.error.set(mapCatalogError(err)),
+        error: (err) => {
+          const mapped = mapCatalogError(err);
+          this.error.set(mapped === 'server' ? 'load_failed' : mapped);
+        },
       });
   }
 }

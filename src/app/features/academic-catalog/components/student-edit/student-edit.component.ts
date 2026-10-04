@@ -151,7 +151,7 @@ export class StudentEditComponent {
 
       // Program academic data
       graduationDate: [''],
-      status: ['ACTIVO' as ProgramStatus, Validators.required],
+      status: ['EN_INVESTIGACION' as ProgramStatus, Validators.required],
       withdrawalReason: ['', [Validators.maxLength(500)]],
       lineOfKnowledge: [''],
       researchArea: [''],

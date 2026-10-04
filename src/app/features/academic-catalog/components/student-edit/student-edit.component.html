@@ -244,7 +244,9 @@
             <app-field-error [control]="form.controls.graduationDate" [submitted]="submitted()" />
           </div>
 
-          @if (form.controls.status.value === 'BAJA') {
+          @if (
+            form.controls.status.value === 'BAJA' || form.controls.status.value === 'SUSPENSION'
+          ) {
             <div class="gap-xs flex flex-col md:col-span-2">
               <label for="withdrawalReason" class="text-body font-medium">
                 {{ 'ACADEMIC_CATALOG.STUDENT_PROGRAM.FIELDS.WITHDRAWAL_REASON' | translate }} *

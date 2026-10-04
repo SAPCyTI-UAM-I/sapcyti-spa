@@ -30,6 +30,7 @@ export type CatalogError =
   | 'invalid_type_change'
   | 'sabbatical_date_order'
   | 'validation'
+  | 'load_failed'
   | 'server';
 
 export const mapCatalogError = createDomainErrorMapper<CatalogError>({

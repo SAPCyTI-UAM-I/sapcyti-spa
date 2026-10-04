@@ -41,7 +41,7 @@ export class StudentProgramMockStore {
     enrollmentId: student.enrollmentId,
     programType: student.programType,
     admissionDate: student.admissionDate,
-    status: student.active ? 'ACTIVO' : 'BAJA',
+    status: student.active ? 'EN_INVESTIGACION' : 'BAJA',
     withdrawalReason: student.active ? undefined : 'Baja por abandono de estudios',
     advisors: [],
     advisorIds: [],
@@ -133,7 +133,7 @@ export class StudentProgramMockStore {
       enrollmentId: student.enrollmentId,
       programType: student.programType,
       admissionDate: student.admissionDate,
-      status: 'ACTIVO',
+      status: 'EN_INVESTIGACION',
       lineOfKnowledge: request.lineOfKnowledge,
       researchArea: request.researchArea,
       tutorId,
@@ -160,7 +160,7 @@ export class StudentProgramMockStore {
   hasActiveAssignment(professorId: number): boolean {
     return this.programs.some(
       (program) =>
-        program.status === 'ACTIVO' &&
+        program.status === 'EN_INVESTIGACION' &&
         (program.tutorId === professorId || program.advisorIds.includes(professorId)),
     );
   }

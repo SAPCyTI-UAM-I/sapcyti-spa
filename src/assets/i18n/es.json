@@ -25,6 +25,7 @@
       "file_format_invalid": "Formato de archivo inválido, utilice la plantilla proporcionada.",
       "graduate_program_not_found": "No se encontró el programa de posgrado solicitado.",
       "invalid_type_change": "Un profesor interno no puede cambiar a externo.",
+      "load_failed": "No se pudo cargar la información.",
       "nemp_immutable": "El número económico no puede modificarse.",
       "professor_already_active": "El profesor ya está activo.",
       "professor_already_inactive": "El profesor ya está inactivo.",
@@ -200,7 +201,9 @@
       "STATUS": {
         "ACTIVO": "Activo",
         "BAJA": "Baja",
-        "EGRESADO": "Egresado"
+        "EGRESADO": "Egresado",
+        "EN_INVESTIGACION": "En investigación",
+        "SUSPENSION": "Suspensión"
       },
       "TOAST": {
         "SAVED": "Programa actualizado correctamente."

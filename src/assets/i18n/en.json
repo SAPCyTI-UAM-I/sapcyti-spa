@@ -25,6 +25,7 @@
       "file_format_invalid": "Invalid file format, please use the provided template.",
       "graduate_program_not_found": "The requested graduate program was not found.",
       "invalid_type_change": "An internal professor cannot become external.",
+      "load_failed": "Could not load the information.",
       "nemp_immutable": "The employee number cannot be changed.",
       "professor_already_active": "The professor is already active.",
       "professor_already_inactive": "The professor is already inactive.",
@@ -200,7 +201,9 @@
       "STATUS": {
         "ACTIVO": "Active",
         "BAJA": "Withdrawn",
-        "EGRESADO": "Graduated"
+        "EGRESADO": "Graduated",
+        "EN_INVESTIGACION": "In research",
+        "SUSPENSION": "Suspended"
       },
       "TOAST": {
         "SAVED": "Program updated successfully."

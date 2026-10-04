@@ -1,6 +1,6 @@
 import type { ProgramType } from './student.model';
 
-export type ProgramStatus = 'ACTIVO' | 'BAJA' | 'EGRESADO';
+export type ProgramStatus = 'EN_INVESTIGACION' | 'EGRESADO' | 'BAJA' | 'SUSPENSION' | 'ACTIVO';
 
 export interface ProfessorReference {
   id: number;
