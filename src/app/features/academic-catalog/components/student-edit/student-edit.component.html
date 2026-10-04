@@ -328,38 +328,39 @@
         </div>
       </article>
 
-      <footer class="gap-md flex flex-wrap justify-end">
-        <p-button
-          severity="secondary"
-          variant="outlined"
-          [label]="'COMMON.ACTIONS.CANCEL' | translate"
-          [disabled]="submitting()"
-          (onClick)="cancel()"
-        />
-        <p-button
-          data-testid="save-student"
-          type="submit"
-          [label]="'COMMON.ACTIONS.SAVE' | translate"
-          [loading]="submitting()"
-        />
+      <footer class="border-outline pt-md gap-sm flex flex-wrap justify-between border-t">
+        <div class="gap-sm flex flex-wrap">
+          @if (student(); as current) {
+            <p-button
+              data-testid="change-student-password"
+              icon="pi pi-key"
+              severity="secondary"
+              variant="outlined"
+              [label]="'ACADEMIC_CATALOG.STUDENTS.DETAIL.CHANGE_PASSWORD' | translate"
+              [routerLink]="['/account/users', current.userId, 'password']"
+              [queryParams]="{
+                returnUrl: '/academic-catalog/students/' + current.id + '/edit',
+                targetName: formatPersonName(current),
+              }"
+            />
+          }
+        </div>
+        <div class="gap-sm flex flex-wrap">
+          <p-button
+            severity="secondary"
+            variant="outlined"
+            [label]="'COMMON.ACTIONS.CANCEL' | translate"
+            [disabled]="submitting()"
+            (onClick)="cancel()"
+          />
+          <p-button
+            data-testid="save-student"
+            type="submit"
+            [label]="'COMMON.ACTIONS.SAVE' | translate"
+            [loading]="submitting()"
+          />
+        </div>
       </footer>
     </form>
-
-    @if (student(); as current) {
-      <div class="border-outline pt-lg gap-sm flex flex-wrap" data-testid="student-edit-actions">
-        <p-button
-          data-testid="change-student-password"
-          icon="pi pi-key"
-          severity="secondary"
-          variant="outlined"
-          [label]="'ACADEMIC_CATALOG.STUDENTS.DETAIL.CHANGE_PASSWORD' | translate"
-          [routerLink]="['/account/users', current.userId, 'password']"
-          [queryParams]="{
-            returnUrl: '/academic-catalog/students/' + current.id + '/edit',
-            targetName: formatPersonName(current),
-          }"
-        />
-      </div>
-    }
   }
 </section>
