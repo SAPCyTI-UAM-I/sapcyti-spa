@@ -6,23 +6,15 @@ import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { finalize } from 'rxjs';
 
-import {
-  EnrollmentHistoryEntry,
-  getLineOfKnowledgeLabelKey,
-  getResearchAreaLabelKey,
-  StudentDetailResponse,
-} from '../../../../models';
+import { EnrollmentHistoryEntry, StudentDetailResponse } from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import {
   BackButtonComponent,
-  CatalogTagComponent,
-  CopyableTextComponent,
-  LoadStateComponent,
+  StudentEnrollmentHistoryComponent,
+  StudentProfileCardComponent,
 } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { StudentService } from '../../services/student.service';
-import { formatProfessorName } from '../../utils/professor-display.util';
-import { programStatusSeverity, programTypeTagSeverity } from '../../utils/catalog-tag.util';
 import {
   CATALOG_ERROR_I18N_SCOPE,
   mapCatalogError,
@@ -31,6 +23,7 @@ import {
 
 @Component({
   selector: 'app-student-detail',
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
   imports: [
@@ -40,9 +33,8 @@ import {
     Message,
     DomainErrorMessagePipe,
     BackButtonComponent,
-    CopyableTextComponent,
-    CatalogTagComponent,
-    LoadStateComponent,
+    StudentProfileCardComponent,
+    StudentEnrollmentHistoryComponent,
   ],
   templateUrl: './student-detail.component.html',
 })
@@ -63,11 +55,6 @@ export class StudentDetailComponent {
   readonly historyLoading = signal(true);
   readonly historyError = signal(false);
 
-  readonly formatProfessorName = formatProfessorName;
-  readonly getLineOfKnowledgeLabelKey = getLineOfKnowledgeLabelKey;
-  readonly getResearchAreaLabelKey = getResearchAreaLabelKey;
-  readonly programStatusSeverity = programStatusSeverity;
-  readonly programTypeTagSeverity = programTypeTagSeverity;
   readonly catalogErrorScope = CATALOG_ERROR_I18N_SCOPE;
 
   constructor() {
@@ -81,16 +68,6 @@ export class StudentDetailComponent {
 
   editRoute(): string[] {
     return ['/academic-catalog/students', String(this.studentId), 'edit'];
-  }
-
-  initials(): string {
-    const current = this.student();
-    if (!current) {
-      return '';
-    }
-    const first = current.firstName?.trim().charAt(0) ?? '';
-    const last = current.firstLastName?.trim().charAt(0) ?? '';
-    return `${first}${last}`.toUpperCase();
   }
 
   loadHistory(): void {

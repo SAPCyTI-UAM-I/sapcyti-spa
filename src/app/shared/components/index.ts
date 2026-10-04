@@ -16,6 +16,8 @@ export { ProfileFieldComponent } from './profile-field/profile-field.component';
 export { ShellSidebarLinkComponent } from './shell-sidebar-link/shell-sidebar-link.component';
 export { ShellSidebarNavComponent } from './shell-sidebar-nav/shell-sidebar-nav.component';
 export { StatCardComponent, type CardTone } from './stat-card/stat-card.component';
+export { StudentProfileCardComponent } from './student-profile-card/student-profile-card.component';
+export { StudentEnrollmentHistoryComponent } from './student-enrollment-history/student-enrollment-history.component';
 export { TemporaryPasswordDialogComponent } from './temporary-password-dialog/temporary-password-dialog.component';
 export { UserMenuComponent } from './user-menu/user-menu.component';
 export { type UserMenuItem } from './user-menu/user-menu.model';

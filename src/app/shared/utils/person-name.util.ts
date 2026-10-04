@@ -17,3 +17,10 @@ export function formatPersonName(
       : [parts.firstName, parts.firstLastName, parts.secondLastName];
   return ordered.filter((part): part is string => !!part?.trim()).join(' ');
 }
+
+export function formatProfessorName(professor: PersonNameParts | null | undefined): string {
+  if (!professor) {
+    return '';
+  }
+  return formatPersonName(professor, 'last-first');
+}
