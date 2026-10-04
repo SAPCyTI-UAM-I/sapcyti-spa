@@ -14,6 +14,7 @@ import {
 } from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import {
+  BackButtonComponent,
   CatalogTagComponent,
   CopyableTextComponent,
   LoadStateComponent,
@@ -38,6 +39,7 @@ import {
     Button,
     Message,
     DomainErrorMessagePipe,
+    BackButtonComponent,
     CopyableTextComponent,
     CatalogTagComponent,
     LoadStateComponent,

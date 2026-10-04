@@ -34,8 +34,11 @@ import { StudentService } from '../../services/student.service';
 import { StudentProgramService } from '../../services/student-program.service';
 import { ProfessorOptionsController } from '../../services/professor-options.controller';
 import { ResearchCatalogService } from '../../services/research-catalog.service';
-import { FieldErrorComponent } from '../../../../shared/components/field-error/field-error.component';
-import { I18nSelectComponent } from '../../../../shared/components';
+import {
+  BackButtonComponent,
+  FieldErrorComponent,
+  I18nSelectComponent,
+} from '../../../../shared/components';
 import { formatPersonName } from '../../../../shared/utils/person-name.util';
 import { isFieldInvalid } from '../../../../shared/utils/field-error.util';
 import { TERM_PATTERN } from '../../../../shared/utils/term.util';
@@ -72,6 +75,7 @@ import {
     Message,
     MultiSelect,
     Select,
+    BackButtonComponent,
     I18nSelectComponent,
     FieldErrorComponent,
   ],

@@ -24,7 +24,11 @@ import {
   ProfessorType,
 } from '../../../../models';
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
-import { FieldErrorComponent, I18nSelectComponent } from '../../../../shared/components';
+import {
+  BackButtonComponent,
+  FieldErrorComponent,
+  I18nSelectComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { formatPersonName } from '../../../../shared/utils/person-name.util';
 import { isFieldInvalid } from '../../../../shared/utils/field-error.util';
@@ -56,6 +60,7 @@ import {
     Dialog,
     InputText,
     Message,
+    BackButtonComponent,
     I18nSelectComponent,
     FieldErrorComponent,
     DomainErrorMessagePipe,

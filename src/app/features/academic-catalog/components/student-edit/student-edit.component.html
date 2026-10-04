@@ -1,11 +1,14 @@
 <section class="gap-lg mx-auto flex w-full max-w-4xl flex-col" data-testid="student-edit">
-  <header>
-    <h1 class="text-h2 text-primary font-bold">
-      {{ 'ACADEMIC_CATALOG.STUDENTS.EDIT.TITLE' | translate }}
-    </h1>
-    <p class="text-text-secondary">
-      {{ 'ACADEMIC_CATALOG.STUDENTS.EDIT.SUBTITLE' | translate }}
-    </p>
+  <header class="gap-md flex items-start sm:items-center">
+    <app-back-button (back)="cancel()" />
+    <div class="gap-xs flex min-w-0 flex-col">
+      <h1 class="text-h2 text-primary font-bold break-words">
+        {{ 'ACADEMIC_CATALOG.STUDENTS.EDIT.TITLE' | translate }}
+      </h1>
+      <p class="text-text-secondary">
+        {{ 'ACADEMIC_CATALOG.STUDENTS.EDIT.SUBTITLE' | translate }}
+      </p>
+    </div>
   </header>
 
   @if (loading()) {

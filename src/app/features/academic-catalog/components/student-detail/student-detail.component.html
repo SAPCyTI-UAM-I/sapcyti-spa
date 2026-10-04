@@ -1,9 +1,12 @@
 <section class="gap-lg flex flex-col" data-testid="student-detail">
   <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
-    <div>
-      <h1 class="text-h2 text-primary font-bold">
-        {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.TITLE' | translate }}
-      </h1>
+    <div class="gap-md flex min-w-0 items-start sm:items-center">
+      <app-back-button (back)="backToCatalog()" />
+      <div class="gap-xs flex min-w-0 flex-col">
+        <h1 class="text-h2 text-primary font-bold break-words">
+          {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.TITLE' | translate }}
+        </h1>
+      </div>
     </div>
     <div class="gap-sm flex flex-wrap">
       @if (student()) {
@@ -14,13 +17,6 @@
           [routerLink]="editRoute()"
         />
       }
-      <p-button
-        severity="secondary"
-        variant="outlined"
-        icon="pi pi-arrow-left"
-        [label]="'COMMON.ACTIONS.BACK' | translate"
-        (onClick)="backToCatalog()"
-      />
     </div>
   </header>
 
