@@ -10,14 +10,19 @@
     @if (survey(); as survey) {
       <div class="gap-lg flex flex-col">
         <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
-          <div class="gap-sm flex flex-wrap items-center">
-            <h1 class="text-h2 text-primary font-bold">
-              {{ 'ENROLLMENT_SURVEY.DETAIL.TITLE' | translate }} {{ survey.term }}
-            </h1>
-            <app-catalog-tag
-              [value]="'ENROLLMENT_SURVEY.STATUS.' + survey.status | translate"
-              [severity]="statusTagSeverity(survey.status)"
-            />
+          <div class="gap-md flex min-w-0 items-start sm:items-center">
+            <app-back-button routerLink="/enrollment-survey" />
+            <div class="gap-xs flex min-w-0 flex-col">
+              <div class="gap-sm flex flex-wrap items-center">
+                <h1 class="text-h2 text-primary font-bold break-words">
+                  {{ 'ENROLLMENT_SURVEY.DETAIL.TITLE' | translate }} {{ survey.term }}
+                </h1>
+                <app-catalog-tag
+                  [value]="'ENROLLMENT_SURVEY.STATUS.' + survey.status | translate"
+                  [severity]="statusTagSeverity(survey.status)"
+                />
+              </div>
+            </div>
           </div>
           <div class="gap-sm flex flex-wrap">
             <!-- HU-58: solo preselecciona la encuesta en el módulo trimestral; no genera nada. -->
@@ -35,13 +40,6 @@
               data-testid="survey-action-edit"
               [label]="'ENROLLMENT_SURVEY.ACTIONS.EDIT' | translate"
               [routerLink]="['/enrollment-survey', surveyId, 'edit']"
-            />
-            <p-button
-              severity="secondary"
-              variant="outlined"
-              icon="pi pi-arrow-left"
-              [label]="'COMMON.ACTIONS.BACK' | translate"
-              routerLink="/enrollment-survey"
             />
           </div>
         </header>

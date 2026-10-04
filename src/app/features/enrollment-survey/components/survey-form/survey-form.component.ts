@@ -20,7 +20,11 @@ import { finalize } from 'rxjs';
 
 import { DomainErrorMessagePipe } from '../../../../core/errors/pipes/domain-error-message.pipe';
 import { SurveyResponse, SurveyStatus } from '../../../../models';
-import { CatalogTagComponent, FieldErrorComponent } from '../../../../shared/components';
+import {
+  BackButtonComponent,
+  CatalogTagComponent,
+  FieldErrorComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { TOAST_LIFE } from '../../../../shared/utils/toast.util';
 import { EnrollmentSurveyService } from '../../services/enrollment-survey.service';
@@ -53,6 +57,7 @@ const SURVEY_LIST_ROUTE = '/enrollment-survey';
     Dialog,
     InputText,
     Message,
+    BackButtonComponent,
     CatalogTagComponent,
     FieldErrorComponent,
     DomainErrorMessagePipe,

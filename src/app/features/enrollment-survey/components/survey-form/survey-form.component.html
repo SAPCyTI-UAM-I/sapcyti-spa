@@ -1,8 +1,9 @@
 <section class="gap-lg mx-auto flex max-w-2xl flex-col" data-testid="survey-form">
-  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
-    <div>
+  <header class="gap-md flex items-start sm:items-center">
+    <app-back-button (back)="cancel()" />
+    <div class="gap-xs flex min-w-0 flex-col">
       <div class="gap-sm flex flex-wrap items-center">
-        <h1 class="text-h2 text-primary font-bold">
+        <h1 class="text-h2 text-primary font-bold break-words">
           {{
             (isEdit ? 'ENROLLMENT_SURVEY.FORM.TITLE_EDIT' : 'ENROLLMENT_SURVEY.FORM.TITLE_NEW')
               | translate
@@ -18,13 +19,6 @@
       </div>
       <p class="text-text-secondary">{{ 'ENROLLMENT_SURVEY.FORM.SUBTITLE' | translate }}</p>
     </div>
-    <p-button
-      severity="secondary"
-      variant="outlined"
-      icon="pi pi-arrow-left"
-      [label]="'COMMON.ACTIONS.BACK' | translate"
-      (onClick)="cancel()"
-    />
   </header>
 
   @if (loading()) {

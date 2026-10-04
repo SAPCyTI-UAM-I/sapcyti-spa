@@ -306,8 +306,13 @@ describe('SurveyFormComponent', () => {
 
     it('routes Save through the reopen validation for a closed survey', async () => {
       const updateSurvey = vi.fn();
+      const closedExpired: SurveyResponse = {
+        ...survey({ status: 'CERRADO' }),
+        opensAt: new Date(Date.now() - 3 * 86_400_000).toISOString(),
+        closesAt: new Date(Date.now() - 86_400_000).toISOString(),
+      };
       const { fixture, navigate } = await setup({
-        getSurvey: vi.fn(() => of(survey({ status: 'CERRADO' }))),
+        getSurvey: vi.fn(() => of(closedExpired)),
         updateSurvey,
       });
       const c = fixture.componentInstance;
