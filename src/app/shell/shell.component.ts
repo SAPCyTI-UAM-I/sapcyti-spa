@@ -20,7 +20,7 @@ import { ShellMobileDrawerComponent } from './shell-mobile-drawer.component';
 import { ShellSidebarNavComponent } from '../shared/components';
 import { buildBreadcrumbTrail } from './breadcrumb';
 import { getShellNavigation, STUDENT_SURVEY_SECTION } from './shell-menu.config';
-import { USER_MENU_ITEMS } from './user-menu.config';
+import { getUserMenuItems } from './user-menu.config';
 import { logoutAndNavigateToLogin } from '../core/auth/utils';
 import { readStoredBoolean, writeStoredBoolean } from '../shared/utils/local-storage.util';
 
@@ -55,7 +55,7 @@ export class ShellComponent {
   readonly currentUser = toSignal(this.auth.currentUser$, { initialValue: null });
   readonly mobileMenuOpen = signal(false);
   readonly searchQuery = signal('');
-  readonly userMenuItems = USER_MENU_ITEMS;
+  readonly userMenuItems = computed(() => getUserMenuItems(this.currentUser()?.role));
   readonly sidebarCollapsed = signal(readStoredBoolean(SIDEBAR_COLLAPSED_KEY));
 
   private readonly navigationEnd = toSignal(

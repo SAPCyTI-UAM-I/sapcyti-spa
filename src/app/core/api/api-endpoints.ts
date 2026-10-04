@@ -9,6 +9,8 @@ export const API_ENDPOINTS = {
     resetPassword: `${environment.apiBaseUrl}/auth/reset-password`,
   },
   students: `${environment.apiBaseUrl}/students`,
+  studentsMe: `${environment.apiBaseUrl}/students/me`,
+  studentEnrollmentHistoryMe: `${environment.apiBaseUrl}/students/me/enrollment-history`,
   student: (studentId: number): string => `${environment.apiBaseUrl}/students/${studentId}`,
   studentPrograms: (studentId: number): string =>
     `${environment.apiBaseUrl}/students/${studentId}/programs`,

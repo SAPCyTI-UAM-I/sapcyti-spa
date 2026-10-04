@@ -371,6 +371,10 @@
       "SUBMIT": "Change password",
       "SUCCESS": "The password was updated.",
       "TARGET_USER": "Target user"
+    },
+    "PROFILE": {
+      "BACK": "Back to dashboard",
+      "TITLE": "My profile"
     }
   },
   "ANNUAL_PLANNING": {
@@ -531,7 +535,8 @@
   "BREADCRUMB": {
     "ADVISOR_APPROVAL": "Approvals",
     "NEW": "New",
-    "PASSWORD": "Password"
+    "PASSWORD": "Password",
+    "PROFILE": "Profile"
   },
   "COMMON": {
     "ACTIONS": {
@@ -798,6 +803,7 @@
       "PLAN_ANNUAL": "Annual planning",
       "PLAN_TRIMESTRAL": "Trimestral planning",
       "PROFESSORS": "Professors",
+      "PROFILE": "Profile",
       "STUDENTS": "Students",
       "SURVEY": "Survey",
       "SURVEY_CONFIG": "Enrollment survey",

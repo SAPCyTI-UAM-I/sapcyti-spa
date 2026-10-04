@@ -1,0 +1,29 @@
+<section class="gap-lg flex flex-col" data-testid="student-self-profile">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div class="gap-md flex min-w-0 items-start sm:items-center">
+      <app-back-button (back)="backToDashboard()" />
+      <div class="gap-xs flex min-w-0 flex-col">
+        <h1 class="text-h2 text-primary font-bold break-words">
+          {{ 'ACCOUNT.PROFILE.TITLE' | translate }}
+        </h1>
+      </div>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="p-xl text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else if (error()) {
+    <p-message severity="error" [text]="'ACADEMIC_CATALOG.STATES.LOAD_ERROR' | translate" />
+  } @else if (student(); as current) {
+    <app-student-profile-card [student]="current" />
+
+    <app-student-enrollment-history
+      [history]="history()"
+      [loading]="historyLoading()"
+      [error]="historyError()"
+      (retry)="loadHistory()"
+    />
+  }
+</section>

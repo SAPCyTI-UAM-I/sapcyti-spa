@@ -371,6 +371,10 @@
       "SUBMIT": "Cambiar contraseña",
       "SUCCESS": "La contraseña fue actualizada.",
       "TARGET_USER": "Usuario objetivo"
+    },
+    "PROFILE": {
+      "BACK": "Regresar al inicio",
+      "TITLE": "Mi perfil"
     }
   },
   "ANNUAL_PLANNING": {
@@ -531,7 +535,8 @@
   "BREADCRUMB": {
     "ADVISOR_APPROVAL": "Aprobaciones",
     "NEW": "Nuevo",
-    "PASSWORD": "Contraseña"
+    "PASSWORD": "Contraseña",
+    "PROFILE": "Perfil"
   },
   "COMMON": {
     "ACTIONS": {
@@ -798,6 +803,7 @@
       "PLAN_ANNUAL": "Planeación anual",
       "PLAN_TRIMESTRAL": "Planeación trimestral",
       "PROFESSORS": "Profesores",
+      "PROFILE": "Perfil",
       "STUDENTS": "Alumnos",
       "SURVEY": "Encuesta",
       "SURVEY_CONFIG": "Encuesta de inscripción",
