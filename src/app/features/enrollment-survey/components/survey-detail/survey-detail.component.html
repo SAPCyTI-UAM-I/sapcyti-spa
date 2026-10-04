@@ -196,7 +196,10 @@
                             <span class="text-caption text-text-secondary block md:hidden">
                               {{ 'ENROLLMENT_SURVEY.RESULTS.COL_FORMACION' | translate }}
                             </span>
-                            {{ row.tipoFormacion }}
+                            {{
+                              'ACADEMIC_CATALOG.UEAS.FORMATION_TYPES.' + row.tipoFormacion
+                                | translate
+                            }}
                           </td>
                           <td class="md:p-md md:table-cell md:text-right">
                             <span class="text-caption text-text-secondary block md:hidden">

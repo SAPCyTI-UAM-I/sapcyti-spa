@@ -227,7 +227,10 @@
                 <span class="block truncate">{{ groups.at(index).controls.nombre.value }}</span>
               </td>
               <td class="border-outline p-sm border whitespace-nowrap">
-                {{ groups.at(index).controls.tipoUea.value }}
+                {{
+                  'ACADEMIC_CATALOG.UEAS.TYPES.' + groups.at(index).controls.tipoUea.value
+                    | translate
+                }}
               </td>
 
               <td
