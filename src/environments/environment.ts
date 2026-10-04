@@ -15,5 +15,6 @@ export const environment = {
     annualPlanning: true,
     enrollmentSurvey: true,
     trimestralPlanning: true,
+    dashboard: true,
   },
 };

@@ -40,6 +40,9 @@ import { ENROLLMENT_SURVEY_REPOSITORY } from '../../features/enrollment-survey/r
 import { TrimestralPlanHttpRepository } from '../../features/trimestral-planning/repositories/trimestral-plan-http.repository';
 import { TrimestralPlanMockRepository } from '../../features/trimestral-planning/repositories/trimestral-plan-mock.repository';
 import { TRIMESTRAL_PLAN_REPOSITORY } from '../../features/trimestral-planning/repositories/trimestral-plan.repository';
+import { DashboardHttpRepository } from '../../features/dashboard/repositories/dashboard-http.repository';
+import { DashboardMockRepository } from '../../features/dashboard/repositories/dashboard-mock.repository';
+import { DASHBOARD_REPOSITORY } from '../../features/dashboard/repositories/dashboard.repository';
 
 export const DATA_LAYER_PROVIDERS: Provider[] = [
   { provide: MOCK_STUDENT_USER_REGISTRY, useExisting: StudentMockStore },
@@ -104,5 +107,11 @@ export const DATA_LAYER_PROVIDERS: Provider[] = [
     PASSWORD_RECOVERY_REPOSITORY,
     PasswordRecoveryHttpRepository,
     PasswordRecoveryMockRepository,
+  ),
+  ...provideMockOrHttpRepository(
+    'dashboard',
+    DASHBOARD_REPOSITORY,
+    DashboardHttpRepository,
+    DashboardMockRepository,
   ),
 ];
