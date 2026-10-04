@@ -9,7 +9,6 @@ export const ROUTE_PERMISSIONS = {
   enrollment: ['COORDINATOR', 'PROFESSOR', 'STUDENT'],
   advisorApproval: ['PROFESSOR'],
   academicCatalog: ['COORDINATOR'],
-  academicOffering: ['COORDINATOR'],
   annualPlanning: ['COORDINATOR'],
   trimestralPlanning: ['COORDINATOR'],
   enrollmentSurvey: ['COORDINATOR'],
