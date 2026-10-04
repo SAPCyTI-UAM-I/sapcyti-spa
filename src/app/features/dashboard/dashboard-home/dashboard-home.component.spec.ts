@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
 import { AuthStateService } from '../../../core/auth/auth.service';
@@ -29,6 +30,7 @@ describe('DashboardHomeComponent', () => {
       imports: [DashboardHomeComponent, TranslateModule.forRoot()],
       providers: [
         provideRouter([]),
+        { provide: MessageService, useValue: { add: vi.fn() } },
         { provide: AuthStateService, useValue: mockAuth },
         { provide: DASHBOARD_REPOSITORY, useValue: dummyRepo },
       ],

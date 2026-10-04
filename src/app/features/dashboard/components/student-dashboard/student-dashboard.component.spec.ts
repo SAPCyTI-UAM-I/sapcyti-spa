@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
 import {
@@ -43,7 +44,11 @@ describe('StudentDashboardComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [StudentDashboardComponent, TranslateModule.forRoot()],
-      providers: [provideRouter([]), { provide: DASHBOARD_REPOSITORY, useValue: mockRepo }],
+      providers: [
+        provideRouter([]),
+        { provide: DASHBOARD_REPOSITORY, useValue: mockRepo },
+        { provide: MessageService, useValue: { add: vi.fn() } },
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(StudentDashboardComponent);
@@ -59,6 +64,7 @@ describe('StudentDashboardComponent', () => {
     expect(compiled.textContent).toContain('Ana Valeria Silva');
     expect(compiled.textContent).toContain('223300999');
     expect(compiled.textContent).toContain('Maestría en CyTI');
+    expect(compiled.textContent).toContain('AS');
   });
 
   it('displays survey action button when student has not responded yet', async () => {
@@ -67,5 +73,16 @@ describe('StudentDashboardComponent', () => {
 
     const actionLink = compiled.querySelector('a[href="/enrollment-survey/respond"]');
     expect(actionLink).toBeTruthy();
+  });
+
+  it('renders link to view full profile and does not show redundant change password link', async () => {
+    const { fixture } = await setup();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    const profileLink = compiled.querySelector('a[href="/account/profile"]');
+    expect(profileLink).toBeTruthy();
+
+    const passwordLink = compiled.querySelector('a[href="/account/password"]');
+    expect(passwordLink).toBeFalsy();
   });
 });

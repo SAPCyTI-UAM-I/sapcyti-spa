@@ -4,7 +4,7 @@ import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
 import { AuthStateService } from '../../../core/auth/auth.service';
-import { PageResponse } from '../../../models';
+import { PageResponse, StudentDetailResponse } from '../../../models';
 import {
   CoordinatorDashboardMetrics,
   ProfessorDashboardData,
@@ -106,33 +106,50 @@ export class DashboardHttpRepository implements DashboardRepository {
   getStudentDashboard(): Observable<StudentDashboardData> {
     const user = this.auth.getCurrentUser();
 
-    return this.http
+    const student$ = this.http
+      .get<StudentDetailResponse>(API_ENDPOINTS.studentsMe, {
+        withCredentials: true,
+      })
+      .pipe(catchError(() => of(null)));
+
+    const survey$ = this.http
       .get<ActiveSurveyApiResponse>(API_ENDPOINTS.enrollmentSurveyActive, {
         withCredentials: true,
       })
-      .pipe(
-        map((survey) => ({
-          studentName: survey.fullName ?? user?.email ?? 'Estudiante',
-          enrollmentId: survey.enrollmentId ?? '—',
-          programType: survey.programType ?? 'Posgrado',
-          activeSurvey: {
-            id: survey.id,
-            term: survey.term,
-            opensAt: survey.startsAt ?? survey.opensAt ?? '',
-            closesAt: survey.endsAt ?? survey.closesAt ?? '',
-            hasResponded: survey.hasResponded ?? Boolean(survey.myResponse),
-            selectedUeasCount: survey.myResponse?.selections?.length ?? 0,
-          },
-        })),
-        catchError(() =>
-          of({
-            studentName: user?.email ? (user.email.split('@')[0] ?? 'Estudiante') : 'Estudiante',
-            enrollmentId: user?.id ? String(user.id) : '—',
-            programType: 'Posgrado',
-            activeSurvey: null,
-          }),
-        ),
-      );
+      .pipe(catchError(() => of(null)));
+
+    return forkJoin({ student: student$, survey: survey$ }).pipe(
+      map(({ student, survey }) => {
+        let studentName = 'Estudiante';
+        if (student) {
+          studentName =
+            `${student.firstName} ${student.firstLastName} ${student.secondLastName ?? ''}`.trim();
+        } else if (survey?.fullName) {
+          studentName = survey.fullName;
+        } else if (user?.email) {
+          studentName = user.email.split('@')[0] ?? 'Estudiante';
+        }
+
+        const enrollmentId = student?.enrollmentId ?? survey?.enrollmentId ?? '—';
+        const programType = student?.programType ?? survey?.programType ?? 'Posgrado';
+
+        return {
+          studentName,
+          enrollmentId,
+          programType,
+          activeSurvey: survey
+            ? {
+                id: survey.id,
+                term: survey.term,
+                opensAt: survey.startsAt ?? survey.opensAt ?? '',
+                closesAt: survey.endsAt ?? survey.closesAt ?? '',
+                hasResponded: survey.hasResponded ?? Boolean(survey.myResponse),
+                selectedUeasCount: survey.myResponse?.selections?.length ?? 0,
+              }
+            : null,
+        };
+      }),
+    );
   }
 
   getProfessorDashboard(): Observable<ProfessorDashboardData> {

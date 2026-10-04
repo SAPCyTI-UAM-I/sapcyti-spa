@@ -1,40 +1,48 @@
 <app-load-state [loading]="loading()" [error]="error()" (retry)="reload()" emptyMessage="">
   @if (studentData(); as data) {
-    <!-- Tarjeta de Identidad del Alumno -->
-    <section class="bg-surface border-outline p-lg gap-md flex min-w-0 flex-col rounded-xl border">
-      <div class="border-surface-subtle pb-sm flex min-w-0 items-center justify-between border-b">
-        <h2 class="text-h3 text-on-surface font-h3 gap-sm flex items-center font-bold">
-          <i class="pi pi-id-card text-primary text-[20px]" aria-hidden="true"></i>
-          {{ 'DASHBOARD.STUDENT.IDENTITY_TITLE' | translate }}
-        </h2>
-      </div>
-
-      <div class="gap-md grid min-w-0 grid-cols-1 sm:grid-cols-3">
-        <div class="gap-xxs flex flex-col">
-          <span class="text-caption text-text-tertiary font-caption">
-            {{ 'DASHBOARD.STUDENT.FULL_NAME_LABEL' | translate }}
-          </span>
-          <span class="text-headline-sm text-on-surface font-headline-sm font-semibold">
-            {{ data.studentName }}
-          </span>
+    <!-- Tarjeta de Identidad del Alumno (mismo diseño que el perfil) -->
+    <section
+      class="border-outline bg-surface overflow-hidden rounded-2xl border"
+      data-testid="student-identity-card"
+    >
+      <div
+        class="from-primary-container to-surface p-md gap-md sm:p-lg flex min-w-0 flex-col bg-gradient-to-br sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div class="gap-md flex min-w-0 flex-1 items-center">
+          <div
+            class="bg-primary text-on-primary text-h1 shadow-card flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl font-bold sm:h-20 sm:w-20"
+            aria-hidden="true"
+          >
+            {{ initials(data.studentName) }}
+          </div>
+          <div class="gap-xs flex min-w-0 flex-col">
+            <h2 class="text-h2 text-on-surface font-bold break-words" data-testid="student-name">
+              {{ data.studentName }}
+            </h2>
+            <div class="gap-sm flex flex-wrap items-center">
+              <app-catalog-tag
+                [value]="data.programType"
+                [severity]="programSeverity(data.programType)"
+              />
+              <span class="gap-xs text-text-secondary text-body-md inline-flex items-center">
+                <i class="pi pi-id-card text-primary shrink-0" aria-hidden="true"></i>
+                <app-copyable-text [value]="data.enrollmentId">
+                  <span class="font-semibold">{{ data.enrollmentId }}</span>
+                </app-copyable-text>
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div class="gap-xxs flex flex-col">
-          <span class="text-caption text-text-tertiary font-caption">
-            {{ 'DASHBOARD.STUDENT.ENROLLMENT_ID_LABEL' | translate }}
-          </span>
-          <span class="text-body-md text-on-surface font-body-md font-medium">
-            {{ data.enrollmentId }}
-          </span>
-        </div>
-
-        <div class="gap-xxs flex flex-col">
-          <span class="text-caption text-text-tertiary font-caption">
-            {{ 'DASHBOARD.STUDENT.PROGRAM_LABEL' | translate }}
-          </span>
-          <span class="text-body-md text-on-surface font-body-md font-medium">
-            {{ data.programType }}
-          </span>
+        <div class="mt-xs shrink-0 sm:mt-0">
+          <a
+            routerLink="/account/profile"
+            class="border-outline bg-surface/80 hover:bg-surface text-primary text-body-md px-md py-sm gap-xs inline-flex items-center rounded-xl border font-semibold backdrop-blur transition-colors"
+          >
+            <i class="pi pi-user text-[14px]" aria-hidden="true"></i>
+            <span>{{ 'ACCOUNT.PROFILE.TITLE' | translate }}</span>
+            <i class="pi pi-arrow-right text-[12px]" aria-hidden="true"></i>
+          </a>
         </div>
       </div>
     </section>
@@ -131,16 +139,5 @@
         </div>
       </section>
     }
-
-    <!-- Accesos Rápidos -->
-    <div class="mt-lg flex justify-end">
-      <a
-        routerLink="/account/password"
-        class="text-text-secondary hover:text-primary text-body-md font-body-md gap-xs inline-flex items-center transition-colors"
-      >
-        <i class="pi pi-lock text-[14px]" aria-hidden="true"></i>
-        <span>{{ 'DASHBOARD.STUDENT.ACCOUNT_SECURITY' | translate }}</span>
-      </a>
-    </div>
   }
 </app-load-state>
