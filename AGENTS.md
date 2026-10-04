@@ -36,6 +36,7 @@ SPA Angular 21 + TypeScript strict + PrimeNG + Tailwind. Gestor: **pnpm** (`pack
 | Rutas app | `src/app/app.routes.ts` |
 | Endpoints | `src/app/core/api/api-endpoints.ts` |
 | Providers mock/HTTP | `src/app/core/api/data-layer.providers.ts` |
+| Versión sistema | `package.json` / `src/app/core/config/app-version.ts` (`pnpm version patch\|minor`) |
 | Features | `src/app/features/` (ver mapa) |
 | Contexto agente | `docs/agent-context/` |
 
