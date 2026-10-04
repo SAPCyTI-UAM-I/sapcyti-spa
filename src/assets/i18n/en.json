@@ -407,7 +407,7 @@
     },
     "GRID": {
       "CLAVE": "Key",
-      "EMPTY": "empty",
+      "EMPTY": "Empty",
       "GROUPS": "Groups",
       "INVALID_CELLS": "Some cells have invalid values. Fix them before saving.",
       "MODALITY": "Modality",
@@ -582,11 +582,11 @@
       "ANNUAL_PLANNING": "Annual planning",
       "CONFIGURE_SURVEY": "Configure survey",
       "NO_ACTIVE_SURVEY": "No active UEA survey at this time.",
-      "PROFESSORS_COUNT": "registered professors",
+      "PROFESSORS_COUNT": "Registered professors",
       "QUICK_ACTIONS_TITLE": "Quick actions",
       "REGISTER_PROFESSOR": "Register professor",
       "REGISTER_STUDENT": "Register student",
-      "STUDENTS_COUNT": "registered students",
+      "STUDENTS_COUNT": "Registered students",
       "SURVEY_CLOSES": "Deadline: {{date}}",
       "SURVEY_RESPONSES": "{{count}} responses received",
       "SURVEY_TERM": "Term {{term}}",
@@ -735,7 +735,7 @@
       "ADD": "Add UEA",
       "BLANK_NOTE": "You cannot select UEAs when \"blank enrollment\" is chosen.",
       "CLOSED_NO_RESPONSE": "You did not submit a response for this survey.",
-      "CREDITS": "credits",
+      "CREDITS": "Credits",
       "EMPTY_AVAILABLE": "No UEAs match your search.",
       "EMPTY_SELECTED": "You haven't added any UEA yet.",
       "MODE": "Response",
@@ -896,7 +896,7 @@
     "GROUP": {
       "CUPO": "Quota",
       "CUPO_SOURCE_LINK": "Set by the {{year}} annual plan",
-      "DECLARED_TERM": "term {{term}}",
+      "DECLARED_TERM": "Term {{term}}",
       "END": "End",
       "GROUP_LIMIT_EXCEEDED": "Exceeds the annual-plan group limit",
       "GRUPO": "Group",
@@ -923,7 +923,7 @@
       "LAB_TIME_REQUIRED": "{{day}} is marked as a lab but is missing its start or end time.",
       "MISSING_END": "{{day}} starts at {{start}} but has no end time.",
       "MISSING_START": "{{day}} ends at {{end}} but has no start time.",
-      "NO_GROUP_CODE": "no group code",
+      "NO_GROUP_CODE": "No group code",
       "OVER_CAPACITY": "It has {{students}} students and the authorized quota is {{cupo}}: remove students or move them to another group.",
       "START_AFTER_END": "{{day}} starts at {{start}} and ends at {{end}}: a class cannot end before it begins.",
       "TIME_FORMAT": "{{day}} has the time “{{value}}”, which is not in 24-hour HH:mm format.",
@@ -940,7 +940,7 @@
       "TITLE": "Trimestral planning"
     },
     "NEW": {
-      "ALREADY_PLANNED": "already planned",
+      "ALREADY_PLANNED": "Already planned",
       "NEWER_PENDING": "There is a more recent closed survey ({{term}}) with no plan yet. Make sure this is the one you meant to generate.",
       "NO_CLOSED_SURVEYS": "There are no closed surveys to generate a plan from.",
       "PICK_SURVEY": "Choose the survey the plan will be generated from",
@@ -978,11 +978,11 @@
       "TERMINADA": "Finished"
     },
     "SUMMARY": {
-      "ASSIGNED": "placed enrolments",
-      "GROUPS": "groups",
-      "INCOMPLETE": "incomplete",
-      "UNASSIGNED": "unassigned",
-      "WITH_PROBLEMS": "with problems"
+      "ASSIGNED": "Placed enrolments",
+      "GROUPS": "Groups",
+      "INCOMPLETE": "Incomplete",
+      "UNASSIGNED": "Unassigned",
+      "WITH_PROBLEMS": "With problems"
     },
     "UNASSIGNED": {
       "REASONS": {
