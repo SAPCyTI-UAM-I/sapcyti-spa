@@ -1,5 +1,6 @@
 export { AccessDeniedComponent } from './access-denied/access-denied.component';
 export { AuthFooterComponent } from './auth-footer/auth-footer.component';
+export { BackButtonComponent } from './back-button/back-button.component';
 export { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 export { CatalogRowLinkDirective } from './catalog-row-link/catalog-row-link.directive';
 export { CatalogTagComponent } from './catalog-tag/catalog-tag.component';
