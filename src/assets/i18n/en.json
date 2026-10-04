@@ -350,64 +350,6 @@
       "STEP_3": "Confirmation"
     }
   },
-  "ACADEMIC_OFFERING": {
-    "ENROLLMENT_START": {
-      "ACCEPT": "Accept",
-      "CHOOSE": "Choose file",
-      "CSV_HINT": "Only .csv files with schedules and draw dates.",
-      "CSV_TITLE": "Read the CSV",
-      "ERRORS": {
-        "INVALID_FORMAT": "Invalid file format."
-      },
-      "NO_FILE": "No file selected",
-      "PROCESS_HINT": "Once started, students will see the selected term's subjects.",
-      "PROCESS_TITLE": "Start the enrollment process",
-      "SUBTITLE": "Select the term to start enrollment; uploading the CSV is optional.",
-      "SUCCESS": "Enrollment process started. Students can now see the term's subjects.",
-      "TERM_LABEL": "Term",
-      "TERM_PLACEHOLDER": "Select a term (e.g. 16I)",
-      "TITLE": "Start enrollment process",
-      "UPLOAD": "Upload"
-    },
-    "PLAN_ANNUAL": {
-      "ALREADY_EDITED": "The quarterly plans for this year were already edited.",
-      "COLUMNS": {
-        "ACTIONS": "Actions",
-        "STATUS": "Status",
-        "TERM": "Term"
-      },
-      "EDIT_DIALOG": {
-        "CAPACITY": "Capacity per group",
-        "ENABLE": "Enable",
-        "GROUPS": "Number of groups",
-        "KEY": "Key",
-        "SELECT_UEAS": "Select the UEAs planned for term {{code}}",
-        "SELECTED_SUBJECTS": "Selected subjects",
-        "SUBJECT": "Subject",
-        "TITLE": "Edit preliminary quarterly plan"
-      },
-      "LIST_EMPTY": "There are no registered annual plans.",
-      "SUBTITLE": "Consult and edit the graduate annual plans.",
-      "TITLE": "Annual planning",
-      "VIEW": {
-        "CAPACITY": "Capacity",
-        "GROUPS": "No. of groups",
-        "TITLE": "Activated subjects"
-      }
-    },
-    "TERM_STATUS": {
-      "EDITED": "Edited",
-      "IN_ENROLLMENT": "In enrollment",
-      "PRELIMINARY": "Preliminary"
-    },
-    "WEEKDAYS": {
-      "FRI": "Friday",
-      "MON": "Monday",
-      "THU": "Thursday",
-      "TUE": "Tuesday",
-      "WED": "Wednesday"
-    }
-  },
   "ACCOUNT": {
     "PASSWORD": {
       "ADMIN_ACTION": "Change password",
@@ -838,7 +780,6 @@
     "MENU": {
       "ADVISOR_APPROVAL": "Approve course selection",
       "CHANGE_PASSWORD": "Change password",
-      "ENROLLMENT_START": "Start enrollment",
       "HOME": "Home",
       "PLAN_ANNUAL": "Annual planning",
       "PLAN_TRIMESTRAL": "Trimestral planning",
