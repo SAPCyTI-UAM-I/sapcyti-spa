@@ -3,6 +3,7 @@ import eslint from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 import angular from 'angular-eslint';
+import { noCrossFeatureImports } from './eslint-rules/no-cross-feature-imports.mjs';
 
 export default defineConfig([
   {
@@ -14,6 +15,13 @@ export default defineConfig([
       angular.configs.tsRecommended,
     ],
     processor: angular.processInlineTemplates,
+    plugins: {
+      sapcyti: {
+        rules: {
+          'no-cross-feature-imports': noCrossFeatureImports,
+        },
+      },
+    },
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -31,6 +39,12 @@ export default defineConfig([
           style: 'kebab-case',
         },
       ],
+    },
+  },
+  {
+    files: ['src/app/features/**/*.ts'],
+    rules: {
+      'sapcyti/no-cross-feature-imports': 'error',
     },
   },
   {

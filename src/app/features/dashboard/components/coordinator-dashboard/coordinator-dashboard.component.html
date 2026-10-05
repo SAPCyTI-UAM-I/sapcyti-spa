@@ -1,0 +1,149 @@
+<app-load-state [loading]="loading()" [error]="error()" (retry)="reload()" emptyMessage="">
+  @if (metrics(); as data) {
+    <!-- KPIs principales -->
+    <div class="gap-gutter lg:gap-margin grid min-w-0 grid-cols-1 md:grid-cols-3">
+      <app-stat-card
+        icon="pi pi-users"
+        [value]="data.totalStudents"
+        labelKey="DASHBOARD.COORDINATOR.STUDENTS_COUNT"
+        linkKey="DASHBOARD.COORDINATOR.VIEW_STUDENTS"
+        linkRoute="/academic-catalog/students"
+        tone="primary"
+      />
+      <app-stat-card
+        icon="pi pi-user-edit"
+        [value]="data.totalProfessors"
+        labelKey="DASHBOARD.COORDINATOR.PROFESSORS_COUNT"
+        linkKey="DASHBOARD.COORDINATOR.VIEW_PROFESSORS"
+        linkRoute="/academic-catalog/professors"
+        tone="secondary"
+      />
+      <app-stat-card
+        icon="pi pi-book"
+        [value]="data.totalUeas"
+        labelKey="DASHBOARD.COORDINATOR.UEAS_COUNT"
+        linkKey="DASHBOARD.COORDINATOR.VIEW_UEAS"
+        linkRoute="/academic-catalog/ueas"
+        tone="info"
+      />
+    </div>
+
+    <!-- Widget de Sondeo Activo -->
+    @if (data.activeSurvey; as survey) {
+      <section
+        class="bg-surface border-outline p-lg gap-md mt-lg flex min-w-0 flex-col items-start justify-between rounded-xl border md:flex-row md:items-center"
+      >
+        <div class="gap-xs flex min-w-0 flex-col">
+          <div class="gap-sm flex items-center">
+            <span
+              class="bg-primary/10 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+            >
+              <i class="pi pi-chart-bar text-[18px]" aria-hidden="true"></i>
+            </span>
+            <h2 class="text-h3 text-on-surface font-h3 font-bold">
+              {{ 'DASHBOARD.COORDINATOR.SURVEY_TITLE' | translate }}
+            </h2>
+            <span
+              class="bg-primary-container text-on-primary-container text-label-sm font-label-sm px-sm py-xxs rounded-full font-semibold"
+            >
+              {{ 'DASHBOARD.COORDINATOR.SURVEY_TERM' | translate: { term: survey.term } }}
+            </span>
+          </div>
+          <div
+            class="text-text-secondary text-body-md font-body-md gap-md mt-xs flex flex-wrap items-center"
+          >
+            @if (survey.closesAt) {
+              <span class="gap-xs flex items-center">
+                <i class="pi pi-calendar text-[15px]" aria-hidden="true"></i>
+                {{
+                  'DASHBOARD.COORDINATOR.SURVEY_CLOSES'
+                    | translate: { date: (survey.closesAt | date: 'dd/MM/yyyy') }
+                }}
+              </span>
+            }
+            @if (survey.totalResponses !== undefined) {
+              <span class="gap-xs flex items-center">
+                <i class="pi pi-check-circle text-[15px]" aria-hidden="true"></i>
+                {{
+                  'DASHBOARD.COORDINATOR.SURVEY_RESPONSES'
+                    | translate: { count: survey.totalResponses }
+                }}
+              </span>
+            }
+          </div>
+        </div>
+
+        <a
+          routerLink="/enrollment-survey"
+          class="bg-primary text-on-primary hover:bg-primary-hover text-label-md font-label-md px-md py-sm gap-xs inline-flex shrink-0 items-center rounded-lg font-semibold transition-colors"
+        >
+          {{ 'DASHBOARD.COORDINATOR.SURVEY_VIEW_RESULTS' | translate }}
+          <i class="pi pi-arrow-right text-[14px]" aria-hidden="true"></i>
+        </a>
+      </section>
+    } @else {
+      <section
+        class="bg-surface-subtle border-outline p-md gap-md mt-lg flex min-w-0 flex-col items-start justify-between rounded-xl border border-dashed sm:flex-row sm:items-center"
+      >
+        <div class="text-text-secondary text-body-md font-body-md gap-sm flex items-center">
+          <i class="pi pi-info-circle text-[18px]" aria-hidden="true"></i>
+          <span>{{ 'DASHBOARD.COORDINATOR.NO_ACTIVE_SURVEY' | translate }}</span>
+        </div>
+        <a
+          routerLink="/enrollment-survey"
+          class="text-primary hover:text-primary-hover text-label-md font-label-md gap-xs inline-flex items-center font-semibold transition-colors"
+        >
+          {{ 'DASHBOARD.COORDINATOR.CONFIGURE_SURVEY' | translate }}
+          <i class="pi pi-arrow-right text-[14px]" aria-hidden="true"></i>
+        </a>
+      </section>
+    }
+
+    <!-- Acciones Rápidas -->
+    <section class="mt-lg">
+      <h3
+        class="text-label-md text-text-secondary font-label-md mb-md font-bold tracking-wider uppercase"
+      >
+        {{ 'DASHBOARD.COORDINATOR.QUICK_ACTIONS_TITLE' | translate }}
+      </h3>
+      <div class="gap-md grid min-w-0 grid-cols-2 sm:grid-cols-4">
+        <a
+          routerLink="/academic-catalog/students"
+          class="bg-surface hover:bg-surface-subtle border-outline p-md gap-sm flex flex-col items-center justify-center rounded-xl border text-center transition-colors"
+        >
+          <i class="pi pi-user-plus text-primary text-[22px]" aria-hidden="true"></i>
+          <span class="text-label-md text-on-surface font-label-md font-medium">
+            {{ 'DASHBOARD.COORDINATOR.REGISTER_STUDENT' | translate }}
+          </span>
+        </a>
+        <a
+          routerLink="/academic-catalog/professors"
+          class="bg-surface hover:bg-surface-subtle border-outline p-md gap-sm flex flex-col items-center justify-center rounded-xl border text-center transition-colors"
+        >
+          <i class="pi pi-user-edit text-secondary text-[22px]" aria-hidden="true"></i>
+          <span class="text-label-md text-on-surface font-label-md font-medium">
+            {{ 'DASHBOARD.COORDINATOR.REGISTER_PROFESSOR' | translate }}
+          </span>
+        </a>
+        <a
+          routerLink="/annual-planning"
+          class="bg-surface hover:bg-surface-subtle border-outline p-md gap-sm flex flex-col items-center justify-center rounded-xl border text-center transition-colors"
+        >
+          <i class="pi pi-calendar-plus text-primary text-[22px]" aria-hidden="true"></i>
+          <span class="text-label-md text-on-surface font-label-md font-medium">
+            {{ 'DASHBOARD.COORDINATOR.ANNUAL_PLANNING' | translate }}
+          </span>
+        </a>
+        <a
+          routerLink="/trimestral-planning"
+          class="bg-surface hover:bg-surface-subtle border-outline p-md gap-sm flex flex-col items-center justify-center rounded-xl border text-center transition-colors"
+        >
+          <i class="pi pi-table text-info text-[22px]" aria-hidden="true"></i>
+          <span class="text-label-md text-on-surface font-label-md font-medium">
+            {{ 'DASHBOARD.COORDINATOR.TRIMESTRAL_PLANNING' | translate }}
+          </span>
+        </a>
+      </div>
+    </section>
+  }
+</app-load-state>

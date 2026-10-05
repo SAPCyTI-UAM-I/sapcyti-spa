@@ -1,0 +1,42 @@
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { AuthStateService } from '../../../core/auth/auth.service';
+import { resolveShellMenuRole } from '../../../shell/shell-menu.config';
+import { ROUTED_PAGE_HOST } from '../../../shared/layout/routed-page-host';
+import { CoordinatorDashboardComponent } from '../components/coordinator-dashboard/coordinator-dashboard.component';
+import { StudentDashboardComponent } from '../components/student-dashboard/student-dashboard.component';
+import { ProfessorDashboardComponent } from '../components/professor-dashboard/professor-dashboard.component';
+
+@Component({
+  selector: 'app-dashboard-home',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: ROUTED_PAGE_HOST,
+  imports: [
+    TranslateModule,
+    CoordinatorDashboardComponent,
+    StudentDashboardComponent,
+    ProfessorDashboardComponent,
+  ],
+  templateUrl: './dashboard-home.component.html',
+})
+export class DashboardHomeComponent {
+  private readonly auth = inject(AuthStateService);
+  private readonly currentUser = toSignal(this.auth.currentUser$, { initialValue: null });
+
+  readonly menuRole = computed(() => {
+    const user = this.currentUser();
+    return user ? resolveShellMenuRole(user.role) : null;
+  });
+
+  readonly titleKey = computed(() => {
+    const role = this.menuRole();
+    return role ? `DASHBOARD.HOME.${role}.TITLE` : 'DASHBOARD.PLACEHOLDER.TITLE';
+  });
+
+  readonly subtitleKey = computed(() => {
+    const role = this.menuRole();
+    return role ? `DASHBOARD.HOME.${role}.SUBTITLE` : 'DASHBOARD.PLACEHOLDER.MESSAGE';
+  });
+}

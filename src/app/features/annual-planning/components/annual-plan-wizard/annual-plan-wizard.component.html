@@ -1,0 +1,41 @@
+<section class="gap-lg mx-auto flex w-full max-w-[28rem] flex-col">
+  <h1 class="text-h2">{{ 'ANNUAL_PLANNING.WIZARD.TITLE' | translate }}</h1>
+  <p class="text-body-md text-text-secondary">{{ 'ANNUAL_PLANNING.WIZARD.INTRO' | translate }}</p>
+
+  <div class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+    @if (error()) {
+      <p-message severity="error" [text]="errorScope + '.' + error() | translate" />
+      @if (error() === 'already_exists') {
+        <a
+          [routerLink]="['/annual-planning', form.controls.year.value]"
+          class="text-primary text-body-md underline"
+        >
+          {{ 'ANNUAL_PLANNING.WIZARD.OPEN_EXISTING' | translate }}
+        </a>
+      }
+    }
+
+    <form class="gap-md flex flex-col" [formGroup]="form" (ngSubmit)="create()">
+      <div class="gap-xs flex flex-col">
+        <label for="year" class="text-label-md">
+          {{ 'ANNUAL_PLANNING.WIZARD.YEAR_LABEL' | translate }}
+        </label>
+        <input id="year" pInputText type="number" formControlName="year" class="w-40" />
+        <app-field-error [control]="form.controls.year" [submitted]="submitted()" />
+      </div>
+      <div class="gap-sm flex justify-end">
+        <p-button
+          type="button"
+          severity="secondary"
+          [label]="'COMMON.ACTIONS.CANCEL' | translate"
+          (onClick)="cancel()"
+        />
+        <p-button
+          type="submit"
+          [label]="'ANNUAL_PLANNING.WIZARD.CREATE' | translate"
+          [loading]="creating()"
+        />
+      </div>
+    </form>
+  </div>
+</section>

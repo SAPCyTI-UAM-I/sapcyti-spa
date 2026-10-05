@@ -1,0 +1,350 @@
+<section class="gap-lg mx-auto flex max-w-3xl flex-col" data-testid="survey-response">
+  <app-load-state
+    [loading]="loading()"
+    [error]="loadError()"
+    [empty]="false"
+    emptyMessage="ENROLLMENT_SURVEY.STATES.LOAD_ERROR"
+    errorMessage="ENROLLMENT_SURVEY.STATES.LOAD_ERROR"
+    (retry)="load()"
+  >
+    @if (data(); as data) {
+      <div class="gap-lg flex flex-col">
+        <header>
+          <h1 class="text-h2 text-primary font-bold">
+            {{ 'ENROLLMENT_SURVEY.RESPONSE.TITLE' | translate }} {{ data.survey.term }}
+          </h1>
+        </header>
+
+        @if (data.survey.introMessage) {
+          <p-message
+            severity="info"
+            data-testid="intro-message"
+            [text]="data.survey.introMessage"
+          />
+        }
+
+        @if (data.removedUeaClaves.length > 0) {
+          <p-message severity="warn" data-testid="removed-ueas-banner">
+            <span>
+              {{ 'ENROLLMENT_SURVEY.RESPONSE.REMOVED_BANNER' | translate }}
+              {{ data.removedUeaClaves.join(', ') }}
+            </span>
+          </p-message>
+        }
+
+        <article
+          class="border-outline bg-surface overflow-hidden rounded-2xl border shadow-sm"
+          data-testid="student-card"
+        >
+          <div
+            class="from-primary-container to-surface p-md sm:p-lg gap-md flex min-w-0 flex-col bg-gradient-to-br sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div class="gap-md flex min-w-0 items-center">
+              <div
+                class="bg-primary text-on-primary text-h2 shadow-card flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl font-bold"
+                aria-hidden="true"
+              >
+                {{ initials() }}
+              </div>
+              <div class="gap-xs flex min-w-0 flex-col">
+                <h2 class="text-h2 text-on-surface font-bold break-words">
+                  {{ data.student.fullName }}
+                </h2>
+                <span class="text-text-secondary gap-xs flex items-center">
+                  <i class="pi pi-id-card text-primary shrink-0" aria-hidden="true"></i>
+                  {{ data.student.enrollmentId }}
+                </span>
+              </div>
+            </div>
+            <app-catalog-tag
+              [value]="'ENROLLMENT_SURVEY.RESPONSE.PROGRAM_' + data.student.programType | translate"
+              severity="info"
+            />
+          </div>
+        </article>
+
+        @if (readonlyView()) {
+          <!-- Closed survey: read-only view of the submitted response. -->
+          <div class="border-outline bg-surface p-lg gap-md flex flex-col rounded-xl border">
+            @if (data.myResponse; as response) {
+              <app-profile-field [label]="'ENROLLMENT_SURVEY.RESPONSE.ACADEMIC_TERM' | translate">
+                {{ response.academicTerm }}
+              </app-profile-field>
+              <app-profile-field [label]="'ENROLLMENT_SURVEY.RESPONSE.MODE' | translate">
+                {{
+                  (response.mode === 'BLANK'
+                    ? 'ENROLLMENT_SURVEY.RESPONSE.MODE_BLANK'
+                    : 'ENROLLMENT_SURVEY.RESPONSE.MODE_ENROLL'
+                  ) | translate
+                }}
+              </app-profile-field>
+              <app-profile-field [label]="'ENROLLMENT_SURVEY.RESPONSE.TOTAL_UEAS' | translate">
+                {{ response.totalUeas }}
+              </app-profile-field>
+            } @else {
+              <p class="text-text-secondary text-center">
+                {{ 'ENROLLMENT_SURVEY.RESPONSE.CLOSED_NO_RESPONSE' | translate }}
+              </p>
+            }
+          </div>
+        } @else {
+          <form class="gap-lg flex flex-col" [formGroup]="form" (ngSubmit)="submit()">
+            @if (error()) {
+              <p-message severity="error" [text]="error() | domainError: errorScope" />
+            }
+
+            <div
+              class="border-outline bg-surface p-lg gap-md grid rounded-xl border md:grid-cols-2"
+            >
+              <div class="gap-xs flex flex-col">
+                <label for="academic-term" class="block md:min-h-[3rem]">
+                  {{ 'ENROLLMENT_SURVEY.RESPONSE.ACADEMIC_TERM' | translate }} *
+                </label>
+                <p-select
+                  inputId="academic-term"
+                  data-testid="academic-term"
+                  formControlName="academicTerm"
+                  [options]="termOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  [placeholder]="'ENROLLMENT_SURVEY.RESPONSE.ACADEMIC_TERM_PLACEHOLDER' | translate"
+                  fluid
+                />
+                <app-field-error [control]="form.controls.academicTerm" [submitted]="submitted()" />
+              </div>
+
+              <div class="gap-xs flex flex-col">
+                <label for="response-mode" class="block md:min-h-[3rem]">
+                  {{ 'ENROLLMENT_SURVEY.RESPONSE.MODE_QUESTION' | translate }} *
+                </label>
+                <app-i18n-select
+                  inputId="response-mode"
+                  controlName="mode"
+                  [options]="modeOptions"
+                  [placeholder]="'ENROLLMENT_SURVEY.RESPONSE.MODE_PLACEHOLDER' | translate"
+                />
+                <app-field-error [control]="form.controls.mode" [submitted]="submitted()" />
+              </div>
+            </div>
+
+            @if (isBlank()) {
+              <div
+                class="border-outline bg-surface-subtle text-text-secondary gap-sm p-lg flex items-center rounded-xl border"
+              >
+                <i class="pi pi-info-circle text-primary text-lg"></i>
+                <span>{{ 'ENROLLMENT_SURVEY.RESPONSE.BLANK_NOTE' | translate }}</span>
+              </div>
+            } @else {
+              @if (submitted() && form.hasError('ueaRequired')) {
+                <p-message
+                  severity="error"
+                  [text]="'ENROLLMENT_SURVEY.RESPONSE.UEA_REQUIRED' | translate"
+                />
+              }
+
+              <div class="gap-lg grid lg:grid-cols-2">
+                <!-- Available UEAs: searchable + sortable, add to selection. -->
+                <div
+                  class="border-outline bg-surface flex flex-col overflow-hidden rounded-xl border shadow-sm"
+                >
+                  <div class="border-outline p-md gap-sm flex flex-col border-b">
+                    <div class="gap-sm flex items-center justify-between">
+                      <h2 class="text-h3 font-semibold">
+                        {{ 'ENROLLMENT_SURVEY.RESPONSE.UEAS_TITLE' | translate }}
+                      </h2>
+                      <span
+                        class="bg-surface-subtle text-text-secondary text-caption px-sm py-xs rounded-full"
+                      >
+                        {{ availableUeas().length }}
+                      </span>
+                    </div>
+                    <div class="relative">
+                      <i
+                        class="pi pi-search text-text-secondary pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-sm"
+                      ></i>
+                      <input
+                        pInputText
+                        type="search"
+                        class="w-full !pl-10"
+                        data-testid="uea-search"
+                        [ngModel]="search()"
+                        [ngModelOptions]="{ standalone: true }"
+                        (ngModelChange)="search.set($event)"
+                        [placeholder]="'ENROLLMENT_SURVEY.RESPONSE.SEARCH_PLACEHOLDER' | translate"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="max-h-80 overflow-y-auto">
+                    <table class="text-body-md w-full border-collapse">
+                      <thead
+                        class="bg-surface-subtle text-label-md text-text-secondary sticky top-0 text-left"
+                      >
+                        <tr>
+                          <th class="p-sm" [attr.aria-sort]="ariaSort('clave')">
+                            <button
+                              type="button"
+                              class="gap-xs flex items-center"
+                              (click)="sortBy('clave')"
+                            >
+                              {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CLAVE' | translate }}
+                              <i class="pi {{ sortIcon('clave') }} text-[10px]"></i>
+                            </button>
+                          </th>
+                          <th class="p-sm" [attr.aria-sort]="ariaSort('nombre')">
+                            <button
+                              type="button"
+                              class="gap-xs flex items-center"
+                              (click)="sortBy('nombre')"
+                            >
+                              {{ 'ENROLLMENT_SURVEY.RESULTS.COL_NOMBRE' | translate }}
+                              <i class="pi {{ sortIcon('nombre') }} text-[10px]"></i>
+                            </button>
+                          </th>
+                          <th class="p-sm text-right">
+                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CREDITOS' | translate }}
+                          </th>
+                          <th class="p-sm"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (uea of availableUeas(); track uea.id) {
+                          <tr
+                            class="border-outline hover:bg-surface-subtle border-t transition-colors"
+                            [attr.data-testid]="'available-uea-' + uea.id"
+                          >
+                            <td class="p-sm text-primary font-semibold">{{ uea.clave }}</td>
+                            <td class="p-sm">{{ uea.nombre }}</td>
+                            <td class="p-sm text-right whitespace-nowrap">{{ uea.creditos }}</td>
+                            <td class="p-sm text-right">
+                              <p-button
+                                type="button"
+                                icon="pi pi-plus"
+                                severity="secondary"
+                                variant="text"
+                                [rounded]="true"
+                                size="small"
+                                [attr.data-testid]="'add-uea-' + uea.id"
+                                [ariaLabel]="'ENROLLMENT_SURVEY.RESPONSE.ADD' | translate"
+                                (onClick)="addUea(uea)"
+                              />
+                            </td>
+                          </tr>
+                        } @empty {
+                          <tr>
+                            <td colspan="4" class="text-text-secondary p-lg text-center">
+                              {{ 'ENROLLMENT_SURVEY.RESPONSE.EMPTY_AVAILABLE' | translate }}
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Selected UEAs: remove from selection. -->
+                <div
+                  class="border-outline bg-surface flex flex-col overflow-hidden rounded-xl border shadow-sm"
+                >
+                  <div
+                    class="border-outline p-md gap-sm flex items-center justify-between border-b"
+                  >
+                    <h2 class="text-h3 font-semibold">
+                      {{ 'ENROLLMENT_SURVEY.RESPONSE.SELECTED_TITLE' | translate }}
+                    </h2>
+                    <span
+                      class="bg-primary-container text-primary text-caption px-sm py-xs rounded-full font-semibold"
+                      data-testid="selected-count"
+                    >
+                      {{ selectedUeas().length }}
+                    </span>
+                  </div>
+
+                  <div class="max-h-80 flex-1 overflow-y-auto">
+                    <table class="text-body-md w-full border-collapse">
+                      <thead
+                        class="bg-surface-subtle text-label-md text-text-secondary sticky top-0 text-left"
+                      >
+                        <tr>
+                          <th class="p-sm">
+                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CLAVE' | translate }}
+                          </th>
+                          <th class="p-sm">
+                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_NOMBRE' | translate }}
+                          </th>
+                          <th class="p-sm text-right">
+                            {{ 'ENROLLMENT_SURVEY.RESULTS.COL_CREDITOS' | translate }}
+                          </th>
+                          <th class="p-sm"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (uea of selectedUeas(); track uea.id) {
+                          <tr
+                            class="border-outline hover:bg-surface-subtle border-t transition-colors"
+                            [attr.data-testid]="'selected-uea-' + uea.id"
+                          >
+                            <td class="p-sm text-primary font-semibold">{{ uea.clave }}</td>
+                            <td class="p-sm">{{ uea.nombre }}</td>
+                            <td class="p-sm text-right whitespace-nowrap">{{ uea.creditos }}</td>
+                            <td class="p-sm text-right">
+                              <p-button
+                                type="button"
+                                icon="pi pi-times"
+                                severity="danger"
+                                variant="text"
+                                [rounded]="true"
+                                size="small"
+                                [attr.data-testid]="'remove-uea-' + uea.id"
+                                [ariaLabel]="'ENROLLMENT_SURVEY.RESPONSE.REMOVE' | translate"
+                                (onClick)="removeUea(uea)"
+                              />
+                            </td>
+                          </tr>
+                        } @empty {
+                          <tr>
+                            <td colspan="4" class="text-text-secondary p-lg text-center">
+                              {{ 'ENROLLMENT_SURVEY.RESPONSE.EMPTY_SELECTED' | translate }}
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+
+                  @if (selectedUeas().length > 0) {
+                    <div
+                      class="border-outline bg-surface-subtle p-md text-body-md flex items-center justify-between border-t"
+                    >
+                      <span class="text-text-secondary">
+                        {{ 'ENROLLMENT_SURVEY.RESPONSE.TOTAL_CREDITS' | translate }}
+                      </span>
+                      <span class="font-semibold">
+                        {{ selectedCredits() }}
+                        {{ 'ENROLLMENT_SURVEY.RESPONSE.CREDITS' | translate }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <footer class="gap-sm flex justify-end">
+              <p-button
+                type="submit"
+                data-testid="submit-response"
+                [label]="'ENROLLMENT_SURVEY.RESPONSE.SUBMIT' | translate"
+                [loading]="submitting()"
+                [disabled]="submitting()"
+              />
+            </footer>
+          </form>
+        }
+      </div>
+    } @else {
+      <p class="text-text-secondary p-xl text-center">
+        {{ 'ENROLLMENT_SURVEY.RESPONSE.NO_ACTIVE' | translate }}
+      </p>
+    }
+  </app-load-state>
+</section>

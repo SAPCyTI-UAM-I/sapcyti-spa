@@ -1,0 +1,86 @@
+<section class="gap-lg flex flex-col">
+  <div class="gap-md flex flex-wrap items-center justify-between">
+    <div class="gap-xs flex flex-col">
+      <h1 class="text-h2">{{ 'TRIMESTRAL_PLANNING.LIST.TITLE' | translate }}</h1>
+      <p class="text-body-md text-text-secondary">
+        {{ 'TRIMESTRAL_PLANNING.LIST.SUBTITLE' | translate }}
+      </p>
+    </div>
+    <p-button
+      [label]="'TRIMESTRAL_PLANNING.LIST.NEW' | translate"
+      icon="pi pi-plus"
+      routerLink="new"
+      data-testid="new-trimestral-plan"
+    />
+  </div>
+
+  <div class="border-outline bg-surface rounded-xl border">
+    <app-load-state
+      [loading]="loading()"
+      [error]="loadError()"
+      [empty]="plans().length === 0"
+      emptyMessage="TRIMESTRAL_PLANNING.LIST.EMPTY"
+      errorMessage="TRIMESTRAL_PLANNING.STATES.LOAD_ERROR"
+      (retry)="load()"
+    >
+      <div class="md:overflow-x-auto">
+        <table class="block w-full border-collapse md:table md:min-w-[48rem]">
+          <thead class="bg-table-header hidden text-left md:table-header-group">
+            <tr>
+              <th class="p-md">{{ 'TRIMESTRAL_PLANNING.LIST.TERM' | translate }}</th>
+              <th class="p-md">{{ 'TRIMESTRAL_PLANNING.LIST.STATUS' | translate }}</th>
+              <th class="p-md">{{ 'TRIMESTRAL_PLANNING.LIST.GROUPS' | translate }}</th>
+              <th class="p-md">{{ 'TRIMESTRAL_PLANNING.LIST.BLANKS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-outline block divide-y md:table-row-group md:divide-y-0">
+            @for (plan of plans(); track plan.id) {
+              <tr
+                class="hover:bg-table-row-hover p-md gap-md md:border-outline grid grid-cols-2 md:table-row md:border-t"
+              >
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'TRIMESTRAL_PLANNING.LIST.TERM' | translate }}
+                  </span>
+                  <a
+                    [routerLink]="[plan.id]"
+                    class="text-primary text-body-md font-medium hover:underline"
+                    [attr.data-testid]="'open-plan-' + plan.id"
+                  >
+                    {{ plan.term }}
+                  </a>
+                  @if (plan.outdated) {
+                    <span class="text-caption text-warning ml-sm">
+                      {{ 'TRIMESTRAL_PLANNING.DETAIL.OUTDATED' | translate }}
+                    </span>
+                  }
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'TRIMESTRAL_PLANNING.LIST.STATUS' | translate }}
+                  </span>
+                  <app-catalog-tag
+                    [value]="'TRIMESTRAL_PLANNING.STATUS.' + plan.status | translate"
+                    [severity]="statusTagSeverity(plan.status)"
+                  />
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'TRIMESTRAL_PLANNING.LIST.GROUPS' | translate }}
+                  </span>
+                  {{ plan.groupCount }}
+                </td>
+                <td class="md:p-md md:table-cell">
+                  <span class="text-caption text-text-secondary block md:hidden">
+                    {{ 'TRIMESTRAL_PLANNING.LIST.BLANKS' | translate }}
+                  </span>
+                  {{ plan.blankCount }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-load-state>
+  </div>
+</section>

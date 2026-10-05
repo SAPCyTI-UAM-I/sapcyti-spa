@@ -88,6 +88,8 @@ pnpm run format
 
 El proyecto usa [ESLint](https://eslint.org/) con [`@angular-eslint`](https://github.com/angular-eslint/angular-eslint) para análisis estático de código TypeScript y plantillas HTML. La configuración se encuentra en `eslint.config.mjs`.
 
+Incluye la regla local **`sapcyti/no-cross-feature-imports`**, que impide que un feature importe código de otro feature (ver [`conventions.md`](conventions.md) sección 17). `pnpm run lint` también ejecuta Prettier e `i18n:check`.
+
 Para analizar el proyecto:
 
 ```bash
@@ -100,6 +102,24 @@ Para corregir automáticamente los errores que ESLint pueda resolver:
 ng lint --fix
 ```
 
+## Internacionalización (i18n)
+
+Traducciones en `src/assets/i18n/es.json` y `en.json`. El proyecto verifica que ambos archivos tengan **exactamente el mismo conjunto de claves**.
+
+Verificar paridad (incluido en `pnpm run lint`):
+
+```bash
+pnpm run i18n:check
+```
+
+Ordenar JSON y regenerar tipos TypeScript (`I18nKey` en `src/app/core/i18n/i18n-keys.generated.ts`) tras añadir o renombrar claves:
+
+```bash
+pnpm run i18n:sync
+```
+
+Script: `scripts/i18n-check.mjs` (flags `--sort`, `--types`). Convenciones detalladas en [`conventions.md`](conventions.md) (sección 10 — i18n).
+
 ## Compilación (Build)
 
 Para compilar el proyecto:
@@ -108,7 +128,47 @@ Para compilar el proyecto:
 ng build
 ```
 
-Esto compilará el proyecto y almacenará los artefactos generados en el directorio `dist/`.
+Esto compilará el proyecto y almacenará los artefactos generados en el directorio `dist/sapcyti-spa/browser`.
+
+## Docker / full stack (SPEC-010)
+
+The production image is built from this repo and orchestrated by **`sapcyti-infra/local-dev/docker-compose.stack.yml`** (service `edge`). Clone layout:
+
+```text
+SAPCyTI/
+├── sapcyti-infra/  ← docker compose -f local-dev/docker-compose.stack.yml up --build
+├── sapcyti-api/    ← build context ../../sapcyti-api
+└── sapcyti-spa/    ← build context ../../sapcyti-spa
+```
+
+### Build edge image only
+
+```bash
+docker build -t sapcyti-spa:local .
+```
+
+Artifacts: `dist/sapcyti-spa/browser` copied into Nginx; [`docker/nginx/default.conf.template`](docker/nginx/default.conf.template) is rendered at startup via `API_URL` (default `http://api:8080`) and proxies `/api/` to the backend.
+
+### Run with the full stack
+
+From `sapcyti-infra/`:
+
+```bash
+cp local-dev/.env.example local-dev/.env   # or Copy-Item on Windows
+docker compose -f local-dev/docker-compose.stack.yml up --build
+```
+
+Open [http://localhost](http://localhost). Production build uses `apiBaseUrl: '/api'` in [`src/environments/environment.prod.ts`](src/environments/environment.prod.ts) (same-origin via Nginx).
+
+### Optional Playwright shell smoke
+
+With the stack running:
+
+```bash
+pnpm exec playwright test e2e/smoke-shell.spec.ts
+```
+
+Asserts `[data-testid="app-shell"]` on the root shell container.
 
 ## Pruebas unitarias
 
@@ -131,3 +191,22 @@ Posteriormente, podremos ejecutar:
 ```bash
 ng e2e
 ```
+
+## Versionado del sistema
+
+La versión canónica de SAPCyTI está centralizada en `package.json` y se consume en la aplicación a través de `src/app/core/config/app-version.ts` (`APP_VERSION`).
+
+Para incrementar la versión semántica:
+
+```bash
+# Para versiones de corrección (parche, ej. 0.1.0 -> 0.1.1):
+pnpm version patch --no-git-tag-version
+
+# Para nuevas funcionalidades (menor, ej. 0.1.0 -> 0.2.0):
+pnpm version minor --no-git-tag-version
+
+# Para versiones mayores con cambios incompatibles (mayor, ej. 0.1.0 -> 1.0.0):
+pnpm version major --no-git-tag-version
+```
+
+O bien editando directamente el campo `"version"` en `package.json`. La UI (incluyendo la pantalla de inicio de sesión) reflejará el cambio automáticamente.

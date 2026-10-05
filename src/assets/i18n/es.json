@@ -1,0 +1,1018 @@
+{
+  "ACADEMIC_CATALOG": {
+    "COLUMNS": {
+      "ACTIONS": "Acciones",
+      "ADMISSION": "Ingreso",
+      "EMAIL": "Correo",
+      "EMPLOYEE_NUMBER": "Número de empleado",
+      "ENROLLMENT": "Matrícula",
+      "NAME": "Nombre",
+      "PROGRAM": "Programa",
+      "STATUS": "Estado"
+    },
+    "DEGREE_LEVELS": {
+      "DOCTORADO": "Doctorado",
+      "LICENCIATURA": "Licenciatura",
+      "MAESTRIA": "Maestría"
+    },
+    "ERRORS": {
+      "clave_invalid_format": "La clave debe contener solo dígitos.",
+      "duplicate_advisor_ids": "No puede repetir el mismo asesor más de una vez.",
+      "duplicate_email": "El correo electrónico ya está registrado.",
+      "duplicate_employee": "El número de empleado ya está registrado.",
+      "duplicate_enrollment": "La matrícula ya está registrada.",
+      "employee_required_for_interno": "El número de empleado es obligatorio para profesores internos.",
+      "file_format_invalid": "Formato de archivo inválido, utilice la plantilla proporcionada.",
+      "graduate_program_not_found": "No se encontró el programa de posgrado solicitado.",
+      "invalid_type_change": "Un profesor interno no puede cambiar a externo.",
+      "load_failed": "No se pudo cargar la información.",
+      "nemp_immutable": "El número económico no puede modificarse.",
+      "professor_already_active": "El profesor ya está activo.",
+      "professor_already_inactive": "El profesor ya está inactivo.",
+      "professor_has_active_assignments": "Debe reasignar tutor o asesores antes de dar de baja al profesor.",
+      "professor_not_found": "No se encontró el profesor solicitado.",
+      "reference_not_found": "No se encontró el programa académico solicitado.",
+      "sabbatical_date_order": "La fecha final del sabático debe ser posterior o igual a la inicial.",
+      "server": "Ocurrió un error al guardar la información.",
+      "uea_already_active": "La UEA ya está activa.",
+      "uea_already_exists": "Esta UEA ya ha sido registrada.",
+      "uea_already_inactive": "La UEA ya está desactivada.",
+      "validation": "Revise los datos del formulario."
+    },
+    "FIELDS": {
+      "ACTIVE": "Estado del alumno",
+      "ADMISSION_DATE": "Fecha de ingreso",
+      "ADMISSION_TERM": "Trimestre de ingreso",
+      "BIRTH_DATE": "Fecha de nacimiento",
+      "COMMISSION_MEMBER": "Miembro de comisión",
+      "EMAIL": "Correo electrónico",
+      "EMPLOYEE_NUMBER": "Número de empleado",
+      "ENROLLMENT_ID": "Matrícula",
+      "FIRST_LAST_NAME": "Apellido paterno",
+      "FIRST_NAME": "Nombre(s)",
+      "LAST_DEGREE_OBTAINED": "Último grado obtenido",
+      "NATIONALITY": "Nacionalidad",
+      "NEXT_SABBATICAL_END": "Fin del próximo sabático",
+      "NEXT_SABBATICAL_START": "Inicio del próximo sabático",
+      "PHONE": "Teléfono",
+      "PHONE_EXTENSION": "Extensión",
+      "PROGRAM_TYPE": "Tipo de programa",
+      "SECOND_LAST_NAME": "Apellido materno",
+      "UNDERGRADUATE_DEGREE": "Universidad de procedencia"
+    },
+    "FILTERS": {
+      "ALL": "Todos",
+      "PROGRAM_TYPE": "Tipo de programa",
+      "STATUS": "Estado"
+    },
+    "HISTORY": {
+      "BLANK": "Inscripción en blanco: sin UEAs ni grupo.",
+      "DECLARED_TERM": "Trimestre declarado: {{term}}",
+      "EMPTY": "El alumno aún no tiene historial de inscripción.",
+      "MANUAL_NOT_SURVEYED": "No respondió la encuesta; agregado en la planeación",
+      "PENDING": "Plan trimestral pendiente",
+      "TITLE": "Historial de inscripción",
+      "UEA_STATUS": {
+        "ASSIGNED": "Asignada",
+        "PENDING": "Pendiente",
+        "REMOVED_FROM_FINAL_PLAN": "Retirada del plan final"
+      }
+    },
+    "PAGINATION": {
+      "TOTAL": "Total"
+    },
+    "PROFESSORS": {
+      "BREADCRUMB": {
+        "DETAIL": "Detalle del profesor",
+        "EDIT": "Editar profesor"
+      },
+      "CREATE": {
+        "SUBTITLE": "Complete los datos institucionales y confirme el alta.",
+        "TITLE": "Registrar profesor"
+      },
+      "DEACTIVATE": {
+        "ACTION": "Dar de baja",
+        "CONFIRM_MESSAGE": "El profesor dejará de estar disponible para nuevas asignaciones y no podrá iniciar sesión. Esta acción conserva su historial académico.",
+        "CONFIRM_TITLE": "Confirmar baja del profesor",
+        "OPEN_GROUP": "{{term}} · {{clave}} · grupo {{grupo}}",
+        "OPEN_GROUPS_TITLE": "Debe retirar al profesor de estos grupos abiertos:",
+        "SUCCESS": "Profesor dado de baja correctamente.",
+        "TUTOR_OR_ADVISOR_BLOCKER": "El profesor conserva tutorías o asesorías activas que deben reasignarse."
+      },
+      "DETAIL": {
+        "CHANGE_PASSWORD": "Cambiar contraseña",
+        "EDIT_ACTION": "Editar",
+        "NO_EMPLOYEE_NUMBER": "No aplica",
+        "NO_SABBATICAL": "Sin fecha registrada",
+        "PERSONAL_SECTION": "Información del profesor",
+        "TITLE": "Detalle del profesor"
+      },
+      "EDIT": {
+        "NEMP_LOCKED": "El número económico no puede modificarse una vez asignado.",
+        "SAVED": "Profesor actualizado correctamente.",
+        "SUBTITLE": "Actualice los datos del profesor y guarde los cambios.",
+        "TITLE": "Editar profesor"
+      },
+      "FIELDS": {
+        "PROFESSOR_TYPE": "Tipo de profesor"
+      },
+      "LIST": {
+        "CREATE": "Crear profesor",
+        "EMPTY": "No se encontraron profesores.",
+        "SEARCH": "Buscar por nombre, correo o número de empleado",
+        "SUBTITLE": "Consulte y administre los profesores del posgrado.",
+        "TITLE": "Profesores"
+      },
+      "RESTORE": {
+        "ACTION": "Restaurar",
+        "MESSAGE": "¿Restaurar a {{name}}? Volverá a estar disponible para asignaciones.",
+        "SUCCESS": "Profesor restaurado correctamente.",
+        "TITLE": "Confirmar restauración"
+      },
+      "TYPES": {
+        "EXTERNO": "Externo",
+        "INTERNO": "Interno"
+      }
+    },
+    "PROGRAM_TYPES": {
+      "DOCTORADO": "Doctorado",
+      "MAESTRIA": "Maestría"
+    },
+    "STATES": {
+      "LOAD_ERROR": "No fue posible cargar el catálogo."
+    },
+    "STATUS": {
+      "ACTIVE": "Activo",
+      "INACTIVE": "Inactivo"
+    },
+    "STUDENT_PROGRAM": {
+      "BREADCRUMB": {
+        "EDIT": "Editar programa",
+        "VIEW": "Programa académico"
+      },
+      "CATALOG": {
+        "AREAS": {
+          "AI": "Inteligencia artificial",
+          "BIG_DATA": "Manejo de datos masivos (Big data)",
+          "DIGITAL_SIGNAL_PROCESSING": "Procesamiento digital de señales en las comunicaciones",
+          "HIGH_PERFORMANCE_COMPUTING": "Supercómputo (cómputo de alto rendimiento)",
+          "IOT": "Internet de las cosas",
+          "NETWORK_APPLICATIONS": "Aplicaciones de redes",
+          "NETWORK_CODING": "Codificación de red",
+          "ROUTING": "Encaminamiento (ruteo)",
+          "SEMANTIC_WEB": "Web semántica",
+          "SOFTWARE_DEFINED_NETWORKS": "Redes definidas por software",
+          "WIRELESS_COMMUNICATIONS": "Comunicaciones inalámbricas"
+        },
+        "LINES": {
+          "COMPUTER_SCIENCE": "Ciencias e Ingeniería de la Computación",
+          "NETWORKS": "Redes de Comunicaciones"
+        }
+      },
+      "CHOOSER": {
+        "SUBTITLE": "Seleccione el programa que desea consultar.",
+        "TITLE": "Elegir programa"
+      },
+      "EDIT": {
+        "TITLE": "Editar programa académico"
+      },
+      "ERRORS": {
+        "date_order": "La fecha de egreso debe ser posterior o igual a la de ingreso.",
+        "duplicate_advisor_ids": "No puede repetir el mismo asesor más de una vez.",
+        "load_failed": "No se pudo cargar la información del programa académico.",
+        "no_program": "Este alumno no tiene un programa académico registrado.",
+        "professor_not_found": "No se encontró el profesor seleccionado.",
+        "program_not_found": "No se encontró el programa académico.",
+        "server": "Ocurrió un error al guardar el programa.",
+        "student_not_found": "No se encontró el alumno solicitado.",
+        "validation": "Revise los datos del formulario.",
+        "withdrawal_reason_required": "Indique el motivo de baja cuando el estado es Baja."
+      },
+      "FIELDS": {
+        "ADVISORS": "Asesores",
+        "GRADUATION_DATE": "Fecha de egreso",
+        "LINE_OF_KNOWLEDGE": "Línea de conocimiento",
+        "PROFESSOR_SEARCH": "Buscar por nombre",
+        "RESEARCH_AREA": "Área de investigación",
+        "TUTOR": "Tutor",
+        "UNCLASSIFIED": "Sin clasificar",
+        "WITHDRAWAL_REASON": "Motivo de baja"
+      },
+      "STATUS": {
+        "BAJA": "Baja",
+        "EGRESADO": "Egresado",
+        "EN_INVESTIGACION": "En investigación",
+        "SUSPENSION": "Suspensión"
+      },
+      "TOAST": {
+        "SAVED": "Programa actualizado correctamente."
+      },
+      "VIEW": {
+        "EDIT_ACTION": "Editar programa",
+        "IDENTIFICATION": "Identificación",
+        "METADATA": "Información del programa",
+        "NO_ADVISORS": "Sin asesores asignados",
+        "NO_TUTOR": "Sin tutor asignado",
+        "TITLE": "Programa académico"
+      }
+    },
+    "STUDENTS": {
+      "BREADCRUMB": {
+        "DETAIL": "Detalles del alumno",
+        "EDIT": "Editar alumno"
+      },
+      "CREATE": {
+        "ACADEMIC_SECTION": "Información académica",
+        "PERSONAL_SECTION": "Datos personales",
+        "SUBTITLE": "Complete los datos y confirme el alta. La contraseña se generará automáticamente.",
+        "TITLE": "Registrar alumno"
+      },
+      "DETAIL": {
+        "ACADEMIC_SECTION": "Información académica",
+        "CHANGE_PASSWORD": "Cambiar contraseña",
+        "CONTACT_SECTION": "Información de contacto",
+        "EDIT_ACTION": "Editar información",
+        "NO_ADMISSION_TERM": "Sin trimestre de ingreso",
+        "NO_ADVISORS": "Sin asesores asignados",
+        "NO_GRADUATION_DATE": "Sin fecha de egreso",
+        "NO_TUTOR": "Sin tutor asignado",
+        "PERSONAL_SECTION": "Datos personales",
+        "PROGRAM_SECTION": "Programa académico",
+        "TITLE": "Detalles del alumno"
+      },
+      "EDIT": {
+        "SAVED": "Alumno actualizado correctamente.",
+        "SUBTITLE": "Modifique los datos del alumno y su programa académico.",
+        "TITLE": "Editar alumno"
+      },
+      "LIST": {
+        "CREATE": "Crear alumno",
+        "EMPTY": "No se encontraron alumnos.",
+        "SEARCH": "Buscar por nombre, correo o matrícula",
+        "SUBTITLE": "Consulte y administre los alumnos del posgrado.",
+        "TITLE": "Alumnos",
+        "VIEW_PROGRAM": "Ver programa"
+      }
+    },
+    "TEMP_PASSWORD": {
+      "CLOSE": "Entendido",
+      "COPIED": "Contraseña copiada.",
+      "COPY": "Copiar al portapapeles",
+      "MESSAGE": "Esta contraseña temporal se mostrará una sola vez. Cópiela antes de continuar.",
+      "SUBTITLE": "La cuenta fue creada correctamente",
+      "TITLE": "Registro completado",
+      "WARNING": "Por seguridad, la contraseña no volverá a mostrarse."
+    },
+    "UEAS": {
+      "ACTIONS": {
+        "EDIT": "Editar",
+        "REACTIVATE": "Reactivar"
+      },
+      "BULK": {
+        "BROWSE": "Seleccionar archivo",
+        "ERRORS": {
+          "DUPLICATE_CLAVE": "Clave duplicada",
+          "INVALID_CREDITS": "Créditos inválidos (debe ser entero mayor a 0)",
+          "INVALID_FORMAT": "Formato inválido",
+          "MISSING_FIELD": "Campo obligatorio faltante"
+        },
+        "FILE_LABEL": "Archivo (.xlsx o .csv)",
+        "NO_FILE": "Ningún archivo seleccionado",
+        "ROW_LABEL": "Fila",
+        "SUMMARY_ERRORS": "{{count}} errores detectados:",
+        "SUMMARY_SUCCESS": "{{count}} creadas, 0 errores",
+        "TEMPLATE": "Descargar plantilla CSV",
+        "TEMPLATE_LABEL": "Descargar plantilla",
+        "TITLE": "Carga masiva de UEAs",
+        "UPLOAD": "Subir archivo"
+      },
+      "CREATE": {
+        "SAVED": "UEA registrada correctamente.",
+        "SUBTITLE": "Complete los datos de la nueva materia.",
+        "TITLE": "Registrar UEA"
+      },
+      "DEACTIVATE": {
+        "ACTION": "Desactivar",
+        "CONTINUE_QUESTION": "¿Deseas continuar?",
+        "IN_ACTIVE_SURVEY": "La UEA está incluida en un sondeo activo.",
+        "SUCCESS": "UEA desactivada correctamente.",
+        "TITLE": "Confirmar desactivación",
+        "WARNING": "La UEA dejará de aparecer en las planeaciones anuales en Borrador. Esta acción conserva el histórico."
+      },
+      "EDIT": {
+        "BACK": "Volver al listado",
+        "BREADCRUMB": "Editar",
+        "CLAVE_READONLY": "La clave no se puede modificar.",
+        "NOMBRE_READONLY": "El nombre no se puede modificar.",
+        "SAVED": "UEA actualizada correctamente.",
+        "SUBTITLE": "Modifique los datos de la materia.",
+        "TITLE": "Editar UEA"
+      },
+      "FIELDS": {
+        "CLAVE": "Clave",
+        "CREDITOS": "Créditos",
+        "H_PRAC": "H. Práctica",
+        "H_TEOR": "H. Teoría",
+        "MODALIDAD": "Modalidad",
+        "NOMBRE": "Nombre UEA",
+        "TIPO": "Tipo",
+        "TIPO_FORMACION": "Tipo formación"
+      },
+      "FORMATION_TYPES": {
+        "BASICA": "Básica",
+        "COMPLEMENTARIA": "Complementaria",
+        "INVESTIGACION": "Investigación"
+      },
+      "LIST": {
+        "BULK": "Carga masiva",
+        "CREATE": "Registrar UEA",
+        "EMPTY": "No se encontraron UEAs en el catálogo.",
+        "SEARCH": "Buscar por clave o nombre",
+        "SUBTITLE": "Consulte y registre las Unidades de Enseñanza Aprendizaje del posgrado.",
+        "TITLE": "Catálogo de UEAs"
+      },
+      "MODALITY": {
+        "MIXTA": "Mixta"
+      },
+      "RESTORE": {
+        "MESSAGE": "¿Reactivar la UEA {{clave}}? Volverá a estar disponible para las planeaciones.",
+        "SUCCESS": "UEA reactivada correctamente.",
+        "TITLE": "Confirmar reactivación"
+      },
+      "TYPES": {
+        "OBLIGATORIA": "Obligatoria",
+        "OPTATIVA": "Optativa"
+      }
+    },
+    "WIZARD": {
+      "CONFIRM_TITLE": "Revise la información antes de confirmar",
+      "INSTITUTIONAL": "Datos institucionales",
+      "STEP_1": "Datos personales",
+      "STEP_2": "Información académica",
+      "STEP_3": "Confirmación"
+    }
+  },
+  "ACCOUNT": {
+    "PASSWORD": {
+      "ADMIN_ACTION": "Cambiar contraseña",
+      "ADMIN_DESCRIPTION": "Defina una nueva contraseña para el usuario seleccionado.",
+      "ADMIN_TITLE": "Cambiar contraseña de usuario",
+      "CONFIRM": "Confirmar nueva contraseña",
+      "CURRENT": "Contraseña actual",
+      "ERRORS": {
+        "current_password": "La contraseña actual es incorrecta.",
+        "server": "No fue posible cambiar la contraseña.",
+        "user_not_found": "No se encontró el usuario solicitado."
+      },
+      "NEW": "Nueva contraseña",
+      "NEW_MIN_LENGTH": "Debe tener al menos 8 caracteres. Faltan {{remaining}}.",
+      "SELF_DESCRIPTION": "Ingrese su contraseña actual y defina una nueva.",
+      "SELF_TITLE": "Cambiar mi contraseña",
+      "SUBMIT": "Cambiar contraseña",
+      "SUCCESS": "La contraseña fue actualizada.",
+      "TARGET_USER": "Usuario objetivo"
+    },
+    "PROFILE": {
+      "BACK": "Regresar al inicio",
+      "TITLE": "Mi perfil"
+    }
+  },
+  "ANNUAL_PLANNING": {
+    "ACTIONS": {
+      "ARCHIVE": "Archivar",
+      "FINISH": "Marcar como completada",
+      "REOPEN": "Reabrir",
+      "UNARCHIVE": "Desarchivar"
+    },
+    "DETAIL": {
+      "BACK": "Volver a planeaciones",
+      "BREADCRUMB": "Planeación",
+      "COMPARE": "Comparar con Excel",
+      "COMPARE_HINT": "Sube el .xlsx de la oferta para revisar diferencias contra el catálogo activo. Es opcional y no modifica la planeación.",
+      "COMPARE_TITLE": "Comparar contra el catálogo",
+      "CONFIRM_MESSAGE": "¿Confirmas el cambio de estado de la planeación?",
+      "CONFIRM_TITLE": "Confirmar cambio de estado",
+      "DOWNLOAD": "Descargar Excel",
+      "REOPEN_WARNING": "Acción destructiva: al reabrir, el plan deja de estar congelado y se sincroniza con el catálogo actual. Esto puede alterar datos históricos: los nombres se actualizarán y las UEAs desactivadas desaparecerán junto con sus valores capturados, sin posibilidad de recuperarlos.",
+      "RUN_COMPARE": "Comparar",
+      "SAVE_PANEL_HINT": "Guardar = borrador. Terminada = snapshot.",
+      "SAVE_PANEL_TITLE": "Edición",
+      "STATUS_ACTIONS_HINT": "Cuando termines de revisar la planeación, cambia aquí su estado.",
+      "TITLE": "Planeación",
+      "TOOLS_PANEL_HINT": "Exporta o compara.",
+      "TOOLS_PANEL_TITLE": "Excel"
+    },
+    "ERRORS": {
+      "already_exists": "Ya existe una planeación para este año.",
+      "file_format_invalid": "El archivo no tiene el formato esperado.",
+      "invalid_transition": "Transición de estado no permitida.",
+      "not_editable": "Solo se puede editar una planeación en Borrador.",
+      "not_found": "No se encontró la planeación.",
+      "server": "Ocurrió un error inesperado. Inténtalo de nuevo.",
+      "validation": "Ocurrió un error al guardar la información."
+    },
+    "GRID": {
+      "CLAVE": "Clave",
+      "EMPTY": "Vacío",
+      "GROUPS": "Grupos",
+      "INVALID_CELLS": "Hay celdas con valores inválidos. Corrígelas antes de guardar.",
+      "MODALITY": "Modalidad",
+      "NAME": "Nombre UEA",
+      "QUOTA": "Cupo",
+      "SAVED": "Planeación guardada."
+    },
+    "LEGEND": {
+      "O": "Optativa",
+      "STAR": "Se abrirá conforme a demanda",
+      "X": "Obligatoria",
+      "X_O": "Obligatoria u optativa"
+    },
+    "LIST": {
+      "EMPTY": "Aún no hay planeaciones registradas.",
+      "NEW": "Nueva planeación",
+      "STATUS": "Estado",
+      "SUBTITLE": "Consulta y edita la oferta anual de UEAs por año.",
+      "TITLE": "Planeación anual",
+      "YEAR": "Año"
+    },
+    "MODALITY": {
+      "MIXTA": "Mixta",
+      "PRESENCIAL": "Presencial",
+      "VIRTUAL": "Virtual"
+    },
+    "STATES": {
+      "LOAD_ERROR": "No se pudieron cargar las planeaciones."
+    },
+    "STATUS": {
+      "ARCHIVADA": "Archivada",
+      "BORRADOR": "Borrador",
+      "TERMINADA": "Terminada"
+    },
+    "WIZARD": {
+      "BROWSE": "Elegir archivo",
+      "CLEAN": "El archivo coincide con el catálogo. Puedes crear la planeación.",
+      "CREATE": "Crear planeación",
+      "DIFFERENCES_HINT": "Se encontraron diferencias. Puedes corregirlas en el catálogo y volver a revisar, o continuar de todos modos.",
+      "INTRO": "Se crea con las UEAs activas del catálogo. Si existe la planeación del año anterior, se copian sus valores; si no, queda en blanco.",
+      "MISSING_IN_CATALOG": "Claves en el archivo que no están en el catálogo activo",
+      "MISSING_IN_FILE": "UEAs activas que faltan en el archivo",
+      "MISSING_PROGRAM": "Columna faltante",
+      "NAME_MISMATCHES": "Nombres distintos entre catálogo y archivo",
+      "NO_FILE": "Ningún archivo seleccionado",
+      "OPEN_EXISTING": "Abrir la planeación existente",
+      "PROGRAM_NOTICE": "Avisos de columnas de posgrado",
+      "RUN_CHECK": "Revisar archivo",
+      "STEP_CHECK": "Chequeo",
+      "STEP_REVIEW": "Revisión",
+      "STEP_YEAR": "Año",
+      "TITLE": "Nueva planeación anual",
+      "UNKNOWN_PROGRAM": "Columna no reconocida",
+      "UPLOAD_HINT": "Sube el archivo .xlsx de la oferta para revisar las UEAs contra el catálogo.",
+      "YEAR_LABEL": "Año de la planeación"
+    }
+  },
+  "AUTH": {
+    "FORGOT_PASSWORD": {
+      "BACK_TO_LOGIN": "Volver al inicio de sesión",
+      "DESCRIPTION": "Ingrese su dirección de correo electrónico. Si existe en el sistema, recibirá un mensaje con instrucciones para restablecer su contraseña.",
+      "EMAIL": "Correo electrónico",
+      "EMAIL_PLACEHOLDER": "usuario@correo.uam.mx",
+      "ERROR_INVALID_EMAIL": "Ingrese una dirección de correo válida.",
+      "ERROR_REQUIRED": "Este campo es obligatorio",
+      "SUBMIT": "Enviar correo",
+      "TITLE": "Recuperar contraseña"
+    },
+    "FORGOT_PASSWORD_SENT": {
+      "BACK_TO_LOGIN": "Volver al inicio de sesión",
+      "MESSAGE": "Un correo electrónico con instrucciones para recuperar su contraseña ha sido enviado a la dirección indicada, si es que existe en el sistema.",
+      "SPAM_HINT": "Revise también su bandeja de correo no deseado.",
+      "TITLE": "Correo enviado"
+    },
+    "LOGIN": {
+      "BRAND": "SAPCyTI",
+      "CLEAR": "Limpiar",
+      "EMAIL": "Correo electrónico",
+      "EMAIL_PLACEHOLDER": "alumno@correo.uam.mx",
+      "ERROR_COOLDOWN": "Demasiados intentos. Espere {seconds} segundos antes de intentar de nuevo.",
+      "ERROR_INVALID_CREDENTIALS": "Credenciales inválidas. Verifique su correo y contraseña.",
+      "ERROR_REQUIRED": "Este campo es obligatorio",
+      "FOOTER": {
+        "COPYRIGHT": "© 2026 SAPCyTI",
+        "PRIVACY": "Privacidad",
+        "SUPPORT": "Soporte",
+        "SUPPORT_BANNER": {
+          "CLOSE": "Cerrar",
+          "COPY": "Copiar correo",
+          "MESSAGE": "Para dudas, asistencia o incidencias de acceso, contacta al equipo de soporte mediante:",
+          "TITLE": "Soporte técnico"
+        },
+        "TERMS": "Términos"
+      },
+      "FORGOT_PASSWORD": "¿Olvidó su contraseña?",
+      "MOCK_HINT": {
+        "TITLE": "Modo demo (sin backend). Use cualquiera de estas cuentas:"
+      },
+      "PASSWORD": "Contraseña",
+      "REMEMBER_ME": "Recordar sesión",
+      "SUBMIT": "Iniciar sesión",
+      "SUBTITLE": "Portal de Posgrado — PCyTI UAM",
+      "TITLE": "Iniciar sesión"
+    },
+    "PLACEHOLDER": {
+      "MESSAGE": "Inicio de sesión — próximamente (Fase 6)",
+      "TITLE": "Autenticación"
+    },
+    "RESET_PASSWORD": {
+      "BACK_TO_LOGIN": "Volver al inicio de sesión",
+      "CONFIRM_PASSWORD": "Confirmar contraseña",
+      "CONFIRM_PASSWORD_PLACEHOLDER": "Repita su nueva contraseña",
+      "DESCRIPTION": "Ingrese su nueva contraseña. Debe tener al menos 8 caracteres.",
+      "EXPIRED_TOKEN": "El enlace de recuperación ha expirado.",
+      "INVALID_TOKEN": "El enlace de recuperación no es válido o ya fue utilizado.",
+      "NEW_PASSWORD": "Nueva contraseña",
+      "NEW_PASSWORD_PLACEHOLDER": "Ingrese su nueva contraseña",
+      "PASSWORD_MIN_LENGTH": "Debe tener al menos 8 caracteres. Faltan {{remaining}}.",
+      "REQUEST_NEW_LINK": "Solicitar un nuevo enlace",
+      "SUBMIT": "Restablecer contraseña",
+      "SUCCESS": "Su contraseña ha sido restablecida correctamente.",
+      "TITLE": "Restablecer contraseña"
+    }
+  },
+  "BREADCRUMB": {
+    "ADVISOR_APPROVAL": "Aprobaciones",
+    "NEW": "Nuevo",
+    "PASSWORD": "Contraseña",
+    "PROFILE": "Perfil"
+  },
+  "COMMON": {
+    "ACTIONS": {
+      "BACK": "Regresar",
+      "CANCEL": "Cancelar",
+      "CLEAR": "Limpiar",
+      "CLOSE": "Cerrar",
+      "CONFIRM": "Confirmar",
+      "CONTINUE": "Continuar",
+      "DELETE": "Eliminar",
+      "EDIT": "Editar",
+      "NEXT": "Siguiente",
+      "RETRY": "Reintentar",
+      "SAVE": "Guardar",
+      "SEARCH": "Buscar",
+      "UNDERSTOOD": "Entendido",
+      "VIEW": "Ver"
+    },
+    "CLIPBOARD": {
+      "COPIED": "Copiado al portapapeles.",
+      "COPY": "Clic para copiar"
+    },
+    "ERRORS": {
+      "ACCESS_DENIED": "Acceso denegado",
+      "ACCESS_DENIED_MSG": "No tienes permisos para acceder a esta página.",
+      "NOT_FOUND": "Página no encontrada",
+      "NOT_FOUND_MSG": "La página que buscas no existe o fue movida.",
+      "SERVER_ERROR": "Error del servidor"
+    },
+    "STATES": {
+      "LOADING": "Cargando...",
+      "NO": "No",
+      "YES": "Sí"
+    },
+    "VALIDATION": {
+      "EMAIL": "Ingrese una dirección de correo válida.",
+      "INTEGER": "Ingrese un número entero mayor a 0.",
+      "MAX": "El valor supera el máximo permitido.",
+      "MAXLENGTH": "El valor es demasiado largo.",
+      "MIN": "El valor debe ser mayor o igual a 0.",
+      "MINLENGTH": "El valor es demasiado corto.",
+      "ONLYDIGITS": "La clave debe contener solo dígitos.",
+      "PASSWORDS_MISMATCH": "Las contraseñas no coinciden.",
+      "PATTERN": "Formato inválido.",
+      "REQUIRED": "Este campo es obligatorio."
+    }
+  },
+  "DASHBOARD": {
+    "COORDINATOR": {
+      "ANNUAL_PLANNING": "Planeación anual",
+      "CONFIGURE_SURVEY": "Configurar sondeo",
+      "NO_ACTIVE_SURVEY": "No hay sondeo de UEAs activo actualmente.",
+      "PROFESSORS_COUNT": "Profesores registrados",
+      "QUICK_ACTIONS_TITLE": "Acciones rápidas",
+      "REGISTER_PROFESSOR": "Registrar profesor",
+      "REGISTER_STUDENT": "Registrar alumno",
+      "STUDENTS_COUNT": "Alumnos registrados",
+      "SURVEY_CLOSES": "Cierre: {{date}}",
+      "SURVEY_RESPONSES": "{{count}} respuestas recibidas",
+      "SURVEY_TERM": "Trimestre {{term}}",
+      "SURVEY_TITLE": "Sondeo de UEAs en curso",
+      "SURVEY_VIEW_RESULTS": "Ver resultados",
+      "TRIMESTRAL_PLANNING": "Planeación trimestral",
+      "UEAS_COUNT": "UEAs en catálogo",
+      "VIEW_PROFESSORS": "Ver profesores",
+      "VIEW_STUDENTS": "Ver alumnos",
+      "VIEW_UEAS": "Ver catálogo"
+    },
+    "HOME": {
+      "ASSISTANT": {
+        "SUBTITLE": "Bienvenido al panel de asistencia técnica.",
+        "TITLE": "Inicio"
+      },
+      "COORDINATOR": {
+        "SUBTITLE": "Bienvenido al Panel de Gestión Académica.",
+        "TITLE": "Inicio"
+      },
+      "GENERIC": "Panel principal del sistema.",
+      "PLACEHOLDER": "Contenido del panel según su rol — próximamente.",
+      "PROFESSOR": {
+        "SUBTITLE": "Bienvenido a su panel de información docente.",
+        "TITLE": "Inicio"
+      },
+      "SPEAKER": {
+        "SUBTITLE": "Bienvenido al portal de ponentes.",
+        "TITLE": "Inicio"
+      },
+      "STUDENT": {
+        "SUBTITLE": "Consulte su estado académico y sondeos vigentes.",
+        "TITLE": "Inicio"
+      },
+      "SYSTEM_ADMIN": {
+        "SUBTITLE": "Supervise la configuración global del sistema.",
+        "TITLE": "Inicio"
+      }
+    },
+    "PLACEHOLDER": {
+      "MESSAGE": "Panel principal — próximamente",
+      "TITLE": "Inicio"
+    },
+    "PROFESSOR": {
+      "ACCOUNT_SECURITY": "Seguridad y contraseña",
+      "CYCLE_DESC": "El periodo de planeación académica y sondeo se encuentra en proceso. Las actividades de revisión y asesoría se habilitarán conforme al calendario institucional.",
+      "CYCLE_TITLE": "Estado del ciclo académico",
+      "WELCOME_DESC": "Bienvenido al portal del Posgrado en Ciencias y Tecnologías de la Información.",
+      "WELCOME_TITLE": "Panel docente"
+    },
+    "STUDENT": {
+      "ACCOUNT_SECURITY": "Cambiar mi contraseña",
+      "ENROLLMENT_ID_LABEL": "Matrícula",
+      "FULL_NAME_LABEL": "Nombre completo",
+      "IDENTITY_TITLE": "Datos del alumno",
+      "NO_ACTIVE_PROCESS": "No hay procesos activos en este momento.",
+      "NO_ACTIVE_PROCESS_DESC": "No se encuentran encuestas de inscripción abiertas. Le notificaremos cuando inicie el próximo periodo.",
+      "PROGRAM_LABEL": "Programa",
+      "SURVEY_COMPLETED_DESC": "Su selección de UEAs ha sido registrada exitosamente. Puede consultar o actualizar sus materias antes del cierre del periodo.",
+      "SURVEY_COMPLETED_TITLE": "Encuesta enviada — Trimestre {{term}}",
+      "SURVEY_DEADLINE": "Fecha límite: {{date}}",
+      "SURVEY_PENDING_DESC": "La encuesta de inscripción para el trimestre {{term}} se encuentra disponible. Participe seleccionando las UEAs de su interés antes de la fecha límite.",
+      "SURVEY_PENDING_TITLE": "Encuesta disponible — Trimestre {{term}}",
+      "SURVEY_RESPOND_ACTION": "Responder encuesta",
+      "SURVEY_TITLE": "Sondeo de inscripción trimestral",
+      "SURVEY_VIEW_ACTION": "Consultar mi respuesta"
+    }
+  },
+  "ENROLLMENT": {
+    "ADVISOR_APPROVAL": {
+      "MESSAGE": "Módulo de aprobación — próximamente",
+      "TITLE": "Aprobar elección de UEAs"
+    }
+  },
+  "ENROLLMENT_SURVEY": {
+    "ACTIONS": {
+      "CLOSE": "Cerrar ahora",
+      "DELETE": "Eliminar",
+      "EDIT": "Editar",
+      "GENERATE_TRIMESTRAL": "Generar plan trimestral",
+      "REOPEN": "Reabrir"
+    },
+    "BREADCRUMB": {
+      "DETAIL": "Detalle",
+      "EDIT": "Editar",
+      "NEW": "Nuevo sondeo",
+      "RESPOND": "Responder"
+    },
+    "DETAIL": {
+      "CLOSED": "Sondeo cerrado.",
+      "CONFIRM_CLOSE_MESSAGE": "¿Deseas cerrar el sondeo ahora? Los alumnos ya no podrán responder.",
+      "CONFIRM_CLOSE_TITLE": "Cerrar sondeo",
+      "TITLE": "Sondeo"
+    },
+    "ERRORS": {
+      "blank_with_ueas_conflict": "No puedes seleccionar UEAs junto con una inscripción en blanco.",
+      "server": "Ocurrió un error. Inténtalo de nuevo.",
+      "survey_already_exists_for_term": "Ya existe un sondeo para ese trimestre.",
+      "survey_no_active_ueas": "No hay UEAs activas en el catálogo; no se puede publicar el sondeo.",
+      "survey_not_active": "El sondeo no está activo.",
+      "survey_not_deletable": "Solo puede eliminarse un sondeo programado sin respuestas.",
+      "survey_not_found": "No existe un sondeo para ese trimestre.",
+      "survey_reopen_blocked_terminated_plan": "No puedes reabrir la encuesta: la planeación trimestral de ese trimestre ya está terminada.",
+      "survey_reopen_dates_invalid": "Para reabrir el sondeo, la fecha de cierre debe ser futura.",
+      "survey_window_overlaps": "Ya existe un sondeo activo o programado en ese periodo.",
+      "uea_not_available": "Una o más UEA seleccionadas ya no están disponibles. Actualiza tu selección.",
+      "validation": "Revisa los datos capturados."
+    },
+    "FORM": {
+      "CLOSES_AT": "Fecha y hora de cierre",
+      "CLOSES_BEFORE_OPENS": "La fecha de cierre debe ser posterior a la de apertura.",
+      "CLOSES_TIME": "Hora de cierre",
+      "DELETE_MESSAGE": "¿Deseas eliminar este sondeo? Esta acción no se puede deshacer.",
+      "DELETE_TITLE": "Eliminar sondeo",
+      "DELETED": "Sondeo eliminado.",
+      "INTRO_DEFAULT": "Recuerda que este sondeo no equivale a una inscripción oficial.",
+      "INTRO_MESSAGE": "Mensaje introductorio (opcional)",
+      "NO_UEAS_WARNING": "El catálogo no tiene UEAs activas: el sondeo se publicaría sin UEAs para elegir. Registra o reactiva UEAs antes de continuar.",
+      "OPENS_AT": "Fecha y hora de apertura",
+      "OPENS_TIME": "Hora de apertura",
+      "REOPEN_HINT": "Para reabrir, cambia la fecha de cierre al día de mañana o después y guarda. Las respuestas registradas se conservan.",
+      "REOPEN_INVALID_MESSAGE": "Para reabrir el sondeo, la fecha de cierre debe ser al menos el día de mañana. No importa la hora: basta con que la fecha sea un día después de hoy. La fecha de apertura puede quedarse igual.",
+      "REOPEN_INVALID_TITLE": "No se puede reabrir",
+      "SAVED": "Sondeo guardado.",
+      "SUBTITLE": "Define la ventana de respuesta del sondeo.",
+      "TERM": "Trimestre",
+      "TERM_HINT": "Formato: dos dígitos de año + O, I o P (por ejemplo 26O).",
+      "TERM_READONLY": "El trimestre no puede cambiarse al editar un sondeo.",
+      "TITLE_EDIT": "Editar sondeo",
+      "TITLE_NEW": "Nuevo sondeo"
+    },
+    "LIST": {
+      "COL_CLOSES": "Cierre",
+      "COL_OPENS": "Apertura",
+      "COL_RESPONSES": "Respuestas",
+      "COL_STATUS": "Estado",
+      "COL_TERM": "Trimestre",
+      "EMPTY": "Aún no hay sondeos registrados.",
+      "NEW": "Nuevo sondeo",
+      "SUBTITLE": "Configura y publica los sondeos trimestrales de UEAs.",
+      "TITLE": "Encuesta de inscripción"
+    },
+    "RESPONSE": {
+      "ACADEMIC_TERM": "Trimestre académico",
+      "ACADEMIC_TERM_PLACEHOLDER": "Selecciona tu trimestre",
+      "ADD": "Agregar UEA",
+      "BLANK_NOTE": "No es posible seleccionar UEAs cuando se elige \"inscripción en blanco\".",
+      "CLOSED_NO_RESPONSE": "No registraste una respuesta para este sondeo.",
+      "CREDITS": "Créditos",
+      "EMPTY_AVAILABLE": "No hay UEAs que coincidan con tu búsqueda.",
+      "EMPTY_SELECTED": "Aún no has agregado ninguna UEA.",
+      "MODE": "Respuesta",
+      "MODE_BLANK": "Realizar inscripción en blanco",
+      "MODE_ENROLL": "Inscribir una o más UEA",
+      "MODE_PLACEHOLDER": "Selecciona una opción",
+      "MODE_QUESTION": "¿Deseas inscribir una o más UEA o realizar una inscripción en blanco?",
+      "NO_ACTIVE": "No hay un sondeo activo en este momento.",
+      "PROGRAM_DOCTORADO": "Doctorado",
+      "PROGRAM_MAESTRIA": "Maestría",
+      "REMOVE": "Quitar UEA",
+      "REMOVED_BANNER": "Las siguientes UEAs fueron retiradas del catálogo y ya no están disponibles:",
+      "SAVED": "Respuesta registrada.",
+      "SEARCH_PLACEHOLDER": "Buscar por clave o nombre",
+      "SELECTED_TITLE": "Tu selección",
+      "SUBMIT": "Enviar respuesta",
+      "TITLE": "Encuesta de inscripción",
+      "TOTAL_CREDITS": "Créditos totales",
+      "TOTAL_UEAS": "UEAs seleccionadas",
+      "UEA_REQUIRED": "Selecciona al menos una UEA.",
+      "UEAS_TITLE": "UEAs disponibles"
+    },
+    "RESULTS": {
+      "BLANK_STAT": "En blanco",
+      "BLANKS_HINT": "Estos alumnos respondieron sin elegir UEAs; no generan demanda.",
+      "BLANKS_TITLE": "Inscripción en blanco",
+      "COL_CLAVE": "Clave",
+      "COL_CREDITOS": "Créditos",
+      "COL_DEMAND": "Respuestas",
+      "COL_FORMACION": "Tipo de formación",
+      "COL_NOMBRE": "Nombre",
+      "EMPTY_ALL_BLANK": "Todas las respuestas fueron inscripción en blanco; no hay demanda de UEAs.",
+      "EMPTY_NO_RESPONSES": "Este sondeo aún no tiene respuestas.",
+      "NO_STUDENTS": "Ningún alumno seleccionó esta UEA.",
+      "RESPONDED": "Respondieron",
+      "SUBTITLE": "Consulta la demanda por UEA para la planeación trimestral.",
+      "TITLE": "Resultados del sondeo",
+      "TRIMESTER": "Trimestre"
+    },
+    "STATES": {
+      "LOAD_ERROR": "No se pudieron cargar los datos."
+    },
+    "STATUS": {
+      "ACTIVO": "Activo",
+      "CERRADO": "Cerrada",
+      "PROGRAMADO": "Programado"
+    }
+  },
+  "SHELL": {
+    "BRAND": {
+      "SUBTITLE": "PCyTI — UAM",
+      "TITLE": "SAPCyTI"
+    },
+    "MENU": {
+      "ADVISOR_APPROVAL": "Aprobar elección de UEAs",
+      "CHANGE_PASSWORD": "Cambiar contraseña",
+      "HOME": "Inicio",
+      "PLAN_ANNUAL": "Planeación anual",
+      "PLAN_TRIMESTRAL": "Planeación trimestral",
+      "PROFESSORS": "Profesores",
+      "PROFILE": "Perfil",
+      "STUDENTS": "Alumnos",
+      "SURVEY": "Encuesta",
+      "SURVEY_CONFIG": "Encuesta de inscripción",
+      "UEAS": "Catálogo de UEAs"
+    },
+    "SECTIONS": {
+      "ACADEMIC_MANAGEMENT": "Gestión académica",
+      "ENROLLMENT": "Inscripción",
+      "MAIN": "Principal",
+      "PLANNING": "Planeación y oferta"
+    },
+    "SIDEBAR": {
+      "COLLAPSE": "Contraer menú",
+      "EXPAND": "Expandir menú"
+    },
+    "TOPBAR": {
+      "LOGOUT": "Cerrar sesión",
+      "MENU": "Menú",
+      "NOTIFICATIONS": "Notificaciones",
+      "SEARCH_PLACEHOLDER": "Buscar alumnos, profesores, matrículas…",
+      "TITLE": "SAPCyTI"
+    }
+  },
+  "TRIMESTRAL_PLANNING": {
+    "ACTIONS": {
+      "ADD_GROUP": "Agregar grupo",
+      "ADD_GROUP_HINT": "Selecciona una UEA para crear otro grupo en esta planeación.",
+      "BACK_TO_DRAFT": "Regresar a borrador",
+      "DOWNLOAD": "Descargar Excel",
+      "FINISH": "Terminar",
+      "GENERATE": "Generar planeación",
+      "REGENERATE": "Regenerar",
+      "REMOVE_GROUP": "Quitar grupo",
+      "SAVE": "Guardar grupos",
+      "SAVE_AND_FINISH": "Guardar y terminar"
+    },
+    "DAYS": {
+      "JUE": "Jueves",
+      "LUN": "Lunes",
+      "MAR": "Martes",
+      "MIE": "Miércoles",
+      "VIE": "Viernes"
+    },
+    "DETAIL": {
+      "BACK_TO_DRAFT_WARNING": "El Excel que ya entregaste dejará de coincidir con la planeación. ¿Regresar a borrador?",
+      "BLANKS": "Inscripción en blanco",
+      "BLANKS_HINT": "Estos alumnos no tienen grupo ni letra y no se incluyen en el Excel.",
+      "BREADCRUMB": "Planeación",
+      "LAST_EXPORTED": "Último Excel generado: {{date}}",
+      "LEAVE_UNSAVED_CONFIRM": "Hay cambios sin guardar en los grupos. ¿Salir y perderlos?",
+      "NO_GROUPS": "La planeación no tiene grupos.",
+      "OUTDATED": "Desactualizado",
+      "PLAN_STATE": "Estado del plan",
+      "REGENERATE_WARNING": "Regenerar descarta todas las ediciones manuales y reconstruye la planeación desde la encuesta.",
+      "SAVE_BEFORE_EXPORT": "Guarda los cambios locales antes de generar el Excel.",
+      "SAVED": "Grupos guardados",
+      "TITLE": "Planeación trimestral {{term}}",
+      "UNSAVED_WARNING": "Tienes cambios en los grupos sin guardar. Guárdalos antes de terminar la planeación.",
+      "WARNING_COUNT": "{{count}} avisos de generación"
+    },
+    "ERRORS": {
+      "already_exists": "Ya existe una planeación para ese trimestre.",
+      "annual_plan_not_terminated": "La planeación anual debe estar terminada para trabajar en la trimestral.",
+      "annual_plan_required": "No hay planeación anual para el año de ese trimestre; créala primero.",
+      "invalid_transition": "Transición de estado no válida.",
+      "not_editable": "La planeación terminada no puede editarse; regrésala a borrador.",
+      "not_found": "No se encontró la planeación trimestral.",
+      "professor_unavailable": "Un profesor asignado ya no está disponible (fue dado de baja): quítalo del grupo para poder guardar.",
+      "server": "Ocurrió un error inesperado. Intenta de nuevo.",
+      "student_unavailable": "Un alumno asignado ya no está disponible (fue dado de baja): quítalo del grupo para poder guardar.",
+      "survey_not_closed": "La planeación solo se genera desde una encuesta cerrada.",
+      "survey_not_found": "No existe la encuesta seleccionada.",
+      "validation": "Revisa los datos capturados."
+    },
+    "FILTERS": {
+      "ALL_GROUPS": "Todos los grupos",
+      "ALL_TYPES": "Todos los tipos",
+      "CLEAR": "Limpiar filtros",
+      "HAS_PROBLEMS": "Con problemas",
+      "INCOMPLETE": "Incompletos",
+      "NO_RESULTS": "Ningún grupo coincide con la búsqueda y los filtros.",
+      "RESULTS": "{{visible}} de {{total}} grupos",
+      "SEARCH": "Buscar por grupo, clave o nombre de UEA…",
+      "STATE": "Situación del grupo",
+      "UEA_TYPE": "Tipo de UEA",
+      "WITH_STUDENTS": "Con alumnos",
+      "WITHOUT_PROFESSORS": "Sin profesores",
+      "WITHOUT_SCHEDULE": "Sin horario",
+      "WITHOUT_STUDENTS": "Sin alumnos"
+    },
+    "GRID": {
+      "CVEUEA": "Clave",
+      "NEMP": "NEMP",
+      "PROF": "Profesores",
+      "TIPO_UEA": "Tipo de UEA",
+      "UEA": "UEA"
+    },
+    "GROUP": {
+      "CUPO": "Cupo",
+      "CUPO_SOURCE_LINK": "Definido en la planeación anual {{year}}",
+      "DECLARED_TERM": "Trim. {{term}}",
+      "END": "Fin",
+      "GROUP_LIMIT_EXCEEDED": "Rebasa el máximo de grupos de la planeación anual",
+      "GRUPO": "Grupo",
+      "INACTIVE_STUDENT": "Alumno inactivo: puede permanecer, pero no moverse ni reponerse",
+      "LAB": "LAB",
+      "MATRICULA": "Matrícula",
+      "NAME": "Nombre",
+      "NO_STUDENTS": "Este grupo todavía no tiene alumnos asignados.",
+      "OCCUPANCY": "Alumnos inscritos / cupo",
+      "OVER_CAPACITY": "Rebasa el cupo",
+      "SEARCH_PROFESSOR": "Buscar por NEMP o nombre…",
+      "SEARCH_STUDENT": "Buscar por matrícula o nombre…",
+      "SEARCH_UEA": "Buscar UEA por clave o nombre…",
+      "START": "Inicio",
+      "STUDENT_NOTE": "Nota"
+    },
+    "ISSUES": {
+      "CUPO_FORMAT": "El cupo «{{cupo}}» no es válido: escribe un número entero o *.",
+      "DUPLICATE_STUDENT": "Un alumno de este grupo también está en otro grupo de esta UEA: déjalo en uno solo.",
+      "DUPLICATE_STUDENTS": "{{students}} alumnos de este grupo también están en otro grupo de esta UEA: deja a cada uno en un solo grupo.",
+      "GO_TO_GROUP": "Filtrar la tabla por esta UEA e ir al grupo",
+      "GROUP_LIMIT": "La planeación anual autoriza {{max}} grupos para esta UEA y ya hay más: quita uno de los grupos.",
+      "GRUPO_TOO_LONG": "La letra de grupo no puede pasar de {{max}} caracteres.",
+      "LAB_TIME_REQUIRED": "{{day}} está marcado como laboratorio, pero le falta la hora de inicio o la de fin.",
+      "MISSING_END": "{{day}} empieza a las {{start}} pero no tiene hora de fin.",
+      "MISSING_START": "{{day}} termina a las {{end}} pero no tiene hora de inicio.",
+      "NO_GROUP_CODE": "Sin letra de grupo",
+      "OVER_CAPACITY": "Tiene {{students}} alumnos y el cupo autorizado es {{cupo}}: quita alumnos o pásalos a otro grupo.",
+      "START_AFTER_END": "{{day}} empieza a las {{start}} y termina a las {{end}}: la clase no puede terminar antes de empezar.",
+      "TIME_FORMAT": "{{day}} tiene la hora «{{value}}», que no es del formato de 24 horas HH:mm.",
+      "TITLE": "Corrige estos {{count}} problemas para poder guardar"
+    },
+    "LIST": {
+      "BLANKS": "En blanco",
+      "EMPTY": "Aún no hay planeaciones trimestrales.",
+      "GROUPS": "Grupos",
+      "NEW": "Generar planeación",
+      "STATUS": "Estado",
+      "SUBTITLE": "Una planeación por trimestre, generada desde la encuesta cerrada.",
+      "TERM": "Trimestre",
+      "TITLE": "Planeación trimestral"
+    },
+    "NEW": {
+      "ALREADY_PLANNED": "Ya tiene planeación",
+      "NEWER_PENDING": "Hay una encuesta cerrada más reciente ({{term}}) que todavía no tiene planeación. Verifica que sea esta la que quieres generar.",
+      "NO_CLOSED_SURVEYS": "No hay encuestas cerradas de las cuales generar una planeación.",
+      "PICK_SURVEY": "Elige la encuesta de la que se generará la planeación",
+      "RESPONSES": "{{count}} respuestas",
+      "SUBTITLE": "La planeación se genera a partir de las respuestas de una encuesta cerrada.",
+      "TITLE": "Generar planeación trimestral"
+    },
+    "OUTDATED_REASONS": {
+      "ANNUAL_PLAN_CHANGED": "Cambió la oferta de la planeación anual.",
+      "SURVEY_REOPENED": "La encuesta fue reabierta después de generar esta planeación.",
+      "TITLE": "Motivos de desactualización"
+    },
+    "PENDING": {
+      "ASSIGN": "Asignar a grupo…",
+      "CREATE_GROUP": "Crear grupo",
+      "HINT": "Alumnos sin grupo y demanda que no cupo. Nada de esto se exporta al Excel.",
+      "TITLE": "Pendientes por resolver"
+    },
+    "PREREQUISITES": {
+      "ANNUAL_NOT_TERMINATED": "La planeación anual correspondiente no está terminada.",
+      "READ_ONLY": "La planeación está disponible sólo para consulta hasta restaurar los prerrequisitos.",
+      "SURVEY_NOT_CLOSED": "La encuesta correspondiente no está cerrada."
+    },
+    "REMOVE_GROUP": {
+      "HINT": "El cambio sólo se enviará al servidor cuando guardes la planeación.",
+      "MESSAGE": "¿Quieres quitar el grupo {{group}} de {{clave}} · {{name}}?",
+      "STUDENTS": "Alumnos que quedarán sin asignar al guardar: {{count}}.",
+      "TITLE": "Confirmar eliminación de grupo"
+    },
+    "STATES": {
+      "LOAD_ERROR": "No se pudo cargar la información."
+    },
+    "STATUS": {
+      "BORRADOR": "Borrador",
+      "TERMINADA": "Terminada"
+    },
+    "SUMMARY": {
+      "ASSIGNED": "Inscripciones colocadas",
+      "GROUPS": "Grupos",
+      "INCOMPLETE": "Incompletos",
+      "UNASSIGNED": "Sin asignar",
+      "WITH_PROBLEMS": "Con problemas"
+    },
+    "UNASSIGNED": {
+      "REASONS": {
+        "GROUP_LIMIT_REACHED": "Se alcanzó el máximo de grupos.",
+        "GROUP_SUFFIX_LIMIT": "Se agotaron los sufijos de grupo A–Z.",
+        "MANUALLY_UNASSIGNED": "El alumno fue retirado manualmente de su grupo.",
+        "UEA_NOT_OFFERED": "La UEA no está ofertada en este trimestre."
+      },
+      "TITLE": "Demanda sin asignar"
+    },
+    "WARNINGS": {
+      "CUPO_EXCEEDED": "Un grupo rebasa el cupo definido.",
+      "NO_RESPONSES": "La encuesta no tiene respuestas; se generó un plan sin UEAs.",
+      "PROFESSOR_INACTIVE": "El profesor asignado ({{employeeNumber}}) está dado de baja.",
+      "STUDENT_INACTIVE": "El alumno {{enrollmentId}} fue dado de baja después de responder.",
+      "UEA_DEACTIVATED": "La UEA {{clave}} fue desactivada del catálogo después de elegirse."
+    }
+  }
+}

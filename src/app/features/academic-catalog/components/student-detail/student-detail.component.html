@@ -1,0 +1,39 @@
+<section class="gap-lg flex flex-col" data-testid="student-detail">
+  <header class="gap-md flex flex-col justify-between sm:flex-row sm:items-center">
+    <div class="gap-md flex min-w-0 items-start sm:items-center">
+      <app-back-button (back)="backToCatalog()" />
+      <div class="gap-xs flex min-w-0 flex-col">
+        <h1 class="text-h2 text-primary font-bold break-words">
+          {{ 'ACADEMIC_CATALOG.STUDENTS.DETAIL.TITLE' | translate }}
+        </h1>
+      </div>
+    </div>
+    <div class="gap-sm flex flex-wrap">
+      @if (student()) {
+        <p-button
+          data-testid="edit-student"
+          icon="pi pi-pencil"
+          [label]="'ACADEMIC_CATALOG.STUDENTS.DETAIL.EDIT_ACTION' | translate"
+          [routerLink]="editRoute()"
+        />
+      }
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="p-xl text-text-secondary text-center">
+      <i class="pi pi-spin pi-spinner mr-sm"></i>{{ 'COMMON.STATES.LOADING' | translate }}
+    </div>
+  } @else if (error()) {
+    <p-message severity="error" [text]="error() | domainError: catalogErrorScope" />
+  } @else if (student(); as current) {
+    <app-student-profile-card [student]="current" />
+
+    <app-student-enrollment-history
+      [history]="history()"
+      [loading]="historyLoading()"
+      [error]="historyError()"
+      (retry)="loadHistory()"
+    />
+  }
+</section>

@@ -1,0 +1,142 @@
+<section class="gap-md flex flex-col">
+  <!-- Legend (official format notation — not translated) -->
+  <div class="text-caption text-text-secondary gap-md flex flex-wrap">
+    <span><strong>X</strong> = {{ 'ANNUAL_PLANNING.LEGEND.X' | translate }}</span>
+    <span><strong>O</strong> = {{ 'ANNUAL_PLANNING.LEGEND.O' | translate }}</span>
+    <span><strong>X/O</strong> = {{ 'ANNUAL_PLANNING.LEGEND.X_O' | translate }}</span>
+    <span><strong>*</strong> = {{ 'ANNUAL_PLANNING.LEGEND.STAR' | translate }}</span>
+  </div>
+
+  @if (showInvalidMessage()) {
+    <p-message severity="error" [text]="'ANNUAL_PLANNING.GRID.INVALID_CELLS' | translate" />
+  }
+  @if (error()) {
+    <p-message severity="error" [text]="error() | domainError: errorScope" />
+  }
+
+  <div class="annual-grid-scroll border-outline max-h-[70vh] overflow-auto rounded-xl border">
+    <table class="annual-grid text-body-md w-max border-collapse">
+      <!--
+        Two-level sticky header. Row 1 is pinned to a fixed height (h-9 = 2.25rem) and
+        every cell is whitespace-nowrap, so the row-2 offset (top-9) is deterministic
+        regardless of font/zoom (rem-based) — no fragile measured value.
+      -->
+      <thead>
+        <tr class="text-label-md h-9">
+          <th
+            class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-24 border text-left whitespace-nowrap md:left-0"
+            rowspan="2"
+            [attr.aria-sort]="ariaSort('clave')"
+          >
+            <button type="button" class="gap-xs flex w-full items-center" (click)="sortBy('clave')">
+              {{ 'ANNUAL_PLANNING.GRID.CLAVE' | translate }}
+              <i class="pi {{ sortIcon('clave') }} text-[10px]"></i>
+            </button>
+          </th>
+          <th
+            class="bg-surface-subtle border-outline p-sm sticky top-0 z-30 w-56 border text-left whitespace-nowrap md:left-24"
+            rowspan="2"
+            [attr.aria-sort]="ariaSort('nombre')"
+          >
+            <button
+              type="button"
+              class="gap-xs flex w-full items-center"
+              (click)="sortBy('nombre')"
+            >
+              {{ 'ANNUAL_PLANNING.GRID.NAME' | translate }}
+              <i class="pi {{ sortIcon('nombre') }} text-[10px]"></i>
+            </button>
+          </th>
+          @for (term of plan().terms; track $index) {
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border whitespace-nowrap"
+              colspan="2"
+            >
+              {{ term }}
+            </th>
+          }
+          @for (code of programCodes; track code) {
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border align-bottom whitespace-nowrap"
+              rowspan="2"
+            >
+              {{ code }}
+            </th>
+          }
+          <th
+            class="bg-surface-subtle border-outline p-sm sticky top-0 z-20 border align-bottom whitespace-nowrap"
+            rowspan="2"
+          >
+            {{ 'ANNUAL_PLANNING.GRID.MODALITY' | translate }}
+          </th>
+        </tr>
+        <tr class="text-caption text-text-secondary">
+          @for (term of plan().terms; track $index) {
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-9 z-20 border whitespace-nowrap"
+            >
+              {{ 'ANNUAL_PLANNING.GRID.GROUPS' | translate }}
+            </th>
+            <th
+              class="bg-surface-subtle border-outline p-sm sticky top-9 z-20 border whitespace-nowrap"
+            >
+              {{ 'ANNUAL_PLANNING.GRID.QUOTA' | translate }}
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of orderedRows(); track row.entry.id) {
+          @let i = row.index;
+          @let entry = row.entry;
+          <tr [formGroup]="rowGroup(i)">
+            <td class="bg-surface border-outline p-sm z-10 border font-medium md:sticky md:left-0">
+              {{ entry.clave }}
+            </td>
+            <td class="bg-surface border-outline p-sm z-10 border md:sticky md:left-24">
+              {{ entry.nombre }}
+            </td>
+
+            @for (cell of cellFields; track cell) {
+              <td class="border-outline p-xs border text-center">
+                @if (editable()) {
+                  <input
+                    type="text"
+                    class="border-outline focus:border-primary px-xs w-14 rounded border bg-transparent py-[2px] text-center outline-none"
+                    [class.border-error]="cellInvalid(i, cell)"
+                    [formControlName]="cell"
+                  />
+                } @else {
+                  <span>{{ rowGroup(i).get(cell)?.value }}</span>
+                }
+              </td>
+            }
+
+            @for (code of programCodes; track code) {
+              <td class="border-outline border p-0 text-center">
+                @if (editable() && !readonlyMark(code)) {
+                  <button
+                    type="button"
+                    class="hover:bg-surface-subtle focus:bg-surface-subtle p-sm h-full w-full outline-none"
+                    [attr.aria-label]="
+                      code + ': ' + (markAt(i, code) ?? ('ANNUAL_PLANNING.GRID.EMPTY' | translate))
+                    "
+                    (click)="cycle(i, code)"
+                  >
+                    {{ markAt(i, code) ?? '' }}
+                  </button>
+                } @else {
+                  <span class="p-sm block">{{ markAt(i, code) ?? '' }}</span>
+                }
+              </td>
+            }
+
+            <td class="border-outline p-sm w-40 border text-center">
+              {{ 'ANNUAL_PLANNING.MODALITY.' + entry.modalidad | translate }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -1,3 +1,106 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+import { authGuard } from './core/auth/guards/auth.guard';
+import { ROUTE_PERMISSIONS } from './core/auth/rbac.policy';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./shell/shell.component').then((m) => m.ShellComponent),
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      {
+        path: 'dashboard',
+        loadChildren: () =>
+          import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.dashboard,
+        },
+      },
+      {
+        path: 'enrollment',
+        loadChildren: () =>
+          import('./features/enrollment/enrollment.routes').then((m) => m.ENROLLMENT_ROUTES),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.enrollment,
+        },
+      },
+      {
+        path: 'academic-catalog',
+        loadChildren: () =>
+          import('./features/academic-catalog/academic-catalog.routes').then(
+            (m) => m.ACADEMIC_CATALOG_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.academicCatalog,
+        },
+      },
+      {
+        path: 'annual-planning',
+        loadChildren: () =>
+          import('./features/annual-planning/annual-planning.routes').then(
+            (m) => m.ANNUAL_PLANNING_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.annualPlanning,
+          breadcrumb: 'SHELL.MENU.PLAN_ANNUAL',
+        },
+      },
+      {
+        path: 'trimestral-planning',
+        loadChildren: () =>
+          import('./features/trimestral-planning/trimestral-planning.routes').then(
+            (m) => m.TRIMESTRAL_PLANNING_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.trimestralPlanning,
+          breadcrumb: 'SHELL.MENU.PLAN_TRIMESTRAL',
+        },
+      },
+      {
+        path: 'enrollment-survey',
+        loadChildren: () =>
+          import('./features/enrollment-survey/enrollment-survey.routes').then(
+            (m) => m.ENROLLMENT_SURVEY_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          breadcrumb: 'SHELL.MENU.SURVEY_CONFIG',
+        },
+      },
+      {
+        path: 'account',
+        loadChildren: () =>
+          import('./features/account/account.routes').then((m) => m.ACCOUNT_ROUTES),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.account,
+        },
+      },
+      {
+        path: 'access-denied',
+        loadComponent: () =>
+          import('./shared/components/access-denied/access-denied.component').then(
+            (m) => m.AccessDeniedComponent,
+          ),
+      },
+      {
+        path: 'not-found',
+        loadComponent: () =>
+          import('./shared/components/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
+      },
+    ],
+  },
+  {
+    path: 'auth',
+    loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
+  },
+  { path: '**', redirectTo: 'not-found' },
+];

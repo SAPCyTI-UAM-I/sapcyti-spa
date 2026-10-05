@@ -1,0 +1,46 @@
+# SPEC-010 — edge proxy: static SPA + /api reverse proxy to Spring Boot
+# API_URL holds host:port only (no scheme). The scheme is hardcoded here so the
+# variable + resolver let Nginx re-resolve the upstream via Docker DNS at request
+# time (survives the API being slow/down at boot, no stale IP).
+server {
+    listen 80;
+    server_name localhost;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    client_max_body_size 10m;
+
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    resolver 127.0.0.11 valid=10s ipv6=off;
+
+    location /api/actuator/ {
+        set $api_backend ${API_URL};
+        rewrite ^/api/actuator/(.*)$ /actuator/$1 break;
+        proxy_pass http://$api_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+
+    location /api/ {
+        set $api_backend ${API_URL};
+        proxy_pass http://$api_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

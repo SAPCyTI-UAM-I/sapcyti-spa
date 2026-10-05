@@ -1,0 +1,27 @@
+<div class="mb-lg">
+  <h1 class="text-headline-lg text-on-surface font-headline-lg">
+    {{ titleKey() | translate }}
+  </h1>
+  <p class="text-body-md text-text-secondary font-body-md mt-xs">
+    {{ subtitleKey() | translate }}
+  </p>
+</div>
+
+@switch (menuRole()) {
+  @case ('COORDINATOR') {
+    <app-coordinator-dashboard />
+  }
+  @case ('STUDENT') {
+    <app-student-dashboard />
+  }
+  @case ('PROFESSOR') {
+    <app-professor-dashboard />
+  }
+  @default {
+    <div class="bg-surface border-outline p-lg rounded-xl border">
+      <p class="text-body-md text-text-secondary font-body-md">
+        {{ 'DASHBOARD.HOME.GENERIC' | translate }}
+      </p>
+    </div>
+  }
+}

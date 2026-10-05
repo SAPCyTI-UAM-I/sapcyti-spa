@@ -1,0 +1,141 @@
+import { RoleType } from '../models';
+
+import { ShellMenuRole, ShellNavigation, ShellNavSection } from './shell-menu.model';
+
+/**
+ * HU-41 — student survey entry. Merged into the student navigation by
+ * `shell.component.ts` only while an active survey exists (dynamic, API-driven).
+ */
+export const STUDENT_SURVEY_SECTION: ShellNavSection = {
+  id: 'student-survey',
+  labelKey: 'SHELL.SECTIONS.ENROLLMENT',
+  items: [
+    {
+      id: 'survey-respond',
+      labelKey: 'SHELL.MENU.SURVEY',
+      route: '/enrollment-survey/respond',
+      icon: 'pi pi-list-check',
+    },
+  ],
+};
+
+const HOME_LINK = {
+  id: 'home',
+  labelKey: 'SHELL.MENU.HOME',
+  route: '/dashboard',
+  icon: 'pi pi-home',
+} as const;
+
+const STUDENT_NAV: ShellNavigation = {
+  home: HOME_LINK,
+  sections: [],
+};
+
+const PROFESSOR_NAV: ShellNavigation = {
+  home: HOME_LINK,
+  sections: [
+    {
+      id: 'professor-enrollment',
+      labelKey: 'SHELL.SECTIONS.ENROLLMENT',
+      items: [
+        {
+          id: 'advisor-approval',
+          labelKey: 'SHELL.MENU.ADVISOR_APPROVAL',
+          route: '/enrollment/advisor-approval',
+          icon: 'pi pi-check-square',
+        },
+      ],
+    },
+  ],
+};
+
+const ASSISTANT_NAV: ShellNavigation = {
+  home: HOME_LINK,
+  sections: [],
+};
+
+const SPEAKER_NAV: ShellNavigation = {
+  home: HOME_LINK,
+  sections: [],
+};
+
+const COORDINATOR_NAV: ShellNavigation = {
+  home: HOME_LINK,
+  sections: [
+    {
+      id: 'coordinator-academic',
+      labelKey: 'SHELL.SECTIONS.ACADEMIC_MANAGEMENT',
+      items: [
+        {
+          id: 'students',
+          labelKey: 'SHELL.MENU.STUDENTS',
+          route: '/academic-catalog/students',
+          icon: 'pi pi-users',
+        },
+        {
+          id: 'professors',
+          labelKey: 'SHELL.MENU.PROFESSORS',
+          route: '/academic-catalog/professors',
+          icon: 'pi pi-user-edit',
+        },
+        {
+          id: 'ueas',
+          labelKey: 'SHELL.MENU.UEAS',
+          route: '/academic-catalog/ueas',
+          icon: 'pi pi-book',
+        },
+      ],
+    },
+    {
+      id: 'coordinator-offering',
+      labelKey: 'SHELL.SECTIONS.PLANNING',
+      items: [
+        {
+          id: 'plan-annual',
+          labelKey: 'SHELL.MENU.PLAN_ANNUAL',
+          route: '/annual-planning',
+          icon: 'pi pi-calendar-plus',
+        },
+        {
+          id: 'plan-trimestral',
+          labelKey: 'SHELL.MENU.PLAN_TRIMESTRAL',
+          route: '/trimestral-planning',
+          icon: 'pi pi-table',
+        },
+        {
+          id: 'enrollment-survey',
+          labelKey: 'SHELL.MENU.SURVEY_CONFIG',
+          route: '/enrollment-survey',
+          icon: 'pi pi-chart-bar',
+        },
+      ],
+    },
+  ],
+};
+
+const SYSTEM_ADMIN_NAV: ShellNavigation = {
+  home: HOME_LINK,
+  sections: [],
+};
+
+const NAV_BY_ROLE: Record<ShellMenuRole, ShellNavigation> = {
+  SYSTEM_ADMIN: SYSTEM_ADMIN_NAV,
+  STUDENT: STUDENT_NAV,
+  PROFESSOR: PROFESSOR_NAV,
+  ASSISTANT: ASSISTANT_NAV,
+  COORDINATOR: COORDINATOR_NAV,
+  SPEAKER: SPEAKER_NAV,
+};
+
+export function resolveShellMenuRole(role: RoleType): ShellMenuRole {
+  return role;
+}
+
+export function getShellNavigation(role: RoleType | null): ShellNavigation | null {
+  const menuRole = role ? resolveShellMenuRole(role) : null;
+  if (!menuRole) {
+    return null;
+  }
+
+  return NAV_BY_ROLE[menuRole];
+}

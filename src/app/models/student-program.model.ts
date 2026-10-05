@@ -1,0 +1,50 @@
+import type { ProgramType } from './student.model';
+
+/** Ciclo de vida del programa; espejo de `ProgramStatus` en el backend (SPEC-037). */
+export type ProgramStatus = 'EGRESADO' | 'EN_INVESTIGACION' | 'BAJA' | 'SUSPENSION';
+
+export interface ProfessorReference {
+  id: number;
+  firstName: string;
+  firstLastName: string;
+  secondLastName?: string;
+  active?: boolean;
+}
+
+export interface StudentProgramSummary {
+  id: number;
+  programType: ProgramType;
+  enrollmentId: string;
+  status: ProgramStatus;
+  tutorId?: number;
+  hasTutor: boolean;
+}
+
+export interface StudentProgramResponse {
+  id: number;
+  studentId: number;
+  graduateProgramId: number;
+  enrollmentId: string;
+  programType: ProgramType;
+  admissionDate: string;
+  graduationDate?: string;
+  lineOfKnowledge?: string;
+  researchArea?: string;
+  status: ProgramStatus;
+  withdrawalReason?: string;
+  tutorId?: number;
+  tutor?: ProfessorReference;
+  advisorIds: number[];
+  advisors: ProfessorReference[];
+}
+
+export interface UpdateStudentProgramRequest {
+  admissionDate: string;
+  graduationDate?: string;
+  lineOfKnowledge?: string;
+  researchArea?: string;
+  status: ProgramStatus;
+  withdrawalReason?: string;
+  tutorId?: number | null;
+  advisorIds: number[];
+}

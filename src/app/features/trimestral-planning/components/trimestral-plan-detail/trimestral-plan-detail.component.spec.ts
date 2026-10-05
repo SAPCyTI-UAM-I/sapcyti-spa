@@ -1,0 +1,287 @@
+import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute, provideRouter } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
+import { of, throwError } from 'rxjs';
+
+import { mockApiError } from '../../../../core/errors/testing/mock-api-error.util';
+import { TrimestralPlanDetail, TrimestralPlanStatus } from '../../../../models';
+import { TrimestralPlanService } from '../../services/trimestral-plan.service';
+import { trimestralGroup, trimestralPlanDetail } from '../../testing/trimestral-fixtures';
+import { TrimestralPlanEditorComponent } from '../trimestral-plan-editor/trimestral-plan-editor.component';
+import { TrimestralPlanDetailComponent } from './trimestral-plan-detail.component';
+
+const plan = trimestralPlanDetail;
+
+/** Un grupo real, para los casos que necesitan tocar el formulario del editor. */
+function planWithGroup(status: TrimestralPlanStatus = 'BORRADOR'): TrimestralPlanDetail {
+  return plan(status, { groups: [trimestralGroup()] });
+}
+
+describe('TrimestralPlanDetailComponent', () => {
+  async function setup(service: Partial<TrimestralPlanService> = {}) {
+    const stub = {
+      get: vi.fn(() => of(plan())),
+      changeStatus: vi.fn(() => of(plan('TERMINADA'))),
+      regenerate: vi.fn(() => of(plan())),
+      export: vi.fn(() => of(new Blob(['x']))),
+      saveGroups: vi.fn(() => of(plan())),
+      searchProfessors: vi.fn(() => of({ content: [] })),
+      searchStudents: vi.fn(() => of({ content: [] })),
+      searchUeas: vi.fn(() => of({ content: [] })),
+      ...service,
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [TrimestralPlanDetailComponent, TranslateModule.forRoot(), NoopAnimationsModule],
+      providers: [
+        provideRouter([]),
+        MessageService,
+        { provide: TrimestralPlanService, useValue: stub },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '1' } } } },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(TrimestralPlanDetailComponent);
+    fixture.detectChanges();
+    return { fixture, component: fixture.componentInstance, stub };
+  }
+
+  it('loads the plan and marks it editable in BORRADOR', async () => {
+    const { component } = await setup();
+
+    expect(component.plan()?.term).toBe('26I');
+    expect(component.editable()).toBe(true);
+  });
+
+  it('lists one line per warning inside the collapsed panel', async () => {
+    const { fixture } = await setup({
+      get: vi.fn(() =>
+        of(
+          plan('BORRADOR', {
+            warnings: [{ code: 'UEA_DEACTIVATED', clave: '2156027' }, { code: 'NO_RESPONSES' }],
+          }),
+        ),
+      ),
+    });
+
+    const banners = fixture.nativeElement.querySelectorAll('[data-testid="plan-warnings"] li');
+    expect(banners).toHaveLength(2);
+  });
+
+  it('finishes the plan and swaps to read-only', async () => {
+    const { component, stub } = await setup();
+
+    component.finish();
+
+    expect(stub.changeStatus).toHaveBeenCalledWith(1, { status: 'TERMINADA' });
+    expect(component.editable()).toBe(false);
+  });
+
+  it('blocks finishing until unsaved group changes are saved', async () => {
+    const { fixture, component, stub } = await setup({ get: vi.fn(() => of(planWithGroup())) });
+
+    // El coordinador captura un horario y pulsa Terminar sin guardar.
+    const editor = fixture.debugElement.query(By.directive(TrimestralPlanEditorComponent))
+      .componentInstance as TrimestralPlanEditorComponent;
+    editor.groups.at(0).controls.grupo.setValue('CO43X');
+    expect(editor.hasUnsavedChanges()).toBe(true);
+    expect(component.canExport()).toBe(false);
+
+    component.finish();
+    fixture.detectChanges();
+
+    expect(stub.changeStatus).not.toHaveBeenCalled();
+    expect(component.showUnsavedDialog()).toBe(true);
+    // El diálogo ofrece salir del paso, no solo cancelar.
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="confirm-finish-unsaved"]'),
+    ).not.toBeNull();
+  });
+
+  it('saves and then finishes from the unsaved-changes dialog', async () => {
+    const { fixture, component, stub } = await setup({ get: vi.fn(() => of(planWithGroup())) });
+    const editor = fixture.debugElement.query(By.directive(TrimestralPlanEditorComponent))
+      .componentInstance as TrimestralPlanEditorComponent;
+    editor.groups.at(0).controls.grupo.setValue('CO43X');
+
+    component.finish();
+    component.saveAndFinish();
+
+    expect(stub.saveGroups).toHaveBeenCalled();
+    expect(component.showUnsavedDialog()).toBe(false);
+    // Terminar se dispara solo cuando el guardado devolvió el detalle.
+    expect(stub.changeStatus).toHaveBeenCalledWith(1, { status: 'TERMINADA' });
+  });
+
+  it('asks before leaving the route with unsaved group changes', async () => {
+    const { fixture, component } = await setup({ get: vi.fn(() => of(planWithGroup())) });
+    const editor = fixture.debugElement.query(By.directive(TrimestralPlanEditorComponent))
+      .componentInstance as TrimestralPlanEditorComponent;
+
+    expect(component.canDeactivate()).toBe(true);
+
+    editor.groups.at(0).controls.grupo.setValue('CO43X');
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+    expect(component.canDeactivate()).toBe(false);
+    expect(confirmSpy).toHaveBeenCalled();
+
+    confirmSpy.mockReturnValue(true);
+    expect(component.canDeactivate()).toBe(true);
+  });
+
+  // PrimeNG redibuja el desplegable si cambia la identidad de [options] en cada ciclo.
+  it('keeps the same group option arrays between change detection cycles', async () => {
+    const { fixture, component } = await setup({ get: vi.fn(() => of(planWithGroup())) });
+
+    const first = component.groupOptions()(1);
+    fixture.detectChanges();
+
+    expect(component.groupOptions()(1)).toBe(first);
+    expect(first).toHaveLength(1);
+    expect(first[0]!.label).toContain('CO43');
+    // Una UEA sin grupos no ofrece nada, y los blancos ven todos los grupos.
+    expect(component.groupOptions()(999)).toEqual([]);
+    expect(component.groupOptions()(null)).toHaveLength(1);
+  });
+
+  it('assigns a pending student into a group from the pending panel', async () => {
+    const { fixture, component } = await setup({ get: vi.fn(() => of(planWithGroup())) });
+    const editor = fixture.debugElement.query(By.directive(TrimestralPlanEditorComponent))
+      .componentInstance as TrimestralPlanEditorComponent;
+    const group = editor.groups.at(0);
+    const before = group.controls.students.length;
+
+    component.onAssign({ studentId: 77, group });
+
+    expect(group.controls.students.length).toBe(before + 1);
+    // Repetirlo no duplica: el mismo alumno puede pedirse desde dos lugares.
+    component.onAssign({ studentId: 77, group });
+    expect(group.controls.students.length).toBe(before + 1);
+  });
+
+  it('only regenerates after the confirmation dialog', async () => {
+    const { component, stub } = await setup();
+
+    component.showRegenerateDialog.set(true);
+    expect(stub.regenerate).not.toHaveBeenCalled();
+
+    component.confirmRegenerate();
+    expect(stub.regenerate).toHaveBeenCalledWith(1);
+    expect(component.showRegenerateDialog()).toBe(false);
+  });
+
+  it('downloads the export as a blob named after the term', async () => {
+    const createObjectURL = vi.fn(() => 'blob:x');
+    const revokeObjectURL = vi.fn();
+    Object.assign(globalThis.URL, { createObjectURL, revokeObjectURL });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(vi.fn());
+
+    const get = vi.fn(() => of(plan('TERMINADA', { exportedAt: '2026-07-21T20:00:00Z' })));
+    const { fixture, component, stub } = await setup({ get });
+    expect(fixture.nativeElement.querySelector('[data-testid="last-exported"]')).not.toBeNull();
+    component.downloadExcel();
+
+    expect(stub.export).toHaveBeenCalledWith(1);
+    // The byte endpoint cannot return exportedAt, so detail is refreshed after download.
+    expect(get).toHaveBeenCalledTimes(2);
+    expect(createObjectURL).toHaveBeenCalled();
+    expect(revokeObjectURL).toHaveBeenCalled();
+    click.mockRestore();
+  });
+
+  it('allows exporting a saved BORRADOR plan', async () => {
+    const { fixture, component } = await setup();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="download-excel"]')).not.toBeNull();
+    expect(component.canExport()).toBe(true);
+  });
+
+  it('switches to read-only and explains unmet prerequisites', async () => {
+    const { fixture, component } = await setup({
+      get: vi.fn(() =>
+        of(
+          plan('BORRADOR', {
+            prerequisites: { surveyClosed: false, annualPlanTerminated: true },
+            outdated: true,
+            outdatedReasons: ['SURVEY_REOPENED'],
+          }),
+        ),
+      ),
+    });
+
+    expect(component.editable()).toBe(false);
+    expect(component.canExport()).toBe(false);
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="prerequisite-blockers"]'),
+    ).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain(
+      'TRIMESTRAL_PLANNING.OUTDATED_REASONS.SURVEY_REOPENED',
+    );
+  });
+
+  it('renders unassigned demand independently from blank enrollments', async () => {
+    const { fixture } = await setup({
+      get: vi.fn(() =>
+        of(
+          plan('BORRADOR', {
+            unassignedDemand: [
+              {
+                studentId: 8,
+                enrollmentId: '2200000008',
+                fullName: 'Ana Pérez',
+                academicTerm: 'III',
+                ueaId: 7,
+                clave: '2156027',
+                nombre: 'INTELIGENCIA ARTIFICIAL',
+                reason: 'GROUP_LIMIT_REACHED',
+              },
+            ],
+          }),
+        ),
+      ),
+    });
+
+    expect(fixture.nativeElement.querySelector('[data-testid="unassigned-demand"]')).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('2200000008');
+  });
+
+  it('returns directly to BORRADOR if the plan has never been exported', async () => {
+    const { component, stub } = await setup({
+      get: vi.fn(() => of(plan('TERMINADA', { exportedAt: null }))),
+    });
+
+    component.backToDraft();
+
+    expect(component.showBackToDraftDialog()).toBe(false);
+    expect(stub.changeStatus).toHaveBeenCalledWith(1, { status: 'BORRADOR' });
+  });
+
+  it('warns before reopening a plan that has already been exported', async () => {
+    const { component, stub } = await setup({
+      get: vi.fn(() => of(plan('TERMINADA', { exportedAt: '2026-07-21T20:00:00Z' }))),
+    });
+
+    component.backToDraft();
+
+    expect(component.showBackToDraftDialog()).toBe(true);
+    expect(stub.changeStatus).not.toHaveBeenCalled();
+    component.confirmBackToDraft();
+    expect(stub.changeStatus).toHaveBeenCalledWith(1, { status: 'BORRADOR' });
+  });
+
+  it('maps a not-editable conflict to its domain key', async () => {
+    const { component } = await setup({
+      changeStatus: vi.fn(() =>
+        throwError(() => mockApiError({ status: 409, error: 'TRIMESTRAL_PLAN_NOT_EDITABLE' })),
+      ),
+    });
+
+    component.finish();
+
+    expect(component.actionError()).toBe('not_editable');
+  });
+});

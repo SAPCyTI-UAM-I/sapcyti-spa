@@ -1,0 +1,111 @@
+<div class="border-outline bg-surface gap-md p-md flex flex-col rounded-xl border">
+  <div>
+    <h2 class="text-h3">{{ 'TRIMESTRAL_PLANNING.PENDING.TITLE' | translate }}</h2>
+    <p class="text-caption text-text-secondary">
+      {{ 'TRIMESTRAL_PLANNING.PENDING.HINT' | translate }}
+    </p>
+  </div>
+
+  @if (unassignedDemand().length > 0) {
+    <section class="gap-sm flex flex-col" data-testid="unassigned-demand">
+      <h3 class="text-label-md text-text-secondary">
+        {{ 'TRIMESTRAL_PLANNING.UNASSIGNED.TITLE' | translate }}
+      </h3>
+      <ul class="gap-sm flex flex-col">
+        @for (demand of unassignedDemand(); track demand.studentId + '-' + demand.ueaId) {
+          <li
+            class="border-outline p-sm gap-sm flex flex-wrap items-center justify-between rounded-lg border"
+          >
+            <div class="gap-xs flex min-w-0 flex-col">
+              <span class="text-body-md font-medium">
+                {{ demand.fullName }} · {{ demand.enrollmentId }}
+              </span>
+              <span class="text-caption text-text-secondary">
+                {{ demand.clave }} · {{ demand.nombre }}
+                @if (demand.academicTerm) {
+                  ·
+                  {{
+                    'TRIMESTRAL_PLANNING.GROUP.DECLARED_TERM'
+                      | translate: { term: demand.academicTerm }
+                  }}
+                }
+              </span>
+              <span class="text-caption text-warning gap-xs flex items-center">
+                <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+                {{ 'TRIMESTRAL_PLANNING.UNASSIGNED.REASONS.' + demand.reason | translate }}
+              </span>
+            </div>
+
+            @if (editable()) {
+              <!-- Cuando no cabe en ningún grupo, lo que falta es abrir otro. -->
+              @if (needsNewGroup(demand)) {
+                <p-button
+                  severity="secondary"
+                  variant="outlined"
+                  icon="pi pi-plus"
+                  [label]="'TRIMESTRAL_PLANNING.PENDING.CREATE_GROUP' | translate"
+                  (onClick)="createGroupForUea.emit(demand.ueaId)"
+                  [attr.data-testid]="'create-group-for-uea-' + demand.ueaId"
+                />
+              } @else {
+                <p-select
+                  class="min-w-[14rem]"
+                  [ngModel]="null"
+                  [ngModelOptions]="{ standalone: true }"
+                  [options]="groupOptions()(demand.ueaId)"
+                  optionLabel="label"
+                  [placeholder]="'TRIMESTRAL_PLANNING.PENDING.ASSIGN' | translate"
+                  [ariaLabel]="'TRIMESTRAL_PLANNING.PENDING.ASSIGN' | translate"
+                  (ngModelChange)="onAssign(demand.studentId, $event)"
+                  [attr.data-testid]="'assign-to-group-' + demand.studentId"
+                />
+              }
+            }
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (blankStudents().length > 0) {
+    <section class="gap-sm flex flex-col" data-testid="blank-students">
+      <div>
+        <h3 class="text-label-md text-text-secondary">
+          {{ 'TRIMESTRAL_PLANNING.DETAIL.BLANKS' | translate }}
+        </h3>
+        <p class="text-caption text-text-secondary">
+          {{ 'TRIMESTRAL_PLANNING.DETAIL.BLANKS_HINT' | translate }}
+        </p>
+      </div>
+      <ul class="gap-sm flex flex-col">
+        @for (student of blankStudents(); track student.studentId) {
+          <li
+            class="border-outline p-sm gap-sm flex flex-wrap items-center justify-between rounded-lg border"
+          >
+            <span class="text-body-md">
+              {{ student.fullName }}
+              <span class="text-caption text-text-secondary">
+                · {{ student.enrollmentId }} · {{ student.academicTerm }}
+              </span>
+            </span>
+
+            @if (editable()) {
+              <p-select
+                class="min-w-[14rem]"
+                [ngModel]="null"
+                [ngModelOptions]="{ standalone: true }"
+                [options]="groupOptions()(null)"
+                optionLabel="label"
+                [filter]="true"
+                [placeholder]="'TRIMESTRAL_PLANNING.PENDING.ASSIGN' | translate"
+                [ariaLabel]="'TRIMESTRAL_PLANNING.PENDING.ASSIGN' | translate"
+                (ngModelChange)="onAssign(student.studentId, $event)"
+                [attr.data-testid]="'assign-to-group-' + student.studentId"
+              />
+            }
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</div>

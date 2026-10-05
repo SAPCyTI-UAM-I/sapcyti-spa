@@ -1,0 +1,59 @@
+<app-load-state [loading]="loading()" [error]="error()" (retry)="reload()" emptyMessage="">
+  @if (professorData(); as data) {
+    <!-- Tarjeta de Bienvenida al Docente -->
+    <section class="bg-surface border-outline p-lg gap-md flex min-w-0 flex-col rounded-xl border">
+      <div class="gap-xs flex min-w-0 flex-col">
+        <div class="gap-sm flex items-center">
+          <span
+            class="bg-secondary/10 text-secondary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+          >
+            <i class="pi pi-user text-[18px]" aria-hidden="true"></i>
+          </span>
+          <h2 class="text-h3 text-on-surface font-h3 font-bold">
+            {{ 'DASHBOARD.PROFESSOR.WELCOME_TITLE' | translate }}
+          </h2>
+        </div>
+        <p class="text-headline-sm text-on-surface font-headline-sm mt-xs font-semibold">
+          {{ data.professorName }}
+        </p>
+        <span class="text-caption text-text-tertiary font-caption">
+          {{ data.email }}
+        </span>
+      </div>
+
+      <p class="text-body-md text-text-secondary font-body-md border-surface-subtle pt-sm border-t">
+        {{ 'DASHBOARD.PROFESSOR.WELCOME_DESC' | translate }}
+      </p>
+    </section>
+
+    <!-- Estado del Ciclo Académico -->
+    <section
+      class="bg-surface-subtle border-outline p-lg gap-md mt-lg flex min-w-0 items-start rounded-xl border"
+    >
+      <span
+        class="bg-surface text-primary mt-xs flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-sm"
+      >
+        <i class="pi pi-info-circle text-[20px]" aria-hidden="true"></i>
+      </span>
+      <div class="gap-xs flex min-w-0 flex-col">
+        <h3 class="text-headline-sm text-on-surface font-headline-sm font-semibold">
+          {{ 'DASHBOARD.PROFESSOR.CYCLE_TITLE' | translate }}
+        </h3>
+        <p class="text-body-md text-text-secondary font-body-md">
+          {{ 'DASHBOARD.PROFESSOR.CYCLE_DESC' | translate }}
+        </p>
+      </div>
+    </section>
+
+    <!-- Acceso Rápido a Seguridad -->
+    <div class="mt-lg flex justify-end">
+      <a
+        routerLink="/account/password"
+        class="text-text-secondary hover:text-primary text-body-md font-body-md gap-xs inline-flex items-center transition-colors"
+      >
+        <i class="pi pi-lock text-[14px]" aria-hidden="true"></i>
+        <span>{{ 'DASHBOARD.PROFESSOR.ACCOUNT_SECURITY' | translate }}</span>
+      </a>
+    </div>
+  }
+</app-load-state>
