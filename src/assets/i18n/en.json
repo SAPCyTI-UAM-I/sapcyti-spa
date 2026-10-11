@@ -797,6 +797,56 @@
       "PROGRAMADO": "Scheduled"
     }
   },
+  "EXAM_REQUEST": {
+    "ACTIONS": {
+      "RETRY": "Retry"
+    },
+    "ARTICLE_HINT": "Free-named PDF or HTTPS link",
+    "DOCUMENT_TYPES": {
+      "ARTICULO": "Article",
+      "COMP_IDIOMA": "Language certificate (or status letter)",
+      "DATOS_ALUM": "Personal data sheet (division form)",
+      "HIST_ACAD": "Academic record",
+      "SOL_SINODALES": "Letter with examining committee proposal and curriculum summary",
+      "TESIS": "Thesis (signed by advisors)"
+    },
+    "ELIGIBILITY": {
+      "PROGRAM_BAJA": "You cannot request the exam because your program has been withdrawn",
+      "PROGRAM_SUSPENSION": "You cannot request the exam because your program is suspended"
+    },
+    "ERRORS": {
+      "academic_program": "The requirements could not be determined. Contact the Coordination office.",
+      "ACADEMIC_PROGRAM_AMBIGUOUS": "The requirements could not be determined. Contact the Coordination office.",
+      "ACADEMIC_PROGRAM_CHANGED": "Your program data needs review. Contact the Coordination office.",
+      "DEGREE_UNSUPPORTED": "The requirements could not be determined. Contact the Coordination office.",
+      "dependency_unavailable": "The requirements could not be loaded. Try again.",
+      "DEPENDENCY_UNAVAILABLE": "The requirements could not be loaded. Try again.",
+      "EXAM_TYPE_NOT_ALLOWED": "This exam type is not available for your program.",
+      "forbidden": "You do not have access to this request.",
+      "FORBIDDEN": "You do not have access to this request.",
+      "generic": "Something went wrong. Try again.",
+      "GENERIC_ERROR": "Something went wrong. Try again.",
+      "program_not_eligible": "You cannot request the exam with your current program status.",
+      "PROGRAM_NOT_ELIGIBLE": "You cannot request the exam with your current program status.",
+      "PROGRAM_STATUS_UNSUPPORTED": "The requirements could not be determined. Contact the Coordination office.",
+      "STUDENT_DATA_INCOMPLETE": "The requirements could not be determined. Contact the Coordination office.",
+      "student_not_found": "Your program data was not found. Contact the Coordination office.",
+      "STUDENT_NOT_FOUND": "Your program data was not found. Contact the Coordination office.",
+      "UNAUTHORIZED": "Sign in to continue.",
+      "validation": "The exam type could not be loaded.",
+      "VALIDATION_ERROR": "The exam type could not be loaded."
+    },
+    "STATES": {
+      "EMPTY": "No requirements were found.",
+      "LOAD_ERROR": "The requirements could not be loaded. Try again."
+    },
+    "STATUS": {
+      "LOADED": "Uploaded",
+      "PENDING": "Pending"
+    },
+    "SUBTITLE": "Documents required for your degree",
+    "TITLE": "Degree exam request"
+  },
   "SHELL": {
     "BRAND": {
       "SUBTITLE": "PCyTI — UAM",
@@ -805,6 +855,7 @@
     "MENU": {
       "ADVISOR_APPROVAL": "Approve course selection",
       "CHANGE_PASSWORD": "Change password",
+      "EXAM_REQUEST": "Degree exam request",
       "HOME": "Home",
       "PLAN_ANNUAL": "Annual planning",
       "PLAN_TRIMESTRAL": "Trimestral planning",

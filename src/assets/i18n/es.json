@@ -797,6 +797,56 @@
       "PROGRAMADO": "Programado"
     }
   },
+  "EXAM_REQUEST": {
+    "ACTIONS": {
+      "RETRY": "Reintentar"
+    },
+    "ARTICLE_HINT": "PDF de nombre libre o enlace HTTPS",
+    "DOCUMENT_TYPES": {
+      "ARTICULO": "Artículo",
+      "COMP_IDIOMA": "Comprobante de idioma (o carta de situación)",
+      "DATOS_ALUM": "Hoja de datos personales (formato de la División)",
+      "HIST_ACAD": "Historia académica",
+      "SOL_SINODALES": "Carta con propuesta de sinodales y resumen curricular",
+      "TESIS": "Tesis (firmada por asesores)"
+    },
+    "ELIGIBILITY": {
+      "PROGRAM_BAJA": "No puedes solicitar el examen porque tu programa está dado de baja",
+      "PROGRAM_SUSPENSION": "No puedes solicitar el examen porque tu programa está suspendido"
+    },
+    "ERRORS": {
+      "academic_program": "No se pudieron determinar los requisitos. Contacta a la Coordinación.",
+      "ACADEMIC_PROGRAM_AMBIGUOUS": "No se pudieron determinar los requisitos. Contacta a la Coordinación.",
+      "ACADEMIC_PROGRAM_CHANGED": "Tus datos de programa necesitan revisión. Contacta a la Coordinación.",
+      "DEGREE_UNSUPPORTED": "No se pudieron determinar los requisitos. Contacta a la Coordinación.",
+      "dependency_unavailable": "No se pudieron cargar los requisitos. Inténtalo de nuevo.",
+      "DEPENDENCY_UNAVAILABLE": "No se pudieron cargar los requisitos. Inténtalo de nuevo.",
+      "EXAM_TYPE_NOT_ALLOWED": "Este tipo de examen no está disponible para tu programa.",
+      "forbidden": "No tienes acceso a esta solicitud.",
+      "FORBIDDEN": "No tienes acceso a esta solicitud.",
+      "generic": "Ocurrió un error. Inténtalo de nuevo.",
+      "GENERIC_ERROR": "Ocurrió un error. Inténtalo de nuevo.",
+      "program_not_eligible": "No puedes solicitar el examen con tu estatus de programa actual.",
+      "PROGRAM_NOT_ELIGIBLE": "No puedes solicitar el examen con tu estatus de programa actual.",
+      "PROGRAM_STATUS_UNSUPPORTED": "No se pudieron determinar los requisitos. Contacta a la Coordinación.",
+      "STUDENT_DATA_INCOMPLETE": "No se pudieron determinar los requisitos. Contacta a la Coordinación.",
+      "student_not_found": "No se encontraron los datos de tu programa. Contacta a la Coordinación.",
+      "STUDENT_NOT_FOUND": "No se encontraron los datos de tu programa. Contacta a la Coordinación.",
+      "UNAUTHORIZED": "Inicia sesión para continuar.",
+      "validation": "No se pudo consultar el tipo de examen.",
+      "VALIDATION_ERROR": "No se pudo consultar el tipo de examen."
+    },
+    "STATES": {
+      "EMPTY": "No se encontraron requisitos.",
+      "LOAD_ERROR": "No se pudieron cargar los requisitos. Inténtalo de nuevo."
+    },
+    "STATUS": {
+      "LOADED": "Cargado",
+      "PENDING": "Pendiente"
+    },
+    "SUBTITLE": "Documentos requeridos para tu grado",
+    "TITLE": "Solicitud de examen de grado"
+  },
   "SHELL": {
     "BRAND": {
       "SUBTITLE": "PCyTI — UAM",
@@ -805,6 +855,7 @@
     "MENU": {
       "ADVISOR_APPROVAL": "Aprobar elección de UEAs",
       "CHANGE_PASSWORD": "Cambiar contraseña",
+      "EXAM_REQUEST": "Solicitud de examen de grado",
       "HOME": "Inicio",
       "PLAN_ANNUAL": "Planeación anual",
       "PLAN_TRIMESTRAL": "Planeación trimestral",
