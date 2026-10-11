@@ -1,0 +1,75 @@
+<section class="gap-lg px-margin flex flex-col" data-testid="exam-requirements-list">
+  <header class="gap-sm flex flex-col">
+    <div class="gap-md flex flex-wrap items-center">
+      <h1 class="text-h1 text-primary font-h1">{{ 'EXAM_REQUEST.TITLE' | translate }}</h1>
+      @if (degree(); as currentDegree) {
+        <app-catalog-tag
+          [value]="'EXAM_REQUEST.DEGREE.' + currentDegree | translate"
+          [severity]="degreeSeverity()"
+          data-testid="exam-degree-tag"
+        />
+      }
+    </div>
+    <p class="text-body-md text-text-secondary font-body-md">
+      {{ 'EXAM_REQUEST.SUBTITLE' | translate }}
+    </p>
+  </header>
+
+  <app-load-state
+    [loading]="loading()"
+    [error]="!!loadError()"
+    [empty]="false"
+    emptyMessage="EXAM_REQUEST.STATES.EMPTY"
+    [errorMessage]="errorMessage()"
+    (retry)="reload()"
+  >
+    @if (showIneligible()) {
+      <div data-testid="exam-ineligible-message">
+        <p-message
+          severity="warn"
+          styleClass="w-full justify-start"
+          [text]="eligibilityMessageKey() | translate"
+        />
+      </div>
+    } @else {
+      <ul class="gap-md flex list-none flex-col p-0">
+        @for (item of visibleRequirements(); track item.documentType) {
+          <li
+            class="border-outline bg-surface p-md gap-sm flex flex-col rounded-xl border"
+            [attr.data-testid]="'exam-requirement-card-' + item.documentType"
+          >
+            <div class="gap-md flex items-start justify-between">
+              <h2 class="text-h3 font-h3">
+                {{ 'EXAM_REQUEST.DOCUMENT_TYPES.' + item.documentType | translate }}
+              </h2>
+              <app-catalog-tag
+                [value]="
+                  (item.status === 'CARGADO'
+                    ? 'EXAM_REQUEST.STATUS.LOADED'
+                    : 'EXAM_REQUEST.STATUS.PENDING'
+                  ) | translate
+                "
+                [severity]="requirementStatusSeverity(item.status)"
+              />
+            </div>
+            @if (item.documentType === 'ARTICULO') {
+              <p class="text-body-md text-text-secondary font-body-md">
+                {{ 'EXAM_REQUEST.ARTICLE_HINT' | translate }}
+              </p>
+            } @else {
+              <p class="text-caption text-text-secondary font-caption">
+                {{ 'EXAM_REQUEST.LABELS.FORMAT' | translate }}: {{ item.expectedName }}
+              </p>
+              <p
+                class="text-caption text-text-secondary font-caption"
+                data-testid="exam-requirement-example"
+              >
+                {{ 'EXAM_REQUEST.LABELS.EXAMPLE' | translate }}: {{ item.exampleName }}
+              </p>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </app-load-state>
+</section>

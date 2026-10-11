@@ -46,6 +46,7 @@ Vista mínima del SPA Angular. No inventar módulos fuera de esta lista.
 | `dashboard` | Home por rol |
 | `enrollment` | Solo placeholder (aprobación asesor) |
 | `enrollment-survey` | Sondeo (lista/form/detalle/respuesta) |
+| `exam-requests` | Requisitos de examen de grado (alumno) |
 | `trimestral-planning` | Plan trimestral (+ `testing/` fixtures) |
 
 ## Ruido — no explorar por defecto

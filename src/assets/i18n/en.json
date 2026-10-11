@@ -802,6 +802,11 @@
       "RETRY": "Retry"
     },
     "ARTICLE_HINT": "Free-named PDF or HTTPS link",
+    "DEGREE": {
+      "DOCTORADO": "Doctorate",
+      "ESPECIALIZACION": "Specialization",
+      "MAESTRIA": "Master's"
+    },
     "DOCUMENT_TYPES": {
       "ARTICULO": "Article",
       "COMP_IDIOMA": "Language certificate (or status letter)",
@@ -835,6 +840,10 @@
       "UNAUTHORIZED": "Sign in to continue.",
       "validation": "The exam type could not be loaded.",
       "VALIDATION_ERROR": "The exam type could not be loaded."
+    },
+    "LABELS": {
+      "EXAMPLE": "Example",
+      "FORMAT": "File name format"
     },
     "STATES": {
       "EMPTY": "No requirements were found.",

@@ -13,6 +13,7 @@ export const ROUTE_PERMISSIONS = {
   trimestralPlanning: ['COORDINATOR'],
   enrollmentSurvey: ['COORDINATOR'],
   enrollmentSurveyResponse: ['STUDENT'],
+  examRequests: ['STUDENT'],
   studentProfile: ['STUDENT'],
   account: ['SYSTEM_ADMIN', 'COORDINATOR', 'ASSISTANT', 'PROFESSOR', 'STUDENT', 'SPEAKER'],
   passwordAdministration: ['COORDINATOR'],

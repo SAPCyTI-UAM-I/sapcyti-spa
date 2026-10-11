@@ -27,6 +27,7 @@ Mapa físico: [`repository-map.md`](./repository-map.md).
 | Pantalla UEA | **`academic-catalog`** (no offering) | rutas `ueas` en `academic-catalog.routes.ts` |
 | Inscripción asesor | `features/enrollment/` | stub placeholder — solo visto bueno de asesor |
 | Sondeo | `features/enrollment-survey/` | repos + components del feature |
+| Solicitud de examen | `features/exam-requests/` | requisitos de grado (HU-62); repos + pantalla |
 | Plan anual | `features/annual-planning/` | — |
 | Plan trimestral | `features/trimestral-planning/` | fixtures en `testing/` |
 | Login / reset password | `features/auth/` | repos en `core/auth/repositories/` |

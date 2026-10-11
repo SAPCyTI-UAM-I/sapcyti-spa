@@ -7,8 +7,8 @@ import {
 } from '../../../core/theme/design-tokens';
 
 /**
- * Wraps PrimeNG `p-tag` for catalog badges. Program-type severities (`maestria`,
- * `doctorado`) use dedicated colors from `CATALOG_PROGRAM_TYPE_TAG`.
+ * Wraps PrimeNG `p-tag` for catalog badges. Program-type severities
+ * (`especializacion`, `maestria`, `doctorado`) use `CATALOG_PROGRAM_TYPE_TAG`.
  */
 @Component({
   selector: 'app-catalog-tag',
@@ -34,7 +34,7 @@ export class CatalogTagComponent {
 
   readonly customColors = computed(() => {
     const severity = this.severity();
-    if (severity === 'maestria' || severity === 'doctorado') {
+    if (severity === 'especializacion' || severity === 'maestria' || severity === 'doctorado') {
       return CATALOG_PROGRAM_TYPE_TAG[severity];
     }
     return null;
@@ -42,7 +42,7 @@ export class CatalogTagComponent {
 
   readonly primeSeverity = computed(() => {
     const severity = this.severity();
-    if (severity === 'maestria' || severity === 'doctorado') {
+    if (severity === 'especializacion' || severity === 'maestria' || severity === 'doctorado') {
       return undefined;
     }
     return severity;

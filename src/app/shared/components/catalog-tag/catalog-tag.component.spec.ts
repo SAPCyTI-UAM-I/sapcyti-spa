@@ -28,4 +28,12 @@ describe('CatalogTagComponent', () => {
     expect(fixture.componentInstance.primeSeverity()).toBeUndefined();
     expect(fixture.componentInstance.customColors()).toEqual(CATALOG_PROGRAM_TYPE_TAG.maestria);
   });
+
+  it('uses primary colors for especializacion', () => {
+    const fixture = create('Especialización', 'especializacion');
+    expect(fixture.componentInstance.primeSeverity()).toBeUndefined();
+    expect(fixture.componentInstance.customColors()).toEqual(
+      CATALOG_PROGRAM_TYPE_TAG.especializacion,
+    );
+  });
 });

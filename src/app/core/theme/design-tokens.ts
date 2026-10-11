@@ -92,11 +92,16 @@ export type CatalogTagSeverity =
   | 'info'
   | 'warn'
   | 'secondary'
+  | 'especializacion'
   | 'maestria'
   | 'doctorado';
 
 /** Tag colors for program-type badges (`CatalogTagComponent` applies these inline). */
 export const CATALOG_PROGRAM_TYPE_TAG = {
+  especializacion: {
+    background: PRIMARY[100],
+    color: PRIMARY[700],
+  },
   maestria: {
     background: SECONDARY[100],
     color: SECONDARY[700],

@@ -74,6 +74,18 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'exam-requests',
+        loadChildren: () =>
+          import('./features/exam-requests/exam-requests.routes').then(
+            (m) => m.EXAM_REQUESTS_ROUTES,
+          ),
+        canActivate: [authGuard],
+        data: {
+          roles: ROUTE_PERMISSIONS.examRequests,
+          breadcrumb: 'SHELL.MENU.EXAM_REQUEST',
+        },
+      },
+      {
         path: 'account',
         loadChildren: () =>
           import('./features/account/account.routes').then((m) => m.ACCOUNT_ROUTES),
