@@ -1,11 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { mockSpringBootNotFound } from '../testing/mock-api-error.util';
+import { mockApiError, mockSpringBootNotFound } from '../testing/mock-api-error.util';
 import {
+  extractFieldErrors,
   getApiErrorCode,
+  getApiErrorDetails,
   getApiErrorMessage,
   getHttpStatus,
+  isRecord,
   parseApiError,
+  toParsedApiError,
 } from './parse-api-error.util';
 
 describe('parseApiError', () => {
@@ -60,5 +64,94 @@ describe('parseApiError', () => {
     expect(getApiErrorCode(error)).toBe('Not Found');
     expect(getApiErrorMessage(error)).toBeUndefined();
     expect(getHttpStatus(error)).toBe(404);
+  });
+});
+
+describe('toParsedApiError', () => {
+  it('copies details when the body declares them', () => {
+    const details = {
+      fieldErrors: [
+        { field: 'examType', code: 'INVALID_ENUM', message: 'Use GRADO or PREDOCTORAL' },
+      ],
+    };
+    const error = mockApiError({
+      status: 400,
+      error: 'VALIDATION_ERROR',
+      message: 'Invalid exam type',
+      details,
+    });
+
+    expect(toParsedApiError(error)).toEqual({
+      status: 400,
+      code: 'VALIDATION_ERROR',
+      message: 'Invalid exam type',
+      details,
+    });
+    expect(getApiErrorDetails(error)).toEqual(details);
+  });
+
+  it('omits details when the body does not declare them', () => {
+    const error = mockApiError({
+      status: 400,
+      error: 'VALIDATION_ERROR',
+      message: 'Invalid exam type',
+    });
+
+    expect(toParsedApiError(error)).toEqual({
+      status: 400,
+      code: 'VALIDATION_ERROR',
+      message: 'Invalid exam type',
+    });
+    expect(getApiErrorDetails(error)).toBeUndefined();
+  });
+
+  it('propagates malformed details without inventing a structure', () => {
+    const error = mockApiError({
+      status: 409,
+      error: 'VERSION_CONFLICT',
+      message: 'The resource version changed',
+      details: 'not-an-object',
+    });
+
+    expect(toParsedApiError(error)).toEqual({
+      status: 409,
+      code: 'VERSION_CONFLICT',
+      message: 'The resource version changed',
+      details: 'not-an-object',
+    });
+    expect(extractFieldErrors(getApiErrorDetails(error))).toEqual([]);
+  });
+});
+
+describe('isRecord', () => {
+  it('accepts plain objects and rejects arrays, null and primitives', () => {
+    expect(isRecord({ field: 'examType' })).toBe(true);
+    expect(isRecord([])).toBe(false);
+    expect(isRecord(null)).toBe(false);
+    expect(isRecord('details')).toBe(false);
+  });
+});
+
+describe('extractFieldErrors', () => {
+  it('returns valid field errors and drops malformed entries', () => {
+    const details = {
+      fieldErrors: [
+        { field: 'examType', code: 'INVALID_ENUM', message: 'Use GRADO or PREDOCTORAL' },
+        { field: 'body', code: 'INVALID_TYPE' },
+        null,
+        'skip',
+      ],
+    };
+
+    expect(extractFieldErrors(details)).toEqual([
+      { field: 'examType', code: 'INVALID_ENUM', message: 'Use GRADO or PREDOCTORAL' },
+    ]);
+  });
+
+  it('returns an empty list when details is absent or malformed', () => {
+    expect(extractFieldErrors(undefined)).toEqual([]);
+    expect(extractFieldErrors(null)).toEqual([]);
+    expect(extractFieldErrors({ fieldErrors: 'not-an-array' })).toEqual([]);
+    expect(extractFieldErrors({ missing: true })).toEqual([]);
   });
 });

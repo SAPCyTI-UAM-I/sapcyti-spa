@@ -6,16 +6,20 @@ export interface MockApiErrorOptions {
   message?: string;
   /** Legacy mock field; mapped to `error` when `error` is omitted. */
   code?: string;
+  /** Metadatos opcionales; las llamadas legacy sin `details` no cambian. */
+  details?: unknown;
 }
 
 /** Builds an HttpErrorResponse matching sapcyti-api ErrorResponse { error, message }. */
 export function mockApiError(options: MockApiErrorOptions): HttpErrorResponse {
   const errorCode = options.error ?? options.code;
+  const hasDetails = options.details !== undefined;
   const body =
-    errorCode || options.message
+    errorCode || options.message || hasDetails
       ? {
           ...(errorCode ? { error: errorCode } : {}),
           ...(options.message ? { message: options.message } : {}),
+          ...(hasDetails ? { details: options.details } : {}),
         }
       : null;
 
