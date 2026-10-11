@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import {
   HttpClient,
+  HttpContext,
   HttpErrorResponse,
   provideHttpClient,
   withInterceptors,
@@ -10,7 +11,15 @@ import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import { AuthStateService } from '../auth/auth.service';
+import { mockApiError } from '../errors/testing/mock-api-error.util';
 import { httpErrorInterceptor } from './http-error.interceptor';
+import { EXAM_STUDENT_OPERATION } from './tokens/exam-context.tokens';
+
+const EXAM_WRITE_URL = '/api/exam-requests/me/GRADO/documents';
+
+function examStudentContext(): HttpContext {
+  return new HttpContext().set(EXAM_STUDENT_OPERATION, true);
+}
 
 describe('httpErrorInterceptor', () => {
   let http: HttpClient;
@@ -18,6 +27,7 @@ describe('httpErrorInterceptor', () => {
   let authState: {
     logout: ReturnType<typeof vi.fn>;
     silentRefresh: ReturnType<typeof vi.fn>;
+    hasRole: ReturnType<typeof vi.fn>;
   };
   let router: { navigateByUrl: ReturnType<typeof vi.fn> };
 
@@ -25,6 +35,7 @@ describe('httpErrorInterceptor', () => {
     authState = {
       logout: vi.fn(() => of(void 0)),
       silentRefresh: vi.fn(() => of(void 0)),
+      hasRole: vi.fn((role: string) => role === 'STUDENT'),
     };
     router = { navigateByUrl: vi.fn() };
 
@@ -118,5 +129,103 @@ describe('httpErrorInterceptor', () => {
     expect(authState.logout).toHaveBeenCalledTimes(1);
     expect(router.navigateByUrl).toHaveBeenCalledWith('/auth/login');
     expect(captured?.status).toBe(401);
+  });
+
+  it('keeps PROGRAM_NOT_ELIGIBLE on exam student writes without redirecting', () => {
+    let captured: HttpErrorResponse | undefined;
+
+    http.post(EXAM_WRITE_URL, {}, { context: examStudentContext() }).subscribe({
+      error: (error: HttpErrorResponse) => {
+        captured = error;
+      },
+    });
+
+    const req = httpMock.expectOne(EXAM_WRITE_URL);
+    req.flush(
+      { error: 'PROGRAM_NOT_ELIGIBLE', message: 'Program is not eligible' },
+      { status: 403, statusText: 'Forbidden' },
+    );
+
+    expect(captured?.status).toBe(403);
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+    expect(authState.logout).not.toHaveBeenCalled();
+  });
+
+  it('redirects a normal role or tenant 403 on the same exam write', () => {
+    let captured: HttpErrorResponse | undefined;
+
+    http.post(EXAM_WRITE_URL, {}, { context: examStudentContext() }).subscribe({
+      error: (error: HttpErrorResponse) => {
+        captured = error;
+      },
+    });
+
+    const req = httpMock.expectOne(EXAM_WRITE_URL);
+    req.flush(mockApiError({ status: 403, error: 'FORBIDDEN' }).error, {
+      status: 403,
+      statusText: 'Forbidden',
+    });
+
+    expect(captured?.status).toBe(403);
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/access-denied');
+  });
+
+  it('redirects PROGRAM_NOT_ELIGIBLE on GET exam reads', () => {
+    const readUrl = '/api/exam-requests/me/options';
+    let captured: HttpErrorResponse | undefined;
+
+    http.get(readUrl, { context: examStudentContext() }).subscribe({
+      error: (error: HttpErrorResponse) => {
+        captured = error;
+      },
+    });
+
+    const req = httpMock.expectOne(readUrl);
+    req.flush(
+      { error: 'PROGRAM_NOT_ELIGIBLE', message: 'Program is not eligible' },
+      { status: 403, statusText: 'Forbidden' },
+    );
+
+    expect(captured?.status).toBe(403);
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/access-denied');
+  });
+
+  it('redirects PROGRAM_NOT_ELIGIBLE on a different write route', () => {
+    const otherUrl = '/api/students/me';
+    let captured: HttpErrorResponse | undefined;
+
+    http.post(otherUrl, {}, { context: examStudentContext() }).subscribe({
+      error: (error: HttpErrorResponse) => {
+        captured = error;
+      },
+    });
+
+    const req = httpMock.expectOne(otherUrl);
+    req.flush(
+      { error: 'PROGRAM_NOT_ELIGIBLE', message: 'Program is not eligible' },
+      { status: 403, statusText: 'Forbidden' },
+    );
+
+    expect(captured?.status).toBe(403);
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/access-denied');
+  });
+
+  it('redirects PROGRAM_NOT_ELIGIBLE when the exam context is absent', () => {
+    let captured: HttpErrorResponse | undefined;
+
+    http.post(EXAM_WRITE_URL, {}).subscribe({
+      error: (error: HttpErrorResponse) => {
+        captured = error;
+      },
+    });
+
+    const req = httpMock.expectOne(EXAM_WRITE_URL);
+    req.flush(
+      { error: 'PROGRAM_NOT_ELIGIBLE', message: 'Program is not eligible' },
+      { status: 403, statusText: 'Forbidden' },
+    );
+
+    expect(captured?.status).toBe(403);
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/access-denied');
   });
 });

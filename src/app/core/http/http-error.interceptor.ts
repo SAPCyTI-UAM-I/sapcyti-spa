@@ -1,10 +1,60 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, finalize, shareReplay, switchMap, throwError } from 'rxjs';
 
 import { isAuthSessionRequest } from '../auth/auth.endpoints';
 import { AuthStateService } from '../auth/auth.service';
+import { getApiErrorCode } from '../errors/utils/parse-api-error.util';
+import { EXAM_STUDENT_OPERATION } from './tokens/exam-context.tokens';
+
+const EXAM_TYPE = 'GRADO|PREDOCTORAL';
+const DOCUMENT_TYPE = 'TESIS|ARTICULO|SOL_SINODALES|HIST_ACAD|COMP_IDIOMA|DATOS_ALUM';
+
+/** Escrituras de alumno bajo /api/exam-requests; enums válidos únicamente. */
+const EXAM_STUDENT_WRITE_PATTERNS: Readonly<Record<string, readonly RegExp[]>> = {
+  POST: [
+    new RegExp(`^/api/exam-requests/me/(?:${EXAM_TYPE})/documents/?$`),
+    new RegExp(`^/api/exam-requests/me/(?:${EXAM_TYPE})/submit/?$`),
+  ],
+  PUT: [
+    new RegExp(`^/api/exam-requests/me/(?:${EXAM_TYPE})/documents/(?:${DOCUMENT_TYPE})/?$`),
+    new RegExp(`^/api/exam-requests/me/(?:${EXAM_TYPE})/updates/?$`),
+  ],
+  DELETE: [new RegExp(`^/api/exam-requests/me/(?:${EXAM_TYPE})/documents/(?:${DOCUMENT_TYPE})/?$`)],
+};
+
+function resolveRequestPath(url: string): string {
+  try {
+    return new URL(url, 'http://local.invalid').pathname;
+  } catch {
+    return url.split('?')[0] ?? url;
+  }
+}
+
+function isExamStudentWriteRequest(method: string, url: string): boolean {
+  const patterns = EXAM_STUDENT_WRITE_PATTERNS[method.toUpperCase()];
+  if (!patterns) {
+    return false;
+  }
+
+  return patterns.some((pattern) => pattern.test(resolveRequestPath(url)));
+}
+
+/** Conserva PROGRAM_NOT_ELIGIBLE en pantalla solo si coinciden todas las condiciones. */
+function shouldKeepProgramNotEligibleOnScreen(
+  req: HttpRequest<unknown>,
+  error: HttpErrorResponse,
+  auth: AuthStateService,
+): boolean {
+  return (
+    error.status === 403 &&
+    getApiErrorCode(error) === 'PROGRAM_NOT_ELIGIBLE' &&
+    auth.hasRole('STUDENT') &&
+    req.context.get(EXAM_STUDENT_OPERATION) === true &&
+    isExamStudentWriteRequest(req.method, req.url)
+  );
+}
 
 const RETRY_HEADER = 'x-sapcyti-auth-retry';
 let refreshInFlight$: ReturnType<AuthStateService['silentRefresh']> | null = null;
@@ -57,7 +107,7 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
-      if (error.status === 403) {
+      if (error.status === 403 && !shouldKeepProgramNotEligibleOnScreen(req, error, auth)) {
         void router.navigateByUrl('/access-denied');
       }
 
