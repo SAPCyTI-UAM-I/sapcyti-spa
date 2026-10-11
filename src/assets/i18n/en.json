@@ -799,7 +799,8 @@
   },
   "EXAM_REQUEST": {
     "ACTIONS": {
-      "RETRY": "Retry"
+      "RETRY": "Retry",
+      "SUBMIT": "Submit request"
     },
     "ARTICLE_HINT": "Free-named PDF or HTTPS link",
     "DEGREE": {
@@ -841,9 +842,17 @@
       "validation": "The exam type could not be loaded.",
       "VALIDATION_ERROR": "The exam type could not be loaded."
     },
+    "EXAM_TYPES": {
+      "GRADO": "Degree exam",
+      "PREDOCTORAL": "Predoctoral exam"
+    },
     "LABELS": {
+      "EXAM_TYPE": "Exam type",
       "EXAMPLE": "Example",
-      "FORMAT": "File name format"
+      "FOLIO": "Folio",
+      "FORMAT": "File name format",
+      "OPTIONAL": "Optional",
+      "REQUIRED": "Required"
     },
     "STATES": {
       "EMPTY": "No requirements were found.",

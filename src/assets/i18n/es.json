@@ -799,7 +799,8 @@
   },
   "EXAM_REQUEST": {
     "ACTIONS": {
-      "RETRY": "Reintentar"
+      "RETRY": "Reintentar",
+      "SUBMIT": "Enviar solicitud"
     },
     "ARTICLE_HINT": "PDF de nombre libre o enlace HTTPS",
     "DEGREE": {
@@ -841,9 +842,17 @@
       "validation": "No se pudo consultar el tipo de examen.",
       "VALIDATION_ERROR": "No se pudo consultar el tipo de examen."
     },
+    "EXAM_TYPES": {
+      "GRADO": "Examen de grado",
+      "PREDOCTORAL": "Examen predoctoral"
+    },
     "LABELS": {
+      "EXAM_TYPE": "Tipo de examen",
       "EXAMPLE": "Ejemplo",
-      "FORMAT": "Formato de nombre"
+      "FOLIO": "Folio",
+      "FORMAT": "Formato de nombre",
+      "OPTIONAL": "Opcional",
+      "REQUIRED": "Obligatorio"
     },
     "STATES": {
       "EMPTY": "No se encontraron requisitos.",
