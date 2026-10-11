@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
 import { mockApiError } from '../../../../core/errors/testing/mock-api-error.util';
@@ -14,6 +14,7 @@ import {
   ExamOptionsDto,
   ExamRequirementDto,
   ExamRequirementsResponse,
+  ExamType,
 } from '../../../../models';
 import { ExamRequestService } from '../../services/exam-request.service';
 import { mapExamRequestError } from '../../utils/exam-request-error.util';
@@ -41,10 +42,10 @@ function pdfRequirement(
   };
 }
 
-function articleRequirement(): ExamRequirementDto {
+function articleRequirement(required = true): ExamRequirementDto {
   return {
     documentType: 'ARTICULO',
-    required: true,
+    required,
     acceptedKinds: ['PDF', 'URL'],
     expectedName: null,
     exampleName: null,
@@ -78,6 +79,15 @@ function buildPayload(
     },
   };
 }
+
+const doctoralItems = (articleRequired: boolean): ExamRequirementDto[] => [
+  pdfRequirement('TESIS', 'Tesis_Docto_Perez_Soto_Luis.pdf'),
+  articleRequirement(articleRequired),
+  pdfRequirement('SOL_SINODALES', 'Sol_Sinodales_Perez_Soto_Luis.pdf'),
+  pdfRequirement('HIST_ACAD', 'Hist_Acad_Perez_Soto_Luis.pdf'),
+  pdfRequirement('COMP_IDIOMA', 'Comp_Idioma_Perez_Soto_Luis.pdf'),
+  pdfRequirement('DATOS_ALUM', 'Datos_Alum_Perez_Soto_Luis.pdf'),
+];
 
 const emanuelItems: ExamRequirementDto[] = [
   pdfRequirement('TESIS', 'Tesis_Mtria_Lopez_Alba_Emanuel.pdf'),
@@ -174,16 +184,7 @@ describe('ExamRequirementsListComponent', () => {
   });
 
   it('shows six doctorate types including Articulo after thesis', async () => {
-    const fixture = await setup(
-      buildPayload('DOCTORADO', [
-        pdfRequirement('TESIS', 'Tesis_Docto_Perez_Soto_Luis.pdf'),
-        articleRequirement(),
-        pdfRequirement('SOL_SINODALES', 'Sol_Sinodales_Perez_Soto_Luis.pdf'),
-        pdfRequirement('HIST_ACAD', 'Hist_Acad_Perez_Soto_Luis.pdf'),
-        pdfRequirement('COMP_IDIOMA', 'Comp_Idioma_Perez_Soto_Luis.pdf'),
-        pdfRequirement('DATOS_ALUM', 'Datos_Alum_Perez_Soto_Luis.pdf'),
-      ]),
-    );
+    const fixture = await setup(buildPayload('DOCTORADO', doctoralItems(true)));
 
     expect(cardTypes(fixture)).toEqual([
       'TESIS',
@@ -269,10 +270,7 @@ describe('ExamRequirementsListComponent', () => {
       .fn()
       .mockReturnValueOnce(throwError(() => mockApiError({ status: 403, error: 'FORBIDDEN' })))
       .mockReturnValueOnce(of(success.options));
-    getRequirements = vi
-      .fn()
-      .mockReturnValueOnce(throwError(() => mockApiError({ status: 403, error: 'FORBIDDEN' })))
-      .mockReturnValueOnce(of(success.requirements));
+    getRequirements = vi.fn(() => of(success.requirements));
 
     await TestBed.configureTestingModule({
       imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
@@ -295,7 +293,8 @@ describe('ExamRequirementsListComponent', () => {
     fixture.debugElement.query(By.css('p-button')).triggerEventHandler('onClick', null);
     fixture.detectChanges();
 
-    expect(getRequirements).toHaveBeenCalledTimes(2);
+    expect(getRequirements).toHaveBeenCalledTimes(1);
+    expect(getRequirements).toHaveBeenCalledWith('GRADO');
     expect(cardTypes(fixture)).toContain('TESIS');
   });
 
@@ -308,6 +307,7 @@ describe('ExamRequirementsListComponent', () => {
 
     expect(fixture.componentInstance.options()).toBeNull();
     expect(fixture.componentInstance.requirements()).toBeNull();
+    expect(fixture.componentInstance.examTypeForm.controls.examType.value).toBe('GRADO');
     expect(cardTypes(fixture)).toEqual([]);
     expect(fixture.nativeElement.textContent).not.toContain('Tesis_Mtria_Lopez_Alba_Emanuel.pdf');
   });
@@ -326,5 +326,162 @@ describe('ExamRequirementsListComponent', () => {
     expect(
       fixture.debugElement.query(By.css('[data-testid="exam-ineligible-message"]')),
     ).toBeTruthy();
+  });
+
+  it('hides the exam type selector when examTypes has only GRADO', async () => {
+    const masters = await setup();
+    expect(masters.debugElement.query(By.css('[data-testid="exam-type-selector"]'))).toBeNull();
+
+    await TestBed.resetTestingModule();
+    const specialization = await setup(
+      buildPayload('ESPECIALIZACION', [
+        pdfRequirement('TESIS', 'Tesis_Esp_Garcia_Ruiz_Maria.pdf'),
+        pdfRequirement('SOL_SINODALES', 'Sol_Sinodales_Garcia_Ruiz_Maria.pdf'),
+        pdfRequirement('HIST_ACAD', 'Hist_Acad_Garcia_Ruiz_Maria.pdf'),
+        pdfRequirement('COMP_IDIOMA', 'Comp_Idioma_Garcia_Ruiz_Maria.pdf'),
+        pdfRequirement('DATOS_ALUM', 'Datos_Alum_Garcia_Ruiz_Maria.pdf'),
+      ]),
+    );
+    expect(
+      specialization.debugElement.query(By.css('[data-testid="exam-type-selector"]')),
+    ).toBeNull();
+  });
+
+  it('shows both exam types for doctorate and reloads PREDOCTORAL without mixing dossiers', async () => {
+    const grado = buildPayload('DOCTORADO', doctoralItems(true));
+    const predoctoral: ExamRequirementsResponse = {
+      ...grado.requirements,
+      examType: 'PREDOCTORAL',
+      request: {
+        id: 6301,
+        examType: 'PREDOCTORAL',
+        degree: 'DOCTORADO',
+        status: 'ENVIADA',
+        folio: 'SEG-184201-110001',
+        version: 1,
+        submittedAt: '2026-03-15T10:00:00.000Z',
+      },
+      requirements: doctoralItems(false),
+    };
+
+    await TestBed.resetTestingModule();
+    user$ = new BehaviorSubject<CurrentUser | null>(student);
+    getOptions = vi.fn(() => of(grado.options));
+    getRequirements = vi.fn((examType: ExamType) =>
+      of(examType === 'PREDOCTORAL' ? predoctoral : grado.requirements),
+    );
+
+    await TestBed.configureTestingModule({
+      imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
+      providers: [
+        {
+          provide: ExamRequestService,
+          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+        },
+        {
+          provide: AuthStateService,
+          useValue: { currentUser$: user$.asObservable(), getCurrentUser: () => user$.value },
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
+    fixture.detectChanges();
+
+    expect(getRequirements).toHaveBeenCalledWith('GRADO');
+    expect(fixture.debugElement.query(By.css('[data-testid="exam-type-selector"]'))).toBeTruthy();
+    expect(fixture.componentInstance.examTypeOptions().map((option) => option.value)).toEqual([
+      'GRADO',
+      'PREDOCTORAL',
+    ]);
+    expect(fixture.debugElement.query(By.css('[data-testid="exam-request-folio"]'))).toBeNull();
+
+    fixture.componentInstance.examTypeForm.controls.examType.setValue('PREDOCTORAL');
+    fixture.detectChanges();
+
+    expect(getRequirements).toHaveBeenCalledWith('PREDOCTORAL');
+    expect(cardTypes(fixture)).toHaveLength(6);
+    expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.LABELS.OPTIONAL');
+    expect(fixture.nativeElement.textContent).toContain('SEG-184201-110001');
+    expect(fixture.componentInstance.requirements()?.examType).toBe('PREDOCTORAL');
+    expect(fixture.componentInstance.requirements()?.request?.id).toBe(6301);
+  });
+
+  it('renders optional and required badges from item.required', async () => {
+    const fixture = await setup(buildPayload('DOCTORADO', doctoralItems(true)));
+
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-requirement-required-ARTICULO"]')),
+    ).toBeTruthy();
+    expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.LABELS.REQUIRED');
+    expect(fixture.nativeElement.textContent).not.toContain('EXAM_REQUEST.LABELS.OPTIONAL');
+  });
+
+  it('discards a late GRADO response after switching to PREDOCTORAL', async () => {
+    const grado = buildPayload('DOCTORADO', doctoralItems(true));
+    const predoctoral: ExamRequirementsResponse = {
+      ...grado.requirements,
+      examType: 'PREDOCTORAL',
+      request: {
+        id: 6301,
+        examType: 'PREDOCTORAL',
+        degree: 'DOCTORADO',
+        status: 'ENVIADA',
+        folio: 'SEG-184201-110001',
+        version: 1,
+        submittedAt: '2026-03-15T10:00:00.000Z',
+      },
+      requirements: doctoralItems(false),
+    };
+    const grado$ = new Subject<ExamRequirementsResponse>();
+    const predoctoral$ = new Subject<ExamRequirementsResponse>();
+
+    await TestBed.resetTestingModule();
+    user$ = new BehaviorSubject<CurrentUser | null>(student);
+    getOptions = vi.fn(() => of(grado.options));
+    getRequirements = vi.fn((examType: ExamType) =>
+      examType === 'PREDOCTORAL' ? predoctoral$.asObservable() : grado$.asObservable(),
+    );
+
+    await TestBed.configureTestingModule({
+      imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
+      providers: [
+        {
+          provide: ExamRequestService,
+          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+        },
+        {
+          provide: AuthStateService,
+          useValue: { currentUser$: user$.asObservable(), getCurrentUser: () => user$.value },
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
+    fixture.detectChanges();
+    expect(getRequirements).toHaveBeenCalledWith('GRADO');
+
+    fixture.componentInstance.examTypeForm.controls.examType.setValue('PREDOCTORAL');
+    fixture.detectChanges();
+    expect(getRequirements).toHaveBeenCalledWith('PREDOCTORAL');
+
+    grado$.next(grado.requirements);
+    grado$.complete();
+    fixture.detectChanges();
+    expect(cardTypes(fixture)).toEqual([]);
+    expect(fixture.componentInstance.requirements()).toBeNull();
+
+    predoctoral$.next(predoctoral);
+    predoctoral$.complete();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.requirements()?.examType).toBe('PREDOCTORAL');
+    expect(fixture.nativeElement.textContent).toContain('SEG-184201-110001');
+    expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.LABELS.OPTIONAL');
+    expect(
+      fixture.componentInstance
+        .requirements()
+        ?.requirements.find((item) => item.documentType === 'ARTICULO')?.required,
+    ).toBe(false);
   });
 });

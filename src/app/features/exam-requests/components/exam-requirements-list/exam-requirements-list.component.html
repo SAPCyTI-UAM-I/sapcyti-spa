@@ -15,6 +15,25 @@
     </p>
   </header>
 
+  @if (showExamTypeSelector()) {
+    <div
+      class="gap-sm flex max-w-md flex-col"
+      [formGroup]="examTypeForm"
+      data-testid="exam-type-selector"
+    >
+      <label class="text-label-md text-on-surface font-label-md" for="exam-type">
+        {{ 'EXAM_REQUEST.LABELS.EXAM_TYPE' | translate }}
+      </label>
+      <app-i18n-select inputId="exam-type" controlName="examType" [options]="examTypeOptions()" />
+    </div>
+  }
+
+  @if (requestFolio(); as folio) {
+    <p class="text-body-md text-text-secondary font-body-md" data-testid="exam-request-folio">
+      {{ 'EXAM_REQUEST.LABELS.FOLIO' | translate }}: {{ folio }}
+    </p>
+  }
+
   <app-load-state
     [loading]="loading()"
     [error]="!!loadError()"
@@ -39,9 +58,21 @@
             [attr.data-testid]="'exam-requirement-card-' + item.documentType"
           >
             <div class="gap-md flex items-start justify-between">
-              <h2 class="text-h3 font-h3">
-                {{ 'EXAM_REQUEST.DOCUMENT_TYPES.' + item.documentType | translate }}
-              </h2>
+              <div class="gap-sm flex min-w-0 flex-wrap items-center">
+                <h2 class="text-h3 font-h3">
+                  {{ 'EXAM_REQUEST.DOCUMENT_TYPES.' + item.documentType | translate }}
+                </h2>
+                <app-catalog-tag
+                  [value]="
+                    (item.required
+                      ? 'EXAM_REQUEST.LABELS.REQUIRED'
+                      : 'EXAM_REQUEST.LABELS.OPTIONAL'
+                    ) | translate
+                  "
+                  [severity]="requirementRequiredSeverity(item.required)"
+                  [attr.data-testid]="'exam-requirement-required-' + item.documentType"
+                />
+              </div>
               <app-catalog-tag
                 [value]="
                   (item.status === 'CARGADO'

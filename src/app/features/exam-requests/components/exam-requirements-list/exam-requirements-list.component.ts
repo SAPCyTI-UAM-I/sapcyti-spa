@@ -8,9 +8,10 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Message } from 'primeng/message';
-import { catchError, EMPTY, finalize, forkJoin, Subject, switchMap } from 'rxjs';
+import { catchError, EMPTY, finalize, Observable, Subject, switchMap } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
 import {
@@ -18,25 +19,45 @@ import {
   ExamOptionsDto,
   ExamRequirementDto,
   ExamRequirementsResponse,
+  ExamType,
 } from '../../../../models';
-import { CatalogTagComponent, LoadStateComponent } from '../../../../shared/components';
+import {
+  CatalogTagComponent,
+  I18nSelectComponent,
+  type I18nSelectOption,
+  LoadStateComponent,
+} from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { ExamRequestService } from '../../services/exam-request.service';
 import { degreeTagSeverity } from '../../utils/degree-tag.util';
 import { EXAM_REQUEST_ERROR_I18N_SCOPE } from '../../utils/exam-request-error.util';
 
+type LoadTrigger = { kind: 'reload' } | { kind: 'type'; examType: ExamType };
+
 @Component({
   selector: 'app-exam-requirements-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: ROUTED_PAGE_HOST,
-  imports: [TranslatePipe, Message, CatalogTagComponent, LoadStateComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    Message,
+    CatalogTagComponent,
+    I18nSelectComponent,
+    LoadStateComponent,
+  ],
   templateUrl: './exam-requirements-list.component.html',
 })
 export class ExamRequirementsListComponent implements OnInit {
   private readonly examRequests = inject(ExamRequestService);
   private readonly auth = inject(AuthStateService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly reload$ = new Subject<void>();
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly load$ = new Subject<LoadTrigger>();
+
+  readonly examTypeForm = this.fb.group({
+    examType: this.fb.control<ExamType>('GRADO'),
+  });
 
   readonly loading = signal(false);
   readonly loadError = signal<string | null>(null);
@@ -85,36 +106,38 @@ export class ExamRequirementsListComponent implements OnInit {
 
   readonly errorMessage = computed(() => this.loadError() ?? 'EXAM_REQUEST.STATES.LOAD_ERROR');
 
+  /** Selector solo si el servidor ofrece más de un tipo. */
+  readonly showExamTypeSelector = computed(() => (this.options()?.examTypes.length ?? 0) > 1);
+
+  readonly examTypeOptions = computed<I18nSelectOption<ExamType>[]>(() =>
+    (this.options()?.examTypes ?? []).map((value) => ({
+      labelKey: `EXAM_REQUEST.EXAM_TYPES.${value}`,
+      value,
+    })),
+  );
+
+  readonly requestFolio = computed(() => this.requirements()?.request?.folio ?? null);
+
   ngOnInit(): void {
-    this.reload$
+    this.load$
       .pipe(
-        switchMap(() => {
-          this.loading.set(true);
-          this.loadError.set(null);
-          return forkJoin({
-            options: this.examRequests.getOptions(),
-            requirements: this.examRequests.getRequirements('GRADO'),
-          }).pipe(
-            finalize(() => this.loading.set(false)),
-            catchError((error: unknown) => {
-              this.options.set(null);
-              this.requirements.set(null);
-              this.loadError.set(
-                `${EXAM_REQUEST_ERROR_I18N_SCOPE}.${this.examRequests.mapError(error)}`,
-              );
-              return EMPTY;
-            }),
-          );
-        }),
+        switchMap((trigger) => this.loadTrigger(trigger)),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(({ options, requirements }) => {
-        this.options.set(options);
+      .subscribe((requirements) => {
         this.requirements.set(requirements);
-        if (options.eligible && requirements.eligible && requirements.requirements.length === 0) {
+        if (
+          this.options()?.eligible &&
+          requirements.eligible &&
+          requirements.requirements.length === 0
+        ) {
           this.loadError.set('EXAM_REQUEST.STATES.EMPTY');
         }
       });
+
+    this.examTypeForm.controls.examType.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((examType) => this.load$.next({ kind: 'type', examType }));
 
     this.auth.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((user) => {
       if (!user) {
@@ -127,11 +150,68 @@ export class ExamRequirementsListComponent implements OnInit {
   }
 
   reload(): void {
-    this.reload$.next();
+    this.load$.next({ kind: 'reload' });
   }
 
   requirementStatusSeverity(status: ExamRequirementDto['status']): 'success' | 'secondary' {
     return status === 'CARGADO' ? 'success' : 'secondary';
+  }
+
+  requirementRequiredSeverity(required: boolean): 'warn' | 'secondary' {
+    return required ? 'warn' : 'secondary';
+  }
+
+  private loadTrigger(trigger: LoadTrigger): Observable<ExamRequirementsResponse> {
+    this.loading.set(true);
+    this.loadError.set(null);
+    // Evita pintar tarjetas del expediente anterior mientras llega el nuevo.
+    this.requirements.set(null);
+
+    const source$ =
+      trigger.kind === 'reload'
+        ? this.loadOptionsThenRequirements()
+        : this.loadRequirements(trigger.examType);
+
+    return source$.pipe(
+      finalize(() => this.loading.set(false)),
+      catchError((error: unknown) => {
+        if (trigger.kind === 'reload') {
+          this.options.set(null);
+        }
+        this.requirements.set(null);
+        this.loadError.set(`${EXAM_REQUEST_ERROR_I18N_SCOPE}.${this.examRequests.mapError(error)}`);
+        return EMPTY;
+      }),
+    );
+  }
+
+  private loadOptionsThenRequirements(): Observable<ExamRequirementsResponse> {
+    return this.examRequests.getOptions().pipe(
+      switchMap((options) => {
+        this.options.set(options);
+        const selected = this.resolveExamType(options.examTypes);
+        this.examTypeForm.patchValue({ examType: selected }, { emitEvent: false });
+        return this.examRequests.getRequirements(selected);
+      }),
+    );
+  }
+
+  private loadRequirements(examType: ExamType): Observable<ExamRequirementsResponse> {
+    const allowed = this.options()?.examTypes ?? [];
+    if (!allowed.includes(examType)) {
+      return EMPTY;
+    }
+
+    return this.examRequests.getRequirements(examType);
+  }
+
+  /** Prefiere GRADO si el servidor lo permite; si no, el primer tipo de examTypes. */
+  private resolveExamType(examTypes: readonly ExamType[]): ExamType {
+    if (examTypes.includes('GRADO')) {
+      return 'GRADO';
+    }
+
+    return examTypes[0] ?? 'GRADO';
   }
 
   private clearAcademicState(): void {
@@ -139,5 +219,6 @@ export class ExamRequirementsListComponent implements OnInit {
     this.requirements.set(null);
     this.loadError.set(null);
     this.loading.set(false);
+    this.examTypeForm.reset({ examType: 'GRADO' }, { emitEvent: false });
   }
 }
