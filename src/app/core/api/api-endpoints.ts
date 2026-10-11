@@ -1,4 +1,5 @@
 import { environment } from '../../../environments/environment';
+import { ExamType } from '../../models';
 
 export const API_ENDPOINTS = {
   auth: {
@@ -67,4 +68,11 @@ export const API_ENDPOINTS = {
     `${environment.apiBaseUrl}/enrollment-surveys/${id}/results/ueas/${ueaId}/students`,
   enrollmentSurveyResultsBlankStudents: (id: number): string =>
     `${environment.apiBaseUrl}/enrollment-surveys/${id}/results/blank-students`,
+  examRequests: {
+    me: {
+      options: `${environment.apiBaseUrl}/exam-requests/me/options`,
+      requirements: (examType: ExamType): string =>
+        `${environment.apiBaseUrl}/exam-requests/me/${examType}/requirements`,
+    },
+  },
 } as const;

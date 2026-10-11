@@ -46,6 +46,9 @@ import { DASHBOARD_REPOSITORY } from '../../features/dashboard/repositories/dash
 import { StudentProfileHttpRepository } from '../../features/account/repositories/student-profile-http.repository';
 import { StudentProfileMockRepository } from '../../features/account/repositories/student-profile-mock.repository';
 import { STUDENT_PROFILE_REPOSITORY } from '../../features/account/repositories/student-profile.repository';
+import { ExamRequestHttpRepository } from '../../features/exam-requests/repositories/exam-request-http.repository';
+import { ExamRequestMockRepository } from '../../features/exam-requests/repositories/exam-request-mock.repository';
+import { EXAM_REQUEST_REPOSITORY } from '../../features/exam-requests/repositories/exam-request.repository';
 
 export const DATA_LAYER_PROVIDERS: Provider[] = [
   { provide: MOCK_STUDENT_USER_REGISTRY, useExisting: StudentMockStore },
@@ -122,5 +125,11 @@ export const DATA_LAYER_PROVIDERS: Provider[] = [
     STUDENT_PROFILE_REPOSITORY,
     StudentProfileHttpRepository,
     StudentProfileMockRepository,
+  ),
+  ...provideMockOrHttpRepository(
+    'examRequests',
+    EXAM_REQUEST_REPOSITORY,
+    ExamRequestHttpRepository,
+    ExamRequestMockRepository,
   ),
 ];

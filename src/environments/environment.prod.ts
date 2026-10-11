@@ -14,5 +14,6 @@ export const environment = {
     enrollmentSurvey: false,
     trimestralPlanning: false,
     dashboard: false,
+    examRequests: false,
   },
 };
