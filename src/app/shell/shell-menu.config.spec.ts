@@ -17,6 +17,35 @@ describe('shell-menu.config', () => {
     expect(routes ?? []).not.toContain('/enrollment');
   });
 
+  it('exposes the static exam-request item for STUDENT', () => {
+    const nav = getShellNavigation('STUDENT');
+    const item = nav?.sections
+      .flatMap((section) => section.items)
+      .find((link) => link.id === 'exam-request');
+
+    expect(item).toEqual({
+      id: 'exam-request',
+      labelKey: 'SHELL.MENU.EXAM_REQUEST',
+      route: '/exam-requests',
+      icon: 'pi pi-verified',
+    });
+  });
+
+  it('does not expose exam-request navigation for other roles', () => {
+    for (const role of [
+      'COORDINATOR',
+      'PROFESSOR',
+      'ASSISTANT',
+      'SPEAKER',
+      'SYSTEM_ADMIN',
+    ] as const) {
+      const routes = getShellNavigation(role)?.sections.flatMap((section) =>
+        section.items.map((item) => item.id),
+      );
+      expect(routes ?? []).not.toContain('exam-request');
+    }
+  });
+
   it('returns professor advisor approval route', () => {
     const nav = getShellNavigation('PROFESSOR');
     expect(nav?.sections[0]?.items[0]?.route).toBe('/enrollment/advisor-approval');

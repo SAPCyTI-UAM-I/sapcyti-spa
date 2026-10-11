@@ -52,6 +52,8 @@ import { ShellNavigation } from './shell-menu.model';
             [labelKey]="item.labelKey"
             [icon]="item.icon"
             [collapsed]="collapsed()"
+            [disabled]="item.disabled === true"
+            [disabledReasonKey]="item.disabledReasonKey ?? null"
           />
         }
       }

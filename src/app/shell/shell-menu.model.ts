@@ -5,6 +5,10 @@ export interface ShellNavLink {
   labelKey: string;
   route: string;
   icon: string;
+  /** Si es true, el ítem se muestra pero no navega. */
+  disabled?: boolean;
+  /** Clave i18n del motivo cuando el ítem está deshabilitado. */
+  disabledReasonKey?: string;
 }
 
 export interface ShellNavSection {

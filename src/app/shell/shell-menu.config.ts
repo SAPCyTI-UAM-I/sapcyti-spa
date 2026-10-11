@@ -28,7 +28,19 @@ const HOME_LINK = {
 
 const STUDENT_NAV: ShellNavigation = {
   home: HOME_LINK,
-  sections: [],
+  sections: [
+    {
+      id: 'student-exam-requests',
+      items: [
+        {
+          id: 'exam-request',
+          labelKey: 'SHELL.MENU.EXAM_REQUEST',
+          route: '/exam-requests',
+          icon: 'pi pi-verified',
+        },
+      ],
+    },
+  ],
 };
 
 const PROFESSOR_NAV: ShellNavigation = {
