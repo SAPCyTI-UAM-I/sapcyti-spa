@@ -80,6 +80,23 @@ function buildPayload(
   };
 }
 
+function markLoaded(
+  items: ExamRequirementDto[],
+  types: readonly DocumentType[],
+): ExamRequirementDto[] {
+  return items.map((item) =>
+    types.includes(item.documentType) ? { ...item, status: 'CARGADO' } : item,
+  );
+}
+
+const PDF_TYPES: readonly Exclude<DocumentType, 'ARTICULO'>[] = [
+  'TESIS',
+  'SOL_SINODALES',
+  'HIST_ACAD',
+  'COMP_IDIOMA',
+  'DATOS_ALUM',
+];
+
 const doctoralItems = (articleRequired: boolean): ExamRequirementDto[] => [
   pdfRequirement('TESIS', 'Tesis_Docto_Perez_Soto_Luis.pdf'),
   articleRequirement(articleRequired),
@@ -483,5 +500,57 @@ describe('ExamRequirementsListComponent', () => {
         .requirements()
         ?.requirements.find((item) => item.documentType === 'ARTICULO')?.required,
     ).toBe(false);
+  });
+
+  it('enables submit on PREDOCTORAL when required PDFs are loaded and Articulo is pending', async () => {
+    const grado = buildPayload('DOCTORADO', doctoralItems(true));
+    const predoctoral: ExamRequirementsResponse = {
+      ...grado.requirements,
+      examType: 'PREDOCTORAL',
+      requirements: markLoaded(doctoralItems(false), PDF_TYPES),
+    };
+
+    await TestBed.resetTestingModule();
+    user$ = new BehaviorSubject<CurrentUser | null>(student);
+    getOptions = vi.fn(() => of(grado.options));
+    getRequirements = vi.fn((examType: ExamType) =>
+      of(examType === 'PREDOCTORAL' ? predoctoral : grado.requirements),
+    );
+
+    await TestBed.configureTestingModule({
+      imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
+      providers: [
+        {
+          provide: ExamRequestService,
+          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+        },
+        {
+          provide: AuthStateService,
+          useValue: { currentUser$: user$.asObservable(), getCurrentUser: () => user$.value },
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.canSubmit()).toBe(false);
+
+    fixture.componentInstance.examTypeForm.controls.examType.setValue('PREDOCTORAL');
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.canSubmit()).toBe(true);
+    const submit = fixture.debugElement.query(By.css('[data-testid="exam-submit"]'));
+    expect(submit).toBeTruthy();
+    expect(submit.componentInstance.disabled).toBe(false);
+  });
+
+  it('keeps submit disabled on doctoral GRADO while Articulo is still pending', async () => {
+    const fixture = await setup(
+      buildPayload('DOCTORADO', markLoaded(doctoralItems(true), PDF_TYPES)),
+    );
+
+    expect(fixture.componentInstance.canSubmit()).toBe(false);
+    const submit = fixture.debugElement.query(By.css('[data-testid="exam-submit"]'));
+    expect(submit.componentInstance.disabled).toBe(true);
   });
 });

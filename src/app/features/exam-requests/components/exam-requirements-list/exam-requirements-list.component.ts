@@ -10,6 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
+import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { catchError, EMPTY, finalize, Observable, Subject, switchMap } from 'rxjs';
 
@@ -41,6 +42,7 @@ type LoadTrigger = { kind: 'reload' } | { kind: 'type'; examType: ExamType };
   imports: [
     ReactiveFormsModule,
     TranslatePipe,
+    Button,
     Message,
     CatalogTagComponent,
     I18nSelectComponent,
@@ -117,6 +119,20 @@ export class ExamRequirementsListComponent implements OnInit {
   );
 
   readonly requestFolio = computed(() => this.requirements()?.request?.folio ?? null);
+
+  /**
+   * Habilitación visual de envío: elegible y todos los required en CARGADO.
+   * El POST real pertenece a HU-67; este botón no dispara HTTP.
+   */
+  readonly canSubmit = computed(() => {
+    if (!this.eligible()) {
+      return false;
+    }
+
+    const items = this.requirements()?.requirements ?? [];
+    const requiredItems = items.filter((item) => item.required);
+    return requiredItems.length > 0 && requiredItems.every((item) => item.status === 'CARGADO');
+  });
 
   ngOnInit(): void {
     this.load$
