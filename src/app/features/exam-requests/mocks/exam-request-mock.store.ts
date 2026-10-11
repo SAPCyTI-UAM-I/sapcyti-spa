@@ -6,6 +6,7 @@ import {
   DocumentType,
   EligibilityReason,
   ExamOptionsDto,
+  ExamRequestSummaryDto,
   ExamRequirementDto,
   ExamRequirementsResponse,
   ExamType,
@@ -13,7 +14,7 @@ import {
 } from '../../../models';
 
 /**
- * Datos demo de HU-62. Borrar este módulo para quitar todo el mock de examen.
+ * Datos demo de HU-62/HU-63. Borrar este módulo para quitar todo el mock de examen.
  */
 export type ExamRequestMockScenario =
   | 'especializacion'
@@ -146,10 +147,10 @@ function pdfRequirement(
   };
 }
 
-function articleRequirement(): ExamRequirementDto {
+function articleRequirement(required: boolean): ExamRequirementDto {
   return {
     documentType: 'ARTICULO',
-    required: true,
+    required,
     acceptedKinds: ['PDF', 'URL'],
     expectedName: null,
     exampleName: null,
@@ -158,7 +159,10 @@ function articleRequirement(): ExamRequirementDto {
   };
 }
 
-function buildRequirements(definition: ScenarioDefinition): ExamRequirementDto[] {
+function buildRequirements(
+  definition: ScenarioDefinition,
+  examType: ExamType,
+): ExamRequirementDto[] {
   if (definition.emptyRequirements) {
     return [];
   }
@@ -167,7 +171,8 @@ function buildRequirements(definition: ScenarioDefinition): ExamRequirementDto[]
   for (const type of DOCUMENT_ORDER) {
     if (type === 'ARTICULO') {
       if (definition.includeArticle) {
-        items.push(articleRequirement());
+        // Artículo opcional solo en PREDOCTORAL; en GRADO doctoral sigue obligatorio.
+        items.push(articleRequirement(examType !== 'PREDOCTORAL'));
       }
       continue;
     }
@@ -180,6 +185,38 @@ function buildRequirements(definition: ScenarioDefinition): ExamRequirementDto[]
   }
 
   return items;
+}
+
+/** Expedientes independientes por tipo: no compartir id, folio ni estado. */
+function toRequestSummary(
+  definition: ScenarioDefinition,
+  examType: ExamType,
+): ExamRequestSummaryDto | null {
+  if (definition.degree !== 'DOCTORADO') {
+    return null;
+  }
+
+  if (examType === 'PREDOCTORAL') {
+    return {
+      id: 6301,
+      examType: 'PREDOCTORAL',
+      degree: 'DOCTORADO',
+      status: 'ENVIADA',
+      folio: 'SEG-184201-110001',
+      version: 1,
+      submittedAt: '2026-03-15T10:00:00.000Z',
+    };
+  }
+
+  return {
+    id: 6302,
+    examType: 'GRADO',
+    degree: 'DOCTORADO',
+    status: 'BORRADOR',
+    folio: null,
+    version: 1,
+    submittedAt: null,
+  };
 }
 
 function toOptions(definition: ScenarioDefinition): ExamOptionsDto {
@@ -225,8 +262,8 @@ export class ExamRequestMockStore {
       programStatus: options.programStatus,
       eligible: options.eligible,
       eligibilityReason: options.eligibilityReason,
-      request: null,
-      requirements: buildRequirements(definition),
+      request: toRequestSummary(definition, examType),
+      requirements: buildRequirements(definition, examType),
     };
   }
 }

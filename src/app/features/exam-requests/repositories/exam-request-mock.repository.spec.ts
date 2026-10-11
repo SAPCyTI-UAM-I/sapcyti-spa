@@ -59,6 +59,49 @@ describe('ExamRequestMockRepository', () => {
     ]);
     expect(article?.expectedName).toBeNull();
     expect(article?.exampleName).toBeNull();
+    expect(article?.required).toBe(true);
+    expect(response.examType).toBe('GRADO');
+  });
+
+  it('marks Articulo as optional on doctoral PREDOCTORAL and keeps a distinct request', async () => {
+    store.setScenario('doctorado');
+
+    const predoctoral = await firstValueFrom(repo.getRequirements('PREDOCTORAL'));
+    const grado = await firstValueFrom(repo.getRequirements('GRADO'));
+    const article = predoctoral.requirements.find((item) => item.documentType === 'ARTICULO');
+
+    expect(predoctoral.examType).toBe('PREDOCTORAL');
+    expect(predoctoral.requirements).toHaveLength(6);
+    expect(article?.required).toBe(false);
+    expect(predoctoral.requirements[0]?.exampleName).toBe('Tesis_Docto_Perez_Soto_Luis.pdf');
+    expect(predoctoral.request).toMatchObject({
+      id: 6301,
+      examType: 'PREDOCTORAL',
+      status: 'ENVIADA',
+      folio: 'SEG-184201-110001',
+    });
+    expect(grado.request).toMatchObject({
+      id: 6302,
+      examType: 'GRADO',
+      status: 'BORRADOR',
+      folio: null,
+    });
+    expect(predoctoral.request?.id).not.toBe(grado.request?.id);
+    expect(predoctoral.request?.folio).not.toBe(grado.request?.folio);
+  });
+
+  it('rejects PREDOCTORAL with EXAM_TYPE_NOT_ALLOWED for maestria and especializacion', async () => {
+    store.setScenario('maestria-emanuel');
+    await expect(firstValueFrom(repo.getRequirements('PREDOCTORAL'))).rejects.toMatchObject({
+      status: 403,
+      error: { error: 'EXAM_TYPE_NOT_ALLOWED' },
+    });
+
+    store.setScenario('especializacion');
+    await expect(firstValueFrom(repo.getRequirements('PREDOCTORAL'))).rejects.toMatchObject({
+      status: 403,
+      error: { error: 'EXAM_TYPE_NOT_ALLOWED' },
+    });
   });
 
   it('marks baja and suspension as ineligible and can return an empty list', async () => {
