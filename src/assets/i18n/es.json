@@ -869,19 +869,18 @@
     "SUBTITLE": "Documentos requeridos para tu grado",
     "TITLE": "Solicitud de examen de grado",
     "UPLOAD": {
-      "BROWSE": " Examinar",
+      "BROWSE": "Examinar",
       "DROP_HINT": "Arrastra y suelta tu archivo aquí",
       "READY": "Listo para guardar",
       "SELECTED": "Seleccionado",
       "SINGLE_FILE_ONLY": "Solo se permite un archivo a la vez"
     },
     "VALIDATION": {
-      "EXPECTED_NAME_UNAVAILABLE": "Could not determine the expected name. Contact Coordination.",
-      "INVALID_ARTICLE_URL": "Enter a valid absolute URL starting with https://.",
-      "INVALID_DOCUMENT_NAME": "The name must be {{expectedName}}. Correct it and choose the file again.",
-      "INVALID_PDF_CONTENT": "The file is not a valid PDF."
+      "EXPECTED_NAME_UNAVAILABLE": "No se pudo determinar el nombre esperado. Contacta a la Coordinación.",
+      "INVALID_ARTICLE_URL": "Captura una URL absoluta válida que empiece con https://.",
+      "INVALID_DOCUMENT_NAME": "El nombre debe ser {{expectedName}}. Corrígelo y vuelve a elegir el archivo.",
+      "INVALID_PDF_CONTENT": "El archivo no es un PDF válido."
     }
-
   },
   "SHELL": {
     "BRAND": {

@@ -88,6 +88,7 @@
                 {{ 'EXAM_REQUEST.ARTICLE_HINT' | translate }}
               </p>
             } @else {
+              <!-- expectedName es el filename canónico de la API; no se traduce el prefijo. -->
               <p class="text-caption text-text-secondary font-caption">
                 {{ 'EXAM_REQUEST.LABELS.FORMAT' | translate }}: {{ item.expectedName }}
               </p>
@@ -98,12 +99,17 @@
                 {{ 'EXAM_REQUEST.LABELS.EXAMPLE' | translate }}: {{ item.exampleName }}
               </p>
             }
+            <app-exam-document-upload
+              [requirement]="item"
+              [disabled]="!eligible()"
+              (selectionChange)="onPendingSelectionChange(item.documentType, $event)"
+            />
           </li>
         }
       </ul>
 
       <!-- El envío real (POST submit) pertenece a HU-67; aquí solo se habilita el control. -->
-      <div class="flex justify-end mt-6">
+      <div class="mt-6 flex justify-end">
         <p-button
           type="button"
           data-testid="exam-submit"

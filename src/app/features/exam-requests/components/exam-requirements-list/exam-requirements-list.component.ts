@@ -17,6 +17,7 @@ import { catchError, EMPTY, finalize, Observable, Subject, switchMap } from 'rxj
 import { AuthStateService } from '../../../../core/auth/auth.service';
 import {
   Degree,
+  DocumentType,
   ExamOptionsDto,
   ExamRequirementDto,
   ExamRequirementsResponse,
@@ -32,6 +33,10 @@ import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { ExamRequestService } from '../../services/exam-request.service';
 import { degreeTagSeverity } from '../../utils/degree-tag.util';
 import { EXAM_REQUEST_ERROR_I18N_SCOPE } from '../../utils/exam-request-error.util';
+import {
+  ExamDocumentUploadComponent,
+  type ExamDocumentSelection,
+} from '../exam-document-upload/exam-document-upload.component';
 
 type LoadTrigger = { kind: 'reload' } | { kind: 'type'; examType: ExamType };
 
@@ -47,6 +52,7 @@ type LoadTrigger = { kind: 'reload' } | { kind: 'type'; examType: ExamType };
     CatalogTagComponent,
     I18nSelectComponent,
     LoadStateComponent,
+    ExamDocumentUploadComponent,
   ],
   templateUrl: './exam-requirements-list.component.html',
 })
@@ -120,6 +126,9 @@ export class ExamRequirementsListComponent implements OnInit {
 
   readonly requestFolio = computed(() => this.requirements()?.request?.folio ?? null);
 
+  /** Selección local por tipo; no se envía hasta HU-65. */
+  readonly pendingSelections = signal<Partial<Record<DocumentType, ExamDocumentSelection>>>({});
+
   /**
    * Habilitación visual de envío: elegible y todos los required en CARGADO.
    * El POST real pertenece a HU-67; este botón no dispara HTTP.
@@ -153,7 +162,10 @@ export class ExamRequirementsListComponent implements OnInit {
 
     this.examTypeForm.controls.examType.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((examType) => this.load$.next({ kind: 'type', examType }));
+      .subscribe((examType) => {
+        this.clearPendingSelections();
+        this.load$.next({ kind: 'type', examType });
+      });
 
     this.auth.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((user) => {
       if (!user) {
@@ -175,6 +187,21 @@ export class ExamRequirementsListComponent implements OnInit {
 
   requirementRequiredSeverity(required: boolean): 'warn' | 'secondary' {
     return required ? 'warn' : 'secondary';
+  }
+
+  onPendingSelectionChange(
+    documentType: DocumentType,
+    selection: ExamDocumentSelection | null,
+  ): void {
+    this.pendingSelections.update((current) => {
+      const next = { ...current };
+      if (!selection) {
+        delete next[documentType];
+      } else {
+        next[documentType] = selection;
+      }
+      return next;
+    });
   }
 
   private loadTrigger(trigger: LoadTrigger): Observable<ExamRequirementsResponse> {
@@ -230,7 +257,12 @@ export class ExamRequirementsListComponent implements OnInit {
     return examTypes[0] ?? 'GRADO';
   }
 
+  private clearPendingSelections(): void {
+    this.pendingSelections.set({});
+  }
+
   private clearAcademicState(): void {
+    this.clearPendingSelections();
     this.options.set(null);
     this.requirements.set(null);
     this.loadError.set(null);

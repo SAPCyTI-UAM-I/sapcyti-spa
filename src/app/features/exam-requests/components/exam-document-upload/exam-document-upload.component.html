@@ -95,7 +95,29 @@
       [id]="errorId()"
       data-testid="exam-document-error"
     >
-      {{ currentError.key | translate: currentError.params }}
+      @switch (currentError.code) {
+        @case ('INVALID_DOCUMENT_NAME') {
+          {{
+            'EXAM_REQUEST.VALIDATION.INVALID_DOCUMENT_NAME'
+              | translate: { expectedName: currentError.expectedName }
+          }}
+        }
+        @case ('INVALID_PDF_CONTENT') {
+          {{ 'EXAM_REQUEST.VALIDATION.INVALID_PDF_CONTENT' | translate }}
+        }
+        @case ('INVALID_ARTICLE_URL') {
+          {{ 'EXAM_REQUEST.VALIDATION.INVALID_ARTICLE_URL' | translate }}
+        }
+        @case ('EXPECTED_NAME_UNAVAILABLE') {
+          {{ 'EXAM_REQUEST.VALIDATION.EXPECTED_NAME_UNAVAILABLE' | translate }}
+        }
+        @case ('SINGLE_FILE_ONLY') {
+          {{ 'EXAM_REQUEST.UPLOAD.SINGLE_FILE_ONLY' | translate }}
+        }
+        @default {
+          {{ currentError.key | translate }}
+        }
+      }
     </p>
   }
 </div>

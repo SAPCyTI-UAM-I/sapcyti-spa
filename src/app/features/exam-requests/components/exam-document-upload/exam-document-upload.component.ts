@@ -30,7 +30,9 @@ export type ExamDocumentSelection =
   | { readonly documentType: DocumentType; readonly kind: 'URL'; readonly url: string };
 
 interface UploadValidationError {
+  readonly code: DocumentValidationCode;
   readonly key: string;
+  readonly expectedName?: string;
   readonly params?: { readonly expectedName: string };
 }
 
@@ -259,7 +261,9 @@ function toUploadError(
   result: Extract<DocumentValidationResult, { ok: false }>,
 ): UploadValidationError {
   return {
+    code: result.code,
     key: validationMessageKey(result.code),
+    expectedName: result.expectedName,
     params: result.expectedName ? { expectedName: result.expectedName } : undefined,
   };
 }

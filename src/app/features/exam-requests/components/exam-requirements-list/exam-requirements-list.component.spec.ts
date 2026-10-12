@@ -18,7 +18,29 @@ import {
 } from '../../../../models';
 import { ExamRequestService } from '../../services/exam-request.service';
 import { mapExamRequestError } from '../../utils/exam-request-error.util';
+import { ExamDocumentUploadComponent } from '../exam-document-upload/exam-document-upload.component';
 import { ExamRequirementsListComponent } from './exam-requirements-list.component';
+
+const EMANUEL_THESIS = 'Tesis_Mtria_Lopez_Alba_Emanuel.pdf';
+const PDF_HEADER = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34]);
+
+function pdfFile(name: string): File {
+  return new File([PDF_HEADER], name, { type: 'application/octet-stream' });
+}
+
+function fileListOf(files: readonly File[]): FileList {
+  const list = {
+    length: files.length,
+    item: (index: number) => files[index] ?? null,
+    *[Symbol.iterator]() {
+      yield* files;
+    },
+  };
+  files.forEach((file, index) => {
+    Object.defineProperty(list, index, { value: file });
+  });
+  return list as unknown as FileList;
+}
 
 const student: CurrentUser = {
   id: 1,
@@ -157,6 +179,28 @@ describe('ExamRequirementsListComponent', () => {
     const fixture = TestBed.createComponent(ExamRequirementsListComponent);
     fixture.detectChanges();
     return fixture;
+  }
+
+  async function flushValidation(
+    fixture: ReturnType<typeof TestBed.createComponent<ExamRequirementsListComponent>>,
+  ): Promise<void> {
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
+  function dropOnCard(
+    fixture: ReturnType<typeof TestBed.createComponent<ExamRequirementsListComponent>>,
+    documentType: DocumentType,
+    files: readonly File[],
+  ): void {
+    const zone = fixture.debugElement.query(
+      By.css(
+        `[data-testid="exam-requirement-card-${documentType}"] [data-testid="exam-document-dropzone"]`,
+      ),
+    );
+    const event = new Event('drop', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'dataTransfer', { value: { files: fileListOf(files) } });
+    zone.triggerEventHandler('drop', event);
   }
 
   function cardTypes(
@@ -319,11 +363,17 @@ describe('ExamRequirementsListComponent', () => {
     const fixture = await setup();
     expect(cardTypes(fixture)).toContain('TESIS');
 
+    const thesis = pdfFile(EMANUEL_THESIS);
+    dropOnCard(fixture, 'TESIS', [thesis]);
+    await flushValidation(fixture);
+    expect(fixture.componentInstance.pendingSelections().TESIS).toBeTruthy();
+
     user$.next(null);
     fixture.detectChanges();
 
     expect(fixture.componentInstance.options()).toBeNull();
     expect(fixture.componentInstance.requirements()).toBeNull();
+    expect(fixture.componentInstance.pendingSelections()).toEqual({});
     expect(fixture.componentInstance.examTypeForm.controls.examType.value).toBe('GRADO');
     expect(cardTypes(fixture)).toEqual([]);
     expect(fixture.nativeElement.textContent).not.toContain('Tesis_Mtria_Lopez_Alba_Emanuel.pdf');
@@ -552,5 +602,108 @@ describe('ExamRequirementsListComponent', () => {
     expect(fixture.componentInstance.canSubmit()).toBe(false);
     const submit = fixture.debugElement.query(By.css('[data-testid="exam-submit"]'));
     expect(submit.componentInstance.disabled).toBe(true);
+  });
+
+  it('keeps a valid Emanuel thesis as a pending local selection', async () => {
+    const fixture = await setup();
+    const thesis = pdfFile(EMANUEL_THESIS);
+
+    dropOnCard(fixture, 'TESIS', [thesis]);
+    await flushValidation(fixture);
+
+    expect(fixture.componentInstance.pendingSelections().TESIS).toEqual({
+      documentType: 'TESIS',
+      kind: 'PDF',
+      file: thesis,
+    });
+    expect(fixture.componentInstance.canSubmit()).toBe(false);
+  });
+
+  it('rejects a wrong name and shows the API expectedName without storing it', async () => {
+    const fixture = await setup();
+
+    dropOnCard(fixture, 'HIST_ACAD', [pdfFile('historia.pdf')]);
+    await flushValidation(fixture);
+
+    const upload = fixture.debugElement
+      .query(By.css('[data-testid="exam-requirement-card-HIST_ACAD"]'))
+      .query(By.directive(ExamDocumentUploadComponent))
+      .componentInstance as ExamDocumentUploadComponent;
+
+    expect(fixture.componentInstance.pendingSelections().HIST_ACAD).toBeUndefined();
+    expect(upload.validationError()).toEqual({
+      code: 'INVALID_DOCUMENT_NAME',
+      key: 'EXAM_REQUEST.VALIDATION.INVALID_DOCUMENT_NAME',
+      expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf',
+      params: { expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf' },
+    });
+    expect(
+      fixture.nativeElement.querySelector(
+        '[data-testid="exam-requirement-card-HIST_ACAD"] [data-testid="exam-document-error"]',
+      )?.textContent,
+    ).toContain('EXAM_REQUEST.VALIDATION.INVALID_DOCUMENT_NAME');
+  });
+
+  it('stores a doctoral article HTTPS URL as a pending selection', async () => {
+    const fixture = await setup(buildPayload('DOCTORADO', doctoralItems(true)));
+    const upload = fixture.debugElement
+      .query(By.css('[data-testid="exam-requirement-card-ARTICULO"]'))
+      .query(By.directive(ExamDocumentUploadComponent))
+      .componentInstance as ExamDocumentUploadComponent;
+
+    upload.kindForm.controls.kind.setValue('URL');
+    fixture.detectChanges();
+    upload.kindForm.controls.url.setValue('https://revista.ejemplo.org/articulo/123');
+    await flushValidation(fixture);
+
+    expect(fixture.componentInstance.pendingSelections().ARTICULO).toEqual({
+      documentType: 'ARTICULO',
+      kind: 'URL',
+      url: 'https://revista.ejemplo.org/articulo/123',
+    });
+  });
+
+  it('clears pending selections when switching from GRADO to PREDOCTORAL', async () => {
+    const grado = buildPayload('DOCTORADO', doctoralItems(true));
+    const predoctoral: ExamRequirementsResponse = {
+      ...grado.requirements,
+      examType: 'PREDOCTORAL',
+      requirements: doctoralItems(false),
+    };
+
+    await TestBed.resetTestingModule();
+    user$ = new BehaviorSubject<CurrentUser | null>(student);
+    getOptions = vi.fn(() => of(grado.options));
+    getRequirements = vi.fn((examType: ExamType) =>
+      of(examType === 'PREDOCTORAL' ? predoctoral : grado.requirements),
+    );
+
+    await TestBed.configureTestingModule({
+      imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
+      providers: [
+        {
+          provide: ExamRequestService,
+          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+        },
+        {
+          provide: AuthStateService,
+          useValue: { currentUser$: user$.asObservable(), getCurrentUser: () => user$.value },
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
+    fixture.detectChanges();
+
+    const thesis = pdfFile('Tesis_Docto_Perez_Soto_Luis.pdf');
+    dropOnCard(fixture, 'TESIS', [thesis]);
+    await flushValidation(fixture);
+    expect(fixture.componentInstance.pendingSelections().TESIS).toBeTruthy();
+
+    fixture.componentInstance.examTypeForm.controls.examType.setValue('PREDOCTORAL');
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.pendingSelections()).toEqual({});
+    expect(fixture.componentInstance.canSubmit()).toBe(false);
   });
 });
