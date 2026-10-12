@@ -57,6 +57,25 @@
       >
         {{ 'EXAM_REQUEST.LABELS.REQUIRED_PENDING' | translate: { count: requiredPendingCount() } }}
       </p>
+      @if (saveWriteErrorKey(); as writeErrorKey) {
+        <p-message
+          severity="error"
+          styleClass="w-full justify-start"
+          [text]="writeErrorKey | translate"
+          data-testid="exam-save-write-error"
+        />
+      }
+      @if (showAllFailed()) {
+        <div
+          #saveErrorSummary
+          class="text-body-md text-error font-body-md"
+          tabindex="-1"
+          aria-live="polite"
+          data-testid="exam-save-error-summary"
+        >
+          {{ 'EXAM_REQUEST.SAVE.ALL_FAILED' | translate }}
+        </div>
+      }
       <ul class="gap-md flex list-none flex-col p-0">
         @for (item of visibleRequirements(); track item.documentType) {
           <li
@@ -164,16 +183,40 @@
             } @else {
               <app-exam-document-upload
                 [requirement]="item"
-                [disabled]="!eligible()"
+                [disabled]="!eligible() || inFlight()"
                 (selectionChange)="onPendingSelectionChange(item.documentType, $event)"
               />
+              @if (saveItemError(item.documentType); as itemError) {
+                <p
+                  class="text-error text-caption font-caption"
+                  [attr.data-testid]="'exam-document-save-error-' + item.documentType"
+                >
+                  {{
+                    itemError.key
+                      | translate
+                        : {
+                            expectedName:
+                              localizedFileName(itemError.expectedName ?? null) ??
+                              itemError.expectedName,
+                          }
+                  }}
+                </p>
+              }
             }
           </li>
         }
       </ul>
 
-      <!-- El envío real (POST submit) pertenece a HU-67; aquí solo se habilita el control. -->
-      <div class="mt-lg flex justify-end">
+      <div class="mt-lg gap-sm flex justify-end">
+        <p-button
+          type="button"
+          data-testid="exam-save-documents"
+          [label]="'EXAM_REQUEST.ACTIONS.SAVE_DOCUMENTS' | translate"
+          [disabled]="!canSave()"
+          [loading]="inFlight()"
+          (onClick)="saveDocuments()"
+        />
+        <!-- El envío real (POST submit) pertenece a HU-67; aquí solo se habilita el control. -->
         <p-button
           type="button"
           data-testid="exam-submit"
@@ -184,3 +227,54 @@
     }
   </app-load-state>
 </section>
+
+<p-dialog
+  [header]="
+    saveDialogTitleKey()
+      | translate: { saved: saveDialogSavedCount(), failed: saveDialogFailed().length }
+  "
+  [modal]="true"
+  [visible]="showSaveDialog()"
+  [style]="{ width: 'min(100%, 32rem)' }"
+  (visibleChange)="showSaveDialog.set($event)"
+>
+  <div class="gap-sm flex flex-col" data-testid="exam-save-dialog">
+    @if (saveDialogFailed().length === 0) {
+      <p class="text-body-md text-text-secondary font-body-md">
+        {{ 'EXAM_REQUEST.SAVE.SUCCESS' | translate }}
+      </p>
+    } @else {
+      <p class="text-body-md text-text-secondary font-body-md">
+        {{
+          'EXAM_REQUEST.SAVE.MIXED'
+            | translate: { saved: saveDialogSavedCount(), failed: saveDialogFailed().length }
+        }}
+      </p>
+      <ul class="pl-lg list-disc" data-testid="exam-save-dialog-errors">
+        @for (itemError of saveDialogFailed(); track itemError.documentType) {
+          <li class="text-body-md font-body-md">
+            {{ 'EXAM_REQUEST.DOCUMENT_TYPES.' + itemError.documentType | translate }}:
+            {{
+              itemError.key
+                | translate
+                  : {
+                      expectedName:
+                        localizedFileName(itemError.expectedName ?? null) ?? itemError.expectedName,
+                    }
+            }}
+          </li>
+        }
+      </ul>
+    }
+  </div>
+  <ng-template #footer>
+    <div class="flex justify-end">
+      <p-button
+        type="button"
+        data-testid="exam-save-dialog-close"
+        [label]="'COMMON.ACTIONS.CLOSE' | translate"
+        (onClick)="closeSaveDialog()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

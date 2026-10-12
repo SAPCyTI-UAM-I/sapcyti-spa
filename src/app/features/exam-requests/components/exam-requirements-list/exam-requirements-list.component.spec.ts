@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { DebugElement } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -14,12 +15,14 @@ import {
   DocumentType,
   ExamOptionsDto,
   ExamPanelResponse,
+  ExamRequestDto,
   ExamRequirementDto,
   ExamType,
+  SaveDocumentsResponse,
 } from '../../../../models';
 import { ExamRequestService } from '../../services/exam-request.service';
 import { formatUploadedAt } from '../../utils/exam-document-format.util';
-import { mapExamRequestError } from '../../utils/exam-request-error.util';
+import { mapExamRequestError, mapExamRequestWriteError } from '../../utils/exam-request-error.util';
 import { ExamDocumentUploadComponent } from '../exam-document-upload/exam-document-upload.component';
 import { ExamRequirementsListComponent } from './exam-requirements-list.component';
 
@@ -134,6 +137,34 @@ function markLoaded(
   );
 }
 
+function draftRequest(
+  items: ExamRequirementDto[],
+  extras: Partial<ExamRequestDto> = {},
+): ExamRequestDto {
+  return {
+    id: extras.id ?? 1001,
+    examType: extras.examType ?? 'GRADO',
+    degree: extras.degree ?? 'MAESTRIA',
+    status: extras.status ?? 'BORRADOR',
+    folio: extras.folio ?? null,
+    version: extras.version ?? 1,
+    submittedAt: extras.submittedAt ?? null,
+    requirements: extras.requirements ?? items,
+    delivery: extras.delivery ?? null,
+  };
+}
+
+function savedPdfResult(
+  documentType: Exclude<DocumentType, 'ARTICULO'>,
+  originalName: string,
+): Extract<SaveDocumentsResponse['results'][number], { status: 'SAVED' }> {
+  return {
+    documentType,
+    status: 'SAVED',
+    document: pdfDocument(documentType, originalName),
+  };
+}
+
 const PDF_TYPES: readonly Exclude<DocumentType, 'ARTICULO'>[] = [
   'TESIS',
   'SOL_SINODALES',
@@ -163,6 +194,7 @@ describe('ExamRequirementsListComponent', () => {
   let user$: BehaviorSubject<CurrentUser | null>;
   let getOptions: ReturnType<typeof vi.fn>;
   let getPanel: ReturnType<typeof vi.fn>;
+  let saveDocuments: ReturnType<typeof vi.fn>;
 
   async function setup(
     payload: {
@@ -175,6 +207,7 @@ describe('ExamRequirementsListComponent', () => {
       of(payload?.options ?? buildPayload('MAESTRIA', emanuelItems).options),
     );
     getPanel = vi.fn(() => of(payload?.panel ?? buildPayload('MAESTRIA', emanuelItems).panel));
+    saveDocuments = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
@@ -184,7 +217,9 @@ describe('ExamRequirementsListComponent', () => {
           useValue: {
             getOptions,
             getPanel,
+            saveDocuments,
             mapError: mapExamRequestError,
+            mapWriteError: mapExamRequestWriteError,
           },
         },
         {
@@ -237,6 +272,19 @@ describe('ExamRequirementsListComponent', () => {
       .map((node: DebugElement) =>
         (node.attributes['data-testid'] ?? '').replace('exam-requirement-card-', ''),
       );
+  }
+
+  function saveButton(
+    fixture: ReturnType<typeof TestBed.createComponent<ExamRequirementsListComponent>>,
+  ) {
+    return fixture.debugElement.query(By.css('[data-testid="exam-save-documents"]'));
+  }
+
+  function clickSave(
+    fixture: ReturnType<typeof TestBed.createComponent<ExamRequirementsListComponent>>,
+  ): void {
+    saveButton(fixture).triggerEventHandler('onClick', null);
+    fixture.detectChanges();
   }
 
   it('shows five master requirements and the Emanuel example', async () => {
@@ -828,5 +876,290 @@ describe('ExamRequirementsListComponent', () => {
       fixture.debugElement.query(By.css('[data-testid="exam-document-size-ARTICULO"]')),
     ).toBeNull();
     expect(fixture.nativeElement.innerHTML).not.toContain('blob:');
+  });
+
+  it('keeps save disabled when there is nothing valid to persist', async () => {
+    const fixture = await setup();
+
+    expect(fixture.componentInstance.canSave()).toBe(false);
+    expect(saveButton(fixture).componentInstance.disabled).toBe(true);
+
+    dropOnCard(fixture, 'HIST_ACAD', [pdfFile('historia.pdf')]);
+    await flushValidation(fixture);
+
+    expect(fixture.componentInstance.pendingSelections().HIST_ACAD).toBeUndefined();
+    expect(fixture.componentInstance.canSave()).toBe(false);
+    expect(saveButton(fixture).componentInstance.disabled).toBe(true);
+  });
+
+  it('keeps save disabled when the request is not a draft', async () => {
+    const payload = buildPayload('MAESTRIA', emanuelItems, { programStatus: 'EGRESADO' });
+    const fixture = await setup({
+      options: payload.options,
+      panel: {
+        ...payload.panel,
+        request: draftRequest(emanuelItems, { status: 'ENVIADA', version: 2, folio: 'SEG-1' }),
+      },
+    });
+    const thesis = pdfFile(EMANUEL_THESIS);
+
+    dropOnCard(fixture, 'TESIS', [thesis]);
+    await flushValidation(fixture);
+
+    expect(fixture.componentInstance.pendingSelections().TESIS).toBeTruthy();
+    expect(fixture.componentInstance.canSave()).toBe(false);
+    expect(saveButton(fixture).componentInstance.disabled).toBe(true);
+    fixture.componentInstance.saveDocuments();
+    expect(saveDocuments).not.toHaveBeenCalled();
+  });
+
+  it('saves valid selections with one POST and confirms only SAVED items', async () => {
+    const thesis = pdfFile(EMANUEL_THESIS);
+    const savedItems = emanuelItems.map((item) =>
+      item.documentType === 'TESIS'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: pdfDocument('TESIS', EMANUEL_THESIS),
+          }
+        : item,
+    );
+    const request = draftRequest(savedItems, { version: 1 });
+    const response: SaveDocumentsResponse = {
+      request,
+      version: 1,
+      results: [savedPdfResult('TESIS', EMANUEL_THESIS)],
+    };
+    const fixture = await setup();
+    saveDocuments.mockReturnValue(of(response));
+
+    dropOnCard(fixture, 'TESIS', [thesis]);
+    await flushValidation(fixture);
+    expect(fixture.componentInstance.canSave()).toBe(true);
+
+    clickSave(fixture);
+    clickSave(fixture);
+    await flushValidation(fixture);
+
+    expect(saveDocuments).toHaveBeenCalledTimes(1);
+    expect(saveDocuments).toHaveBeenCalledWith('GRADO', 0, [
+      { documentType: 'TESIS', kind: 'PDF', file: thesis },
+    ]);
+    expect(fixture.componentInstance.pendingSelections().TESIS).toBeUndefined();
+    expect(fixture.componentInstance.showSaveDialog()).toBe(true);
+    expect(fixture.componentInstance.saveDialogSavedCount()).toBe(1);
+    expect(fixture.componentInstance.saveDialogFailed()).toEqual([]);
+    expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.SAVE.SUCCESS');
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-name-TESIS"]')),
+    ).toBeTruthy();
+  });
+
+  it('keeps ERROR items on the card and lists them in the mixed confirmation', async () => {
+    const thesis = pdfFile(EMANUEL_THESIS);
+    const history = pdfFile('Hist_Acad_Lopez_Alba_Emanuel.pdf');
+    const savedItems = emanuelItems.map((item) =>
+      item.documentType === 'TESIS'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: pdfDocument('TESIS', EMANUEL_THESIS),
+          }
+        : item,
+    );
+    const response: SaveDocumentsResponse = {
+      request: draftRequest(savedItems, { version: 1 }),
+      version: 1,
+      results: [
+        savedPdfResult('TESIS', EMANUEL_THESIS),
+        {
+          documentType: 'HIST_ACAD',
+          status: 'ERROR',
+          error: {
+            error: 'INVALID_DOCUMENT_NAME',
+            message: 'Raw backend filename rejected',
+            details: { expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf' },
+          },
+        },
+      ],
+    };
+    const fixture = await setup();
+    saveDocuments.mockReturnValue(of(response));
+
+    dropOnCard(fixture, 'TESIS', [thesis]);
+    dropOnCard(fixture, 'HIST_ACAD', [history]);
+    await flushValidation(fixture);
+
+    clickSave(fixture);
+    await flushValidation(fixture);
+
+    expect(saveDocuments).toHaveBeenCalledTimes(1);
+    expect(fixture.componentInstance.pendingSelections().TESIS).toBeUndefined();
+    expect(fixture.componentInstance.pendingSelections().HIST_ACAD).toEqual({
+      documentType: 'HIST_ACAD',
+      kind: 'PDF',
+      file: history,
+    });
+    expect(fixture.componentInstance.showSaveDialog()).toBe(true);
+    expect(fixture.componentInstance.showAllFailed()).toBe(false);
+    expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.SAVE.MIXED');
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-save-dialog-errors"]')).nativeElement
+        .textContent,
+    ).toContain('EXAM_REQUEST.VALIDATION.INVALID_DOCUMENT_NAME');
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-save-error-HIST_ACAD"]'))
+        .nativeElement.textContent,
+    ).toContain('EXAM_REQUEST.VALIDATION.INVALID_DOCUMENT_NAME');
+    expect(fixture.nativeElement.textContent).not.toContain('Raw backend filename rejected');
+  });
+
+  it('does not claim success when every result is ERROR and focuses the summary', async () => {
+    const thesis = pdfFile(EMANUEL_THESIS);
+    const response: SaveDocumentsResponse = {
+      request: null,
+      version: 0,
+      results: [
+        {
+          documentType: 'TESIS',
+          status: 'ERROR',
+          error: {
+            error: 'INVALID_PDF_CONTENT',
+            message: 'PDF magic bytes missing',
+          },
+        },
+      ],
+    };
+    const fixture = await setup();
+    saveDocuments.mockReturnValue(of(response));
+
+    dropOnCard(fixture, 'TESIS', [thesis]);
+    await flushValidation(fixture);
+    clickSave(fixture);
+    await flushValidation(fixture);
+    await Promise.resolve();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.showSaveDialog()).toBe(false);
+    expect(fixture.componentInstance.showAllFailed()).toBe(true);
+    expect(fixture.componentInstance.pendingSelections().TESIS).toEqual({
+      documentType: 'TESIS',
+      kind: 'PDF',
+      file: thesis,
+    });
+    const summary = fixture.nativeElement.querySelector(
+      '[data-testid="exam-save-error-summary"]',
+    ) as HTMLElement | null;
+    expect(summary?.textContent).toContain('EXAM_REQUEST.SAVE.ALL_FAILED');
+    expect(summary).toBe(document.activeElement);
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-save-error-TESIS"]'))
+        .nativeElement.textContent,
+    ).toContain('EXAM_REQUEST.VALIDATION.INVALID_PDF_CONTENT');
+    expect(fixture.nativeElement.textContent).not.toContain('PDF magic bytes missing');
+  });
+
+  it('reloads the panel after a 409 and does not retry the POST', async () => {
+    const thesis = pdfFile(EMANUEL_THESIS);
+    const fixture = await setup();
+    saveDocuments.mockReturnValue(
+      throwError(() =>
+        mockApiError({
+          status: 409,
+          error: 'VERSION_CONFLICT',
+          message: 'Version 2 is already stored',
+        }),
+      ),
+    );
+
+    dropOnCard(fixture, 'TESIS', [thesis]);
+    await flushValidation(fixture);
+    expect(getPanel).toHaveBeenCalledTimes(1);
+
+    clickSave(fixture);
+    await flushValidation(fixture);
+
+    expect(saveDocuments).toHaveBeenCalledTimes(1);
+    expect(getPanel).toHaveBeenCalledTimes(2);
+    expect(getPanel).toHaveBeenLastCalledWith('GRADO');
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-save-write-error"]')),
+    ).toBeTruthy();
+    expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.ERRORS.version_conflict');
+    expect(fixture.nativeElement.textContent).not.toContain('Version 2 is already stored');
+    expect(fixture.componentInstance.showSaveDialog()).toBe(false);
+  });
+
+  it('reloads the panel after a network error and leaves retry to the user', async () => {
+    const thesis = pdfFile(EMANUEL_THESIS);
+    const fixture = await setup();
+    saveDocuments.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 0 })));
+
+    dropOnCard(fixture, 'TESIS', [thesis]);
+    await flushValidation(fixture);
+    clickSave(fixture);
+    await flushValidation(fixture);
+
+    expect(saveDocuments).toHaveBeenCalledTimes(1);
+    expect(getPanel).toHaveBeenCalledTimes(2);
+    expect(fixture.componentInstance.pendingSelections().TESIS).toEqual({
+      documentType: 'TESIS',
+      kind: 'PDF',
+      file: thesis,
+    });
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-save-write-error"]')),
+    ).toBeTruthy();
+    expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.ERRORS.generic');
+    expect(fixture.componentInstance.canSave()).toBe(true);
+  });
+
+  it('sends the draft version and ignores a second click while the POST is in flight', async () => {
+    const thesis = pdfFile(EMANUEL_THESIS);
+    const payload = buildPayload('MAESTRIA', emanuelItems, { programStatus: 'EGRESADO' });
+    const pending$ = new Subject<SaveDocumentsResponse>();
+    const fixture = await setup({
+      options: payload.options,
+      panel: {
+        ...payload.panel,
+        request: draftRequest(emanuelItems, { version: 3 }),
+      },
+    });
+    saveDocuments.mockReturnValue(pending$.asObservable());
+
+    dropOnCard(fixture, 'TESIS', [thesis]);
+    await flushValidation(fixture);
+    clickSave(fixture);
+    clickSave(fixture);
+
+    expect(saveDocuments).toHaveBeenCalledTimes(1);
+    expect(saveDocuments).toHaveBeenCalledWith('GRADO', 3, [
+      { documentType: 'TESIS', kind: 'PDF', file: thesis },
+    ]);
+    expect(fixture.componentInstance.inFlight()).toBe(true);
+    expect(fixture.componentInstance.canSave()).toBe(false);
+    expect(saveButton(fixture).componentInstance.disabled).toBe(true);
+
+    pending$.next({
+      request: draftRequest(
+        emanuelItems.map((item) =>
+          item.documentType === 'TESIS'
+            ? {
+                ...item,
+                status: 'CARGADO' as const,
+                currentDocument: pdfDocument('TESIS', EMANUEL_THESIS),
+              }
+            : item,
+        ),
+        { version: 4 },
+      ),
+      version: 4,
+      results: [savedPdfResult('TESIS', EMANUEL_THESIS)],
+    });
+    pending$.complete();
+    await flushValidation(fixture);
+
+    expect(fixture.componentInstance.inFlight()).toBe(false);
+    expect(fixture.componentInstance.showSaveDialog()).toBe(true);
   });
 });

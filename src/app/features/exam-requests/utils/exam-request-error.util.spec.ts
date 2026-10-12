@@ -1,5 +1,9 @@
 import { mockApiError } from '../../../core/errors/testing/mock-api-error.util';
-import { mapExamRequestError, mapExamRequestWriteError } from './exam-request-error.util';
+import {
+  mapExamRequestError,
+  mapExamRequestWriteError,
+  mapSaveDocumentItemError,
+} from './exam-request-error.util';
 
 describe('mapExamRequestError', () => {
   it('maps PROGRAM_NOT_ELIGIBLE before the security fallback', () => {
@@ -59,5 +63,22 @@ describe('mapExamRequestWriteError', () => {
     expect(mapExamRequestWriteError(mockApiError({ status: 409, error: 'VERSION_CONFLICT' }))).toBe(
       'version_conflict',
     );
+  });
+});
+
+describe('mapSaveDocumentItemError', () => {
+  it('maps INVALID_DOCUMENT_NAME with escaped expectedName and ignores message', () => {
+    expect(
+      mapSaveDocumentItemError('HIST_ACAD', {
+        error: 'INVALID_DOCUMENT_NAME',
+        message: 'Invalid filename',
+        details: { expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf' },
+      }),
+    ).toEqual({
+      documentType: 'HIST_ACAD',
+      key: 'EXAM_REQUEST.VALIDATION.INVALID_DOCUMENT_NAME',
+      expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf',
+      params: { expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf' },
+    });
   });
 });

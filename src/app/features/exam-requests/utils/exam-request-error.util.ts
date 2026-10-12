@@ -3,6 +3,7 @@ import {
   matchCode,
 } from '../../../core/errors/utils/create-domain-error-mapper.util';
 import { getApiErrorCode } from '../../../core/errors/utils/parse-api-error.util';
+import type { DocumentError, DocumentType } from '../../../models';
 
 export const EXAM_REQUEST_ERROR_I18N_SCOPE = 'EXAM_REQUEST.ERRORS' as const;
 
@@ -96,4 +97,45 @@ export function mapExamRequestWriteError(error: unknown): ExamRequestWriteError 
   }
 
   return mapExamRequestWriteDomainError(error);
+}
+
+export interface SaveItemErrorView {
+  readonly documentType: DocumentType;
+  readonly key: string;
+  readonly expectedName?: string;
+  readonly params?: { readonly expectedName: string };
+}
+
+/**
+ * Traduce results[].error por código estable. Nunca usa message del backend.
+ * expectedName se entrega escapado por el pipe translate.
+ */
+export function mapSaveDocumentItemError(
+  documentType: DocumentType,
+  error: DocumentError,
+): SaveItemErrorView {
+  const expectedName =
+    typeof error.details?.expectedName === 'string' && error.details.expectedName.length > 0
+      ? error.details.expectedName
+      : undefined;
+
+  switch (error.error) {
+    case 'INVALID_DOCUMENT_NAME':
+      return {
+        documentType,
+        key: 'EXAM_REQUEST.VALIDATION.INVALID_DOCUMENT_NAME',
+        expectedName,
+        params: expectedName ? { expectedName } : undefined,
+      };
+    case 'INVALID_PDF_CONTENT':
+      return { documentType, key: 'EXAM_REQUEST.VALIDATION.INVALID_PDF_CONTENT' };
+    case 'INVALID_ARTICLE_URL':
+      return { documentType, key: 'EXAM_REQUEST.VALIDATION.INVALID_ARTICLE_URL' };
+    case 'STORAGE_WRITE_FAILED':
+      return { documentType, key: 'EXAM_REQUEST.ERRORS.STORAGE_WRITE_FAILED' };
+    case 'UNSAFE_FILE_NAME':
+      return { documentType, key: 'EXAM_REQUEST.ERRORS.UNSAFE_FILE_NAME' };
+    default:
+      return { documentType, key: 'EXAM_REQUEST.ERRORS.generic' };
+  }
 }

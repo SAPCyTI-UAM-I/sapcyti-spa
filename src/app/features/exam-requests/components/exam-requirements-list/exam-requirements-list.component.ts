@@ -1,16 +1,20 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
+  ElementRef,
   inject,
   OnInit,
   signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
 import { Message } from 'primeng/message';
 import { catchError, EMPTY, finalize, Observable, Subject, switchMap } from 'rxjs';
 
@@ -20,8 +24,10 @@ import {
   DocumentType,
   ExamOptionsDto,
   ExamPanelResponse,
+  ExamRequestDto,
   ExamRequirementDto,
   ExamType,
+  SaveDocumentsResponse,
 } from '../../../../models';
 import {
   CatalogTagComponent,
@@ -37,7 +43,12 @@ import {
   localizeDocumentFileName,
   resolveDocumentNameLanguage,
 } from '../../utils/exam-document-name.util';
-import { EXAM_REQUEST_ERROR_I18N_SCOPE } from '../../utils/exam-request-error.util';
+import {
+  EXAM_REQUEST_ERROR_I18N_SCOPE,
+  ExamRequestWriteError,
+  mapSaveDocumentItemError,
+  type SaveItemErrorView,
+} from '../../utils/exam-request-error.util';
 import {
   ExamDocumentUploadComponent,
   type ExamDocumentSelection,
@@ -53,6 +64,7 @@ type LoadTrigger = { kind: 'reload' } | { kind: 'type'; examType: ExamType };
     ReactiveFormsModule,
     TranslatePipe,
     Button,
+    Dialog,
     Message,
     CatalogTagComponent,
     I18nSelectComponent,
@@ -135,7 +147,7 @@ export class ExamRequirementsListComponent implements OnInit {
 
   readonly requestFolio = computed(() => this.panel()?.request?.folio ?? null);
 
-  /** Selección local por tipo; no se envía hasta HU-65. */
+  /** Selección local por tipo; el POST solo toma tipos sin currentDocument. */
   readonly pendingSelections = signal<Partial<Record<DocumentType, ExamDocumentSelection>>>({});
 
   /**
@@ -150,6 +162,51 @@ export class ExamRequirementsListComponent implements OnInit {
     const items = this.panel()?.requirements ?? [];
     const requiredItems = items.filter((item) => item.required);
     return requiredItems.length > 0 && requiredItems.every((item) => item.status === 'CARGADO');
+  });
+
+  readonly inFlight = signal(false);
+  readonly saveWriteError = signal<string | null>(null);
+  readonly itemSaveErrors = signal<Partial<Record<DocumentType, SaveItemErrorView>>>({});
+  readonly showSaveDialog = signal(false);
+  readonly saveDialogSavedCount = signal(0);
+  readonly saveDialogFailed = signal<SaveItemErrorView[]>([]);
+  readonly showAllFailed = signal(false);
+  private readonly saveErrorSummary = viewChild<ElementRef<HTMLElement>>('saveErrorSummary');
+
+  readonly saveWriteErrorKey = computed(() => {
+    const key = this.saveWriteError();
+    return key ? `${EXAM_REQUEST_ERROR_I18N_SCOPE}.${key}` : null;
+  });
+
+  readonly saveDialogTitleKey = computed(() =>
+    this.saveDialogFailed().length > 0 ? 'EXAM_REQUEST.SAVE.MIXED' : 'EXAM_REQUEST.SAVE.SUCCESS',
+  );
+
+  /** Solo tipos sin documento vigente; el reemplazo es PUT (HU-65 Tarea 6). */
+  readonly saveableSelections = computed<ExamDocumentSelection[]>(() => {
+    const items = this.panel()?.requirements ?? [];
+    const pending = this.pendingSelections();
+    return Object.values(pending).filter((selection): selection is ExamDocumentSelection => {
+      if (!selection) {
+        return false;
+      }
+
+      const item = items.find((requirement) => requirement.documentType === selection.documentType);
+      return item?.currentDocument == null;
+    });
+  });
+
+  readonly canSave = computed(() => {
+    if (this.inFlight() || !this.eligible()) {
+      return false;
+    }
+
+    const request = this.panel()?.request;
+    if (request && request.status !== 'BORRADOR') {
+      return false;
+    }
+
+    return this.saveableSelections().length > 0;
   });
 
   ngOnInit(): void {
@@ -226,6 +283,40 @@ export class ExamRequirementsListComponent implements OnInit {
     });
   }
 
+  saveItemError(documentType: DocumentType): SaveItemErrorView | null {
+    return this.itemSaveErrors()[documentType] ?? null;
+  }
+
+  closeSaveDialog(): void {
+    this.showSaveDialog.set(false);
+  }
+
+  /** Un POST por clic; inFlight bloquea el segundo disparo. */
+  saveDocuments(): void {
+    if (!this.canSave()) {
+      return;
+    }
+
+    const examType = this.examTypeForm.controls.examType.value;
+    const version = this.panel()?.request?.version ?? 0;
+    const selections = this.saveableSelections();
+    this.inFlight.set(true);
+    this.saveWriteError.set(null);
+    this.showAllFailed.set(false);
+    this.itemSaveErrors.set({});
+
+    this.examRequests
+      .saveDocuments(examType, version, selections)
+      .pipe(
+        finalize(() => this.inFlight.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (response) => this.applySaveResponse(response),
+        error: (error: unknown) => this.handleSaveFailure(error, examType),
+      });
+  }
+
   private loadTrigger(trigger: LoadTrigger): Observable<ExamPanelResponse> {
     this.loading.set(true);
     this.loadError.set(null);
@@ -277,6 +368,90 @@ export class ExamRequirementsListComponent implements OnInit {
     return examTypes[0] ?? 'GRADO';
   }
 
+  private applySaveResponse(response: SaveDocumentsResponse): void {
+    const failed: SaveItemErrorView[] = [];
+    const savedTypes = new Set<DocumentType>();
+
+    for (const result of response.results) {
+      if (result.status === 'SAVED') {
+        savedTypes.add(result.documentType);
+        continue;
+      }
+
+      failed.push(mapSaveDocumentItemError(result.documentType, result.error));
+    }
+
+    this.pendingSelections.update((current) => {
+      const next = { ...current };
+      for (const type of savedTypes) {
+        delete next[type];
+      }
+      return next;
+    });
+
+    const errors: Partial<Record<DocumentType, SaveItemErrorView>> = {};
+    for (const item of failed) {
+      errors[item.documentType] = item;
+    }
+    this.itemSaveErrors.set(errors);
+
+    if (response.request) {
+      this.applyRequestToPanel(response.request);
+    }
+
+    this.saveDialogSavedCount.set(savedTypes.size);
+    this.saveDialogFailed.set(failed);
+
+    if (savedTypes.size > 0) {
+      this.showSaveDialog.set(true);
+      return;
+    }
+
+    // Todos ERROR: no afirmar guardado; enfocar el resumen.
+    this.showAllFailed.set(failed.length > 0);
+    queueMicrotask(() => this.saveErrorSummary()?.nativeElement.focus());
+  }
+
+  private applyRequestToPanel(request: ExamRequestDto): void {
+    this.panel.update((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        request,
+        requirements: request.requirements,
+        requiredPendingCount: request.requirements.filter(
+          (item) => item.required && item.status === 'PENDIENTE',
+        ).length,
+      };
+    });
+  }
+
+  private handleSaveFailure(error: unknown, examType: ExamType): void {
+    const writeKey = this.examRequests.mapWriteError(error);
+    if (shouldReconcilePanelAfterSaveError(error)) {
+      this.reconcilePanel(examType, writeKey);
+      return;
+    }
+
+    this.saveWriteError.set(writeKey);
+  }
+
+  private reconcilePanel(examType: ExamType, writeKey: ExamRequestWriteError): void {
+    this.examRequests
+      .getPanel(examType)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (panel) => {
+          this.panel.set(panel);
+          this.saveWriteError.set(writeKey);
+        },
+        error: () => this.saveWriteError.set(writeKey),
+      });
+  }
+
   private clearPendingSelections(): void {
     this.pendingSelections.set({});
   }
@@ -287,6 +462,19 @@ export class ExamRequirementsListComponent implements OnInit {
     this.panel.set(null);
     this.loadError.set(null);
     this.loading.set(false);
+    this.inFlight.set(false);
+    this.saveWriteError.set(null);
+    this.itemSaveErrors.set({});
+    this.showSaveDialog.set(false);
+    this.showAllFailed.set(false);
     this.examTypeForm.reset({ examType: 'GRADO' }, { emitEvent: false });
   }
+}
+
+function shouldReconcilePanelAfterSaveError(error: unknown): boolean {
+  if (!(error instanceof HttpErrorResponse)) {
+    return true;
+  }
+
+  return error.status === 0 || error.status === 409 || error.status >= 500;
 }
