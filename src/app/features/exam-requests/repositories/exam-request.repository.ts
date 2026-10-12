@@ -14,6 +14,9 @@ import {
 } from '../../../models';
 import type { SaveDocumentSelection } from '../utils/exam-document-form-data.util';
 
+/** Query de GET content. Ausente en el path; el repositorio la añade. */
+export type DocumentContentDisposition = 'inline' | 'attachment';
+
 /** PUT PDF usa archivo; PUT artículo URL usa el JSON del contrato. */
 export type ReplaceDocumentCommand =
   | { readonly kind: 'PDF'; readonly version: number; readonly file: File }
@@ -38,6 +41,11 @@ export interface ExamRequestRepository {
     documentType: DocumentType,
     request: DeleteDocumentRequest,
   ): Observable<MutationResponse>;
+  getDocumentContent(
+    examType: ExamType,
+    documentType: DocumentType,
+    disposition: DocumentContentDisposition,
+  ): Observable<Blob>;
 }
 
 export const EXAM_REQUEST_REPOSITORY = new InjectionToken<ExamRequestRepository>(

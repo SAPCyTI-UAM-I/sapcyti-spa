@@ -6,6 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
 import { EXAM_STUDENT_OPERATION } from '../../../core/http/tokens/exam-context.tokens';
 import { ExamOptionsDto, ExamRequirementsResponse } from '../../../models';
+import { EXAM_DOCUMENT_PDF_FIXTURE } from '../mocks/exam-document-pdf.fixture';
 import { ExamRequestHttpRepository } from './exam-request-http.repository';
 
 const options: ExamOptionsDto = {
@@ -260,5 +261,62 @@ describe('ExamRequestHttpRepository', () => {
       status: 403,
       error: { error: 'PROGRAM_NOT_ELIGIBLE' },
     });
+  });
+
+  it('downloads the same PDF bytes for inline and attachment', async () => {
+    const inline = firstValueFrom(repo.getDocumentContent('GRADO', 'TESIS', 'inline'));
+    const inlineReq = http.expectOne(
+      `${API_ENDPOINTS.examRequests.me.content('GRADO', 'TESIS')}?disposition=inline`,
+    );
+    expect(inlineReq.request.method).toBe('GET');
+    expect(inlineReq.request.responseType).toBe('blob');
+    expect(inlineReq.request.headers.get('Accept')).toBe('application/pdf');
+    expect(inlineReq.request.withCredentials).toBe(true);
+    expect(inlineReq.request.context.get(EXAM_STUDENT_OPERATION)).toBe(true);
+    inlineReq.flush(new Blob([EXAM_DOCUMENT_PDF_FIXTURE], { type: 'application/pdf' }));
+
+    const attachment = firstValueFrom(repo.getDocumentContent('GRADO', 'TESIS', 'attachment'));
+    const attachmentReq = http.expectOne(
+      `${API_ENDPOINTS.examRequests.me.content('GRADO', 'TESIS')}?disposition=attachment`,
+    );
+    expect(attachmentReq.request.url).toBe(API_ENDPOINTS.examRequests.me.content('GRADO', 'TESIS'));
+    attachmentReq.flush(new Blob([EXAM_DOCUMENT_PDF_FIXTURE], { type: 'application/pdf' }));
+
+    const inlineBytes = new Uint8Array(await (await inline).arrayBuffer());
+    const attachmentBytes = new Uint8Array(await (await attachment).arrayBuffer());
+    expect(inlineBytes).toEqual(EXAM_DOCUMENT_PDF_FIXTURE);
+    expect(attachmentBytes).toEqual(inlineBytes);
+  });
+
+  it('normalizes a JSON error blob and keeps status, statusText and headers', async () => {
+    const pending = firstValueFrom(repo.getDocumentContent('GRADO', 'TESIS', 'inline'));
+    http
+      .expectOne(`${API_ENDPOINTS.examRequests.me.content('GRADO', 'TESIS')}?disposition=inline`)
+      .flush(
+        new Blob([JSON.stringify({ error: 'DOCUMENT_NOT_FOUND', message: 'Document not found' })], {
+          type: 'application/json',
+        }),
+        {
+          status: 404,
+          statusText: 'Not Found',
+          headers: { 'Content-Type': 'application/json', 'Retry-After': '3' },
+        },
+      );
+
+    const error = await pending.then(
+      () => {
+        throw new Error('expected the content request to fail');
+      },
+      (failure: unknown) => failure,
+    );
+
+    expect(error).toMatchObject({
+      status: 404,
+      statusText: 'Not Found',
+      error: { error: 'DOCUMENT_NOT_FOUND', message: 'Document not found' },
+    });
+    expect(
+      (error as { headers: { get: (name: string) => string | null } }).headers.get('Retry-After'),
+    ).toBe('3');
   });
 });

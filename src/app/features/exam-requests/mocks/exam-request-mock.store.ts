@@ -19,9 +19,13 @@ import {
   SaveDocumentsResponse,
   SaveResult,
 } from '../../../models';
-import type { ReplaceDocumentCommand } from '../repositories/exam-request.repository';
+import type {
+  DocumentContentDisposition,
+  ReplaceDocumentCommand,
+} from '../repositories/exam-request.repository';
 import type { SaveDocumentSelection } from '../utils/exam-document-form-data.util';
 import { matchesExpectedDocumentName } from '../utils/exam-document-validation.util';
+import { EXAM_DOCUMENT_PDF_FIXTURE } from './exam-document-pdf.fixture';
 
 /**
  * Datos demo de HU-62/HU-65. Borrar este módulo para quitar todo el mock de examen.
@@ -258,11 +262,18 @@ export class ExamRequestMockStore {
   private scenario: ExamRequestMockScenario = 'maestria-emanuel';
   private readonly states = new Map<ExamType, PersistState>();
   private nextRequestId = 6401;
+  /** Fuerza 401 o 503 en GET content sin depender del documento vigente. */
+  private contentFault: 'unauthorized' | 'storage_unavailable' | null = null;
 
   setScenario(scenario: ExamRequestMockScenario): void {
     this.scenario = scenario;
     this.states.clear();
     this.nextRequestId = 6401;
+    this.contentFault = null;
+  }
+
+  setContentFault(fault: 'unauthorized' | 'storage_unavailable' | null): void {
+    this.contentFault = fault;
   }
 
   getScenario(): ExamRequestMockScenario {
@@ -408,6 +419,52 @@ export class ExamRequestMockStore {
       version: state.request.version,
       document: null,
     };
+  }
+
+  /**
+   * Bytes del PDF vigente. inline y attachment devuelven el mismo fixture.
+   * URL vigente, ausencia, 401 y 503 no entregan PDF.
+   */
+  getDocumentContent(
+    examType: ExamType,
+    documentType: DocumentType,
+    _disposition: DocumentContentDisposition,
+  ): Blob {
+    if (this.contentFault === 'unauthorized') {
+      throw mockApiError({
+        status: 401,
+        error: 'UNAUTHORIZED',
+        message: 'Sign in to continue',
+      });
+    }
+
+    if (this.contentFault === 'storage_unavailable') {
+      throw mockApiError({
+        status: 503,
+        error: 'DOCUMENT_STORAGE_UNAVAILABLE',
+        message: 'Object storage is unavailable',
+      });
+    }
+
+    this.assertReadable(examType);
+    const document = this.ensureState(examType).documents[documentType];
+    if (!document) {
+      throw mockApiError({
+        status: 404,
+        error: 'DOCUMENT_NOT_FOUND',
+        message: 'Document not found',
+      });
+    }
+
+    if (document.kind === 'URL') {
+      throw mockApiError({
+        status: 409,
+        error: 'DOCUMENT_IS_EXTERNAL_URL',
+        message: 'The current article is an external URL',
+      });
+    }
+
+    return new Blob([EXAM_DOCUMENT_PDF_FIXTURE], { type: 'application/pdf' });
   }
 
   private readSnapshot(examType: ExamType): {

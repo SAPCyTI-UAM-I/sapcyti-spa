@@ -80,6 +80,9 @@ export const API_ENDPOINTS = {
         `${environment.apiBaseUrl}/exam-requests/me/${examType}/documents`,
       document: (examType: ExamType, documentType: DocumentType): string =>
         `${environment.apiBaseUrl}/exam-requests/me/${examType}/documents/${documentType}`,
+      /** Bytes del PDF vigente. La query disposition la arma el repositorio. */
+      content: (examType: ExamType, documentType: DocumentType): string =>
+        `${environment.apiBaseUrl}/exam-requests/me/${examType}/documents/${documentType}/content`,
     },
   },
 } as const;

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
+import { EXAM_DOCUMENT_PDF_FIXTURE } from '../mocks/exam-document-pdf.fixture';
 import { ExamRequestMockStore } from '../mocks/exam-request-mock.store';
 import { ExamRequestMockRepository } from './exam-request-mock.repository';
 
@@ -247,5 +248,65 @@ describe('ExamRequestMockRepository', () => {
     await expect(
       firstValueFrom(repo.deleteDocument('GRADO', 'DATOS_ALUM', { version: 3 })),
     ).rejects.toMatchObject({ status: 404, error: { error: 'DOCUMENT_NOT_FOUND' } });
+  });
+
+  it('returns the same PDF fixture for inline and attachment', async () => {
+    store.setScenario('maestria-parcial');
+
+    const inline = await firstValueFrom(repo.getDocumentContent('GRADO', 'TESIS', 'inline'));
+    const attachment = await firstValueFrom(
+      repo.getDocumentContent('GRADO', 'TESIS', 'attachment'),
+    );
+
+    expect(new Uint8Array(await inline.arrayBuffer())).toEqual(EXAM_DOCUMENT_PDF_FIXTURE);
+    expect(new Uint8Array(await attachment.arrayBuffer())).toEqual(EXAM_DOCUMENT_PDF_FIXTURE);
+    expect(String.fromCharCode(...EXAM_DOCUMENT_PDF_FIXTURE.slice(0, 5))).toBe('%PDF-');
+  });
+
+  it('returns 404 when the current document does not exist', async () => {
+    store.setScenario('maestria-emanuel');
+
+    await expect(
+      firstValueFrom(repo.getDocumentContent('GRADO', 'TESIS', 'inline')),
+    ).rejects.toMatchObject({
+      status: 404,
+      error: { error: 'DOCUMENT_NOT_FOUND', message: 'Document not found' },
+    });
+  });
+
+  it('returns 409 when the current article is an external URL', async () => {
+    store.setScenario('doctorado');
+    await firstValueFrom(
+      repo.saveDocuments('GRADO', 1, [
+        {
+          documentType: 'ARTICULO',
+          kind: 'URL',
+          url: 'https://revista.ejemplo.org/articulo/123',
+        },
+      ]),
+    );
+
+    await expect(
+      firstValueFrom(repo.getDocumentContent('GRADO', 'ARTICULO', 'inline')),
+    ).rejects.toMatchObject({
+      status: 409,
+      error: { error: 'DOCUMENT_IS_EXTERNAL_URL' },
+    });
+  });
+
+  it('returns 401 and 503 content faults without PDF bytes', async () => {
+    store.setScenario('maestria-parcial');
+    store.setContentFault('unauthorized');
+    await expect(
+      firstValueFrom(repo.getDocumentContent('GRADO', 'TESIS', 'inline')),
+    ).rejects.toMatchObject({ status: 401, error: { error: 'UNAUTHORIZED' } });
+
+    store.setContentFault('storage_unavailable');
+    await expect(
+      firstValueFrom(repo.getDocumentContent('GRADO', 'TESIS', 'attachment')),
+    ).rejects.toMatchObject({
+      status: 503,
+      error: { error: 'DOCUMENT_STORAGE_UNAVAILABLE' },
+    });
   });
 });

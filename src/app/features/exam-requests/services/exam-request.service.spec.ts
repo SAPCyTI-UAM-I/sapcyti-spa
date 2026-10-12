@@ -25,6 +25,7 @@ describe('ExamRequestService', () => {
     saveDocuments: vi.fn(() => of(mixedResponse)),
     replaceDocument: vi.fn(),
     deleteDocument: vi.fn(),
+    getDocumentContent: vi.fn(() => of(new Blob(['%PDF-']))),
   };
 
   beforeEach(() => {
@@ -56,5 +57,10 @@ describe('ExamRequestService', () => {
     expect(service.mapError(mockApiError({ status: 400, error: 'VALIDATION_ERROR' }))).toBe(
       'validation',
     );
+    expect(
+      service.mapContentError(
+        mockApiError({ status: 404, error: 'DOCUMENT_NOT_FOUND', message: 'Document not found' }),
+      ),
+    ).toBe('document_not_found');
   });
 });

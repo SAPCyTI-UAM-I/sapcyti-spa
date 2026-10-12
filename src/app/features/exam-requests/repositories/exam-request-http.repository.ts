@@ -1,8 +1,9 @@
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, from, Observable, switchMap, throwError } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
+import { normalizeBlobError } from '../../../core/errors/utils/normalize-blob-error.util';
 import { EXAM_STUDENT_OPERATION } from '../../../core/http/tokens/exam-context.tokens';
 import {
   DeleteDocumentRequest,
@@ -19,7 +20,11 @@ import {
   buildSaveDocumentsFormData,
   type SaveDocumentSelection,
 } from '../utils/exam-document-form-data.util';
-import { ExamRequestRepository, type ReplaceDocumentCommand } from './exam-request.repository';
+import {
+  ExamRequestRepository,
+  type DocumentContentDisposition,
+  type ReplaceDocumentCommand,
+} from './exam-request.repository';
 
 /** Marca escrituras para que el interceptor conserve PROGRAM_NOT_ELIGIBLE. */
 function examWriteContext(): HttpContext {
@@ -91,5 +96,31 @@ export class ExamRequestHttpRepository implements ExamRequestRepository {
       API_ENDPOINTS.examRequests.me.document(examType, documentType),
       { body: request, withCredentials: true, context: examWriteContext() },
     );
+  }
+
+  /**
+   * PDF vigente. disposition viaja como query; un error JSON llega como Blob
+   * y se normaliza antes del mapper.
+   */
+  getDocumentContent(
+    examType: ExamType,
+    documentType: DocumentType,
+    disposition: DocumentContentDisposition,
+  ): Observable<Blob> {
+    return this.http
+      .get(API_ENDPOINTS.examRequests.me.content(examType, documentType), {
+        params: new HttpParams().set('disposition', disposition),
+        responseType: 'blob',
+        headers: new HttpHeaders({ Accept: 'application/pdf' }),
+        withCredentials: true,
+        context: examWriteContext(),
+      })
+      .pipe(
+        catchError((error: unknown) =>
+          from(normalizeBlobError(error)).pipe(
+            switchMap((normalized) => throwError(() => normalized)),
+          ),
+        ),
+      );
   }
 }

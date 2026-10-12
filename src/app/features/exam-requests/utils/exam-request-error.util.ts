@@ -16,6 +16,15 @@ export type ExamRequestError =
   | 'forbidden'
   | 'generic';
 
+/** Lectura binaria HU-66. 401/403 siguen en forbidden; el message no se usa. */
+export type ExamRequestContentError =
+  | 'document_not_found'
+  | 'document_is_external_url'
+  | 'DOCUMENT_STORAGE_UNAVAILABLE'
+  | 'validation'
+  | 'forbidden'
+  | 'generic';
+
 /** Claves de escritura; 200 mixto no entra aquí. */
 export type ExamRequestWriteError =
   | 'program_not_eligible'
@@ -97,6 +106,23 @@ export function mapExamRequestWriteError(error: unknown): ExamRequestWriteError 
   }
 
   return mapExamRequestWriteDomainError(error);
+}
+
+const mapExamRequestContentDomainError = createDomainErrorMapper<ExamRequestContentError>({
+  rules: [
+    { match: matchCode('DOCUMENT_NOT_FOUND'), key: 'document_not_found' },
+    { match: matchCode('REQUEST_NOT_FOUND'), key: 'document_not_found' },
+    { match: matchCode('DOCUMENT_IS_EXTERNAL_URL'), key: 'document_is_external_url' },
+    { match: matchCode('DOCUMENT_STORAGE_UNAVAILABLE'), key: 'DOCUMENT_STORAGE_UNAVAILABLE' },
+    { match: matchCode('VALIDATION_ERROR'), key: 'validation' },
+  ],
+  fallback: 'generic',
+  securityFallback: 'forbidden',
+});
+
+/** Traduce el envelope ya normalizado de GET content. Nunca devuelve message. */
+export function mapExamRequestContentError(error: unknown): ExamRequestContentError {
+  return mapExamRequestContentDomainError(error);
 }
 
 export interface SaveItemErrorView {

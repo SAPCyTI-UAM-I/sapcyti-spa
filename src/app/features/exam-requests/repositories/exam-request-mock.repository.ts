@@ -14,7 +14,11 @@ import {
 } from '../../../models';
 import { ExamRequestMockStore } from '../mocks/exam-request-mock.store';
 import type { SaveDocumentSelection } from '../utils/exam-document-form-data.util';
-import { ExamRequestRepository, type ReplaceDocumentCommand } from './exam-request.repository';
+import {
+  ExamRequestRepository,
+  type DocumentContentDisposition,
+  type ReplaceDocumentCommand,
+} from './exam-request.repository';
 
 @Injectable()
 export class ExamRequestMockRepository implements ExamRequestRepository {
@@ -54,5 +58,13 @@ export class ExamRequestMockRepository implements ExamRequestRepository {
     request: DeleteDocumentRequest,
   ): Observable<MutationResponse> {
     return fromMockStore(() => this.store.deleteDocument(examType, documentType, request.version));
+  }
+
+  getDocumentContent(
+    examType: ExamType,
+    documentType: DocumentType,
+    disposition: DocumentContentDisposition,
+  ): Observable<Blob> {
+    return fromMockStore(() => this.store.getDocumentContent(examType, documentType, disposition));
   }
 }

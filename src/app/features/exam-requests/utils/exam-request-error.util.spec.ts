@@ -1,5 +1,6 @@
 import { mockApiError } from '../../../core/errors/testing/mock-api-error.util';
 import {
+  mapExamRequestContentError,
   mapExamRequestError,
   mapExamRequestWriteError,
   mapSaveDocumentItemError,
@@ -62,6 +63,44 @@ describe('mapExamRequestWriteError', () => {
     ).toBe('document_not_found');
     expect(mapExamRequestWriteError(mockApiError({ status: 409, error: 'VERSION_CONFLICT' }))).toBe(
       'version_conflict',
+    );
+  });
+});
+
+describe('mapExamRequestContentError', () => {
+  it('maps content codes and keeps 401 and 403 as forbidden', () => {
+    expect(
+      mapExamRequestContentError(
+        mockApiError({
+          status: 404,
+          error: 'DOCUMENT_NOT_FOUND',
+          message: 'Document not found',
+        }),
+      ),
+    ).toBe('document_not_found');
+    expect(
+      mapExamRequestContentError(
+        mockApiError({
+          status: 409,
+          error: 'DOCUMENT_IS_EXTERNAL_URL',
+          message: 'Article is a URL',
+        }),
+      ),
+    ).toBe('document_is_external_url');
+    expect(
+      mapExamRequestContentError(
+        mockApiError({
+          status: 503,
+          error: 'DOCUMENT_STORAGE_UNAVAILABLE',
+          message: 'Object storage is unavailable',
+        }),
+      ),
+    ).toBe('DOCUMENT_STORAGE_UNAVAILABLE');
+    expect(mapExamRequestContentError(mockApiError({ status: 401, error: 'UNAUTHORIZED' }))).toBe(
+      'forbidden',
+    );
+    expect(mapExamRequestContentError(mockApiError({ status: 403, error: 'FORBIDDEN' }))).toBe(
+      'forbidden',
     );
   });
 });
