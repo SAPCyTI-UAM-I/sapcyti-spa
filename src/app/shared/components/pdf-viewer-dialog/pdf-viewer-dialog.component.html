@@ -1,0 +1,103 @@
+<p-dialog
+  [header]="'EXAM_REQUEST.VIEWER.TITLE' | translate"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [visible]="visible()"
+  [style]="{ width: 'min(100%, 48rem)' }"
+  data-testid="pdf-viewer-dialog"
+  (visibleChange)="onVisibleChange($event)"
+>
+  <div class="bg-surface gap-sm flex flex-col">
+    @if (fileName(); as name) {
+      <p class="text-body-md text-text-secondary font-body-md" data-testid="pdf-viewer-file-name">
+        {{ name }}
+      </p>
+    }
+
+    <div
+      class="gap-sm flex flex-wrap items-center"
+      role="group"
+      [attr.aria-label]="'EXAM_REQUEST.VIEWER.ZOOM' | translate: { level: zoom() }"
+    >
+      <p-button
+        type="button"
+        severity="secondary"
+        variant="outlined"
+        data-testid="pdf-viewer-zoom-out"
+        [label]="'EXAM_REQUEST.ACTIONS.ZOOM_OUT' | translate"
+        [disabled]="zoom() <= minZoom || !blobUrl()"
+        (onClick)="zoomOut()"
+      />
+      <span class="text-body-md font-body-md" aria-live="polite" data-testid="pdf-viewer-zoom">
+        {{ 'EXAM_REQUEST.VIEWER.ZOOM' | translate: { level: zoom() } }}
+      </span>
+      <p-button
+        type="button"
+        severity="secondary"
+        variant="outlined"
+        data-testid="pdf-viewer-zoom-in"
+        [label]="'EXAM_REQUEST.ACTIONS.ZOOM_IN' | translate"
+        [disabled]="zoom() >= maxZoom || !blobUrl()"
+        (onClick)="zoomIn()"
+      />
+      <p-button
+        type="button"
+        severity="secondary"
+        variant="outlined"
+        data-testid="pdf-viewer-zoom-reset"
+        [label]="'EXAM_REQUEST.ACTIONS.ZOOM_RESET' | translate"
+        [disabled]="zoom() === 100 || !blobUrl()"
+        (onClick)="resetZoom()"
+      />
+      <p-button
+        type="button"
+        data-testid="pdf-viewer-download"
+        [label]="'EXAM_REQUEST.ACTIONS.DOWNLOAD' | translate"
+        [disabled]="!blob()"
+        (onClick)="requestDownload()"
+      />
+    </div>
+
+    <app-load-state
+      [loading]="loading()"
+      [error]="!!errorKey() || renderFailed()"
+      [empty]="!loading() && !errorKey() && !blobUrl()"
+      emptyMessage="EXAM_REQUEST.VIEWER.LOADING"
+      [errorMessage]="viewerErrorKey()"
+      (retry)="retry.emit()"
+    >
+      @if (blobUrl(); as url) {
+        <div class="max-h-[70vh] overflow-auto">
+          <div [style.width.%]="zoom()">
+            <object
+              class="h-[70vh] w-full"
+              [data]="url"
+              type="application/pdf"
+              [attr.aria-label]="'EXAM_REQUEST.VIEWER.TITLE' | translate"
+              data-testid="pdf-viewer-object"
+              (error)="onObjectError()"
+            >
+              <p class="text-body-md text-text-secondary font-body-md">
+                {{ 'EXAM_REQUEST.VIEWER.RENDER_ERROR' | translate }}
+              </p>
+            </object>
+          </div>
+        </div>
+      }
+    </app-load-state>
+  </div>
+
+  <ng-template #footer>
+    <div class="flex justify-end">
+      <p-button
+        type="button"
+        severity="secondary"
+        variant="outlined"
+        data-testid="pdf-viewer-close"
+        [label]="'COMMON.ACTIONS.CLOSE' | translate"
+        (onClick)="onVisibleChange(false)"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

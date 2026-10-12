@@ -11,6 +11,7 @@ export { FieldErrorComponent } from './field-error/field-error.component';
 export { I18nSelectComponent, type I18nSelectOption } from './i18n-select/i18n-select.component';
 export { LanguageSwitcherComponent } from './language-switcher/language-switcher.component';
 export { LoadStateComponent } from './load-state/load-state.component';
+export { PdfViewerDialogComponent } from './pdf-viewer-dialog/pdf-viewer-dialog.component';
 export { NotFoundComponent } from './not-found/not-found.component';
 export { ProfileFieldComponent } from './profile-field/profile-field.component';
 export { ShellSidebarLinkComponent } from './shell-sidebar-link/shell-sidebar-link.component';
