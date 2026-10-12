@@ -801,10 +801,15 @@
     "ACTIONS": {
       "CONFIRM_DELETE": "Eliminar documento",
       "DELETE": "Eliminar",
+      "DOWNLOAD": "Descargar",
+      "OPEN_DOCUMENT": "Abrir documento",
       "REPLACE": "Reemplazar",
       "RETRY": "Reintentar",
       "SAVE_DOCUMENTS": "Guardar documentos",
-      "SUBMIT": "Enviar solicitud"
+      "SUBMIT": "Enviar solicitud",
+      "ZOOM_IN": "Aumentar",
+      "ZOOM_OUT": "Reducir",
+      "ZOOM_RESET": "Restablecer zoom"
     },
     "ARTICLE_HINT": "PDF de nombre libre o enlace HTTPS",
     "ARTICLE_KIND": {
@@ -838,8 +843,11 @@
       "DEGREE_UNSUPPORTED": "No se pudieron determinar los requisitos. Contacta a la Coordinación.",
       "dependency_unavailable": "No se pudieron cargar los requisitos. Inténtalo de nuevo.",
       "DEPENDENCY_UNAVAILABLE": "No se pudieron cargar los requisitos. Inténtalo de nuevo.",
+      "document_is_external_url": "Este documento es un enlace. Ábrelo desde el panel.",
+      "DOCUMENT_IS_EXTERNAL_URL": "Este documento es un enlace. Ábrelo desde el panel.",
       "document_not_found": "El borrador o documento ya no está disponible.",
       "DOCUMENT_NOT_FOUND": "El borrador o documento ya no está disponible.",
+      "DOCUMENT_STORAGE_UNAVAILABLE": "No se pudo obtener el PDF. Inténtalo de nuevo.",
       "EXAM_TYPE_NOT_ALLOWED": "Este tipo de examen no está disponible para tu programa.",
       "forbidden": "No tienes acceso a esta solicitud.",
       "FORBIDDEN": "No tienes acceso a esta solicitud.",
@@ -917,6 +925,12 @@
       "INVALID_ARTICLE_URL": "Captura una URL absoluta válida que empiece con https://.",
       "INVALID_DOCUMENT_NAME": "El nombre debe ser {{expectedName}}. Corrígelo y vuelve a elegir el archivo.",
       "INVALID_PDF_CONTENT": "El archivo no es un PDF válido."
+    },
+    "VIEWER": {
+      "LOADING": "Cargando el PDF",
+      "RENDER_ERROR": "No se pudo mostrar el PDF. Puedes descargarlo o reintentar.",
+      "TITLE": "Documento PDF",
+      "ZOOM": "Zoom {{level}}"
     }
   },
   "SHELL": {
