@@ -1,5 +1,5 @@
 import { environment } from '../../../environments/environment';
-import { ExamType } from '../../models';
+import { DocumentType, ExamType } from '../../models';
 
 export const API_ENDPOINTS = {
   auth: {
@@ -73,6 +73,13 @@ export const API_ENDPOINTS = {
       options: `${environment.apiBaseUrl}/exam-requests/me/options`,
       requirements: (examType: ExamType): string =>
         `${environment.apiBaseUrl}/exam-requests/me/${examType}/requirements`,
+      /** Panel persistente HU-65; no sustituye GET /requirements. */
+      panel: (examType: ExamType): string =>
+        `${environment.apiBaseUrl}/exam-requests/me/${examType}`,
+      documents: (examType: ExamType): string =>
+        `${environment.apiBaseUrl}/exam-requests/me/${examType}/documents`,
+      document: (examType: ExamType, documentType: DocumentType): string =>
+        `${environment.apiBaseUrl}/exam-requests/me/${examType}/documents/${documentType}`,
     },
   },
 } as const;

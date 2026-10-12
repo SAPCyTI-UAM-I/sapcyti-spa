@@ -121,4 +121,131 @@ describe('ExamRequestMockRepository', () => {
     const empty = await firstValueFrom(repo.getRequirements('GRADO'));
     expect(empty.requirements).toEqual([]);
   });
+
+  it('returns a maestria panel with three loaded documents and pending count 2', async () => {
+    store.setScenario('maestria-parcial');
+
+    const panel = await firstValueFrom(repo.getPanel('GRADO'));
+    const loaded = panel.requirements.filter((item) => item.status === 'CARGADO');
+    const pending = panel.requirements.filter((item) => item.status === 'PENDIENTE');
+
+    expect(panel.requiredPendingCount).toBe(2);
+    expect(loaded).toHaveLength(3);
+    expect(pending).toHaveLength(2);
+    expect(panel.request).toMatchObject({
+      id: 41,
+      status: 'BORRADOR',
+      folio: null,
+      version: 3,
+      delivery: null,
+    });
+  });
+
+  it('saves a first draft without folio and increments version once', async () => {
+    store.setScenario('maestria-emanuel');
+    const file = new File(
+      [new Uint8Array([0x25, 0x50, 0x44, 0x46])],
+      'Tesis_Mtria_Lopez_Alba_Emanuel.pdf',
+    );
+
+    const saved = await firstValueFrom(
+      repo.saveDocuments('GRADO', 0, [{ documentType: 'TESIS', kind: 'PDF', file }]),
+    );
+
+    expect(saved.version).toBe(1);
+    expect(saved.request).toMatchObject({ status: 'BORRADOR', folio: null, submittedAt: null });
+    expect(saved.results[0]?.status).toBe('SAVED');
+
+    const panel = await firstValueFrom(repo.getPanel('GRADO'));
+    expect(panel.requirements.find((item) => item.documentType === 'TESIS')?.status).toBe(
+      'CARGADO',
+    );
+  });
+
+  it('returns mixed 200 results and keeps only the saved document', async () => {
+    store.setScenario('maestria-emanuel');
+    const thesis = new File(
+      [new Uint8Array([0x25, 0x50, 0x44, 0x46])],
+      'Tesis_Mtria_Lopez_Alba_Emanuel.pdf',
+    );
+    const history = new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], 'historia.pdf');
+
+    const saved = await firstValueFrom(
+      repo.saveDocuments('GRADO', 0, [
+        { documentType: 'TESIS', kind: 'PDF', file: thesis },
+        { documentType: 'HIST_ACAD', kind: 'PDF', file: history },
+      ]),
+    );
+
+    expect(saved.results).toEqual([
+      expect.objectContaining({ documentType: 'TESIS', status: 'SAVED' }),
+      expect.objectContaining({
+        documentType: 'HIST_ACAD',
+        status: 'ERROR',
+        error: expect.objectContaining({
+          error: 'INVALID_DOCUMENT_NAME',
+          details: { expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf' },
+        }),
+      }),
+    ]);
+    expect(saved.request?.folio).toBeNull();
+    expect(saved.version).toBe(1);
+
+    const panel = await firstValueFrom(repo.getPanel('GRADO'));
+    expect(panel.requirements.find((item) => item.documentType === 'TESIS')?.status).toBe(
+      'CARGADO',
+    );
+    expect(panel.requirements.find((item) => item.documentType === 'HIST_ACAD')?.status).toBe(
+      'PENDIENTE',
+    );
+  });
+
+  it('rejects a stale version and a non-draft delete', async () => {
+    store.setScenario('maestria-parcial');
+    await expect(
+      firstValueFrom(
+        repo.saveDocuments('GRADO', 0, [
+          {
+            documentType: 'DATOS_ALUM',
+            kind: 'PDF',
+            file: new File([new Uint8Array([0x25])], 'Datos_Alum_Lopez_Alba_Emanuel.pdf'),
+          },
+        ]),
+      ),
+    ).rejects.toMatchObject({ status: 409, error: { error: 'VERSION_CONFLICT' } });
+
+    store.setScenario('doctorado');
+    await expect(
+      firstValueFrom(repo.deleteDocument('PREDOCTORAL', 'TESIS', { version: 1 })),
+    ).rejects.toMatchObject({ status: 409, error: { error: 'REQUEST_NOT_DRAFT' } });
+  });
+
+  it('replaces and deletes a draft document using CAS', async () => {
+    store.setScenario('maestria-parcial');
+    const file = new File(
+      [new Uint8Array([0x25, 0x50, 0x44, 0x46])],
+      'Tesis_Mtria_Lopez_Alba_Emanuel.pdf',
+    );
+
+    const replaced = await firstValueFrom(
+      repo.replaceDocument('GRADO', 'TESIS', { kind: 'PDF', version: 3, file }),
+    );
+    expect(replaced.version).toBe(4);
+    expect(replaced.document?.originalName).toBe('Tesis_Mtria_Lopez_Alba_Emanuel.pdf');
+    expect(replaced.request.folio).toBeNull();
+
+    const deleted = await firstValueFrom(repo.deleteDocument('GRADO', 'TESIS', { version: 4 }));
+    expect(deleted.version).toBe(5);
+    expect(deleted.document).toBeNull();
+    expect(deleted.request.requirements.find((item) => item.documentType === 'TESIS')?.status).toBe(
+      'PENDIENTE',
+    );
+  });
+
+  it('returns 404 DOCUMENT_NOT_FOUND when deleting a missing file', async () => {
+    store.setScenario('maestria-parcial');
+    await expect(
+      firstValueFrom(repo.deleteDocument('GRADO', 'DATOS_ALUM', { version: 3 })),
+    ).rejects.toMatchObject({ status: 404, error: { error: 'DOCUMENT_NOT_FOUND' } });
+  });
 });
