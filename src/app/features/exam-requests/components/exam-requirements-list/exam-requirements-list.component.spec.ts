@@ -1555,15 +1555,20 @@ describe('ExamRequirementsListComponent', () => {
     const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
     const pdf = new Blob(['%PDF-own']);
     getDocumentContent.mockReturnValue(of(pdf));
+    const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
 
     clickDocument(fixture, 'TESIS');
 
     expect(getDocumentContent).toHaveBeenCalledTimes(1);
     expect(getDocumentContent).toHaveBeenCalledWith('GRADO', 'TESIS', 'inline');
     expect(getDocumentContent.mock.calls[0]).toHaveLength(3);
-    expect(fixture.componentInstance.viewerVisible()).toBe(true);
-    expect(fixture.componentInstance.viewerBlob()).toBe(pdf);
+    expect(open).toHaveBeenCalledWith('blob:exam-doc', '_blank');
+    expect(fixture.debugElement.query(By.css('app-pdf-viewer-dialog'))).toBeNull();
+    const name = fixture.debugElement.query(By.css('[data-testid="exam-document-name-TESIS"]'));
+    expect(name.classes['underline']).toBe(true);
+    expect(name.classes['cursor-pointer']).toBe(true);
     expect(fixture.nativeElement.textContent).not.toContain('88');
+    open.mockRestore();
   });
 
   it('opens an https article in a new tab and keeps the accessible link', async () => {
@@ -1657,11 +1662,12 @@ describe('ExamRequirementsListComponent', () => {
         ),
       );
 
+    const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
     clickDocument(fixture, 'TESIS');
     clickDocument(fixture, 'SOL_SINODALES');
 
-    expect(fixture.componentInstance.viewerBlob()).toBeNull();
-    expect(fixture.componentInstance.viewerErrorKey()).toBe(
+    expect(open).toHaveBeenCalledTimes(1);
+    expect(fixture.componentInstance.documentNotice('SOL_SINODALES')).toBe(
       'EXAM_REQUEST.ERRORS.document_not_found',
     );
     expect(document.body.textContent).toContain('EXAM_REQUEST.ERRORS.document_not_found');
@@ -1670,6 +1676,7 @@ describe('ExamRequirementsListComponent', () => {
       fixture.componentInstance.panel()?.requirements.find((item) => item.documentType === 'TESIS')
         ?.currentDocument?.originalName,
     ).toBe(EMANUEL_THESIS);
+    open.mockRestore();
   });
 
   it('reloads the panel on 409 and offers the current https link', async () => {
@@ -1714,8 +1721,7 @@ describe('ExamRequirementsListComponent', () => {
 
     expect(getPanel).toHaveBeenCalledTimes(2);
     expect(getDocumentContent).toHaveBeenCalledWith('GRADO', 'ARTICULO', 'inline');
-    expect(conflictFixture.componentInstance.viewerBlob()).toBeNull();
-    expect(conflictFixture.componentInstance.viewerVisible()).toBe(false);
+    expect(conflictFixture.debugElement.query(By.css('app-pdf-viewer-dialog'))).toBeNull();
     const link = conflictFixture.debugElement.query(
       By.css('[data-testid="exam-document-url-ARTICULO"]'),
     );
@@ -1742,9 +1748,10 @@ describe('ExamRequirementsListComponent', () => {
       )
       .mockReturnValueOnce(of(stored));
 
+    const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
     clickDocument(fixture, 'TESIS');
 
-    expect(fixture.componentInstance.viewerErrorKey()).toBe(
+    expect(fixture.componentInstance.documentNotice('TESIS')).toBe(
       'EXAM_REQUEST.ERRORS.DOCUMENT_STORAGE_UNAVAILABLE',
     );
     expect(document.body.textContent).not.toContain('s3://bucket/private/key');
@@ -1753,12 +1760,10 @@ describe('ExamRequirementsListComponent', () => {
         ?.currentDocument,
     ).not.toBeNull();
 
-    fixture.debugElement
-      .query(By.css('app-pdf-viewer-dialog'))
-      .triggerEventHandler('retry', undefined);
-    fixture.detectChanges();
+    clickDocument(fixture, 'TESIS');
 
-    expect(fixture.componentInstance.viewerBlob()).toBe(stored);
+    expect(open).toHaveBeenCalledWith('blob:exam-doc', '_blank');
+    open.mockRestore();
     expect(getDocumentContent.mock.calls).toEqual([
       ['GRADO', 'TESIS', 'inline'],
       ['GRADO', 'TESIS', 'inline'],
@@ -1774,8 +1779,8 @@ describe('ExamRequirementsListComponent', () => {
 
     clickDocument(fixture, 'TESIS');
 
-    expect(fixture.componentInstance.viewerErrorKey()).toBe('EXAM_REQUEST.ERRORS.generic');
-    expect(fixture.componentInstance.viewerVisible()).toBe(true);
+    expect(fixture.componentInstance.documentNotice('TESIS')).toBe('EXAM_REQUEST.ERRORS.generic');
+    expect(fixture.debugElement.query(By.css('app-pdf-viewer-dialog'))).toBeNull();
     expect(
       fixture.componentInstance.panel()?.requirements.find((item) => item.documentType === 'TESIS')
         ?.currentDocument?.originalName,
@@ -1783,37 +1788,53 @@ describe('ExamRequirementsListComponent', () => {
     expect(getPanel).toHaveBeenCalledTimes(1);
   });
 
-  it('downloads the attachment with the sanitized original name', async () => {
-    const items = loadedPdfItems(
-      emanuelItems,
-      'TESIS',
-      'carpeta\\Tesis_Mtria_Garcia_Ruiz_Maria.pdf',
-    );
+  it('reopens a cached PDF in a new tab without another request', async () => {
+    const items = loadedPdfItems(emanuelItems, 'TESIS', EMANUEL_THESIS);
     const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
-    const attachment = new Blob(['%PDF-attachment']);
-    getDocumentContent.mockImplementation((_examType, _documentType, disposition: string) =>
-      of(disposition === 'attachment' ? attachment : new Blob(['%PDF-inline'])),
-    );
+    const pdf = new Blob(['%PDF-inline']);
+    getDocumentContent.mockReturnValue(of(pdf));
+    const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
 
     clickDocument(fixture, 'TESIS');
+    vi.mocked(URL.createObjectURL).mockClear();
+    clickDocument(fixture, 'TESIS');
+
+    expect(getDocumentContent).toHaveBeenCalledTimes(1);
+    expect(open).toHaveBeenCalledTimes(2);
+    expect(open).toHaveBeenLastCalledWith('blob:exam-doc', '_blank');
+    expect(URL.createObjectURL).not.toHaveBeenCalled();
+    open.mockRestore();
+  });
+
+  it('opens a typed PDF blob and downloads it when the new tab is blocked', async () => {
+    const items = loadedPdfItems(emanuelItems, 'TESIS', EMANUEL_THESIS);
+    const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
+    const pdf = new Blob(['%PDF-inline']);
+    getDocumentContent.mockReturnValue(of(pdf));
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
     const anchor = document.createElement('a');
-    const clickSpy = vi.spyOn(anchor, 'click').mockImplementation(() => undefined);
-    const realCreate = document.createElement.bind(document);
+    const click = vi.spyOn(anchor, 'click').mockImplementation(() => undefined);
     const createElement = vi
       .spyOn(document, 'createElement')
-      .mockImplementation((tag: string) => (tag === 'a' ? anchor : realCreate(tag)));
+      .mockImplementation((tagName: string) =>
+        tagName === 'a' ? anchor : Document.prototype.createElement.call(document, tagName),
+      );
+    vi.mocked(URL.createObjectURL).mockClear();
 
-    fixture.debugElement
-      .query(By.css('app-pdf-viewer-dialog'))
-      .triggerEventHandler('download', undefined);
-    fixture.detectChanges();
+    clickDocument(fixture, 'TESIS');
 
-    expect(getDocumentContent).toHaveBeenCalledWith('GRADO', 'TESIS', 'attachment');
-    expect(anchor.download).toBe('Tesis_Mtria_Garcia_Ruiz_Maria.pdf');
-    expect(clickSpy).toHaveBeenCalledOnce();
-    expect(vi.mocked(URL.createObjectURL).mock.calls.at(-1)?.[0]).toBe(attachment);
-    expect(vi.mocked(URL.revokeObjectURL)).toHaveBeenCalledWith('blob:exam-doc');
+    const created = vi.mocked(URL.createObjectURL).mock.calls.map(([blob]) => blob as Blob);
+    expect(created).toHaveLength(2);
+    expect(created.every((blob) => blob.type === 'application/pdf')).toBe(true);
+    expect(open).toHaveBeenCalledWith('blob:exam-doc', '_blank');
+    expect(click).toHaveBeenCalled();
+    expect(anchor.download).toBe(EMANUEL_THESIS);
+    expect(fixture.componentInstance.previewBlob(thesisItem(fixture))?.type).toBe(
+      'application/pdf',
+    );
+
     createElement.mockRestore();
+    open.mockRestore();
   });
 
   it('cancels the in-flight content request when the exam type changes', async () => {
@@ -1830,23 +1851,176 @@ describe('ExamRequirementsListComponent', () => {
     fixture.detectChanges();
 
     expect(pending.observed).toBe(false);
-    expect(fixture.componentInstance.viewerVisible()).toBe(false);
-    expect(fixture.componentInstance.viewerBlob()).toBeNull();
+    expect(fixture.debugElement.query(By.css('app-pdf-viewer-dialog'))).toBeNull();
   });
 
-  it('drops the viewer blob when the session ends', async () => {
+  it('revokes the blob URL when the session ends', async () => {
     const items = loadedPdfItems(emanuelItems, 'TESIS', EMANUEL_THESIS);
     const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
     getDocumentContent.mockReturnValue(of(new Blob(['%PDF-session'])));
+    const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
 
     clickDocument(fixture, 'TESIS');
-    expect(fixture.componentInstance.viewerBlob()).not.toBeNull();
+    expect(open).toHaveBeenCalledWith('blob:exam-doc', '_blank');
+    const revokesBeforeLogout = vi.mocked(URL.revokeObjectURL).mock.calls.length;
 
     user$.next(null);
     fixture.detectChanges();
 
-    expect(fixture.componentInstance.viewerVisible()).toBe(false);
-    expect(fixture.componentInstance.viewerBlob()).toBeNull();
+    expect(vi.mocked(URL.revokeObjectURL).mock.calls.length).toBeGreaterThan(revokesBeforeLogout);
     expect(fixture.componentInstance.panel()).toBeNull();
+    open.mockRestore();
+  });
+
+  function thesisItem(
+    fixture: ReturnType<typeof TestBed.createComponent<ExamRequirementsListComponent>>,
+  ): ExamRequirementDto {
+    const item = fixture.componentInstance
+      .panel()
+      ?.requirements.find((requirement) => requirement.documentType === 'TESIS');
+    if (!item) {
+      throw new Error('Missing TESIS requirement');
+    }
+    return item;
+  }
+
+  it('serves a second open from cache and keeps the accessible preview fallback', async () => {
+    const items = loadedPdfItems(emanuelItems, 'TESIS', EMANUEL_THESIS).map((item) =>
+      item.documentType === 'SOL_SINODALES'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: pdfDocument('SOL_SINODALES', 'Sol_Sinodales_Lopez_Alba_Emanuel.pdf'),
+          }
+        : item,
+    );
+    const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
+    const pdf = new Blob(['%PDF-cached']);
+    const other = new Blob(['%PDF-other']);
+    getDocumentContent.mockReturnValueOnce(of(pdf)).mockReturnValueOnce(of(other));
+    const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
+
+    clickDocument(fixture, 'TESIS');
+    clickDocument(fixture, 'TESIS');
+
+    expect(getDocumentContent).toHaveBeenCalledTimes(1);
+    const cachedThesis = fixture.componentInstance.previewBlob(thesisItem(fixture));
+    expect(cachedThesis?.type).toBe('application/pdf');
+    expect(cachedThesis?.size).toBe(pdf.size);
+    clickDocument(fixture, 'TESIS');
+    expect(fixture.componentInstance.previewBlob(thesisItem(fixture))).toBe(cachedThesis);
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-panel-TESIS"]')).attributes[
+        'aria-label'
+      ],
+    ).toBe('EXAM_REQUEST.UPLOAD.PREVIEW_FALLBACK');
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-panel-TESIS"] img')),
+    ).toBeNull();
+
+    clickDocument(fixture, 'SOL_SINODALES');
+    expect(getDocumentContent).toHaveBeenCalledTimes(2);
+    expect(
+      fixture.componentInstance.previewBlob(
+        fixture.componentInstance
+          .panel()!
+          .requirements.find((item) => item.documentType === 'SOL_SINODALES')!,
+      )?.type,
+    ).toBe('application/pdf');
+    expect(open).toHaveBeenCalledWith('blob:exam-doc', '_blank');
+    open.mockRestore();
+  });
+
+  it('ignores a late response from the document that is no longer open', async () => {
+    const items = loadedPdfItems(emanuelItems, 'TESIS', EMANUEL_THESIS).map((item) =>
+      item.documentType === 'SOL_SINODALES'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: pdfDocument('SOL_SINODALES', 'Sol_Sinodales_Lopez_Alba_Emanuel.pdf'),
+          }
+        : item,
+    );
+    const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
+    const late = new Subject<Blob>();
+    const current = new Subject<Blob>();
+    getDocumentContent.mockReturnValueOnce(late).mockReturnValueOnce(current);
+    const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
+
+    clickDocument(fixture, 'TESIS');
+    clickDocument(fixture, 'SOL_SINODALES');
+    late.next(new Blob(['%PDF-late']));
+    const fresh = new Blob(['%PDF-fresh']);
+    current.next(fresh);
+    fixture.detectChanges();
+
+    expect(open).toHaveBeenCalledTimes(1);
+    expect(open).toHaveBeenCalledWith('blob:exam-doc', '_blank');
+    expect(fixture.componentInstance.previewBlob(thesisItem(fixture))).toBeNull();
+    expect(
+      fixture.componentInstance.previewBlob(
+        fixture.componentInstance
+          .panel()!
+          .requirements.find((item) => item.documentType === 'SOL_SINODALES')!,
+      )?.type,
+    ).toBe('application/pdf');
+    open.mockRestore();
+  });
+
+  it('invalidates the cached blob when the saved document is replaced', async () => {
+    const replacement = pdfFile(EMANUEL_THESIS);
+    const fixture = await setup(draftLoadedPayload('BORRADOR', 3));
+    const first = new Blob(['%PDF-old']);
+    const second = new Blob(['%PDF-new']);
+    getDocumentContent.mockReturnValueOnce(of(first)).mockReturnValueOnce(of(second));
+    const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
+
+    clickDocument(fixture, 'TESIS');
+    const cached = fixture.componentInstance.previewBlob(thesisItem(fixture));
+    expect(cached?.type).toBe('application/pdf');
+    expect(cached?.size).toBe(first.size);
+    const revokesBeforeReplace = vi.mocked(URL.revokeObjectURL).mock.calls.length;
+
+    const replacedItems = fixture.componentInstance.panel()!.requirements.map((item) =>
+      item.documentType === 'TESIS' && item.currentDocument
+        ? {
+            ...item,
+            currentDocument: { ...item.currentDocument, uploadedAt: '2026-10-11T12:00:00Z' },
+          }
+        : item,
+    );
+    const replacedDocument = replacedItems.find(
+      (item) => item.documentType === 'TESIS',
+    )?.currentDocument;
+    replaceDocument.mockReturnValue(
+      of({
+        request: draftRequest(replacedItems, { version: 4 }),
+        version: 4,
+        document: replacedDocument ?? null,
+      } satisfies MutationResponse),
+    );
+
+    clickCardAction(fixture, 'exam-document-replace-TESIS');
+    dropOnCard(fixture, 'TESIS', [replacement]);
+    await flushValidation(fixture);
+    clickCardAction(fixture, 'exam-document-replace-confirm-TESIS');
+    await flushValidation(fixture);
+
+    expect(vi.mocked(URL.revokeObjectURL).mock.calls.length).toBeGreaterThan(revokesBeforeReplace);
+    expect(fixture.componentInstance.previewBlob(thesisItem(fixture))).toBeNull();
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-panel-TESIS"]')).attributes[
+        'aria-label'
+      ],
+    ).toBe('EXAM_REQUEST.UPLOAD.PREVIEW_FALLBACK');
+
+    clickDocument(fixture, 'TESIS');
+    expect(getDocumentContent).toHaveBeenCalledTimes(2);
+    const refreshed = fixture.componentInstance.previewBlob(thesisItem(fixture));
+    expect(refreshed?.type).toBe('application/pdf');
+    expect(refreshed?.size).toBe(second.size);
+    expect(refreshed).not.toBe(cached);
+    expect(open).toHaveBeenCalledTimes(2);
+    open.mockRestore();
   });
 });

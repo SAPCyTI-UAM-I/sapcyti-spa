@@ -35,7 +35,6 @@ import {
   I18nSelectComponent,
   type I18nSelectOption,
   LoadStateComponent,
-  PdfViewerDialogComponent,
 } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { downloadBlob } from '../../../../shared/utils/download.util';
@@ -65,20 +64,19 @@ type LoadTrigger = { kind: 'reload' } | { kind: 'type'; examType: ExamType };
 interface DocumentContentRequest {
   readonly examType: ExamType;
   readonly documentType: DocumentType;
+  readonly uploadedAt: string;
+  readonly epoch: number;
 }
 
 type ContentResult =
   | { readonly ok: true; readonly blob: Blob; readonly request: DocumentContentRequest }
   | { readonly ok: false; readonly error: unknown; readonly request: DocumentContentRequest };
 
-type DownloadResult =
-  | {
-      readonly ok: true;
-      readonly blob: Blob;
-      readonly fileName: string;
-      readonly request: DocumentContentRequest;
-    }
-  | { readonly ok: false; readonly error: unknown; readonly request: DocumentContentRequest };
+/** Blob compartido por visor y consulta de miniatura. objectUrl se revoca al soltar la entrada. */
+interface ContentCacheEntry {
+  readonly blob: Blob;
+  readonly objectUrl: string;
+}
 
 @Component({
   selector: 'app-exam-requirements-list',
@@ -93,7 +91,6 @@ type DownloadResult =
     CatalogTagComponent,
     I18nSelectComponent,
     LoadStateComponent,
-    PdfViewerDialogComponent,
     ExamDocumentUploadComponent,
   ],
   templateUrl: './exam-requirements-list.component.html',
@@ -106,7 +103,10 @@ export class ExamRequirementsListComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly load$ = new Subject<LoadTrigger>();
   private readonly openContent$ = new Subject<DocumentContentRequest | null>();
-  private readonly downloadContent$ = new Subject<DocumentContentRequest | null>();
+  private readonly contentCache = new Map<string, ContentCacheEntry>();
+  /** Descarta una respuesta si el alumno ya cambió de documento o cerró el visor. */
+  private contentEpoch = 0;
+  private inflightKey: string | null = null;
   private readonly lang = toSignal(this.translate.onLangChange, { initialValue: null });
 
   readonly examTypeForm = this.fb.group({
@@ -209,13 +209,7 @@ export class ExamRequirementsListComponent implements OnInit {
     this.saveDialogFailed().length > 0 ? 'EXAM_REQUEST.SAVE.MIXED' : 'EXAM_REQUEST.SAVE.SUCCESS',
   );
 
-  readonly viewerVisible = signal(false);
-  readonly viewerBlob = signal<Blob | null>(null);
-  readonly viewerFileName = signal<string | null>(null);
-  readonly viewerLoading = signal(false);
-  readonly viewerErrorKey = signal<string | null>(null);
-  readonly viewerDocumentType = signal<DocumentType | null>(null);
-  /** Aviso por tipo (URL inválida o 409); no incluye message del backend. */
+  /** Aviso por tipo; no incluye message del backend. */
   readonly documentNotices = signal<Partial<Record<DocumentType, string>>>({});
 
   readonly replacingType = signal<DocumentType | null>(null);
@@ -269,37 +263,26 @@ export class ExamRequirementsListComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((result) => {
-        if (!result) {
+        if (!result || result.request.epoch !== this.contentEpoch) {
           return;
         }
 
+        this.inflightKey = null;
         if (result.ok) {
-          this.viewerBlob.set(result.blob);
-          this.viewerLoading.set(false);
-          this.viewerErrorKey.set(null);
+          this.rememberContent(result.request, result.blob);
+          const entry = this.contentCache.get(contentCacheKey(result.request));
+          if (entry) {
+            this.openPdfTab(entry, result.request.documentType);
+          }
           return;
         }
 
-        this.presentContentError(result.error, result.request, 'inline');
+        this.presentContentError(result.error, result.request);
       });
 
-    this.downloadContent$
-      .pipe(
-        switchMap((request) => this.fetchAttachment(request)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((result) => {
-        if (!result) {
-          return;
-        }
-
-        if (result.ok) {
-          downloadBlob(result.blob, result.fileName);
-          return;
-        }
-
-        this.presentContentError(result.error, result.request, 'attachment');
-      });
+    this.destroyRef.onDestroy(() => {
+      this.clearContentCache();
+    });
 
     this.load$
       .pipe(
@@ -376,8 +359,26 @@ export class ExamRequirementsListComponent implements OnInit {
   }
 
   /**
-   * PDF: GET content inline del tipo vigente.
-   * URL: pestaña nueva; si el navegador la bloquea, queda el enlace del panel.
+   * Blob ya cargado para este PDF. No dispara HTTP: la miniatura visible
+   * sigue siendo el aviso accesible.
+   */
+  previewBlob(item: ExamRequirementDto): Blob | null {
+    const document = item.currentDocument;
+    if (!document || document.kind !== 'PDF') {
+      return null;
+    }
+
+    const key = contentCacheKey({
+      examType: this.examTypeForm.controls.examType.value,
+      documentType: item.documentType,
+      uploadedAt: document.uploadedAt,
+    });
+    return this.contentCache.get(key)?.blob ?? null;
+  }
+
+  /**
+   * PDF y URL se abren en una pestaña nueva.
+   * El PDF usa una blob: URL de la caché; el enlace HTTPS sale de la metadata.
    */
   openSavedDocument(item: ExamRequirementDto, event?: Event): void {
     const document = item.currentDocument;
@@ -390,12 +391,7 @@ export class ExamRequirementsListComponent implements OnInit {
       return;
     }
 
-    const examType = this.examTypeForm.controls.examType.value;
-    this.viewerDocumentType.set(item.documentType);
-    this.viewerFileName.set(sanitizeDownloadFileName(document.originalName));
-    this.viewerVisible.set(true);
-    this.viewerErrorKey.set(null);
-    this.openContent$.next({ examType, documentType: item.documentType });
+    this.showCachedOrLoad(this.contentRequestFor(item.documentType, document.uploadedAt));
   }
 
   openExternalDocument(item: ExamRequirementDto, event?: Event): void {
@@ -423,31 +419,6 @@ export class ExamRequirementsListComponent implements OnInit {
 
     event.preventDefault();
     this.openSavedDocument(item);
-  }
-
-  onViewerVisibleChange(open: boolean): void {
-    if (!open) {
-      this.closeViewer();
-    }
-  }
-
-  downloadOpenDocument(): void {
-    const request = this.currentContentRequest();
-    if (!request) {
-      return;
-    }
-
-    this.downloadContent$.next(request);
-  }
-
-  retryOpenDocument(): void {
-    const request = this.currentContentRequest();
-    if (!request) {
-      return;
-    }
-
-    this.viewerErrorKey.set(null);
-    this.openContent$.next(request);
   }
 
   onPendingSelectionChange(
@@ -634,8 +605,9 @@ export class ExamRequirementsListComponent implements OnInit {
   }
 
   private loadTrigger(trigger: LoadTrigger): Observable<ExamPanelResponse> {
-    // Cambiar de expediente cancela el Blob que todavía estuviera en vuelo.
+    // Cambiar de expediente cancela el Blob en vuelo y suelta la caché anterior.
     this.closeViewer();
+    this.clearContentCache();
     this.loading.set(true);
     this.loadError.set(null);
     // Evita pintar tarjetas del expediente anterior mientras llega el nuevo.
@@ -757,8 +729,9 @@ export class ExamRequirementsListComponent implements OnInit {
     this.saveWriteError.set(writeKey);
   }
 
-  /** Sustituye currentDocument; no retiene miniatura del archivo anterior. */
+  /** Sustituye currentDocument; no retiene el Blob ni la URL del archivo anterior. */
   private applyReplaceSuccess(response: MutationResponse, documentType: DocumentType): void {
+    this.invalidateDocument(this.examTypeForm.controls.examType.value, documentType);
     this.applyRequestToPanel(response.request);
     this.pendingSelections.update((current) => {
       const next = { ...current };
@@ -791,6 +764,7 @@ export class ExamRequirementsListComponent implements OnInit {
   }
 
   private applyOptimisticDelete(documentType: DocumentType): void {
+    this.invalidateDocument(this.examTypeForm.controls.examType.value, documentType);
     this.panel.update((current) => {
       if (!current) {
         return current;
@@ -851,6 +825,7 @@ export class ExamRequirementsListComponent implements OnInit {
   private clearAcademicState(): void {
     this.clearPendingSelections();
     this.closeMutationUi();
+    this.clearContentCache();
     this.closeViewer();
     this.documentNotices.set({});
     this.options.set(null);
@@ -865,16 +840,42 @@ export class ExamRequirementsListComponent implements OnInit {
     this.examTypeForm.reset({ examType: 'GRADO' }, { emitEvent: false });
   }
 
-  private currentContentRequest(): DocumentContentRequest | null {
-    const documentType = this.viewerDocumentType();
-    if (!documentType) {
-      return null;
-    }
-
+  private contentRequestFor(
+    documentType: DocumentType,
+    uploadedAt: string,
+  ): DocumentContentRequest {
     return {
       examType: this.examTypeForm.controls.examType.value,
       documentType,
+      uploadedAt,
+      epoch: this.contentEpoch,
     };
+  }
+
+  /** Un acierto no pide red. Un fallo deja un solo GET inline en vuelo para esa clave. */
+  private showCachedOrLoad(request: DocumentContentRequest): void {
+    const key = contentCacheKey(request);
+    const cached = this.contentCache.get(key);
+    if (cached) {
+      this.contentEpoch += 1;
+      this.inflightKey = null;
+      this.openContent$.next(null);
+      this.openPdfTab(cached, request.documentType);
+      return;
+    }
+
+    if (this.inflightKey === key) {
+      return;
+    }
+
+    this.beginInlineLoad(request);
+  }
+
+  private beginInlineLoad(request: DocumentContentRequest): void {
+    this.contentEpoch += 1;
+    const next = { ...request, epoch: this.contentEpoch };
+    this.inflightKey = contentCacheKey(next);
+    this.openContent$.next(next);
   }
 
   private fetchInline(request: DocumentContentRequest | null): Observable<ContentResult | null> {
@@ -882,9 +883,6 @@ export class ExamRequirementsListComponent implements OnInit {
       return EMPTY;
     }
 
-    this.viewerLoading.set(true);
-    this.viewerErrorKey.set(null);
-    this.viewerBlob.set(null);
     return this.examRequests
       .getDocumentContent(request.examType, request.documentType, 'inline')
       .pipe(
@@ -893,73 +891,133 @@ export class ExamRequirementsListComponent implements OnInit {
       );
   }
 
-  private fetchAttachment(
-    request: DocumentContentRequest | null,
-  ): Observable<DownloadResult | null> {
-    if (!request) {
-      return EMPTY;
+  private rememberContent(request: DocumentContentRequest, blob: Blob): void {
+    const key = contentCacheKey(request);
+    const previous = this.contentCache.get(key);
+    if (previous?.blob === blob) {
+      return;
     }
 
-    const fileName = this.viewerFileName() ?? sanitizeDownloadFileName(null);
-    return this.examRequests
-      .getDocumentContent(request.examType, request.documentType, 'attachment')
-      .pipe(
-        map((blob) => ({ ok: true as const, blob, fileName, request })),
-        catchError((error: unknown) => of({ ok: false as const, error, request })),
-      );
+    if (previous) {
+      this.releaseEntry(previous);
+    }
+
+    const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+    this.contentCache.set(key, { blob: pdfBlob, objectUrl: URL.createObjectURL(pdfBlob) });
+  }
+
+  /**
+   * Abre el PDF tipado. Si el navegador bloquea la pestaña, descarga el mismo Blob.
+   * La blob: URL se revoca al reemplazar, borrar, cambiar de expediente, cerrar sesión
+   * o destruir el componente.
+   */
+  private openPdfTab(entry: ContentCacheEntry, documentType: DocumentType): void {
+    this.documentNotices.update((current) => {
+      if (!(documentType in current)) {
+        return current;
+      }
+      const next = { ...current };
+      delete next[documentType];
+      return next;
+    });
+
+    // noopener haría que window.open devolviera null aunque la pestaña abriera,
+    // y la descarga se dispararía siempre. Se anula opener después de abrir.
+    const popup = window.open(entry.objectUrl, '_blank');
+    if (!popup) {
+      downloadBlob(entry.blob, this.pdfDownloadName(documentType));
+      return;
+    }
+
+    popup.opener = null;
+  }
+
+  private pdfDownloadName(documentType: DocumentType): string {
+    const original = this.panel()?.requirements.find((item) => item.documentType === documentType)
+      ?.currentDocument?.originalName;
+    const base = (original ?? '').replaceAll('\\', '/').split('/').pop()?.trim() ?? '';
+    if (!base || base === '.' || base === '..') {
+      return 'document.pdf';
+    }
+
+    return base.toLowerCase().endsWith('.pdf') ? base : `${base}.pdf`;
   }
 
   /**
    * 404 cierra el Blob anterior. 409 recarga el panel para ofrecer el enlace.
    * 503 y status 0 dejan la metadata y permiten reintentar.
    */
-  private presentContentError(
-    error: unknown,
-    request: DocumentContentRequest,
-    source: 'inline' | 'attachment',
-  ): void {
+
+  private presentContentError(error: unknown, request: DocumentContentRequest): void {
     const status = error instanceof HttpErrorResponse ? error.status : undefined;
     const mapped = this.examRequests.mapContentError(error);
-    this.viewerLoading.set(false);
 
     if (status === 409 || mapped === 'document_is_external_url') {
-      this.viewerBlob.set(null);
-      this.viewerVisible.set(false);
-      this.viewerErrorKey.set(null);
-      this.viewerDocumentType.set(null);
-      this.documentNotices.update((current) => ({
-        ...current,
-        [request.documentType]: `${EXAM_REQUEST_ERROR_I18N_SCOPE}.document_is_external_url`,
-      }));
+      this.dropContent(request.examType, request.documentType);
+      this.setDocumentNotice(
+        request.documentType,
+        `${EXAM_REQUEST_ERROR_I18N_SCOPE}.document_is_external_url`,
+      );
       this.reload();
       return;
     }
 
     if (status === 404 || mapped === 'document_not_found') {
-      this.viewerBlob.set(null);
-      this.viewerVisible.set(true);
-      this.viewerErrorKey.set(`${EXAM_REQUEST_ERROR_I18N_SCOPE}.document_not_found`);
+      this.dropContent(request.examType, request.documentType);
+      this.setDocumentNotice(
+        request.documentType,
+        `${EXAM_REQUEST_ERROR_I18N_SCOPE}.document_not_found`,
+      );
       return;
     }
 
-    if (source === 'inline') {
-      this.viewerBlob.set(null);
-    }
-
-    this.viewerVisible.set(true);
-    this.viewerErrorKey.set(`${EXAM_REQUEST_ERROR_I18N_SCOPE}.${mapped}`);
+    this.setDocumentNotice(request.documentType, `${EXAM_REQUEST_ERROR_I18N_SCOPE}.${mapped}`);
   }
 
-  /** Revoca el ciclo del visor y cancela inline/attachment en vuelo. */
+  private setDocumentNotice(documentType: DocumentType, key: string): void {
+    this.documentNotices.update((current) => ({ ...current, [documentType]: key }));
+  }
+
+  /** Descarta la respuesta que todavía no haya llegado. La caché permanece. */
   private closeViewer(): void {
-    this.viewerVisible.set(false);
-    this.viewerBlob.set(null);
-    this.viewerFileName.set(null);
-    this.viewerLoading.set(false);
-    this.viewerErrorKey.set(null);
-    this.viewerDocumentType.set(null);
+    this.contentEpoch += 1;
+    this.inflightKey = null;
     this.openContent$.next(null);
-    this.downloadContent$.next(null);
+  }
+
+  private invalidateDocument(examType: ExamType, documentType: DocumentType): void {
+    const prefix = `${examType}\u0000${documentType}\u0000`;
+    this.dropContent(examType, documentType);
+    if (this.inflightKey?.startsWith(prefix)) {
+      this.closeViewer();
+    }
+  }
+
+  private dropContent(examType: ExamType, documentType: DocumentType): void {
+    const prefix = `${examType}\u0000${documentType}\u0000`;
+    for (const key of [...this.contentCache.keys()]) {
+      if (!key.startsWith(prefix)) {
+        continue;
+      }
+
+      const entry = this.contentCache.get(key);
+      if (entry) {
+        this.releaseEntry(entry);
+      }
+      this.contentCache.delete(key);
+    }
+  }
+
+  private clearContentCache(): void {
+    for (const entry of this.contentCache.values()) {
+      this.releaseEntry(entry);
+    }
+    this.contentCache.clear();
+    this.inflightKey = null;
+  }
+
+  private releaseEntry(entry: ContentCacheEntry): void {
+    URL.revokeObjectURL(entry.objectUrl);
   }
 }
 
@@ -971,21 +1029,8 @@ function shouldReconcilePanelAfterSaveError(error: unknown): boolean {
   return error.status === 0 || error.status === 409 || error.status >= 500;
 }
 
-/** Nombre de descarga a partir de originalName, sin rutas ni caracteres de control. */
-function sanitizeDownloadFileName(originalName: string | null): string {
-  const base = (originalName ?? '').replaceAll('\\', '/').split('/').pop() ?? '';
-  let cleaned = '';
-  for (const char of base) {
-    const code = char.charCodeAt(0);
-    if (code <= 31 || code === 127 || '"<>|:*?'.includes(char)) {
-      continue;
-    }
-    cleaned += char;
-  }
-  cleaned = cleaned.trim();
-  if (!cleaned || cleaned === '.' || cleaned === '..') {
-    return 'document.pdf';
-  }
-
-  return cleaned;
+function contentCacheKey(
+  request: Pick<DocumentContentRequest, 'examType' | 'documentType' | 'uploadedAt'>,
+): string {
+  return `${request.examType}\u0000${request.documentType}\u0000${request.uploadedAt}`;
 }

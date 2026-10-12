@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { fromMockStore } from '../../../core/mocks/from-mock-store.util';
 import {
@@ -65,6 +65,8 @@ export class ExamRequestMockRepository implements ExamRequestRepository {
     documentType: DocumentType,
     disposition: DocumentContentDisposition,
   ): Observable<Blob> {
-    return fromMockStore(() => this.store.getDocumentContent(examType, documentType, disposition));
+    return fromMockStore(() =>
+      this.store.getDocumentContent(examType, documentType, disposition),
+    ).pipe(map((blob) => new Blob([blob], { type: 'application/pdf' })));
   }
 }

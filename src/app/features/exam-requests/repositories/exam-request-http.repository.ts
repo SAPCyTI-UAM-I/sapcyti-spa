@@ -1,6 +1,6 @@
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, from, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../core/api/api-endpoints';
 import { normalizeBlobError } from '../../../core/errors/utils/normalize-blob-error.util';
@@ -116,6 +116,8 @@ export class ExamRequestHttpRepository implements ExamRequestRepository {
         context: examWriteContext(),
       })
       .pipe(
+        // El visor de PDF no pinta un blob: sin tipo, aunque Accept sea application/pdf.
+        map((blob) => new Blob([blob], { type: 'application/pdf' })),
         catchError((error: unknown) =>
           from(normalizeBlobError(error)).pipe(
             switchMap((normalized) => throwError(() => normalized)),

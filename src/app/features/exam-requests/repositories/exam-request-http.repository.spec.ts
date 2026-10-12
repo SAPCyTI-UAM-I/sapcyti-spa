@@ -282,8 +282,12 @@ describe('ExamRequestHttpRepository', () => {
     expect(attachmentReq.request.url).toBe(API_ENDPOINTS.examRequests.me.content('GRADO', 'TESIS'));
     attachmentReq.flush(new Blob([EXAM_DOCUMENT_PDF_FIXTURE], { type: 'application/pdf' }));
 
-    const inlineBytes = new Uint8Array(await (await inline).arrayBuffer());
-    const attachmentBytes = new Uint8Array(await (await attachment).arrayBuffer());
+    const inlineBlob = await inline;
+    const attachmentBlob = await attachment;
+    expect(inlineBlob.type).toBe('application/pdf');
+    expect(attachmentBlob.type).toBe('application/pdf');
+    const inlineBytes = new Uint8Array(await inlineBlob.arrayBuffer());
+    const attachmentBytes = new Uint8Array(await attachmentBlob.arrayBuffer());
     expect(inlineBytes).toEqual(EXAM_DOCUMENT_PDF_FIXTURE);
     expect(attachmentBytes).toEqual(inlineBytes);
   });

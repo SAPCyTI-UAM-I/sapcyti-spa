@@ -258,6 +258,8 @@ describe('ExamRequestMockRepository', () => {
       repo.getDocumentContent('GRADO', 'TESIS', 'attachment'),
     );
 
+    expect(inline.type).toBe('application/pdf');
+    expect(attachment.type).toBe('application/pdf');
     expect(new Uint8Array(await inline.arrayBuffer())).toEqual(EXAM_DOCUMENT_PDF_FIXTURE);
     expect(new Uint8Array(await attachment.arrayBuffer())).toEqual(EXAM_DOCUMENT_PDF_FIXTURE);
     expect(String.fromCharCode(...EXAM_DOCUMENT_PDF_FIXTURE.slice(0, 5))).toBe('%PDF-');
