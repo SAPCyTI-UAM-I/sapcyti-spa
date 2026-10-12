@@ -799,13 +799,20 @@
   },
   "EXAM_REQUEST": {
     "ACTIONS": {
+      "CONFIRM_DELETE": "Eliminar documento",
+      "DELETE": "Eliminar",
+      "REPLACE": "Reemplazar",
       "RETRY": "Reintentar",
+      "SAVE_DOCUMENTS": "Guardar documentos",
       "SUBMIT": "Enviar solicitud"
     },
     "ARTICLE_HINT": "PDF de nombre libre o enlace HTTPS",
     "ARTICLE_KIND": {
       "PDF": "Archivo PDF",
       "URL": "Enlace"
+    },
+    "CONFIRM": {
+      "DELETE_DOCUMENT": "¿Eliminar {{type}} del borrador?"
     },
     "DEGREE": {
       "DOCTORADO": "Doctorado",
@@ -831,6 +838,8 @@
       "DEGREE_UNSUPPORTED": "No se pudieron determinar los requisitos. Contacta a la Coordinación.",
       "dependency_unavailable": "No se pudieron cargar los requisitos. Inténtalo de nuevo.",
       "DEPENDENCY_UNAVAILABLE": "No se pudieron cargar los requisitos. Inténtalo de nuevo.",
+      "document_not_found": "El borrador o documento ya no está disponible.",
+      "DOCUMENT_NOT_FOUND": "El borrador o documento ya no está disponible.",
       "EXAM_TYPE_NOT_ALLOWED": "Este tipo de examen no está disponible para tu programa.",
       "forbidden": "No tienes acceso a esta solicitud.",
       "FORBIDDEN": "No tienes acceso a esta solicitud.",
@@ -839,12 +848,23 @@
       "program_not_eligible": "No puedes solicitar el examen con tu estatus de programa actual.",
       "PROGRAM_NOT_ELIGIBLE": "No puedes solicitar el examen con tu estatus de programa actual.",
       "PROGRAM_STATUS_UNSUPPORTED": "No se pudieron determinar los requisitos. Contacta a la Coordinación.",
+      "request_not_draft": "Esta solicitud ya no permite cambios de borrador.",
+      "REQUEST_NOT_DRAFT": "Esta solicitud ya no permite cambios de borrador.",
+      "REQUEST_NOT_FOUND": "El borrador o documento ya no está disponible.",
+      "REQUEST_TOO_LARGE": "La selección supera el tamaño permitido.",
+      "save_validation": "Revisa los datos del guardado.",
+      "STORAGE_UNAVAILABLE": "No se pudo completar el guardado. Inténtalo de nuevo.",
+      "STORAGE_WRITE_FAILED": "No se guardó este documento. Inténtalo de nuevo.",
       "STUDENT_DATA_INCOMPLETE": "No se pudieron determinar los requisitos. Contacta a la Coordinación.",
       "student_not_found": "No se encontraron los datos de tu programa. Contacta a la Coordinación.",
       "STUDENT_NOT_FOUND": "No se encontraron los datos de tu programa. Contacta a la Coordinación.",
       "UNAUTHORIZED": "Inicia sesión para continuar.",
+      "UNSAFE_FILE_NAME": "El nombre del archivo contiene caracteres no permitidos.",
+      "UNSUPPORTED_MEDIA_TYPE": "El formato de la solicitud no es válido.",
       "validation": "No se pudo consultar el tipo de examen.",
-      "VALIDATION_ERROR": "No se pudo consultar el tipo de examen."
+      "VALIDATION_ERROR": "No se pudo consultar el tipo de examen.",
+      "version_conflict": "La solicitud cambió. Actualiza el panel y vuelve a intentarlo.",
+      "VERSION_CONFLICT": "La solicitud cambió. Actualiza el panel y vuelve a intentarlo."
     },
     "EXAM_TYPES": {
       "GRADO": "Examen de grado",
@@ -853,10 +873,14 @@
     "LABELS": {
       "EXAM_TYPE": "Tipo de examen",
       "EXAMPLE": "Ejemplo",
+      "FILE_SIZE": "Tamaño",
       "FOLIO": "Folio",
       "FORMAT": "Formato de nombre",
+      "LINK": "Enlace",
       "OPTIONAL": "Opcional",
-      "REQUIRED": "Obligatorio"
+      "REQUIRED": "Obligatorio",
+      "REQUIRED_PENDING": "{{count}} documentos obligatorios pendientes",
+      "UPLOADED_AT": "Fecha de carga"
     },
     "NAME_PREFIX": {
       "COMP_IDIOMA": "Comp_Idioma",
@@ -864,6 +888,11 @@
       "HIST_ACAD": "Hist_Acad",
       "SOL_SINODALES": "Sol_Sinodales",
       "TESIS": "Tesis"
+    },
+    "SAVE": {
+      "ALL_FAILED": "No se guardó ningún documento.",
+      "MIXED": "Se guardaron {{saved}} documentos. {{failed}} no se guardaron.",
+      "SUCCESS": "Los documentos se guardaron."
     },
     "STATES": {
       "EMPTY": "No se encontraron requisitos.",
@@ -878,6 +907,7 @@
     "UPLOAD": {
       "BROWSE": "Examinar",
       "DROP_HINT": "Arrastra y suelta tu archivo aquí",
+      "PREVIEW_FALLBACK": "Vista previa no disponible",
       "READY": "Listo para guardar",
       "SELECTED": "Seleccionado",
       "SINGLE_FILE_ONLY": "Solo se permite un archivo a la vez"

@@ -799,13 +799,20 @@
   },
   "EXAM_REQUEST": {
     "ACTIONS": {
+      "CONFIRM_DELETE": "Delete document",
+      "DELETE": "Delete",
+      "REPLACE": "Replace",
       "RETRY": "Retry",
+      "SAVE_DOCUMENTS": "Save documents",
       "SUBMIT": "Submit request"
     },
     "ARTICLE_HINT": "Free-named PDF or HTTPS link",
     "ARTICLE_KIND": {
       "PDF": "PDF file",
       "URL": "Link"
+    },
+    "CONFIRM": {
+      "DELETE_DOCUMENT": "Delete {{type}} from the draft?"
     },
     "DEGREE": {
       "DOCTORADO": "Doctorate",
@@ -831,6 +838,8 @@
       "DEGREE_UNSUPPORTED": "The requirements could not be determined. Contact the Coordination office.",
       "dependency_unavailable": "The requirements could not be loaded. Try again.",
       "DEPENDENCY_UNAVAILABLE": "The requirements could not be loaded. Try again.",
+      "document_not_found": "The draft or document is no longer available.",
+      "DOCUMENT_NOT_FOUND": "The draft or document is no longer available.",
       "EXAM_TYPE_NOT_ALLOWED": "This exam type is not available for your program.",
       "forbidden": "You do not have access to this request.",
       "FORBIDDEN": "You do not have access to this request.",
@@ -839,12 +848,23 @@
       "program_not_eligible": "You cannot request the exam with your current program status.",
       "PROGRAM_NOT_ELIGIBLE": "You cannot request the exam with your current program status.",
       "PROGRAM_STATUS_UNSUPPORTED": "The requirements could not be determined. Contact the Coordination office.",
+      "request_not_draft": "This request no longer allows draft changes.",
+      "REQUEST_NOT_DRAFT": "This request no longer allows draft changes.",
+      "REQUEST_NOT_FOUND": "The draft or document is no longer available.",
+      "REQUEST_TOO_LARGE": "The selection exceeds the allowed size.",
+      "save_validation": "Review the save data.",
+      "STORAGE_UNAVAILABLE": "The save could not be completed. Try again.",
+      "STORAGE_WRITE_FAILED": "This document was not saved. Try again.",
       "STUDENT_DATA_INCOMPLETE": "The requirements could not be determined. Contact the Coordination office.",
       "student_not_found": "Your program data was not found. Contact the Coordination office.",
       "STUDENT_NOT_FOUND": "Your program data was not found. Contact the Coordination office.",
       "UNAUTHORIZED": "Sign in to continue.",
+      "UNSAFE_FILE_NAME": "The file name contains characters that are not allowed.",
+      "UNSUPPORTED_MEDIA_TYPE": "The request format is not valid.",
       "validation": "The exam type could not be loaded.",
-      "VALIDATION_ERROR": "The exam type could not be loaded."
+      "VALIDATION_ERROR": "The exam type could not be loaded.",
+      "version_conflict": "The request changed. Refresh the panel and try again.",
+      "VERSION_CONFLICT": "The request changed. Refresh the panel and try again."
     },
     "EXAM_TYPES": {
       "GRADO": "Degree exam",
@@ -853,10 +873,14 @@
     "LABELS": {
       "EXAM_TYPE": "Exam type",
       "EXAMPLE": "Example",
+      "FILE_SIZE": "Size",
       "FOLIO": "Folio",
       "FORMAT": "File name format",
+      "LINK": "Link",
       "OPTIONAL": "Optional",
-      "REQUIRED": "Required"
+      "REQUIRED": "Required",
+      "REQUIRED_PENDING": "{{count}} required documents pending",
+      "UPLOADED_AT": "Upload date"
     },
     "NAME_PREFIX": {
       "COMP_IDIOMA": "Language_Certificate",
@@ -864,6 +888,11 @@
       "HIST_ACAD": "Academic_Record",
       "SOL_SINODALES": "Faculty_Committee",
       "TESIS": "Thesis"
+    },
+    "SAVE": {
+      "ALL_FAILED": "No documents were saved.",
+      "MIXED": "{{saved}} documents were saved. {{failed}} were not saved.",
+      "SUCCESS": "The documents were saved."
     },
     "STATES": {
       "EMPTY": "No requirements were found.",
@@ -878,6 +907,7 @@
     "UPLOAD": {
       "BROWSE": "Browse",
       "DROP_HINT": "Drag and drop your file here",
+      "PREVIEW_FALLBACK": "Preview not available",
       "READY": "Ready to save",
       "SELECTED": "Selected",
       "SINGLE_FILE_ONLY": "Only one file is allowed at a time"
