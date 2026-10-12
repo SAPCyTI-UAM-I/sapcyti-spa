@@ -70,3 +70,101 @@ export interface ExamRequirementsResponse {
   request: ExamRequestSummaryDto | null;
   requirements: ExamRequirementDto[];
 }
+
+/** Grupos de correo; el panel HU-65 los lee pero no los envía. */
+export type DeliveryStatus = 'PENDING' | 'SENT' | 'FAILED' | 'SUPPRESSED' | 'NO_RECIPIENTS';
+
+export type DeliveryGroup = 'COORDINATION' | 'OFFICE' | 'STUDENT';
+
+export interface DeliveryGroupDto {
+  group: DeliveryGroup;
+  intendedCount: number;
+  pendingCount: number;
+  sentCount: number;
+  failedCount: number;
+  suppressedCount: number;
+  status: DeliveryStatus;
+}
+
+export interface DeliverySummaryDto {
+  groups: DeliveryGroupDto[];
+  overallStatus: DeliveryStatus;
+}
+
+/** Expediente completo del panel; incluye requisitos y delivery. */
+export interface ExamRequestDto {
+  id: number;
+  examType: ExamType;
+  degree: Degree;
+  status: ExamRequestStatus;
+  folio: string | null;
+  version: number;
+  submittedAt: string | null;
+  requirements: ExamRequirementDto[];
+  delivery: DeliverySummaryDto | null;
+}
+
+/** GET /exam-requests/me/{examType}. requiredPendingCount lo deriva el servidor. */
+export interface ExamPanelResponse {
+  examType: ExamType;
+  degree: Degree;
+  programStatus: ProgramStatus;
+  eligible: boolean;
+  eligibilityReason: EligibilityReason | null;
+  request: ExamRequestDto | null;
+  requirements: ExamRequirementDto[];
+  requiredPendingCount: number;
+}
+
+/** Un ítem del manifest POST. PDF lleva filePart; URL lleva externalUrl. */
+export interface UploadDescriptor {
+  documentType: DocumentType;
+  kind: DocumentKind;
+  filePart?: string;
+  externalUrl?: string;
+}
+
+export interface BatchManifest {
+  version: number;
+  documents: UploadDescriptor[];
+}
+
+export interface DocumentErrorDetails {
+  expectedName?: string;
+  fieldErrors?: Array<{ field: string; code: string; message: string }>;
+}
+
+/** Envelope por documento en results[]; message no se muestra en UI. */
+export interface DocumentError {
+  error: string;
+  message: string;
+  details?: DocumentErrorDetails;
+}
+
+export type SaveResultStatus = 'SAVED' | 'ERROR';
+
+export type SaveResult =
+  | { documentType: DocumentType; status: 'SAVED'; document: DocumentDto }
+  | { documentType: DocumentType; status: 'ERROR'; error: DocumentError };
+
+export interface SaveDocumentsResponse {
+  request: ExamRequestDto | null;
+  version: number;
+  results: SaveResult[];
+}
+
+export interface PutUrlRequest {
+  version: number;
+  kind: 'URL';
+  externalUrl: string;
+}
+
+export interface DeleteDocumentRequest {
+  version: number;
+}
+
+export interface MutationResponse {
+  request: ExamRequestDto;
+  version: number;
+  document: DocumentDto | null;
+}
