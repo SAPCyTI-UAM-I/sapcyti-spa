@@ -180,6 +180,58 @@
                   }
                 </div>
               </div>
+              @if (canShowDraftActions(item)) {
+                <div class="gap-sm flex flex-wrap">
+                  <p-button
+                    type="button"
+                    [attr.data-testid]="'exam-document-replace-' + item.documentType"
+                    [label]="'EXAM_REQUEST.ACTIONS.REPLACE' | translate"
+                    [disabled]="inFlight()"
+                    [attr.aria-label]="
+                      ('EXAM_REQUEST.ACTIONS.REPLACE' | translate) +
+                      ': ' +
+                      ('EXAM_REQUEST.DOCUMENT_TYPES.' + item.documentType | translate)
+                    "
+                    (onClick)="toggleReplaceEditor(item.documentType)"
+                  />
+                  <p-button
+                    type="button"
+                    severity="danger"
+                    [attr.data-testid]="'exam-document-delete-' + item.documentType"
+                    [label]="'EXAM_REQUEST.ACTIONS.DELETE' | translate"
+                    [disabled]="inFlight()"
+                    [attr.aria-label]="
+                      ('EXAM_REQUEST.ACTIONS.DELETE' | translate) +
+                      ': ' +
+                      ('EXAM_REQUEST.DOCUMENT_TYPES.' + item.documentType | translate)
+                    "
+                    (onClick)="askDelete(item.documentType)"
+                  />
+                </div>
+                @if (isReplacing(item.documentType)) {
+                  <app-exam-document-upload
+                    [requirement]="item"
+                    [disabled]="!eligible() || inFlight()"
+                    (selectionChange)="onPendingSelectionChange(item.documentType, $event)"
+                  />
+                  @if (replaceWriteErrorKey(item.documentType); as replaceErrorKey) {
+                    <p
+                      class="text-error text-caption font-caption"
+                      [attr.data-testid]="'exam-document-replace-error-' + item.documentType"
+                    >
+                      {{ replaceErrorKey | translate }}
+                    </p>
+                  }
+                  <p-button
+                    type="button"
+                    [attr.data-testid]="'exam-document-replace-confirm-' + item.documentType"
+                    [label]="'EXAM_REQUEST.ACTIONS.REPLACE' | translate"
+                    [disabled]="!canConfirmReplace(item.documentType)"
+                    [loading]="inFlight()"
+                    (onClick)="confirmReplace(item.documentType)"
+                  />
+                }
+              }
             } @else {
               <app-exam-document-upload
                 [requirement]="item"
@@ -274,6 +326,43 @@
         data-testid="exam-save-dialog-close"
         [label]="'COMMON.ACTIONS.CLOSE' | translate"
         (onClick)="closeSaveDialog()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [header]="'EXAM_REQUEST.ACTIONS.CONFIRM_DELETE' | translate"
+  [modal]="true"
+  [visible]="showDeleteDialog()"
+  [style]="{ width: 'min(100%, 32rem)' }"
+  (visibleChange)="onDeleteDialogVisibleChange($event)"
+>
+  <p
+    class="text-body-md text-text-secondary font-body-md"
+    data-testid="exam-delete-confirm-message"
+  >
+    {{ 'EXAM_REQUEST.CONFIRM.DELETE_DOCUMENT' | translate: { type: deleteTypeName() } }}
+  </p>
+  <ng-template #footer>
+    <div class="gap-sm flex justify-end">
+      <p-button
+        type="button"
+        severity="secondary"
+        variant="outlined"
+        data-testid="exam-delete-cancel"
+        [label]="'COMMON.ACTIONS.CANCEL' | translate"
+        [disabled]="inFlight()"
+        (onClick)="cancelDelete()"
+      />
+      <p-button
+        type="button"
+        severity="danger"
+        data-testid="exam-delete-confirm"
+        [label]="'EXAM_REQUEST.ACTIONS.DELETE' | translate"
+        [loading]="inFlight()"
+        [disabled]="inFlight()"
+        (onClick)="confirmDelete()"
       />
     </div>
   </ng-template>

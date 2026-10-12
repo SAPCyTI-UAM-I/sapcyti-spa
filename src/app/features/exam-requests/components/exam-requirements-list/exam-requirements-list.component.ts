@@ -27,6 +27,7 @@ import {
   ExamRequestDto,
   ExamRequirementDto,
   ExamType,
+  MutationResponse,
   SaveDocumentsResponse,
 } from '../../../../models';
 import {
@@ -36,6 +37,7 @@ import {
   LoadStateComponent,
 } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
+import type { ReplaceDocumentCommand } from '../../repositories/exam-request.repository';
 import { ExamRequestService } from '../../services/exam-request.service';
 import { degreeTagSeverity } from '../../utils/degree-tag.util';
 import { formatDocumentFileSize, formatUploadedAt } from '../../utils/exam-document-format.util';
@@ -182,7 +184,24 @@ export class ExamRequirementsListComponent implements OnInit {
     this.saveDialogFailed().length > 0 ? 'EXAM_REQUEST.SAVE.MIXED' : 'EXAM_REQUEST.SAVE.SUCCESS',
   );
 
-  /** Solo tipos sin documento vigente; el reemplazo es PUT (HU-65 Tarea 6). */
+  readonly replacingType = signal<DocumentType | null>(null);
+  readonly deleteTarget = signal<DocumentType | null>(null);
+  readonly itemReplaceErrors = signal<Partial<Record<DocumentType, ExamRequestWriteError>>>({});
+
+  /** Reemplazo y borrado solo en BORRADOR con documento vigente. */
+  readonly canMutateDraft = computed(() => this.panel()?.request?.status === 'BORRADOR');
+
+  readonly showDeleteDialog = computed(() => this.deleteTarget() !== null);
+
+  readonly deleteTypeName = computed(() => {
+    this.lang();
+    const documentType = this.deleteTarget();
+    return documentType
+      ? this.translate.instant(`EXAM_REQUEST.DOCUMENT_TYPES.${documentType}`)
+      : '';
+  });
+
+  /** Solo tipos sin documento vigente; el reemplazo usa PUT por tarjeta. */
   readonly saveableSelections = computed<ExamDocumentSelection[]>(() => {
     const items = this.panel()?.requirements ?? [];
     const pending = this.pendingSelections();
@@ -226,6 +245,7 @@ export class ExamRequirementsListComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((examType) => {
         this.clearPendingSelections();
+        this.closeMutationUi();
         this.load$.next({ kind: 'type', examType });
       });
 
@@ -289,6 +309,140 @@ export class ExamRequirementsListComponent implements OnInit {
 
   closeSaveDialog(): void {
     this.showSaveDialog.set(false);
+  }
+
+  canShowDraftActions(item: ExamRequirementDto): boolean {
+    return this.canMutateDraft() && item.currentDocument != null;
+  }
+
+  isReplacing(documentType: DocumentType): boolean {
+    return this.replacingType() === documentType;
+  }
+
+  canConfirmReplace(documentType: DocumentType): boolean {
+    return (
+      this.canMutateDraft() &&
+      !this.inFlight() &&
+      this.pendingSelections()[documentType] != null &&
+      this.panel()?.requirements.find((item) => item.documentType === documentType)
+        ?.currentDocument != null
+    );
+  }
+
+  replaceWriteErrorKey(documentType: DocumentType): string | null {
+    const key = this.itemReplaceErrors()[documentType];
+    return key ? `${EXAM_REQUEST_ERROR_I18N_SCOPE}.${key}` : null;
+  }
+
+  /** Abre o cierra el editor de reemplazo; no dispara HTTP. */
+  toggleReplaceEditor(documentType: DocumentType): void {
+    if (!this.canMutateDraft() || this.inFlight()) {
+      return;
+    }
+
+    this.replacingType.update((current) => (current === documentType ? null : documentType));
+  }
+
+  askDelete(documentType: DocumentType): void {
+    if (!this.canMutateDraft() || this.inFlight()) {
+      return;
+    }
+
+    const item = this.panel()?.requirements.find(
+      (requirement) => requirement.documentType === documentType,
+    );
+    if (!item?.currentDocument) {
+      return;
+    }
+
+    this.deleteTarget.set(documentType);
+  }
+
+  cancelDelete(): void {
+    this.deleteTarget.set(null);
+  }
+
+  onDeleteDialogVisibleChange(visible: boolean): void {
+    if (!visible) {
+      this.cancelDelete();
+    }
+  }
+
+  /** PUT solo con borrador vigente y selección válida; el fallo conserva el documento anterior. */
+  confirmReplace(documentType: DocumentType): void {
+    if (!this.canConfirmReplace(documentType)) {
+      return;
+    }
+
+    const selection = this.pendingSelections()[documentType];
+    const version = this.panel()?.request?.version;
+    if (!selection || version == null) {
+      return;
+    }
+
+    const examType = this.examTypeForm.controls.examType.value;
+    const command: ReplaceDocumentCommand =
+      selection.kind === 'PDF'
+        ? { kind: 'PDF', version, file: selection.file }
+        : { kind: 'URL', version, externalUrl: selection.url };
+
+    this.inFlight.set(true);
+    this.saveWriteError.set(null);
+    this.itemReplaceErrors.update((current) => {
+      const next = { ...current };
+      delete next[documentType];
+      return next;
+    });
+
+    this.examRequests
+      .replaceDocument(examType, documentType, command)
+      .pipe(
+        finalize(() => this.inFlight.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (response) => this.applyReplaceSuccess(response, documentType),
+        error: (error: unknown) => this.handleReplaceFailure(error, examType, documentType),
+      });
+  }
+
+  /**
+   * Optimista a PENDIENTE; 409 restaura la fila y recarga el panel.
+   * Cancelar no llega aquí.
+   */
+  confirmDelete(): void {
+    if (this.inFlight() || !this.canMutateDraft()) {
+      return;
+    }
+
+    const documentType = this.deleteTarget();
+    const request = this.panel()?.request;
+    if (!documentType || !request) {
+      return;
+    }
+
+    const examType = this.examTypeForm.controls.examType.value;
+    const snapshot = this.panel();
+    this.deleteTarget.set(null);
+    this.applyOptimisticDelete(documentType);
+    this.inFlight.set(true);
+    this.saveWriteError.set(null);
+
+    this.examRequests
+      .deleteDocument(examType, documentType, { version: request.version })
+      .pipe(
+        finalize(() => this.inFlight.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (response) => this.applyRequestToPanel(response.request),
+        error: (error: unknown) => {
+          if (snapshot) {
+            this.panel.set(snapshot);
+          }
+          this.handleDeleteFailure(error, examType);
+        },
+      });
   }
 
   /** Un POST por clic; inFlight bloquea el segundo disparo. */
@@ -439,25 +593,100 @@ export class ExamRequirementsListComponent implements OnInit {
     this.saveWriteError.set(writeKey);
   }
 
-  private reconcilePanel(examType: ExamType, writeKey: ExamRequestWriteError): void {
+  /** Sustituye currentDocument; no retiene miniatura del archivo anterior. */
+  private applyReplaceSuccess(response: MutationResponse, documentType: DocumentType): void {
+    this.applyRequestToPanel(response.request);
+    this.pendingSelections.update((current) => {
+      const next = { ...current };
+      delete next[documentType];
+      return next;
+    });
+    this.replacingType.set(null);
+  }
+
+  private handleReplaceFailure(
+    error: unknown,
+    examType: ExamType,
+    documentType: DocumentType,
+  ): void {
+    const writeKey = this.examRequests.mapWriteError(error);
+    this.assignWriteError(writeKey, documentType);
+    if (shouldReconcilePanelAfterSaveError(error)) {
+      this.reconcilePanel(examType, writeKey, documentType);
+    }
+  }
+
+  private handleDeleteFailure(error: unknown, examType: ExamType): void {
+    const writeKey = this.examRequests.mapWriteError(error);
+    if (shouldReconcilePanelAfterSaveError(error)) {
+      this.reconcilePanel(examType, writeKey);
+      return;
+    }
+
+    this.saveWriteError.set(writeKey);
+  }
+
+  private applyOptimisticDelete(documentType: DocumentType): void {
+    this.panel.update((current) => {
+      if (!current) {
+        return current;
+      }
+
+      const requirements = current.requirements.map((item) =>
+        item.documentType === documentType
+          ? { ...item, status: 'PENDIENTE' as const, currentDocument: null }
+          : item,
+      );
+
+      return {
+        ...current,
+        requirements,
+        requiredPendingCount: requirements.filter(
+          (item) => item.required && item.status === 'PENDIENTE',
+        ).length,
+      };
+    });
+  }
+
+  private reconcilePanel(
+    examType: ExamType,
+    writeKey: ExamRequestWriteError,
+    documentType?: DocumentType,
+  ): void {
     this.examRequests
       .getPanel(examType)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (panel) => {
           this.panel.set(panel);
-          this.saveWriteError.set(writeKey);
+          this.assignWriteError(writeKey, documentType);
         },
-        error: () => this.saveWriteError.set(writeKey),
+        error: () => this.assignWriteError(writeKey, documentType),
       });
+  }
+
+  private assignWriteError(writeKey: ExamRequestWriteError, documentType?: DocumentType): void {
+    if (documentType) {
+      this.itemReplaceErrors.update((current) => ({ ...current, [documentType]: writeKey }));
+      return;
+    }
+
+    this.saveWriteError.set(writeKey);
   }
 
   private clearPendingSelections(): void {
     this.pendingSelections.set({});
   }
 
+  private closeMutationUi(): void {
+    this.replacingType.set(null);
+    this.deleteTarget.set(null);
+    this.itemReplaceErrors.set({});
+  }
+
   private clearAcademicState(): void {
     this.clearPendingSelections();
+    this.closeMutationUi();
     this.options.set(null);
     this.panel.set(null);
     this.loadError.set(null);

@@ -17,7 +17,9 @@ import {
   ExamPanelResponse,
   ExamRequestDto,
   ExamRequirementDto,
+  ExamRequestStatus,
   ExamType,
+  MutationResponse,
   SaveDocumentsResponse,
 } from '../../../../models';
 import { ExamRequestService } from '../../services/exam-request.service';
@@ -165,6 +167,39 @@ function savedPdfResult(
   };
 }
 
+function loadedThesisItems(): ExamRequirementDto[] {
+  return emanuelItems.map((item) =>
+    item.documentType === 'TESIS'
+      ? {
+          ...item,
+          status: 'CARGADO' as const,
+          currentDocument: pdfDocument('TESIS', EMANUEL_THESIS),
+        }
+      : item,
+  );
+}
+
+function draftLoadedPayload(
+  status: ExamRequestStatus = 'BORRADOR',
+  version = 3,
+): { options: ExamOptionsDto; panel: ExamPanelResponse } {
+  const items = loadedThesisItems();
+  const payload = buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' });
+  return {
+    options: payload.options,
+    panel: {
+      ...payload.panel,
+      request: draftRequest(items, {
+        status,
+        version,
+        folio: status === 'BORRADOR' ? null : 'SEG-184201-110001',
+      }),
+      requirements: items,
+      requiredPendingCount: countRequiredPending(items),
+    },
+  };
+}
+
 const PDF_TYPES: readonly Exclude<DocumentType, 'ARTICULO'>[] = [
   'TESIS',
   'SOL_SINODALES',
@@ -195,6 +230,8 @@ describe('ExamRequirementsListComponent', () => {
   let getOptions: ReturnType<typeof vi.fn>;
   let getPanel: ReturnType<typeof vi.fn>;
   let saveDocuments: ReturnType<typeof vi.fn>;
+  let replaceDocument: ReturnType<typeof vi.fn>;
+  let deleteDocument: ReturnType<typeof vi.fn>;
 
   async function setup(
     payload: {
@@ -208,6 +245,8 @@ describe('ExamRequirementsListComponent', () => {
     );
     getPanel = vi.fn(() => of(payload?.panel ?? buildPayload('MAESTRIA', emanuelItems).panel));
     saveDocuments = vi.fn();
+    replaceDocument = vi.fn();
+    deleteDocument = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
@@ -218,6 +257,8 @@ describe('ExamRequirementsListComponent', () => {
             getOptions,
             getPanel,
             saveDocuments,
+            replaceDocument,
+            deleteDocument,
             mapError: mapExamRequestError,
             mapWriteError: mapExamRequestWriteError,
           },
@@ -284,6 +325,16 @@ describe('ExamRequirementsListComponent', () => {
     fixture: ReturnType<typeof TestBed.createComponent<ExamRequirementsListComponent>>,
   ): void {
     saveButton(fixture).triggerEventHandler('onClick', null);
+    fixture.detectChanges();
+  }
+
+  function clickCardAction(
+    fixture: ReturnType<typeof TestBed.createComponent<ExamRequirementsListComponent>>,
+    testId: string,
+  ): void {
+    fixture.debugElement
+      .query(By.css(`[data-testid="${testId}"]`))
+      .triggerEventHandler('onClick', null);
     fixture.detectChanges();
   }
 
@@ -1161,5 +1212,283 @@ describe('ExamRequirementsListComponent', () => {
 
     expect(fixture.componentInstance.inFlight()).toBe(false);
     expect(fixture.componentInstance.showSaveDialog()).toBe(true);
+  });
+
+  it('asks for delete confirmation that names the document type', async () => {
+    const fixture = await setup(draftLoadedPayload());
+
+    clickCardAction(fixture, 'exam-document-delete-TESIS');
+
+    expect(fixture.componentInstance.deleteTarget()).toBe('TESIS');
+    expect(fixture.componentInstance.showDeleteDialog()).toBe(true);
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-delete-confirm-message"]'))
+        .nativeElement.textContent,
+    ).toContain('EXAM_REQUEST.CONFIRM.DELETE_DOCUMENT');
+    expect(fixture.componentInstance.deleteTypeName()).toBe('EXAM_REQUEST.DOCUMENT_TYPES.TESIS');
+    expect(deleteDocument).not.toHaveBeenCalled();
+  });
+
+  it('does not call DELETE when the confirmation is cancelled', async () => {
+    const fixture = await setup(draftLoadedPayload());
+
+    clickCardAction(fixture, 'exam-document-delete-TESIS');
+    clickCardAction(fixture, 'exam-delete-cancel');
+
+    expect(fixture.componentInstance.showDeleteDialog()).toBe(false);
+    expect(fixture.componentInstance.deleteTarget()).toBeNull();
+    expect(deleteDocument).not.toHaveBeenCalled();
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-panel-TESIS"]')),
+    ).toBeTruthy();
+  });
+
+  it('confirms delete with the current version and leaves the requirement pending', async () => {
+    const pendingItems = emanuelItems.map((item) =>
+      item.documentType === 'TESIS'
+        ? { ...item, status: 'PENDIENTE' as const, currentDocument: null }
+        : item,
+    );
+    const response: MutationResponse = {
+      request: draftRequest(pendingItems, { version: 4 }),
+      version: 4,
+      document: null,
+    };
+    const fixture = await setup(draftLoadedPayload('BORRADOR', 3));
+    deleteDocument.mockReturnValue(of(response));
+
+    clickCardAction(fixture, 'exam-document-delete-TESIS');
+    clickCardAction(fixture, 'exam-delete-confirm');
+    await flushValidation(fixture);
+
+    expect(deleteDocument).toHaveBeenCalledTimes(1);
+    expect(deleteDocument).toHaveBeenCalledWith('GRADO', 'TESIS', { version: 3 });
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-panel-TESIS"]')),
+    ).toBeNull();
+    expect(
+      fixture.componentInstance.panel()?.requirements.find((item) => item.documentType === 'TESIS')
+        ?.status,
+    ).toBe('PENDIENTE');
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-delete-TESIS"]')),
+    ).toBeNull();
+  });
+
+  it('hides replace and delete when the request is no longer a draft', async () => {
+    for (const status of ['ENVIADA', 'ACTUALIZADA', 'CERRADA'] as const) {
+      await TestBed.resetTestingModule();
+      const fixture = await setup(draftLoadedPayload(status));
+
+      expect(fixture.componentInstance.canMutateDraft()).toBe(false);
+      expect(
+        fixture.debugElement.query(By.css('[data-testid="exam-document-delete-TESIS"]')),
+      ).toBeNull();
+      expect(
+        fixture.debugElement.query(By.css('[data-testid="exam-document-replace-TESIS"]')),
+      ).toBeNull();
+      expect(
+        fixture.debugElement.query(By.css('[data-testid="exam-document-panel-TESIS"]')),
+      ).toBeTruthy();
+    }
+  });
+
+  it('keeps the previous document and selection when replace PUT fails', async () => {
+    const replacement = pdfFile(EMANUEL_THESIS);
+    const fixture = await setup(draftLoadedPayload('BORRADOR', 3));
+    replaceDocument.mockReturnValue(
+      throwError(() =>
+        mockApiError({
+          status: 400,
+          error: 'VALIDATION_ERROR',
+          message: 'Raw replace payload rejected',
+        }),
+      ),
+    );
+
+    clickCardAction(fixture, 'exam-document-replace-TESIS');
+    dropOnCard(fixture, 'TESIS', [replacement]);
+    await flushValidation(fixture);
+    clickCardAction(fixture, 'exam-document-replace-confirm-TESIS');
+    await flushValidation(fixture);
+
+    expect(replaceDocument).toHaveBeenCalledTimes(1);
+    expect(replaceDocument).toHaveBeenCalledWith('GRADO', 'TESIS', {
+      kind: 'PDF',
+      version: 3,
+      file: replacement,
+    });
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-name-TESIS"]')).nativeElement
+        .textContent,
+    ).toContain(EMANUEL_THESIS);
+    expect(fixture.componentInstance.pendingSelections().TESIS).toEqual({
+      documentType: 'TESIS',
+      kind: 'PDF',
+      file: replacement,
+    });
+    expect(fixture.componentInstance.isReplacing('TESIS')).toBe(true);
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-replace-error-TESIS"]'))
+        .nativeElement.textContent,
+    ).toContain('EXAM_REQUEST.ERRORS.save_validation');
+    expect(fixture.nativeElement.textContent).not.toContain('Raw replace payload rejected');
+    expect(fixture.componentInstance.panel()?.request?.version).toBe(3);
+  });
+
+  it('sends a URL replace as JSON with version and externalUrl', async () => {
+    const articleUrl = 'https://revista.ejemplo.org/articulo/123';
+    const nextUrl = 'https://revista.ejemplo.org/articulo/456';
+    const items = doctoralItems(true).map((item) =>
+      item.documentType === 'ARTICULO'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: {
+              id: 90,
+              documentType: 'ARTICULO' as const,
+              kind: 'URL' as const,
+              originalName: null,
+              externalUrl: articleUrl,
+              sizeBytes: null,
+              uploadedAt: '2026-10-09T18:10:00Z',
+            },
+          }
+        : item,
+    );
+    const payload = buildPayload('DOCTORADO', items);
+    const fixture = await setup({
+      options: payload.options,
+      panel: {
+        ...payload.panel,
+        request: draftRequest(items, { degree: 'DOCTORADO', version: 2 }),
+        requirements: items,
+      },
+    });
+    replaceDocument.mockReturnValue(
+      of({
+        request: draftRequest(
+          items.map((item) =>
+            item.documentType === 'ARTICULO'
+              ? {
+                  ...item,
+                  currentDocument: {
+                    ...item.currentDocument!,
+                    externalUrl: nextUrl,
+                    uploadedAt: '2026-10-11T12:00:00Z',
+                  },
+                }
+              : item,
+          ),
+          { degree: 'DOCTORADO', version: 3 },
+        ),
+        version: 3,
+        document: {
+          id: 91,
+          documentType: 'ARTICULO',
+          kind: 'URL',
+          originalName: null,
+          externalUrl: nextUrl,
+          sizeBytes: null,
+          uploadedAt: '2026-10-11T12:00:00Z',
+        },
+      } satisfies MutationResponse),
+    );
+
+    clickCardAction(fixture, 'exam-document-replace-ARTICULO');
+    const upload = fixture.debugElement
+      .query(By.css('[data-testid="exam-requirement-card-ARTICULO"]'))
+      .query(By.directive(ExamDocumentUploadComponent))
+      .componentInstance as ExamDocumentUploadComponent;
+    upload.kindForm.controls.kind.setValue('URL');
+    fixture.detectChanges();
+    upload.kindForm.controls.url.setValue(nextUrl);
+    await flushValidation(fixture);
+    clickCardAction(fixture, 'exam-document-replace-confirm-ARTICULO');
+    await flushValidation(fixture);
+
+    expect(replaceDocument).toHaveBeenCalledWith('GRADO', 'ARTICULO', {
+      kind: 'URL',
+      version: 2,
+      externalUrl: nextUrl,
+    });
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-url-ARTICULO"]')).nativeElement
+        .textContent,
+    ).toContain(nextUrl);
+    expect(fixture.nativeElement.textContent).not.toContain(articleUrl);
+  });
+
+  it('shows only the replaced document after a successful PUT', async () => {
+    const replacement = pdfFile(EMANUEL_THESIS);
+    const replaced = pdfDocument('TESIS', EMANUEL_THESIS, 409600);
+    const replacedItems = emanuelItems.map((item) =>
+      item.documentType === 'TESIS'
+        ? { ...item, status: 'CARGADO' as const, currentDocument: replaced }
+        : item,
+    );
+    const fixture = await setup(draftLoadedPayload('BORRADOR', 3));
+    replaceDocument.mockReturnValue(
+      of({
+        request: draftRequest(replacedItems, { version: 4 }),
+        version: 4,
+        document: replaced,
+      } satisfies MutationResponse),
+    );
+
+    clickCardAction(fixture, 'exam-document-replace-TESIS');
+    dropOnCard(fixture, 'TESIS', [replacement]);
+    await flushValidation(fixture);
+    clickCardAction(fixture, 'exam-document-replace-confirm-TESIS');
+    await flushValidation(fixture);
+
+    expect(replaceDocument).toHaveBeenCalledTimes(1);
+    expect(fixture.componentInstance.pendingSelections().TESIS).toBeUndefined();
+    expect(fixture.componentInstance.isReplacing('TESIS')).toBe(false);
+    expect(fixture.componentInstance.panel()?.request?.version).toBe(4);
+    expect(
+      fixture.debugElement.queryAll(By.css('[data-testid="exam-document-panel-TESIS"]')),
+    ).toHaveLength(1);
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-size-TESIS"]')).nativeElement
+        .textContent,
+    ).toContain('400 KB');
+    expect(
+      fixture.debugElement.query(
+        By.css(
+          '[data-testid="exam-requirement-card-TESIS"] [data-testid="exam-document-dropzone"]',
+        ),
+      ),
+    ).toBeNull();
+  });
+
+  it('reverts the optimistic delete and reloads the panel on 409', async () => {
+    const fixture = await setup(draftLoadedPayload('BORRADOR', 3));
+    deleteDocument.mockReturnValue(
+      throwError(() =>
+        mockApiError({
+          status: 409,
+          error: 'VERSION_CONFLICT',
+          message: 'Version 4 is already stored',
+        }),
+      ),
+    );
+
+    expect(getPanel).toHaveBeenCalledTimes(1);
+    clickCardAction(fixture, 'exam-document-delete-TESIS');
+    clickCardAction(fixture, 'exam-delete-confirm');
+    await flushValidation(fixture);
+
+    expect(deleteDocument).toHaveBeenCalledTimes(1);
+    expect(getPanel).toHaveBeenCalledTimes(2);
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-panel-TESIS"]')),
+    ).toBeTruthy();
+    expect(
+      fixture.componentInstance.panel()?.requirements.find((item) => item.documentType === 'TESIS')
+        ?.status,
+    ).toBe('CARGADO');
+    expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.ERRORS.version_conflict');
+    expect(fixture.nativeElement.textContent).not.toContain('Version 4 is already stored');
   });
 });
