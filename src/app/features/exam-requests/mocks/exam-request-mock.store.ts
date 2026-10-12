@@ -34,6 +34,7 @@ const DOCUMENT_ORDER: readonly DocumentType[] = [
   'DATOS_ALUM',
 ];
 
+/** Prefijos canónicos del contrato API (español). La UI localiza al mostrar. */
 const NAME_PREFIX: Record<Exclude<DocumentType, 'ARTICULO'>, string> = {
   TESIS: 'Tesis',
   SOL_SINODALES: 'Sol_Sinodales',

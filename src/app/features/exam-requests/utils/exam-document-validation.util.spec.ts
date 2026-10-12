@@ -53,6 +53,9 @@ describe('exam-document-validation.util', () => {
       expect(matchesExpectedDocumentName('TESIS_MTRIA_LOPEZ_ALBA_EMANUEL.PDF', EMANUEL_THESIS)).toBe(
         true,
       );
+      expect(
+        matchesExpectedDocumentName('Thesis_Mtria_Lopez_Alba_Emanuel.pdf', EMANUEL_THESIS),
+      ).toBe(true);
     });
 
     it('rejects accents, another type, and a wrong degree prefix', () => {

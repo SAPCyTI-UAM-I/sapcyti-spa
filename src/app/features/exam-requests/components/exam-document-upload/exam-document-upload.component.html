@@ -99,7 +99,7 @@
         @case ('INVALID_DOCUMENT_NAME') {
           {{
             'EXAM_REQUEST.VALIDATION.INVALID_DOCUMENT_NAME'
-              | translate: { expectedName: currentError.expectedName }
+              | translate: { expectedName: localizedErrorName() }
           }}
         }
         @case ('INVALID_PDF_CONTENT') {

@@ -14,11 +14,15 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { InputText } from 'primeng/inputtext';
 
 import type { DocumentKind, DocumentType, ExamRequirementDto } from '../../../../models';
 import { I18nSelectComponent, type I18nSelectOption } from '../../../../shared/components';
+import {
+  localizeDocumentFileName,
+  resolveDocumentNameLanguage,
+} from '../../utils/exam-document-name.util';
 import {
   type DocumentValidationCode,
   type DocumentValidationResult,
@@ -45,6 +49,8 @@ interface UploadValidationError {
 export class ExamDocumentUploadComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(NonNullableFormBuilder);
+  private readonly translate = inject(TranslateService);
+  private readonly lang = toSignal(this.translate.onLangChange, { initialValue: null });
   private readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
   private validationSeq = 0;
 
@@ -79,6 +85,14 @@ export class ExamDocumentUploadComponent {
   readonly kindInputId = computed(() => `exam-article-kind-${this.requirement().documentType}`);
   readonly urlInputId = computed(() => `exam-article-url-${this.requirement().documentType}`);
   readonly errorId = computed(() => `exam-document-error-${this.requirement().documentType}`);
+
+  readonly localizedErrorName = computed(() => {
+    this.lang();
+    return localizeDocumentFileName(
+      this.validationError()?.expectedName ?? null,
+      resolveDocumentNameLanguage(this.translate.currentLang),
+    );
+  });
 
   constructor() {
     effect(() => {

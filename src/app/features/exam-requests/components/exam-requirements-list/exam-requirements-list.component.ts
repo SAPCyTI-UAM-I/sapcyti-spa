@@ -7,9 +7,9 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { catchError, EMPTY, finalize, Observable, Subject, switchMap } from 'rxjs';
@@ -32,6 +32,10 @@ import {
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { ExamRequestService } from '../../services/exam-request.service';
 import { degreeTagSeverity } from '../../utils/degree-tag.util';
+import {
+  localizeDocumentFileName,
+  resolveDocumentNameLanguage,
+} from '../../utils/exam-document-name.util';
 import { EXAM_REQUEST_ERROR_I18N_SCOPE } from '../../utils/exam-request-error.util';
 import {
   ExamDocumentUploadComponent,
@@ -61,7 +65,9 @@ export class ExamRequirementsListComponent implements OnInit {
   private readonly auth = inject(AuthStateService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(NonNullableFormBuilder);
+  private readonly translate = inject(TranslateService);
   private readonly load$ = new Subject<LoadTrigger>();
+  private readonly lang = toSignal(this.translate.onLangChange, { initialValue: null });
 
   readonly examTypeForm = this.fb.group({
     examType: this.fb.control<ExamType>('GRADO'),
@@ -187,6 +193,15 @@ export class ExamRequirementsListComponent implements OnInit {
 
   requirementRequiredSeverity(required: boolean): 'warn' | 'secondary' {
     return required ? 'warn' : 'secondary';
+  }
+
+  /** El API entrega el prefijo en español; se muestra el alias del idioma activo. */
+  localizedFileName(fileName: string | null): string | null {
+    this.lang();
+    return localizeDocumentFileName(
+      fileName,
+      resolveDocumentNameLanguage(this.translate.currentLang),
+    );
   }
 
   onPendingSelectionChange(

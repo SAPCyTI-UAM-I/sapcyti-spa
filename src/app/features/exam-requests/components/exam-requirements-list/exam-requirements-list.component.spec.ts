@@ -2,7 +2,7 @@ import { DebugElement } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
@@ -176,7 +176,12 @@ describe('ExamRequirementsListComponent', () => {
       ],
     }).compileComponents();
 
+    return createListFixture();
+  }
+
+  function createListFixture() {
     const fixture = TestBed.createComponent(ExamRequirementsListComponent);
+    TestBed.inject(TranslateService).use('es');
     fixture.detectChanges();
     return fixture;
   }
@@ -226,6 +231,17 @@ describe('ExamRequirementsListComponent', () => {
     ]);
     expect(fixture.nativeElement.textContent).toContain('Tesis_Mtria_Lopez_Alba_Emanuel.pdf');
     expect(fixture.componentInstance.eligible()).toBe(true);
+  });
+
+  it('shows English filename prefixes when the active language is en', async () => {
+    const fixture = await setup();
+    TestBed.inject(TranslateService).use('en');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Thesis_Mtria_Lopez_Alba_Emanuel.pdf');
+    expect(fixture.nativeElement.textContent).toContain('Faculty_Committee_Lopez_Alba_Emanuel.pdf');
+    expect(fixture.nativeElement.textContent).toContain('Academic_Record_Lopez_Alba_Emanuel.pdf');
+    expect(fixture.nativeElement.textContent).not.toContain('Tesis_Mtria_Lopez_Alba_Emanuel.pdf');
   });
 
   it('shows five specialization types without Articulo', async () => {
@@ -287,8 +303,7 @@ describe('ExamRequirementsListComponent', () => {
       ],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
-    fixture.detectChanges();
+    const fixture = createListFixture();
 
     expect(fixture.componentInstance.loadError()).toBe('EXAM_REQUEST.ERRORS.forbidden');
     expect(cardTypes(fixture)).toEqual([]);
@@ -316,8 +331,7 @@ describe('ExamRequirementsListComponent', () => {
       ],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
-    fixture.detectChanges();
+    const fixture = createListFixture();
 
     expect(fixture.componentInstance.loadError()).toBe('EXAM_REQUEST.ERRORS.forbidden');
     expect(cardTypes(fixture)).toEqual([]);
@@ -347,8 +361,7 @@ describe('ExamRequirementsListComponent', () => {
       ],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
-    fixture.detectChanges();
+    const fixture = createListFixture();
     expect(cardTypes(fixture)).toEqual([]);
 
     fixture.debugElement.query(By.css('p-button')).triggerEventHandler('onClick', null);
@@ -452,8 +465,7 @@ describe('ExamRequirementsListComponent', () => {
       ],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
-    fixture.detectChanges();
+    const fixture = createListFixture();
 
     expect(getRequirements).toHaveBeenCalledWith('GRADO');
     expect(fixture.debugElement.query(By.css('[data-testid="exam-type-selector"]'))).toBeTruthy();
@@ -524,8 +536,7 @@ describe('ExamRequirementsListComponent', () => {
       ],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
-    fixture.detectChanges();
+    const fixture = createListFixture();
     expect(getRequirements).toHaveBeenCalledWith('GRADO');
 
     fixture.componentInstance.examTypeForm.controls.examType.setValue('PREDOCTORAL');
@@ -581,8 +592,7 @@ describe('ExamRequirementsListComponent', () => {
       ],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
-    fixture.detectChanges();
+    const fixture = createListFixture();
     expect(fixture.componentInstance.canSubmit()).toBe(false);
 
     fixture.componentInstance.examTypeForm.controls.examType.setValue('PREDOCTORAL');
@@ -692,8 +702,7 @@ describe('ExamRequirementsListComponent', () => {
       ],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(ExamRequirementsListComponent);
-    fixture.detectChanges();
+    const fixture = createListFixture();
 
     const thesis = pdfFile('Tesis_Docto_Perez_Soto_Luis.pdf');
     dropOnCard(fixture, 'TESIS', [thesis]);

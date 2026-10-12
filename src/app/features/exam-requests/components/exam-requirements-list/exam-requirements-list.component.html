@@ -88,15 +88,16 @@
                 {{ 'EXAM_REQUEST.ARTICLE_HINT' | translate }}
               </p>
             } @else {
-              <!-- expectedName es el filename canónico de la API; no se traduce el prefijo. -->
               <p class="text-caption text-text-secondary font-caption">
-                {{ 'EXAM_REQUEST.LABELS.FORMAT' | translate }}: {{ item.expectedName }}
+                {{ 'EXAM_REQUEST.LABELS.FORMAT' | translate }}:
+                {{ localizedFileName(item.expectedName) }}
               </p>
               <p
                 class="text-caption text-text-secondary font-caption"
                 data-testid="exam-requirement-example"
               >
-                {{ 'EXAM_REQUEST.LABELS.EXAMPLE' | translate }}: {{ item.exampleName }}
+                {{ 'EXAM_REQUEST.LABELS.EXAMPLE' | translate }}:
+                {{ localizedFileName(item.exampleName) }}
               </p>
             }
             <app-exam-document-upload

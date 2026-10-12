@@ -858,6 +858,13 @@
       "OPTIONAL": "Optional",
       "REQUIRED": "Required"
     },
+    "NAME_PREFIX": {
+      "COMP_IDIOMA": "Language_Certificate",
+      "DATOS_ALUM": "Student_Data",
+      "HIST_ACAD": "Academic_Record",
+      "SOL_SINODALES": "Faculty_Committee",
+      "TESIS": "Thesis"
+    },
     "STATES": {
       "EMPTY": "No requirements were found.",
       "LOAD_ERROR": "The requirements could not be loaded. Try again."

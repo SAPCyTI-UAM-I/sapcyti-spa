@@ -1,4 +1,5 @@
 import type { DocumentKind, DocumentType } from '../../../models';
+import { documentFileNameAliases } from './exam-document-name.util';
 
 /** Prefijo canónico de un PDF; no se usa File.type como autoridad. */
 const PDF_MAGIC = new Uint8Array([0x25, 0x50, 0x44, 0x46]); // %PDF
@@ -25,9 +26,12 @@ export interface ValidatePendingDocumentInput {
   readonly kind: DocumentKind;
 }
 
-/** Compara ignorando solo caja y la extensión .pdf/.PDF; no normaliza acentos. */
+/** Compara ignorando caja, .pdf y el prefijo es/en; no normaliza acentos. */
 export function matchesExpectedDocumentName(fileName: string, expectedName: string): boolean {
-  return normalizeComparableName(fileName) === normalizeComparableName(expectedName);
+  const fileNorm = normalizeComparableName(fileName);
+  return documentFileNameAliases(expectedName).some(
+    (alias) => normalizeComparableName(alias) === fileNorm,
+  );
 }
 
 /** La muestra es PDF solo si empieza con %PDF. */

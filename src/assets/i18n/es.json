@@ -858,6 +858,13 @@
       "OPTIONAL": "Opcional",
       "REQUIRED": "Obligatorio"
     },
+    "NAME_PREFIX": {
+      "COMP_IDIOMA": "Comp_Idioma",
+      "DATOS_ALUM": "Datos_Alum",
+      "HIST_ACAD": "Hist_Acad",
+      "SOL_SINODALES": "Sol_Sinodales",
+      "TESIS": "Tesis"
+    },
     "STATES": {
       "EMPTY": "No se encontraron requisitos.",
       "LOAD_ERROR": "No se pudieron cargar los requisitos. Inténtalo de nuevo."
