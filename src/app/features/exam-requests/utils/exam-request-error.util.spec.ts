@@ -72,13 +72,13 @@ describe('mapSaveDocumentItemError', () => {
       mapSaveDocumentItemError('HIST_ACAD', {
         error: 'INVALID_DOCUMENT_NAME',
         message: 'Invalid filename',
-        details: { expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf' },
+        details: { expectedName: 'Hist_Acad_Pena_Nunez_Maria_Jose.pdf' },
       }),
     ).toEqual({
       documentType: 'HIST_ACAD',
       key: 'EXAM_REQUEST.VALIDATION.INVALID_DOCUMENT_NAME',
-      expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf',
-      params: { expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf' },
+      expectedName: 'Hist_Acad_Pena_Nunez_Maria_Jose.pdf',
+      params: { expectedName: 'Hist_Acad_Pena_Nunez_Maria_Jose.pdf' },
     });
   });
 });

@@ -9,7 +9,7 @@ import {
   type ExamDocumentSelection,
 } from './exam-document-upload.component';
 
-const EMANUEL_THESIS = 'Tesis_Mtria_Lopez_Alba_Emanuel.pdf';
+const GARCIA_THESIS = 'Tesis_Mtria_Garcia_Ruiz_Maria.pdf';
 const PDF_HEADER = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34]);
 
 function thesisRequirement(): ExamRequirementDto {
@@ -17,8 +17,8 @@ function thesisRequirement(): ExamRequirementDto {
     documentType: 'TESIS',
     required: true,
     acceptedKinds: ['PDF'],
-    expectedName: EMANUEL_THESIS,
-    exampleName: EMANUEL_THESIS,
+    expectedName: GARCIA_THESIS,
+    exampleName: GARCIA_THESIS,
     status: 'PENDIENTE',
     currentDocument: null,
   };
@@ -102,7 +102,7 @@ describe('ExamDocumentUploadComponent', () => {
 
   it('accepts a valid PDF from drag and drop and from the file input', async () => {
     const { fixture, emissions } = await setup();
-    const first = pdfFile(EMANUEL_THESIS);
+    const first = pdfFile(GARCIA_THESIS);
 
     dropFiles(fixture, [first]);
     await flushValidation(fixture);
@@ -112,9 +112,9 @@ describe('ExamDocumentUploadComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="exam-document-ready"]')).toBeTruthy();
     expect(
       fixture.nativeElement.querySelector('[data-testid="exam-document-selected"]').textContent,
-    ).toContain(EMANUEL_THESIS);
+    ).toContain(GARCIA_THESIS);
 
-    const second = pdfFile(EMANUEL_THESIS);
+    const second = pdfFile(GARCIA_THESIS);
     chooseFiles(fixture, [second]);
     await flushValidation(fixture);
 
@@ -123,8 +123,8 @@ describe('ExamDocumentUploadComponent', () => {
 
   it('replaces a previous valid local selection with another valid file', async () => {
     const { fixture, emissions } = await setup();
-    const first = pdfFile(EMANUEL_THESIS);
-    const replacement = pdfFile('TESIS_MTRIA_LOPEZ_ALBA_EMANUEL.PDF');
+    const first = pdfFile(GARCIA_THESIS);
+    const replacement = pdfFile('TESIS_MTRIA_GARCIA_RUIZ_MARIA.PDF');
 
     dropFiles(fixture, [first]);
     await flushValidation(fixture);
@@ -142,11 +142,11 @@ describe('ExamDocumentUploadComponent', () => {
 
   it('rejects several files at once and keeps the previous valid selection', async () => {
     const { fixture, emissions } = await setup();
-    const valid = pdfFile(EMANUEL_THESIS);
+    const valid = pdfFile(GARCIA_THESIS);
 
     dropFiles(fixture, [valid]);
     await flushValidation(fixture);
-    dropFiles(fixture, [pdfFile(EMANUEL_THESIS), pdfFile('otra.pdf')]);
+    dropFiles(fixture, [pdfFile(GARCIA_THESIS), pdfFile('otra.pdf')]);
     await flushValidation(fixture);
 
     expect(emissions).toEqual([{ documentType: 'TESIS', kind: 'PDF', file: valid }]);

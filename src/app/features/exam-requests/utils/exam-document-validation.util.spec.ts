@@ -7,7 +7,10 @@ import {
   validatePendingDocument,
 } from './exam-document-validation.util';
 
-const EMANUEL_THESIS = 'Tesis_Mtria_Lopez_Alba_Emanuel.pdf';
+const GARCIA_THESIS = 'Tesis_Mtria_Garcia_Ruiz_Maria.pdf';
+const PEREZ_THESIS = 'Tesis_Docto_Perez_Soto_Luis.pdf';
+const PENA_HIST = 'Hist_Acad_Pena_Nunez_Maria_Jose.pdf';
+const CHEN_HIST = 'Hist_Acad_Chen_Wei.pdf';
 const PDF_HEADER = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34]);
 
 function pdfFile(name: string, extraBytes = 0): File {
@@ -37,9 +40,9 @@ function pdfInput(
   }> = {},
 ) {
   return {
-    files: extras.files ?? [pdfFile(EMANUEL_THESIS)],
+    files: extras.files ?? [pdfFile(GARCIA_THESIS)],
     documentType: extras.documentType ?? 'TESIS',
-    expectedName: extras.expectedName !== undefined ? extras.expectedName : EMANUEL_THESIS,
+    expectedName: extras.expectedName !== undefined ? extras.expectedName : GARCIA_THESIS,
     acceptedKinds: extras.acceptedKinds ?? (['PDF'] as const),
     kind: extras.kind ?? 'PDF',
     url: extras.url ?? null,
@@ -48,44 +51,31 @@ function pdfInput(
 
 describe('exam-document-validation.util', () => {
   describe('matchesExpectedDocumentName', () => {
-    it('accepts the Emanuel thesis name ignoring only case and .PDF', () => {
-      expect(matchesExpectedDocumentName(EMANUEL_THESIS, EMANUEL_THESIS)).toBe(true);
-      expect(matchesExpectedDocumentName('TESIS_MTRIA_LOPEZ_ALBA_EMANUEL.PDF', EMANUEL_THESIS)).toBe(
+    it('accepts the DTO expectedName ignoring only case, .PDF and the en prefix', () => {
+      expect(matchesExpectedDocumentName(GARCIA_THESIS, GARCIA_THESIS)).toBe(true);
+      expect(matchesExpectedDocumentName('TESIS_MTRIA_GARCIA_RUIZ_MARIA.PDF', GARCIA_THESIS)).toBe(
         true,
       );
-      expect(
-        matchesExpectedDocumentName('Thesis_Mtria_Lopez_Alba_Emanuel.pdf', EMANUEL_THESIS),
-      ).toBe(true);
+      expect(matchesExpectedDocumentName('Thesis_Mtria_Garcia_Ruiz_Maria.pdf', GARCIA_THESIS)).toBe(
+        true,
+      );
     });
 
-    it('rejects accents, another type, and a wrong degree prefix', () => {
-      expect(
-        matchesExpectedDocumentName('Tesis_Mtria_López_Alba_Emanuel.pdf', EMANUEL_THESIS),
-      ).toBe(false);
-      expect(matchesExpectedDocumentName('historia.pdf', 'Hist_Acad_Lopez_Alba_Emanuel.pdf')).toBe(
+    it('rejects accents, another type, and a file that belongs to a different student', () => {
+      expect(matchesExpectedDocumentName('Tesis_Mtria_García_Ruiz_Maria.pdf', GARCIA_THESIS)).toBe(
         false,
       );
-      expect(
-        matchesExpectedDocumentName('Tesis_Docto_Lopez_Alba_Emanuel.pdf', EMANUEL_THESIS),
-      ).toBe(false);
-      expect(
-        matchesExpectedDocumentName(
-          'Hist_Acad_Lopez_Alba_Emanuel.pdf',
-          'Comp_Idioma_Lopez_Alba_Emanuel.pdf',
-        ),
-      ).toBe(false);
+      expect(matchesExpectedDocumentName('historia.pdf', PENA_HIST)).toBe(false);
+      expect(matchesExpectedDocumentName(PEREZ_THESIS, GARCIA_THESIS)).toBe(false);
+      expect(matchesExpectedDocumentName(PENA_HIST, 'Comp_Idioma_Pena_Nunez_Maria_Jose.pdf')).toBe(
+        false,
+      );
     });
 
-    it('accepts names without maternal surname and composed names from the API', () => {
-      expect(
-        matchesExpectedDocumentName('Hist_Acad_Lopez_Emanuel.pdf', 'Hist_Acad_Lopez_Emanuel.pdf'),
-      ).toBe(true);
-      expect(
-        matchesExpectedDocumentName(
-          'Hist_Acad_Pena_Nunez_Maria_Jose.pdf',
-          'Hist_Acad_Pena_Nunez_Maria_Jose.pdf',
-        ),
-      ).toBe(true);
+    it('accepts composed names and a missing maternal surname from the API expectedName', () => {
+      expect(matchesExpectedDocumentName(PENA_HIST, PENA_HIST)).toBe(true);
+      expect(matchesExpectedDocumentName(CHEN_HIST, CHEN_HIST)).toBe(true);
+      expect(matchesExpectedDocumentName(GARCIA_THESIS, PENA_HIST)).toBe(false);
     });
   });
 
@@ -95,7 +85,7 @@ describe('exam-document-validation.util', () => {
       expect(hasPdfMagicBytes(new Uint8Array([0x25, 0x50]))).toBe(false);
       expect(hasPdfMagicBytes(new Uint8Array([0x00, 0x01, 0x02, 0x03]))).toBe(false);
 
-      const sample = await readPdfSample(notPdfFile('Tesis_Mtria_Lopez_Alba_Emanuel.pdf'));
+      const sample = await readPdfSample(notPdfFile(PEREZ_THESIS));
       expect(sample.length).toBeLessThanOrEqual(8);
       expect(hasPdfMagicBytes(sample)).toBe(false);
     });
@@ -114,7 +104,7 @@ describe('exam-document-validation.util', () => {
 
   describe('validatePendingDocument', () => {
     it('accepts a valid regulated PDF including a large file', async () => {
-      const large = pdfFile(EMANUEL_THESIS);
+      const large = pdfFile(GARCIA_THESIS);
       Object.defineProperty(large, 'size', { value: 25 * 1024 * 1024 });
 
       await expect(validatePendingDocument(pdfInput())).resolves.toEqual({ ok: true });
@@ -123,32 +113,42 @@ describe('exam-document-validation.util', () => {
       });
     });
 
-    it('rejects a wrong name and keeps the API expectedName', async () => {
+    it('rejects a wrong name and keeps the API expectedName for another student', async () => {
       await expect(
         validatePendingDocument(
           pdfInput({
             files: [pdfFile('historia.pdf')],
-            expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf',
+            expectedName: PENA_HIST,
           }),
         ),
       ).resolves.toEqual({
         ok: false,
         code: 'INVALID_DOCUMENT_NAME',
-        expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf',
+        expectedName: PENA_HIST,
       });
+    });
+
+    it('accepts a second student when the file matches that DTO expectedName', async () => {
+      await expect(
+        validatePendingDocument(
+          pdfInput({
+            files: [pdfFile(PEREZ_THESIS)],
+            documentType: 'TESIS',
+            expectedName: PEREZ_THESIS,
+          }),
+        ),
+      ).resolves.toEqual({ ok: true });
     });
 
     it('rejects a fake PDF even when File.type claims application/pdf', async () => {
       await expect(
-        validatePendingDocument(pdfInput({ files: [notPdfFile(EMANUEL_THESIS)] })),
+        validatePendingDocument(pdfInput({ files: [notPdfFile(GARCIA_THESIS)] })),
       ).resolves.toEqual({ ok: false, code: 'INVALID_PDF_CONTENT' });
     });
 
     it('rejects multiple files at once', async () => {
       await expect(
-        validatePendingDocument(
-          pdfInput({ files: [pdfFile(EMANUEL_THESIS), pdfFile('otra.pdf')] }),
-        ),
+        validatePendingDocument(pdfInput({ files: [pdfFile(GARCIA_THESIS), pdfFile('otra.pdf')] })),
       ).resolves.toEqual({ ok: false, code: 'SINGLE_FILE_ONLY' });
     });
 

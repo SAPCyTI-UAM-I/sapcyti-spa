@@ -26,7 +26,10 @@ export interface ValidatePendingDocumentInput {
   readonly kind: DocumentKind;
 }
 
-/** Compara ignorando caja, .pdf y el prefijo es/en; no normaliza acentos. */
+/**
+ * Compara el archivo elegido con el expectedName del DTO (contrato del servidor).
+ * No arma apellidos ni nombres propios: solo caja, .pdf y el alias de prefijo es/en.
+ */
 export function matchesExpectedDocumentName(fileName: string, expectedName: string): boolean {
   const fileNorm = normalizeComparableName(fileName);
   return documentFileNameAliases(expectedName).some(
@@ -121,6 +124,7 @@ async function validatePdfSelection(
     return { ok: true };
   }
 
+  // El nombre canónico lo entrega el backend; si falta, no se inventa uno local.
   if (!input.expectedName) {
     return { ok: false, code: 'EXPECTED_NAME_UNAVAILABLE' };
   }

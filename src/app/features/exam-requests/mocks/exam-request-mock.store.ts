@@ -19,8 +19,9 @@ import {
   SaveDocumentsResponse,
   SaveResult,
 } from '../../../models';
-import type { SaveDocumentSelection } from '../utils/exam-document-form-data.util';
 import type { ReplaceDocumentCommand } from '../repositories/exam-request.repository';
+import type { SaveDocumentSelection } from '../utils/exam-document-form-data.util';
+import { matchesExpectedDocumentName } from '../utils/exam-document-validation.util';
 
 /**
  * Datos demo de HU-62/HU-65. Borrar este módulo para quitar todo el mock de examen.
@@ -608,10 +609,11 @@ export class ExamRequestMockStore {
       };
     }
 
+    // Misma regla que HU-64: solo el expectedName del DTO, nunca un alumno fijo.
     if (
       selection.documentType !== 'ARTICULO' &&
       requirement.expectedName &&
-      selection.file.name.toLowerCase() !== requirement.expectedName.toLowerCase()
+      !matchesExpectedDocumentName(selection.file.name, requirement.expectedName)
     ) {
       return {
         documentType: selection.documentType,

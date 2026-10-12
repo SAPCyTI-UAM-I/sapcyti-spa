@@ -225,6 +225,18 @@ const emanuelItems: ExamRequirementDto[] = [
   pdfRequirement('DATOS_ALUM', 'Datos_Alum_Lopez_Alba_Emanuel.pdf'),
 ];
 
+function requirementsForPerson(degree: Degree, personFileName: string): ExamRequirementDto[] {
+  const degreeCode =
+    degree === 'DOCTORADO' ? 'Docto' : degree === 'ESPECIALIZACION' ? 'Esp' : 'Mtria';
+  return [
+    pdfRequirement('TESIS', `Tesis_${degreeCode}_${personFileName}.pdf`),
+    pdfRequirement('SOL_SINODALES', `Sol_Sinodales_${personFileName}.pdf`),
+    pdfRequirement('HIST_ACAD', `Hist_Acad_${personFileName}.pdf`),
+    pdfRequirement('COMP_IDIOMA', `Comp_Idioma_${personFileName}.pdf`),
+    pdfRequirement('DATOS_ALUM', `Datos_Alum_${personFileName}.pdf`),
+  ];
+}
+
 describe('ExamRequirementsListComponent', () => {
   let user$: BehaviorSubject<CurrentUser | null>;
   let getOptions: ReturnType<typeof vi.fn>;
@@ -738,9 +750,11 @@ describe('ExamRequirementsListComponent', () => {
     expect(submit.componentInstance.disabled).toBe(true);
   });
 
-  it('keeps a valid Emanuel thesis as a pending local selection', async () => {
-    const fixture = await setup();
-    const thesis = pdfFile(EMANUEL_THESIS);
+  it('keeps a valid thesis that matches the requirement expectedName', async () => {
+    const items = requirementsForPerson('MAESTRIA', 'Garcia_Ruiz_Maria');
+    const thesisName = items[0]?.expectedName ?? '';
+    const fixture = await setup(buildPayload('MAESTRIA', items));
+    const thesis = pdfFile(thesisName);
 
     dropOnCard(fixture, 'TESIS', [thesis]);
     await flushValidation(fixture);
@@ -754,7 +768,9 @@ describe('ExamRequirementsListComponent', () => {
   });
 
   it('rejects a wrong name and shows the API expectedName without storing it', async () => {
-    const fixture = await setup();
+    const items = requirementsForPerson('MAESTRIA', 'Pena_Nunez_Maria_Jose');
+    const expectedName = 'Hist_Acad_Pena_Nunez_Maria_Jose.pdf';
+    const fixture = await setup(buildPayload('MAESTRIA', items));
 
     dropOnCard(fixture, 'HIST_ACAD', [pdfFile('historia.pdf')]);
     await flushValidation(fixture);
@@ -768,8 +784,8 @@ describe('ExamRequirementsListComponent', () => {
     expect(upload.validationError()).toEqual({
       code: 'INVALID_DOCUMENT_NAME',
       key: 'EXAM_REQUEST.VALIDATION.INVALID_DOCUMENT_NAME',
-      expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf',
-      params: { expectedName: 'Hist_Acad_Lopez_Alba_Emanuel.pdf' },
+      expectedName,
+      params: { expectedName },
     });
     expect(
       fixture.nativeElement.querySelector(
