@@ -126,6 +126,11 @@
                 class="bg-surface-subtle p-sm gap-sm flex items-start rounded-lg"
                 [attr.data-testid]="'exam-document-panel-' + item.documentType"
                 [attr.aria-label]="'EXAM_REQUEST.UPLOAD.PREVIEW_FALLBACK' | translate"
+                [attr.role]="document.kind === 'PDF' ? 'button' : null"
+                [attr.tabindex]="document.kind === 'PDF' ? 0 : null"
+                (click)="openSavedDocument(item, $event)"
+                (keydown.enter)="openSavedDocument(item, $event)"
+                (keydown.space)="onDocumentKeydown(item, $event)"
               >
                 <i
                   class="pi text-text-secondary mt-xs"
@@ -138,15 +143,25 @@
                     <p class="text-caption text-text-secondary font-caption">
                       {{ 'EXAM_REQUEST.LABELS.LINK' | translate }}
                     </p>
-                    <a
-                      class="text-body-md text-primary font-body-md break-all underline"
-                      [href]="document.externalUrl"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      [attr.data-testid]="'exam-document-url-' + item.documentType"
-                    >
-                      {{ document.externalUrl }}
-                    </a>
+                    @if (safeArticleUrl(document.externalUrl); as url) {
+                      <a
+                        class="text-body-md text-primary font-body-md break-all underline"
+                        [href]="url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        [attr.data-testid]="'exam-document-url-' + item.documentType"
+                        (click)="openExternalDocument(item, $event)"
+                      >
+                        {{ url }}
+                      </a>
+                    } @else {
+                      <p
+                        class="text-error text-body-md font-body-md"
+                        [attr.data-testid]="'exam-document-url-error-' + item.documentType"
+                      >
+                        {{ 'EXAM_REQUEST.VALIDATION.INVALID_ARTICLE_URL' | translate }}
+                      </p>
+                    }
                     <p class="text-caption text-text-secondary font-caption">
                       {{ 'EXAM_REQUEST.LABELS.UPLOADED_AT' | translate }}:
                       {{ documentUploadedAt(document.uploadedAt) }}
@@ -172,6 +187,14 @@
                     >
                       {{ 'EXAM_REQUEST.LABELS.UPLOADED_AT' | translate }}:
                       {{ documentUploadedAt(document.uploadedAt) }}
+                    </p>
+                  }
+                  @if (documentNotice(item.documentType); as noticeKey) {
+                    <p
+                      class="text-error text-caption font-caption"
+                      [attr.data-testid]="'exam-document-notice-' + item.documentType"
+                    >
+                      {{ noticeKey | translate }}
                     </p>
                   }
                 </div>
@@ -363,3 +386,14 @@
     </div>
   </ng-template>
 </p-dialog>
+
+<app-pdf-viewer-dialog
+  [visible]="viewerVisible()"
+  [blob]="viewerBlob()"
+  [fileName]="viewerFileName()"
+  [loading]="viewerLoading()"
+  [errorKey]="viewerErrorKey()"
+  (visibleChange)="onViewerVisibleChange($event)"
+  (download)="downloadOpenDocument()"
+  (retry)="retryOpenDocument()"
+/>

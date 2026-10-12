@@ -16,7 +16,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { Message } from 'primeng/message';
-import { catchError, EMPTY, finalize, Observable, Subject, switchMap } from 'rxjs';
+import { catchError, EMPTY, finalize, map, Observable, of, Subject, switchMap } from 'rxjs';
 
 import { AuthStateService } from '../../../../core/auth/auth.service';
 import {
@@ -35,8 +35,10 @@ import {
   I18nSelectComponent,
   type I18nSelectOption,
   LoadStateComponent,
+  PdfViewerDialogComponent,
 } from '../../../../shared/components';
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
+import { downloadBlob } from '../../../../shared/utils/download.util';
 import type { ReplaceDocumentCommand } from '../../repositories/exam-request.repository';
 import { ExamRequestService } from '../../services/exam-request.service';
 import { degreeTagSeverity } from '../../utils/degree-tag.util';
@@ -45,6 +47,7 @@ import {
   localizeDocumentFileName,
   resolveDocumentNameLanguage,
 } from '../../utils/exam-document-name.util';
+import { isHttpsArticleUrl } from '../../utils/exam-document-validation.util';
 import {
   EXAM_REQUEST_ERROR_I18N_SCOPE,
   ExamRequestWriteError,
@@ -57,6 +60,25 @@ import {
 } from '../exam-document-upload/exam-document-upload.component';
 
 type LoadTrigger = { kind: 'reload' } | { kind: 'type'; examType: ExamType };
+
+/** Petición de bytes; la autorización es examType + documentType, nunca el id. */
+interface DocumentContentRequest {
+  readonly examType: ExamType;
+  readonly documentType: DocumentType;
+}
+
+type ContentResult =
+  | { readonly ok: true; readonly blob: Blob; readonly request: DocumentContentRequest }
+  | { readonly ok: false; readonly error: unknown; readonly request: DocumentContentRequest };
+
+type DownloadResult =
+  | {
+      readonly ok: true;
+      readonly blob: Blob;
+      readonly fileName: string;
+      readonly request: DocumentContentRequest;
+    }
+  | { readonly ok: false; readonly error: unknown; readonly request: DocumentContentRequest };
 
 @Component({
   selector: 'app-exam-requirements-list',
@@ -71,6 +93,7 @@ type LoadTrigger = { kind: 'reload' } | { kind: 'type'; examType: ExamType };
     CatalogTagComponent,
     I18nSelectComponent,
     LoadStateComponent,
+    PdfViewerDialogComponent,
     ExamDocumentUploadComponent,
   ],
   templateUrl: './exam-requirements-list.component.html',
@@ -82,6 +105,8 @@ export class ExamRequirementsListComponent implements OnInit {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly translate = inject(TranslateService);
   private readonly load$ = new Subject<LoadTrigger>();
+  private readonly openContent$ = new Subject<DocumentContentRequest | null>();
+  private readonly downloadContent$ = new Subject<DocumentContentRequest | null>();
   private readonly lang = toSignal(this.translate.onLangChange, { initialValue: null });
 
   readonly examTypeForm = this.fb.group({
@@ -184,6 +209,15 @@ export class ExamRequirementsListComponent implements OnInit {
     this.saveDialogFailed().length > 0 ? 'EXAM_REQUEST.SAVE.MIXED' : 'EXAM_REQUEST.SAVE.SUCCESS',
   );
 
+  readonly viewerVisible = signal(false);
+  readonly viewerBlob = signal<Blob | null>(null);
+  readonly viewerFileName = signal<string | null>(null);
+  readonly viewerLoading = signal(false);
+  readonly viewerErrorKey = signal<string | null>(null);
+  readonly viewerDocumentType = signal<DocumentType | null>(null);
+  /** Aviso por tipo (URL inválida o 409); no incluye message del backend. */
+  readonly documentNotices = signal<Partial<Record<DocumentType, string>>>({});
+
   readonly replacingType = signal<DocumentType | null>(null);
   readonly deleteTarget = signal<DocumentType | null>(null);
   readonly itemReplaceErrors = signal<Partial<Record<DocumentType, ExamRequestWriteError>>>({});
@@ -229,6 +263,44 @@ export class ExamRequirementsListComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.openContent$
+      .pipe(
+        switchMap((request) => this.fetchInline(request)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((result) => {
+        if (!result) {
+          return;
+        }
+
+        if (result.ok) {
+          this.viewerBlob.set(result.blob);
+          this.viewerLoading.set(false);
+          this.viewerErrorKey.set(null);
+          return;
+        }
+
+        this.presentContentError(result.error, result.request, 'inline');
+      });
+
+    this.downloadContent$
+      .pipe(
+        switchMap((request) => this.fetchAttachment(request)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((result) => {
+        if (!result) {
+          return;
+        }
+
+        if (result.ok) {
+          downloadBlob(result.blob, result.fileName);
+          return;
+        }
+
+        this.presentContentError(result.error, result.request, 'attachment');
+      });
+
     this.load$
       .pipe(
         switchMap((trigger) => this.loadTrigger(trigger)),
@@ -244,6 +316,8 @@ export class ExamRequirementsListComponent implements OnInit {
     this.examTypeForm.controls.examType.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((examType) => {
+        this.documentNotices.set({});
+        this.closeViewer();
         this.clearPendingSelections();
         this.closeMutationUi();
         this.load$.next({ kind: 'type', examType });
@@ -286,6 +360,94 @@ export class ExamRequirementsListComponent implements OnInit {
 
   documentUploadedAt(iso: string): string {
     return formatUploadedAt(iso);
+  }
+
+  /** HTTPS con host; null si falta o el esquema no es https. */
+  safeArticleUrl(value: string | null): string | null {
+    if (!value || !isHttpsArticleUrl(value)) {
+      return null;
+    }
+
+    return value.trim();
+  }
+
+  documentNotice(documentType: DocumentType): string | null {
+    return this.documentNotices()[documentType] ?? null;
+  }
+
+  /**
+   * PDF: GET content inline del tipo vigente.
+   * URL: pestaña nueva; si el navegador la bloquea, queda el enlace del panel.
+   */
+  openSavedDocument(item: ExamRequirementDto, event?: Event): void {
+    const document = item.currentDocument;
+    if (!document) {
+      return;
+    }
+
+    if (document.kind === 'URL') {
+      this.openExternalDocument(item, event);
+      return;
+    }
+
+    const examType = this.examTypeForm.controls.examType.value;
+    this.viewerDocumentType.set(item.documentType);
+    this.viewerFileName.set(sanitizeDownloadFileName(document.originalName));
+    this.viewerVisible.set(true);
+    this.viewerErrorKey.set(null);
+    this.openContent$.next({ examType, documentType: item.documentType });
+  }
+
+  openExternalDocument(item: ExamRequirementDto, event?: Event): void {
+    event?.stopPropagation();
+    const url = this.safeArticleUrl(item.currentDocument?.externalUrl ?? null);
+    if (!url) {
+      event?.preventDefault();
+      this.documentNotices.update((current) => ({
+        ...current,
+        [item.documentType]: 'EXAM_REQUEST.VALIDATION.INVALID_ARTICLE_URL',
+      }));
+      return;
+    }
+
+    const popup = window.open(url, '_blank', 'noopener,noreferrer');
+    if (popup) {
+      event?.preventDefault();
+    }
+  }
+
+  onDocumentKeydown(item: ExamRequirementDto, event: Event): void {
+    if (item.currentDocument?.kind !== 'PDF') {
+      return;
+    }
+
+    event.preventDefault();
+    this.openSavedDocument(item);
+  }
+
+  onViewerVisibleChange(open: boolean): void {
+    if (!open) {
+      this.closeViewer();
+    }
+  }
+
+  downloadOpenDocument(): void {
+    const request = this.currentContentRequest();
+    if (!request) {
+      return;
+    }
+
+    this.downloadContent$.next(request);
+  }
+
+  retryOpenDocument(): void {
+    const request = this.currentContentRequest();
+    if (!request) {
+      return;
+    }
+
+    this.viewerErrorKey.set(null);
+    this.openContent$.next(request);
   }
 
   onPendingSelectionChange(
@@ -472,6 +634,8 @@ export class ExamRequirementsListComponent implements OnInit {
   }
 
   private loadTrigger(trigger: LoadTrigger): Observable<ExamPanelResponse> {
+    // Cambiar de expediente cancela el Blob que todavía estuviera en vuelo.
+    this.closeViewer();
     this.loading.set(true);
     this.loadError.set(null);
     // Evita pintar tarjetas del expediente anterior mientras llega el nuevo.
@@ -687,6 +851,8 @@ export class ExamRequirementsListComponent implements OnInit {
   private clearAcademicState(): void {
     this.clearPendingSelections();
     this.closeMutationUi();
+    this.closeViewer();
+    this.documentNotices.set({});
     this.options.set(null);
     this.panel.set(null);
     this.loadError.set(null);
@@ -698,6 +864,103 @@ export class ExamRequirementsListComponent implements OnInit {
     this.showAllFailed.set(false);
     this.examTypeForm.reset({ examType: 'GRADO' }, { emitEvent: false });
   }
+
+  private currentContentRequest(): DocumentContentRequest | null {
+    const documentType = this.viewerDocumentType();
+    if (!documentType) {
+      return null;
+    }
+
+    return {
+      examType: this.examTypeForm.controls.examType.value,
+      documentType,
+    };
+  }
+
+  private fetchInline(request: DocumentContentRequest | null): Observable<ContentResult | null> {
+    if (!request) {
+      return EMPTY;
+    }
+
+    this.viewerLoading.set(true);
+    this.viewerErrorKey.set(null);
+    this.viewerBlob.set(null);
+    return this.examRequests
+      .getDocumentContent(request.examType, request.documentType, 'inline')
+      .pipe(
+        map((blob) => ({ ok: true as const, blob, request })),
+        catchError((error: unknown) => of({ ok: false as const, error, request })),
+      );
+  }
+
+  private fetchAttachment(
+    request: DocumentContentRequest | null,
+  ): Observable<DownloadResult | null> {
+    if (!request) {
+      return EMPTY;
+    }
+
+    const fileName = this.viewerFileName() ?? sanitizeDownloadFileName(null);
+    return this.examRequests
+      .getDocumentContent(request.examType, request.documentType, 'attachment')
+      .pipe(
+        map((blob) => ({ ok: true as const, blob, fileName, request })),
+        catchError((error: unknown) => of({ ok: false as const, error, request })),
+      );
+  }
+
+  /**
+   * 404 cierra el Blob anterior. 409 recarga el panel para ofrecer el enlace.
+   * 503 y status 0 dejan la metadata y permiten reintentar.
+   */
+  private presentContentError(
+    error: unknown,
+    request: DocumentContentRequest,
+    source: 'inline' | 'attachment',
+  ): void {
+    const status = error instanceof HttpErrorResponse ? error.status : undefined;
+    const mapped = this.examRequests.mapContentError(error);
+    this.viewerLoading.set(false);
+
+    if (status === 409 || mapped === 'document_is_external_url') {
+      this.viewerBlob.set(null);
+      this.viewerVisible.set(false);
+      this.viewerErrorKey.set(null);
+      this.viewerDocumentType.set(null);
+      this.documentNotices.update((current) => ({
+        ...current,
+        [request.documentType]: `${EXAM_REQUEST_ERROR_I18N_SCOPE}.document_is_external_url`,
+      }));
+      this.reload();
+      return;
+    }
+
+    if (status === 404 || mapped === 'document_not_found') {
+      this.viewerBlob.set(null);
+      this.viewerVisible.set(true);
+      this.viewerErrorKey.set(`${EXAM_REQUEST_ERROR_I18N_SCOPE}.document_not_found`);
+      return;
+    }
+
+    if (source === 'inline') {
+      this.viewerBlob.set(null);
+    }
+
+    this.viewerVisible.set(true);
+    this.viewerErrorKey.set(`${EXAM_REQUEST_ERROR_I18N_SCOPE}.${mapped}`);
+  }
+
+  /** Revoca el ciclo del visor y cancela inline/attachment en vuelo. */
+  private closeViewer(): void {
+    this.viewerVisible.set(false);
+    this.viewerBlob.set(null);
+    this.viewerFileName.set(null);
+    this.viewerLoading.set(false);
+    this.viewerErrorKey.set(null);
+    this.viewerDocumentType.set(null);
+    this.openContent$.next(null);
+    this.downloadContent$.next(null);
+  }
 }
 
 function shouldReconcilePanelAfterSaveError(error: unknown): boolean {
@@ -706,4 +969,23 @@ function shouldReconcilePanelAfterSaveError(error: unknown): boolean {
   }
 
   return error.status === 0 || error.status === 409 || error.status >= 500;
+}
+
+/** Nombre de descarga a partir de originalName, sin rutas ni caracteres de control. */
+function sanitizeDownloadFileName(originalName: string | null): string {
+  const base = (originalName ?? '').replaceAll('\\', '/').split('/').pop() ?? '';
+  let cleaned = '';
+  for (const char of base) {
+    const code = char.charCodeAt(0);
+    if (code <= 31 || code === 127 || '"<>|:*?'.includes(char)) {
+      continue;
+    }
+    cleaned += char;
+  }
+  cleaned = cleaned.trim();
+  if (!cleaned || cleaned === '.' || cleaned === '..') {
+    return 'document.pdf';
+  }
+
+  return cleaned;
 }

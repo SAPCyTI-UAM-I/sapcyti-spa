@@ -24,7 +24,11 @@ import {
 } from '../../../../models';
 import { ExamRequestService } from '../../services/exam-request.service';
 import { formatUploadedAt } from '../../utils/exam-document-format.util';
-import { mapExamRequestError, mapExamRequestWriteError } from '../../utils/exam-request-error.util';
+import {
+  mapExamRequestContentError,
+  mapExamRequestError,
+  mapExamRequestWriteError,
+} from '../../utils/exam-request-error.util';
 import { ExamDocumentUploadComponent } from '../exam-document-upload/exam-document-upload.component';
 import { ExamRequirementsListComponent } from './exam-requirements-list.component';
 
@@ -244,6 +248,7 @@ describe('ExamRequirementsListComponent', () => {
   let saveDocuments: ReturnType<typeof vi.fn>;
   let replaceDocument: ReturnType<typeof vi.fn>;
   let deleteDocument: ReturnType<typeof vi.fn>;
+  let getDocumentContent: ReturnType<typeof vi.fn>;
 
   async function setup(
     payload: {
@@ -259,6 +264,11 @@ describe('ExamRequirementsListComponent', () => {
     saveDocuments = vi.fn();
     replaceDocument = vi.fn();
     deleteDocument = vi.fn();
+    getDocumentContent = vi.fn(() => of(new Blob(['%PDF-'])));
+    if (!vi.isMockFunction(URL.createObjectURL)) {
+      vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:exam-doc');
+      vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    }
 
     await TestBed.configureTestingModule({
       imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
@@ -271,8 +281,10 @@ describe('ExamRequirementsListComponent', () => {
             saveDocuments,
             replaceDocument,
             deleteDocument,
+            getDocumentContent,
             mapError: mapExamRequestError,
             mapWriteError: mapExamRequestWriteError,
+            mapContentError: mapExamRequestContentError,
           },
         },
         {
@@ -1506,5 +1518,335 @@ describe('ExamRequirementsListComponent', () => {
     ).toBe('CARGADO');
     expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.ERRORS.version_conflict');
     expect(fixture.nativeElement.textContent).not.toContain('Version 4 is already stored');
+  });
+
+  function loadedPdfItems(
+    items: ExamRequirementDto[],
+    documentType: DocumentType,
+    originalName: string,
+  ): ExamRequirementDto[] {
+    return items.map((item) =>
+      item.documentType === documentType
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: {
+              ...pdfDocument(documentType === 'ARTICULO' ? 'TESIS' : documentType, originalName),
+              id: 88,
+              documentType,
+            },
+          }
+        : item,
+    );
+  }
+
+  function clickDocument(
+    fixture: ReturnType<typeof TestBed.createComponent<ExamRequirementsListComponent>>,
+    documentType: DocumentType,
+  ): void {
+    fixture.debugElement
+      .query(By.css(`[data-testid="exam-document-panel-${documentType}"]`))
+      .triggerEventHandler('click', new MouseEvent('click'));
+    fixture.detectChanges();
+  }
+
+  it('opens the saved PDF with the current exam type and document type', async () => {
+    const items = loadedPdfItems(emanuelItems, 'TESIS', EMANUEL_THESIS);
+    const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
+    const pdf = new Blob(['%PDF-own']);
+    getDocumentContent.mockReturnValue(of(pdf));
+
+    clickDocument(fixture, 'TESIS');
+
+    expect(getDocumentContent).toHaveBeenCalledTimes(1);
+    expect(getDocumentContent).toHaveBeenCalledWith('GRADO', 'TESIS', 'inline');
+    expect(getDocumentContent.mock.calls[0]).toHaveLength(3);
+    expect(fixture.componentInstance.viewerVisible()).toBe(true);
+    expect(fixture.componentInstance.viewerBlob()).toBe(pdf);
+    expect(fixture.nativeElement.textContent).not.toContain('88');
+  });
+
+  it('opens an https article in a new tab and keeps the accessible link', async () => {
+    const articleUrl = 'https://revista.ejemplo.org/articulo/123';
+    const items = doctoralItems(true).map((item) =>
+      item.documentType === 'ARTICULO'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: {
+              id: 90,
+              documentType: 'ARTICULO' as const,
+              kind: 'URL' as const,
+              originalName: null,
+              externalUrl: articleUrl,
+              sizeBytes: null,
+              uploadedAt: '2026-10-09T18:10:00Z',
+            },
+          }
+        : item,
+    );
+    const fixture = await setup(buildPayload('DOCTORADO', items));
+    const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
+
+    clickDocument(fixture, 'ARTICULO');
+
+    expect(open).toHaveBeenCalledWith(articleUrl, '_blank', 'noopener,noreferrer');
+    expect(getDocumentContent).not.toHaveBeenCalled();
+    const link = fixture.debugElement.query(By.css('[data-testid="exam-document-url-ARTICULO"]'));
+    expect(link.attributes['href']).toBe(articleUrl);
+    expect(link.attributes['target']).toBe('_blank');
+    expect(link.attributes['rel']).toBe('noopener noreferrer');
+
+    open.mockReturnValue(null);
+    link.triggerEventHandler('click', new MouseEvent('click', { cancelable: true }));
+    expect(link.attributes['href']).toBe(articleUrl);
+    open.mockRestore();
+  });
+
+  it('shows an i18n error for a malformed article URL and does not build a link', async () => {
+    const items = doctoralItems(true).map((item) =>
+      item.documentType === 'ARTICULO'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: {
+              id: 91,
+              documentType: 'ARTICULO' as const,
+              kind: 'URL' as const,
+              originalName: null,
+              externalUrl: 'http://inseguro.ejemplo/articulo',
+              sizeBytes: null,
+              uploadedAt: '2026-10-09T18:10:00Z',
+            },
+          }
+        : item,
+    );
+    const fixture = await setup(buildPayload('DOCTORADO', items));
+    const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
+
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-url-ARTICULO"]')),
+    ).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain(
+      'EXAM_REQUEST.VALIDATION.INVALID_ARTICLE_URL',
+    );
+    expect(fixture.nativeElement.innerHTML).not.toContain('http://inseguro.ejemplo/articulo');
+
+    clickDocument(fixture, 'ARTICULO');
+    expect(open).not.toHaveBeenCalled();
+    open.mockRestore();
+  });
+
+  it('clears the previous blob on 404 without showing the backend message', async () => {
+    const rawMessage = 'Document not found in bucket/private/key';
+    const items = loadedPdfItems(emanuelItems, 'TESIS', EMANUEL_THESIS).map((item) =>
+      item.documentType === 'SOL_SINODALES'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: pdfDocument('SOL_SINODALES', 'Sol_Sinodales_Lopez_Alba_Emanuel.pdf'),
+          }
+        : item,
+    );
+    const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
+    getDocumentContent
+      .mockReturnValueOnce(of(new Blob(['%PDF-first'])))
+      .mockReturnValueOnce(
+        throwError(() =>
+          mockApiError({ status: 404, error: 'DOCUMENT_NOT_FOUND', message: rawMessage }),
+        ),
+      );
+
+    clickDocument(fixture, 'TESIS');
+    clickDocument(fixture, 'SOL_SINODALES');
+
+    expect(fixture.componentInstance.viewerBlob()).toBeNull();
+    expect(fixture.componentInstance.viewerErrorKey()).toBe(
+      'EXAM_REQUEST.ERRORS.document_not_found',
+    );
+    expect(document.body.textContent).toContain('EXAM_REQUEST.ERRORS.document_not_found');
+    expect(document.body.textContent).not.toContain(rawMessage);
+    expect(
+      fixture.componentInstance.panel()?.requirements.find((item) => item.documentType === 'TESIS')
+        ?.currentDocument?.originalName,
+    ).toBe(EMANUEL_THESIS);
+  });
+
+  it('reloads the panel on 409 and offers the current https link', async () => {
+    const articleUrl = 'https://revista.ejemplo.org/articulo/409';
+    const conflictMessage = 'Stored at https://bucket.internal/secret';
+    const refreshed = doctoralItems(true).map((item) =>
+      item.documentType === 'ARTICULO'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: {
+              id: 90,
+              documentType: 'ARTICULO' as const,
+              kind: 'URL' as const,
+              originalName: null,
+              externalUrl: articleUrl,
+              sizeBytes: null,
+              uploadedAt: '2026-10-09T18:10:00Z',
+            },
+          }
+        : item,
+    );
+    const conflictFixture = await setup(
+      buildPayload(
+        'DOCTORADO',
+        loadedPdfItems(doctoralItems(true), 'ARTICULO', 'Articulo_Perez_Soto_Luis.pdf'),
+      ),
+    );
+    getPanel.mockReturnValue(of(buildPayload('DOCTORADO', refreshed).panel));
+    getDocumentContent.mockReturnValue(
+      throwError(() =>
+        mockApiError({
+          status: 409,
+          error: 'DOCUMENT_IS_EXTERNAL_URL',
+          message: conflictMessage,
+        }),
+      ),
+    );
+
+    expect(getPanel).toHaveBeenCalledTimes(1);
+    clickDocument(conflictFixture, 'ARTICULO');
+
+    expect(getPanel).toHaveBeenCalledTimes(2);
+    expect(getDocumentContent).toHaveBeenCalledWith('GRADO', 'ARTICULO', 'inline');
+    expect(conflictFixture.componentInstance.viewerBlob()).toBeNull();
+    expect(conflictFixture.componentInstance.viewerVisible()).toBe(false);
+    const link = conflictFixture.debugElement.query(
+      By.css('[data-testid="exam-document-url-ARTICULO"]'),
+    );
+    expect(link.attributes['href']).toBe(articleUrl);
+    expect(conflictFixture.nativeElement.textContent).toContain(
+      'EXAM_REQUEST.ERRORS.document_is_external_url',
+    );
+    expect(conflictFixture.nativeElement.textContent).not.toContain(conflictMessage);
+  });
+
+  it('keeps metadata on 503 and retries without using the document id', async () => {
+    const items = loadedPdfItems(emanuelItems, 'TESIS', EMANUEL_THESIS);
+    const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
+    const stored = new Blob(['%PDF-retry']);
+    getDocumentContent
+      .mockReturnValueOnce(
+        throwError(() =>
+          mockApiError({
+            status: 503,
+            error: 'DOCUMENT_STORAGE_UNAVAILABLE',
+            message: 's3://bucket/private/key',
+          }),
+        ),
+      )
+      .mockReturnValueOnce(of(stored));
+
+    clickDocument(fixture, 'TESIS');
+
+    expect(fixture.componentInstance.viewerErrorKey()).toBe(
+      'EXAM_REQUEST.ERRORS.DOCUMENT_STORAGE_UNAVAILABLE',
+    );
+    expect(document.body.textContent).not.toContain('s3://bucket/private/key');
+    expect(
+      fixture.componentInstance.panel()?.requirements.find((item) => item.documentType === 'TESIS')
+        ?.currentDocument,
+    ).not.toBeNull();
+
+    fixture.debugElement
+      .query(By.css('app-pdf-viewer-dialog'))
+      .triggerEventHandler('retry', undefined);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.viewerBlob()).toBe(stored);
+    expect(getDocumentContent.mock.calls).toEqual([
+      ['GRADO', 'TESIS', 'inline'],
+      ['GRADO', 'TESIS', 'inline'],
+    ]);
+  });
+
+  it('keeps metadata and allows retry when the content request fails with status 0', async () => {
+    const items = loadedPdfItems(emanuelItems, 'TESIS', EMANUEL_THESIS);
+    const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
+    getDocumentContent.mockReturnValueOnce(
+      throwError(() => new HttpErrorResponse({ status: 0, statusText: 'Unknown Error' })),
+    );
+
+    clickDocument(fixture, 'TESIS');
+
+    expect(fixture.componentInstance.viewerErrorKey()).toBe('EXAM_REQUEST.ERRORS.generic');
+    expect(fixture.componentInstance.viewerVisible()).toBe(true);
+    expect(
+      fixture.componentInstance.panel()?.requirements.find((item) => item.documentType === 'TESIS')
+        ?.currentDocument?.originalName,
+    ).toBe(EMANUEL_THESIS);
+    expect(getPanel).toHaveBeenCalledTimes(1);
+  });
+
+  it('downloads the attachment with the sanitized original name', async () => {
+    const items = loadedPdfItems(
+      emanuelItems,
+      'TESIS',
+      'carpeta\\Tesis_Mtria_Garcia_Ruiz_Maria.pdf',
+    );
+    const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
+    const attachment = new Blob(['%PDF-attachment']);
+    getDocumentContent.mockImplementation((_examType, _documentType, disposition: string) =>
+      of(disposition === 'attachment' ? attachment : new Blob(['%PDF-inline'])),
+    );
+
+    clickDocument(fixture, 'TESIS');
+    const anchor = document.createElement('a');
+    const clickSpy = vi.spyOn(anchor, 'click').mockImplementation(() => undefined);
+    const realCreate = document.createElement.bind(document);
+    const createElement = vi
+      .spyOn(document, 'createElement')
+      .mockImplementation((tag: string) => (tag === 'a' ? anchor : realCreate(tag)));
+
+    fixture.debugElement
+      .query(By.css('app-pdf-viewer-dialog'))
+      .triggerEventHandler('download', undefined);
+    fixture.detectChanges();
+
+    expect(getDocumentContent).toHaveBeenCalledWith('GRADO', 'TESIS', 'attachment');
+    expect(anchor.download).toBe('Tesis_Mtria_Garcia_Ruiz_Maria.pdf');
+    expect(clickSpy).toHaveBeenCalledOnce();
+    expect(vi.mocked(URL.createObjectURL).mock.calls.at(-1)?.[0]).toBe(attachment);
+    expect(vi.mocked(URL.revokeObjectURL)).toHaveBeenCalledWith('blob:exam-doc');
+    createElement.mockRestore();
+  });
+
+  it('cancels the in-flight content request when the exam type changes', async () => {
+    const items = loadedPdfItems(doctoralItems(true), 'TESIS', 'Tesis_Docto_Perez_Soto_Luis.pdf');
+    const fixture = await setup(buildPayload('DOCTORADO', items));
+    const pending = new Subject<Blob>();
+    getDocumentContent.mockReturnValue(pending);
+
+    clickDocument(fixture, 'TESIS');
+    expect(pending.observed).toBe(true);
+    expect(getDocumentContent).toHaveBeenCalledWith('GRADO', 'TESIS', 'inline');
+
+    fixture.componentInstance.examTypeForm.controls.examType.setValue('PREDOCTORAL');
+    fixture.detectChanges();
+
+    expect(pending.observed).toBe(false);
+    expect(fixture.componentInstance.viewerVisible()).toBe(false);
+    expect(fixture.componentInstance.viewerBlob()).toBeNull();
+  });
+
+  it('drops the viewer blob when the session ends', async () => {
+    const items = loadedPdfItems(emanuelItems, 'TESIS', EMANUEL_THESIS);
+    const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
+    getDocumentContent.mockReturnValue(of(new Blob(['%PDF-session'])));
+
+    clickDocument(fixture, 'TESIS');
+    expect(fixture.componentInstance.viewerBlob()).not.toBeNull();
+
+    user$.next(null);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.viewerVisible()).toBe(false);
+    expect(fixture.componentInstance.viewerBlob()).toBeNull();
+    expect(fixture.componentInstance.panel()).toBeNull();
   });
 });
