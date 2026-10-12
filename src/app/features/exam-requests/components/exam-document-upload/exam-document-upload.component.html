@@ -1,0 +1,101 @@
+<div class="gap-sm flex flex-col" [formGroup]="kindForm" data-testid="exam-document-upload">
+  @if (showKindSelector()) {
+    <div class="gap-xs flex max-w-md flex-col" data-testid="exam-article-kind">
+      <label class="text-label-md text-on-surface font-label-md" [attr.for]="kindInputId()">
+        {{ 'EXAM_REQUEST.DOCUMENT_TYPES.ARTICULO' | translate }}
+      </label>
+      <app-i18n-select
+        [inputId]="kindInputId()"
+        controlName="kind"
+        [options]="kindOptions"
+        [disabled]="disabled()"
+      />
+    </div>
+  }
+
+  @if (selectedKind() === 'URL') {
+    <div class="gap-xs flex flex-col">
+      <label class="text-label-md text-on-surface font-label-md" [attr.for]="urlInputId()">
+        {{ 'EXAM_REQUEST.ARTICLE_KIND.URL' | translate }}
+      </label>
+      <input
+        pInputText
+        class="w-full"
+        type="url"
+        [id]="urlInputId()"
+        formControlName="url"
+        data-testid="exam-article-url"
+        [attr.aria-invalid]="validationError() ? 'true' : 'false'"
+        [attr.aria-describedby]="validationError() ? errorId() : null"
+      />
+    </div>
+  } @else {
+    <div
+      class="border-outline bg-surface-subtle p-md gap-sm flex flex-col items-center rounded-xl border border-dashed"
+      [class.border-primary]="dragging()"
+      [class.border-error]="!!validationError()"
+      [class.opacity-50]="disabled()"
+      [class.pointer-events-none]="disabled()"
+      data-testid="exam-document-dropzone"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <div
+        class="text-body-md text-text-secondary font-body-md text-center"
+        role="button"
+        [attr.tabindex]="disabled() ? -1 : 0"
+        [attr.aria-disabled]="disabled()"
+        [attr.aria-label]="'EXAM_REQUEST.UPLOAD.DROP_HINT' | translate"
+        [attr.aria-invalid]="validationError() ? 'true' : 'false'"
+        [attr.aria-describedby]="validationError() ? errorId() : null"
+        (click)="openFilePicker()"
+        (keydown)="onDropZoneKeydown($event)"
+      >
+        {{ 'EXAM_REQUEST.UPLOAD.DROP_HINT' | translate }}
+      </div>
+      <label
+        class="bg-primary hover:bg-primary-hover text-on-primary px-md py-sm text-label-md cursor-pointer rounded-lg font-medium transition-colors"
+        [attr.for]="fileInputId()"
+        data-testid="exam-document-browse"
+      >
+        {{ 'EXAM_REQUEST.UPLOAD.BROWSE' | translate }}
+      </label>
+      <input
+        #fileInput
+        class="sr-only"
+        type="file"
+        accept=".pdf,application/pdf"
+        [id]="fileInputId()"
+        [attr.disabled]="disabled() ? true : null"
+        data-testid="exam-document-file"
+        (change)="onFileChange($event)"
+      />
+    </div>
+  }
+
+  @if (pendingSelection(); as selection) {
+    <p class="text-body-md text-on-surface font-body-md" data-testid="exam-document-selected">
+      {{ 'EXAM_REQUEST.UPLOAD.SELECTED' | translate }}:
+      {{ selection.kind === 'PDF' ? selection.file.name : selection.url }}
+    </p>
+    <p
+      class="text-caption text-text-secondary font-caption"
+      role="status"
+      data-testid="exam-document-ready"
+    >
+      {{ 'EXAM_REQUEST.UPLOAD.READY' | translate }}
+    </p>
+  }
+
+  @if (validationError(); as currentError) {
+    <p
+      class="text-error text-caption font-caption"
+      role="status"
+      [id]="errorId()"
+      data-testid="exam-document-error"
+    >
+      {{ currentError.key | translate: currentError.params }}
+    </p>
+  }
+</div>
