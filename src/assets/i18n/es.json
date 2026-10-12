@@ -803,6 +803,10 @@
       "SUBMIT": "Enviar solicitud"
     },
     "ARTICLE_HINT": "PDF de nombre libre o enlace HTTPS",
+    "ARTICLE_KIND": {
+      "PDF": "Archivo PDF",
+      "URL": "Enlace"
+    },
     "DEGREE": {
       "DOCTORADO": "Doctorado",
       "ESPECIALIZACION": "Especialización",
@@ -863,7 +867,21 @@
       "PENDING": "Pendiente"
     },
     "SUBTITLE": "Documentos requeridos para tu grado",
-    "TITLE": "Solicitud de examen de grado"
+    "TITLE": "Solicitud de examen de grado",
+    "UPLOAD": {
+      "BROWSE": " Examinar",
+      "DROP_HINT": "Arrastra y suelta tu archivo aquí",
+      "READY": "Listo para guardar",
+      "SELECTED": "Seleccionado",
+      "SINGLE_FILE_ONLY": "Solo se permite un archivo a la vez"
+    },
+    "VALIDATION": {
+      "EXPECTED_NAME_UNAVAILABLE": "Could not determine the expected name. Contact Coordination.",
+      "INVALID_ARTICLE_URL": "Enter a valid absolute URL starting with https://.",
+      "INVALID_DOCUMENT_NAME": "The name must be {{expectedName}}. Correct it and choose the file again.",
+      "INVALID_PDF_CONTENT": "The file is not a valid PDF."
+    }
+
   },
   "SHELL": {
     "BRAND": {

@@ -803,6 +803,10 @@
       "SUBMIT": "Submit request"
     },
     "ARTICLE_HINT": "Free-named PDF or HTTPS link",
+    "ARTICLE_KIND": {
+      "PDF": "PDF file",
+      "URL": "Link"
+    },
     "DEGREE": {
       "DOCTORADO": "Doctorate",
       "ESPECIALIZACION": "Specialization",
@@ -863,7 +867,20 @@
       "PENDING": "Pending"
     },
     "SUBTITLE": "Documents required for your degree",
-    "TITLE": "Degree exam request"
+    "TITLE": "Degree exam request",
+    "UPLOAD": {
+      "BROWSE": "Browse",
+      "DROP_HINT": "Drag and drop your file here",
+      "READY": "Ready to save",
+      "SELECTED": "Selected",
+      "SINGLE_FILE_ONLY": "Only one file is allowed at a time"
+    },
+    "VALIDATION": {
+      "EXPECTED_NAME_UNAVAILABLE": "Could not determine the expected name. Contact Coordination.",
+      "INVALID_ARTICLE_URL": "Enter a valid absolute URL starting with https://.",
+      "INVALID_DOCUMENT_NAME": "The name must be {{expectedName}}. Correct it and choose the file again.",
+      "INVALID_PDF_CONTENT": "The file is not a valid PDF."
+    }
   },
   "SHELL": {
     "BRAND": {
