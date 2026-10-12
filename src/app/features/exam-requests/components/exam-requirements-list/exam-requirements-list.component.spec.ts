@@ -10,13 +10,15 @@ import { mockApiError } from '../../../../core/errors/testing/mock-api-error.uti
 import {
   CurrentUser,
   Degree,
+  DocumentDto,
   DocumentType,
   ExamOptionsDto,
+  ExamPanelResponse,
   ExamRequirementDto,
-  ExamRequirementsResponse,
   ExamType,
 } from '../../../../models';
 import { ExamRequestService } from '../../services/exam-request.service';
+import { formatUploadedAt } from '../../utils/exam-document-format.util';
 import { mapExamRequestError } from '../../utils/exam-request-error.util';
 import { ExamDocumentUploadComponent } from '../exam-document-upload/exam-document-upload.component';
 import { ExamRequirementsListComponent } from './exam-requirements-list.component';
@@ -76,11 +78,15 @@ function articleRequirement(required = true): ExamRequirementDto {
   };
 }
 
+function countRequiredPending(items: readonly ExamRequirementDto[]): number {
+  return items.filter((item) => item.required && item.status === 'PENDIENTE').length;
+}
+
 function buildPayload(
   degree: Degree,
   items: ExamRequirementDto[],
-  extras: Partial<ExamOptionsDto> = {},
-): { options: ExamOptionsDto; requirements: ExamRequirementsResponse } {
+  extras: Partial<ExamOptionsDto> & { requiredPendingCount?: number } = {},
+): { options: ExamOptionsDto; panel: ExamPanelResponse } {
   const options: ExamOptionsDto = {
     degree,
     programStatus: extras.programStatus ?? 'EN_INVESTIGACION',
@@ -90,7 +96,7 @@ function buildPayload(
   };
   return {
     options,
-    requirements: {
+    panel: {
       examType: 'GRADO',
       degree,
       programStatus: options.programStatus,
@@ -98,7 +104,24 @@ function buildPayload(
       eligibilityReason: options.eligibilityReason,
       request: null,
       requirements: items,
+      requiredPendingCount: extras.requiredPendingCount ?? countRequiredPending(items),
     },
+  };
+}
+
+function pdfDocument(
+  documentType: Exclude<DocumentType, 'ARTICULO'>,
+  originalName: string,
+  sizeBytes = 204800,
+): DocumentDto {
+  return {
+    id: 88,
+    documentType,
+    kind: 'PDF',
+    originalName,
+    externalUrl: null,
+    sizeBytes,
+    uploadedAt: '2026-10-09T18:00:00Z',
   };
 }
 
@@ -139,21 +162,19 @@ const emanuelItems: ExamRequirementDto[] = [
 describe('ExamRequirementsListComponent', () => {
   let user$: BehaviorSubject<CurrentUser | null>;
   let getOptions: ReturnType<typeof vi.fn>;
-  let getRequirements: ReturnType<typeof vi.fn>;
+  let getPanel: ReturnType<typeof vi.fn>;
 
   async function setup(
     payload: {
       options: ExamOptionsDto;
-      requirements: ExamRequirementsResponse;
+      panel: ExamPanelResponse;
     } | null = buildPayload('MAESTRIA', emanuelItems, { programStatus: 'EGRESADO' }),
   ) {
     user$ = new BehaviorSubject<CurrentUser | null>(student);
     getOptions = vi.fn(() =>
       of(payload?.options ?? buildPayload('MAESTRIA', emanuelItems).options),
     );
-    getRequirements = vi.fn(() =>
-      of(payload?.requirements ?? buildPayload('MAESTRIA', emanuelItems).requirements),
-    );
+    getPanel = vi.fn(() => of(payload?.panel ?? buildPayload('MAESTRIA', emanuelItems).panel));
 
     await TestBed.configureTestingModule({
       imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
@@ -162,7 +183,7 @@ describe('ExamRequirementsListComponent', () => {
           provide: ExamRequestService,
           useValue: {
             getOptions,
-            getRequirements,
+            getPanel,
             mapError: mapExamRequestError,
           },
         },
@@ -221,7 +242,7 @@ describe('ExamRequirementsListComponent', () => {
   it('shows five master requirements and the Emanuel example', async () => {
     const fixture = await setup();
 
-    expect(getRequirements).toHaveBeenCalledWith('GRADO');
+    expect(getPanel).toHaveBeenCalledWith('GRADO');
     expect(cardTypes(fixture)).toEqual([
       'TESIS',
       'SOL_SINODALES',
@@ -287,14 +308,14 @@ describe('ExamRequirementsListComponent', () => {
     getOptions = vi.fn(() =>
       throwError(() => mockApiError({ status: 401, error: 'UNAUTHORIZED' })),
     );
-    getRequirements = vi.fn(() => of(buildPayload('MAESTRIA', emanuelItems).requirements));
+    getPanel = vi.fn(() => of(buildPayload('MAESTRIA', emanuelItems).panel));
 
     await TestBed.configureTestingModule({
       imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
         {
           provide: ExamRequestService,
-          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+          useValue: { getOptions, getPanel, mapError: mapExamRequestError },
         },
         {
           provide: AuthStateService,
@@ -313,16 +334,14 @@ describe('ExamRequirementsListComponent', () => {
     await TestBed.resetTestingModule();
     user$ = new BehaviorSubject<CurrentUser | null>(student);
     getOptions = vi.fn(() => throwError(() => mockApiError({ status: 403, error: 'FORBIDDEN' })));
-    getRequirements = vi.fn(() =>
-      throwError(() => mockApiError({ status: 401, error: 'UNAUTHORIZED' })),
-    );
+    getPanel = vi.fn(() => throwError(() => mockApiError({ status: 401, error: 'UNAUTHORIZED' })));
 
     await TestBed.configureTestingModule({
       imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
         {
           provide: ExamRequestService,
-          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+          useValue: { getOptions, getPanel, mapError: mapExamRequestError },
         },
         {
           provide: AuthStateService,
@@ -345,14 +364,14 @@ describe('ExamRequirementsListComponent', () => {
       .fn()
       .mockReturnValueOnce(throwError(() => mockApiError({ status: 403, error: 'FORBIDDEN' })))
       .mockReturnValueOnce(of(success.options));
-    getRequirements = vi.fn(() => of(success.requirements));
+    getPanel = vi.fn(() => of(success.panel));
 
     await TestBed.configureTestingModule({
       imports: [ExamRequirementsListComponent, TranslateModule.forRoot(), NoopAnimationsModule],
       providers: [
         {
           provide: ExamRequestService,
-          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+          useValue: { getOptions, getPanel, mapError: mapExamRequestError },
         },
         {
           provide: AuthStateService,
@@ -367,8 +386,8 @@ describe('ExamRequirementsListComponent', () => {
     fixture.debugElement.query(By.css('p-button')).triggerEventHandler('onClick', null);
     fixture.detectChanges();
 
-    expect(getRequirements).toHaveBeenCalledTimes(1);
-    expect(getRequirements).toHaveBeenCalledWith('GRADO');
+    expect(getPanel).toHaveBeenCalledTimes(1);
+    expect(getPanel).toHaveBeenCalledWith('GRADO');
     expect(cardTypes(fixture)).toContain('TESIS');
   });
 
@@ -385,7 +404,7 @@ describe('ExamRequirementsListComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.options()).toBeNull();
-    expect(fixture.componentInstance.requirements()).toBeNull();
+    expect(fixture.componentInstance.panel()).toBeNull();
     expect(fixture.componentInstance.pendingSelections()).toEqual({});
     expect(fixture.componentInstance.examTypeForm.controls.examType.value).toBe('GRADO');
     expect(cardTypes(fixture)).toEqual([]);
@@ -429,8 +448,8 @@ describe('ExamRequirementsListComponent', () => {
 
   it('shows both exam types for doctorate and reloads PREDOCTORAL without mixing dossiers', async () => {
     const grado = buildPayload('DOCTORADO', doctoralItems(true));
-    const predoctoral: ExamRequirementsResponse = {
-      ...grado.requirements,
+    const predoctoral: ExamPanelResponse = {
+      ...grado.panel,
       examType: 'PREDOCTORAL',
       request: {
         id: 6301,
@@ -440,15 +459,18 @@ describe('ExamRequirementsListComponent', () => {
         folio: 'SEG-184201-110001',
         version: 1,
         submittedAt: '2026-03-15T10:00:00.000Z',
+        requirements: doctoralItems(false),
+        delivery: null,
       },
       requirements: doctoralItems(false),
+      requiredPendingCount: countRequiredPending(doctoralItems(false)),
     };
 
     await TestBed.resetTestingModule();
     user$ = new BehaviorSubject<CurrentUser | null>(student);
     getOptions = vi.fn(() => of(grado.options));
-    getRequirements = vi.fn((examType: ExamType) =>
-      of(examType === 'PREDOCTORAL' ? predoctoral : grado.requirements),
+    getPanel = vi.fn((examType: ExamType) =>
+      of(examType === 'PREDOCTORAL' ? predoctoral : grado.panel),
     );
 
     await TestBed.configureTestingModule({
@@ -456,7 +478,7 @@ describe('ExamRequirementsListComponent', () => {
       providers: [
         {
           provide: ExamRequestService,
-          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+          useValue: { getOptions, getPanel, mapError: mapExamRequestError },
         },
         {
           provide: AuthStateService,
@@ -467,7 +489,7 @@ describe('ExamRequirementsListComponent', () => {
 
     const fixture = createListFixture();
 
-    expect(getRequirements).toHaveBeenCalledWith('GRADO');
+    expect(getPanel).toHaveBeenCalledWith('GRADO');
     expect(fixture.debugElement.query(By.css('[data-testid="exam-type-selector"]'))).toBeTruthy();
     expect(fixture.componentInstance.examTypeOptions().map((option) => option.value)).toEqual([
       'GRADO',
@@ -478,12 +500,12 @@ describe('ExamRequirementsListComponent', () => {
     fixture.componentInstance.examTypeForm.controls.examType.setValue('PREDOCTORAL');
     fixture.detectChanges();
 
-    expect(getRequirements).toHaveBeenCalledWith('PREDOCTORAL');
+    expect(getPanel).toHaveBeenCalledWith('PREDOCTORAL');
     expect(cardTypes(fixture)).toHaveLength(6);
     expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.LABELS.OPTIONAL');
     expect(fixture.nativeElement.textContent).toContain('SEG-184201-110001');
-    expect(fixture.componentInstance.requirements()?.examType).toBe('PREDOCTORAL');
-    expect(fixture.componentInstance.requirements()?.request?.id).toBe(6301);
+    expect(fixture.componentInstance.panel()?.examType).toBe('PREDOCTORAL');
+    expect(fixture.componentInstance.panel()?.request?.id).toBe(6301);
   });
 
   it('renders optional and required badges from item.required', async () => {
@@ -498,8 +520,8 @@ describe('ExamRequirementsListComponent', () => {
 
   it('discards a late GRADO response after switching to PREDOCTORAL', async () => {
     const grado = buildPayload('DOCTORADO', doctoralItems(true));
-    const predoctoral: ExamRequirementsResponse = {
-      ...grado.requirements,
+    const predoctoral: ExamPanelResponse = {
+      ...grado.panel,
       examType: 'PREDOCTORAL',
       request: {
         id: 6301,
@@ -509,16 +531,19 @@ describe('ExamRequirementsListComponent', () => {
         folio: 'SEG-184201-110001',
         version: 1,
         submittedAt: '2026-03-15T10:00:00.000Z',
+        requirements: doctoralItems(false),
+        delivery: null,
       },
       requirements: doctoralItems(false),
+      requiredPendingCount: countRequiredPending(doctoralItems(false)),
     };
-    const grado$ = new Subject<ExamRequirementsResponse>();
-    const predoctoral$ = new Subject<ExamRequirementsResponse>();
+    const grado$ = new Subject<ExamPanelResponse>();
+    const predoctoral$ = new Subject<ExamPanelResponse>();
 
     await TestBed.resetTestingModule();
     user$ = new BehaviorSubject<CurrentUser | null>(student);
     getOptions = vi.fn(() => of(grado.options));
-    getRequirements = vi.fn((examType: ExamType) =>
+    getPanel = vi.fn((examType: ExamType) =>
       examType === 'PREDOCTORAL' ? predoctoral$.asObservable() : grado$.asObservable(),
     );
 
@@ -527,7 +552,7 @@ describe('ExamRequirementsListComponent', () => {
       providers: [
         {
           provide: ExamRequestService,
-          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+          useValue: { getOptions, getPanel, mapError: mapExamRequestError },
         },
         {
           provide: AuthStateService,
@@ -537,36 +562,36 @@ describe('ExamRequirementsListComponent', () => {
     }).compileComponents();
 
     const fixture = createListFixture();
-    expect(getRequirements).toHaveBeenCalledWith('GRADO');
+    expect(getPanel).toHaveBeenCalledWith('GRADO');
 
     fixture.componentInstance.examTypeForm.controls.examType.setValue('PREDOCTORAL');
     fixture.detectChanges();
-    expect(getRequirements).toHaveBeenCalledWith('PREDOCTORAL');
+    expect(getPanel).toHaveBeenCalledWith('PREDOCTORAL');
 
-    grado$.next(grado.requirements);
+    grado$.next(grado.panel);
     grado$.complete();
     fixture.detectChanges();
     expect(cardTypes(fixture)).toEqual([]);
-    expect(fixture.componentInstance.requirements()).toBeNull();
+    expect(fixture.componentInstance.panel()).toBeNull();
 
     predoctoral$.next(predoctoral);
     predoctoral$.complete();
     fixture.detectChanges();
 
-    expect(fixture.componentInstance.requirements()?.examType).toBe('PREDOCTORAL');
+    expect(fixture.componentInstance.panel()?.examType).toBe('PREDOCTORAL');
     expect(fixture.nativeElement.textContent).toContain('SEG-184201-110001');
     expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.LABELS.OPTIONAL');
     expect(
       fixture.componentInstance
-        .requirements()
+        .panel()
         ?.requirements.find((item) => item.documentType === 'ARTICULO')?.required,
     ).toBe(false);
   });
 
   it('enables submit on PREDOCTORAL when required PDFs are loaded and Articulo is pending', async () => {
     const grado = buildPayload('DOCTORADO', doctoralItems(true));
-    const predoctoral: ExamRequirementsResponse = {
-      ...grado.requirements,
+    const predoctoral: ExamPanelResponse = {
+      ...grado.panel,
       examType: 'PREDOCTORAL',
       requirements: markLoaded(doctoralItems(false), PDF_TYPES),
     };
@@ -574,8 +599,8 @@ describe('ExamRequirementsListComponent', () => {
     await TestBed.resetTestingModule();
     user$ = new BehaviorSubject<CurrentUser | null>(student);
     getOptions = vi.fn(() => of(grado.options));
-    getRequirements = vi.fn((examType: ExamType) =>
-      of(examType === 'PREDOCTORAL' ? predoctoral : grado.requirements),
+    getPanel = vi.fn((examType: ExamType) =>
+      of(examType === 'PREDOCTORAL' ? predoctoral : grado.panel),
     );
 
     await TestBed.configureTestingModule({
@@ -583,7 +608,7 @@ describe('ExamRequirementsListComponent', () => {
       providers: [
         {
           provide: ExamRequestService,
-          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+          useValue: { getOptions, getPanel, mapError: mapExamRequestError },
         },
         {
           provide: AuthStateService,
@@ -675,8 +700,8 @@ describe('ExamRequirementsListComponent', () => {
 
   it('clears pending selections when switching from GRADO to PREDOCTORAL', async () => {
     const grado = buildPayload('DOCTORADO', doctoralItems(true));
-    const predoctoral: ExamRequirementsResponse = {
-      ...grado.requirements,
+    const predoctoral: ExamPanelResponse = {
+      ...grado.panel,
       examType: 'PREDOCTORAL',
       requirements: doctoralItems(false),
     };
@@ -684,8 +709,8 @@ describe('ExamRequirementsListComponent', () => {
     await TestBed.resetTestingModule();
     user$ = new BehaviorSubject<CurrentUser | null>(student);
     getOptions = vi.fn(() => of(grado.options));
-    getRequirements = vi.fn((examType: ExamType) =>
-      of(examType === 'PREDOCTORAL' ? predoctoral : grado.requirements),
+    getPanel = vi.fn((examType: ExamType) =>
+      of(examType === 'PREDOCTORAL' ? predoctoral : grado.panel),
     );
 
     await TestBed.configureTestingModule({
@@ -693,7 +718,7 @@ describe('ExamRequirementsListComponent', () => {
       providers: [
         {
           provide: ExamRequestService,
-          useValue: { getOptions, getRequirements, mapError: mapExamRequestError },
+          useValue: { getOptions, getPanel, mapError: mapExamRequestError },
         },
         {
           provide: AuthStateService,
@@ -714,5 +739,94 @@ describe('ExamRequirementsListComponent', () => {
 
     expect(fixture.componentInstance.pendingSelections()).toEqual({});
     expect(fixture.componentInstance.canSubmit()).toBe(false);
+  });
+
+  it('renders the server requiredPendingCount without recounting cards', async () => {
+    const items = markLoaded(emanuelItems, ['TESIS', 'SOL_SINODALES', 'HIST_ACAD']).map((item) =>
+      item.documentType === 'TESIS'
+        ? { ...item, currentDocument: pdfDocument('TESIS', EMANUEL_THESIS) }
+        : item,
+    );
+    const fixture = await setup(
+      buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO', requiredPendingCount: 9 }),
+    );
+
+    expect(fixture.componentInstance.requiredPendingCount()).toBe(9);
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-required-pending-count"]')),
+    ).toBeTruthy();
+    expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.LABELS.REQUIRED_PENDING');
+  });
+
+  it('shows persisted PDF metadata with an accessible fallback and hides the upload', async () => {
+    const items = emanuelItems.map((item) =>
+      item.documentType === 'TESIS'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: pdfDocument('TESIS', EMANUEL_THESIS, 204800),
+          }
+        : item,
+    );
+    const fixture = await setup(buildPayload('MAESTRIA', items, { programStatus: 'EGRESADO' }));
+
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-name-TESIS"]')).nativeElement
+        .textContent,
+    ).toContain(EMANUEL_THESIS);
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-size-TESIS"]')).nativeElement
+        .textContent,
+    ).toContain('200 KB');
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-uploaded-at-TESIS"]'))
+        .nativeElement.textContent,
+    ).toContain(formatUploadedAt('2026-10-09T18:00:00Z'));
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-panel-TESIS"]')).attributes[
+        'aria-label'
+      ],
+    ).toBe('EXAM_REQUEST.UPLOAD.PREVIEW_FALLBACK');
+    expect(fixture.nativeElement.innerHTML).not.toContain('blob:');
+    expect(
+      fixture.debugElement.query(
+        By.css(
+          '[data-testid="exam-requirement-card-TESIS"] [data-testid="exam-document-dropzone"]',
+        ),
+      ),
+    ).toBeNull();
+  });
+
+  it('shows an article URL as a link without inventing file size or a PDF thumbnail', async () => {
+    const articleUrl = 'https://revista.ejemplo.org/articulo/123';
+    const items = doctoralItems(true).map((item) =>
+      item.documentType === 'ARTICULO'
+        ? {
+            ...item,
+            status: 'CARGADO' as const,
+            currentDocument: {
+              id: 90,
+              documentType: 'ARTICULO' as const,
+              kind: 'URL' as const,
+              originalName: null,
+              externalUrl: articleUrl,
+              sizeBytes: null,
+              uploadedAt: '2026-10-09T18:10:00Z',
+            },
+          }
+        : item,
+    );
+    const fixture = await setup(buildPayload('DOCTORADO', items));
+    const link = fixture.debugElement.query(By.css('[data-testid="exam-document-url-ARTICULO"]'));
+
+    expect(link.nativeElement.textContent.trim()).toBe(articleUrl);
+    expect(link.attributes['href']).toBe(articleUrl);
+    expect(link.attributes['target']).toBe('_blank');
+    expect(link.attributes['rel']).toBe('noopener noreferrer');
+    expect(fixture.nativeElement.textContent).toContain('EXAM_REQUEST.LABELS.LINK');
+    expect(
+      fixture.debugElement.query(By.css('[data-testid="exam-document-size-ARTICULO"]')),
+    ).toBeNull();
+    expect(fixture.nativeElement.innerHTML).not.toContain('blob:');
   });
 });

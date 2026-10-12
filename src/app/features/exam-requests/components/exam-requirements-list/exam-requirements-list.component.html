@@ -51,6 +51,12 @@
         />
       </div>
     } @else {
+      <p
+        class="text-body-md text-text-secondary font-body-md"
+        data-testid="exam-required-pending-count"
+      >
+        {{ 'EXAM_REQUEST.LABELS.REQUIRED_PENDING' | translate: { count: requiredPendingCount() } }}
+      </p>
       <ul class="gap-md flex list-none flex-col p-0">
         @for (item of visibleRequirements(); track item.documentType) {
           <li
@@ -100,17 +106,74 @@
                 {{ localizedFileName(item.exampleName) }}
               </p>
             }
-            <app-exam-document-upload
-              [requirement]="item"
-              [disabled]="!eligible()"
-              (selectionChange)="onPendingSelectionChange(item.documentType, $event)"
-            />
+            @if (item.currentDocument; as document) {
+              <div
+                class="bg-surface-subtle p-sm gap-sm flex items-start rounded-lg"
+                [attr.data-testid]="'exam-document-panel-' + item.documentType"
+                [attr.aria-label]="'EXAM_REQUEST.UPLOAD.PREVIEW_FALLBACK' | translate"
+              >
+                <i
+                  class="pi text-text-secondary mt-xs"
+                  [class.pi-file]="document.kind === 'PDF'"
+                  [class.pi-link]="document.kind === 'URL'"
+                  aria-hidden="true"
+                ></i>
+                <div class="gap-xs flex min-w-0 flex-col">
+                  @if (document.kind === 'URL') {
+                    <p class="text-caption text-text-secondary font-caption">
+                      {{ 'EXAM_REQUEST.LABELS.LINK' | translate }}
+                    </p>
+                    <a
+                      class="text-body-md text-primary font-body-md break-all underline"
+                      [href]="document.externalUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      [attr.data-testid]="'exam-document-url-' + item.documentType"
+                    >
+                      {{ document.externalUrl }}
+                    </a>
+                    <p class="text-caption text-text-secondary font-caption">
+                      {{ 'EXAM_REQUEST.LABELS.UPLOADED_AT' | translate }}:
+                      {{ documentUploadedAt(document.uploadedAt) }}
+                    </p>
+                  } @else {
+                    <p
+                      class="text-body-md font-body-md break-all"
+                      [attr.data-testid]="'exam-document-name-' + item.documentType"
+                    >
+                      {{ localizedFileName(document.originalName) }}
+                    </p>
+                    @if (documentFileSize(document.sizeBytes); as size) {
+                      <p
+                        class="text-caption text-text-secondary font-caption"
+                        [attr.data-testid]="'exam-document-size-' + item.documentType"
+                      >
+                        {{ 'EXAM_REQUEST.LABELS.FILE_SIZE' | translate }}: {{ size }}
+                      </p>
+                    }
+                    <p
+                      class="text-caption text-text-secondary font-caption"
+                      [attr.data-testid]="'exam-document-uploaded-at-' + item.documentType"
+                    >
+                      {{ 'EXAM_REQUEST.LABELS.UPLOADED_AT' | translate }}:
+                      {{ documentUploadedAt(document.uploadedAt) }}
+                    </p>
+                  }
+                </div>
+              </div>
+            } @else {
+              <app-exam-document-upload
+                [requirement]="item"
+                [disabled]="!eligible()"
+                (selectionChange)="onPendingSelectionChange(item.documentType, $event)"
+              />
+            }
           </li>
         }
       </ul>
 
       <!-- El envío real (POST submit) pertenece a HU-67; aquí solo se habilita el control. -->
-      <div class="mt-6 flex justify-end">
+      <div class="mt-lg flex justify-end">
         <p-button
           type="button"
           data-testid="exam-submit"

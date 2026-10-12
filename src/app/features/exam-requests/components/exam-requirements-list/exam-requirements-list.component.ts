@@ -19,8 +19,8 @@ import {
   Degree,
   DocumentType,
   ExamOptionsDto,
+  ExamPanelResponse,
   ExamRequirementDto,
-  ExamRequirementsResponse,
   ExamType,
 } from '../../../../models';
 import {
@@ -32,6 +32,7 @@ import {
 import { ROUTED_PAGE_HOST } from '../../../../shared/layout/routed-page-host';
 import { ExamRequestService } from '../../services/exam-request.service';
 import { degreeTagSeverity } from '../../utils/degree-tag.util';
+import { formatDocumentFileSize, formatUploadedAt } from '../../utils/exam-document-format.util';
 import {
   localizeDocumentFileName,
   resolveDocumentNameLanguage,
@@ -76,15 +77,15 @@ export class ExamRequirementsListComponent implements OnInit {
   readonly loading = signal(false);
   readonly loadError = signal<string | null>(null);
   readonly options = signal<ExamOptionsDto | null>(null);
-  readonly requirements = signal<ExamRequirementsResponse | null>(null);
+  readonly panel = signal<ExamPanelResponse | null>(null);
 
   /** Queda en el estado para habilitar carga en HU-65. */
   readonly eligible = computed(
-    () => this.options()?.eligible === true && this.requirements()?.eligible === true,
+    () => this.options()?.eligible === true && this.panel()?.eligible === true,
   );
 
   readonly degree = computed<Degree | null>(
-    () => this.options()?.degree ?? this.requirements()?.degree ?? null,
+    () => this.options()?.degree ?? this.panel()?.degree ?? null,
   );
 
   readonly degreeSeverity = computed(() => {
@@ -101,12 +102,14 @@ export class ExamRequirementsListComponent implements OnInit {
       return [];
     }
 
-    return this.requirements()?.requirements ?? [];
+    return this.panel()?.requirements ?? [];
   });
 
+  /** El servidor deriva el contador; no se recalcula en la vista. */
+  readonly requiredPendingCount = computed(() => this.panel()?.requiredPendingCount ?? 0);
+
   readonly eligibilityMessageKey = computed(() => {
-    const reason =
-      this.options()?.eligibilityReason ?? this.requirements()?.eligibilityReason ?? null;
+    const reason = this.options()?.eligibilityReason ?? this.panel()?.eligibilityReason ?? null;
     if (reason === 'PROGRAM_BAJA') {
       return 'EXAM_REQUEST.ELIGIBILITY.PROGRAM_BAJA';
     }
@@ -130,7 +133,7 @@ export class ExamRequirementsListComponent implements OnInit {
     })),
   );
 
-  readonly requestFolio = computed(() => this.requirements()?.request?.folio ?? null);
+  readonly requestFolio = computed(() => this.panel()?.request?.folio ?? null);
 
   /** Selección local por tipo; no se envía hasta HU-65. */
   readonly pendingSelections = signal<Partial<Record<DocumentType, ExamDocumentSelection>>>({});
@@ -144,7 +147,7 @@ export class ExamRequirementsListComponent implements OnInit {
       return false;
     }
 
-    const items = this.requirements()?.requirements ?? [];
+    const items = this.panel()?.requirements ?? [];
     const requiredItems = items.filter((item) => item.required);
     return requiredItems.length > 0 && requiredItems.every((item) => item.status === 'CARGADO');
   });
@@ -155,13 +158,9 @@ export class ExamRequirementsListComponent implements OnInit {
         switchMap((trigger) => this.loadTrigger(trigger)),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((requirements) => {
-        this.requirements.set(requirements);
-        if (
-          this.options()?.eligible &&
-          requirements.eligible &&
-          requirements.requirements.length === 0
-        ) {
+      .subscribe((panel) => {
+        this.panel.set(panel);
+        if (this.options()?.eligible && panel.eligible && panel.requirements.length === 0) {
           this.loadError.set('EXAM_REQUEST.STATES.EMPTY');
         }
       });
@@ -204,6 +203,14 @@ export class ExamRequirementsListComponent implements OnInit {
     );
   }
 
+  documentFileSize(sizeBytes: number | null): string | null {
+    return formatDocumentFileSize(sizeBytes);
+  }
+
+  documentUploadedAt(iso: string): string {
+    return formatUploadedAt(iso);
+  }
+
   onPendingSelectionChange(
     documentType: DocumentType,
     selection: ExamDocumentSelection | null,
@@ -219,16 +226,14 @@ export class ExamRequirementsListComponent implements OnInit {
     });
   }
 
-  private loadTrigger(trigger: LoadTrigger): Observable<ExamRequirementsResponse> {
+  private loadTrigger(trigger: LoadTrigger): Observable<ExamPanelResponse> {
     this.loading.set(true);
     this.loadError.set(null);
     // Evita pintar tarjetas del expediente anterior mientras llega el nuevo.
-    this.requirements.set(null);
+    this.panel.set(null);
 
     const source$ =
-      trigger.kind === 'reload'
-        ? this.loadOptionsThenRequirements()
-        : this.loadRequirements(trigger.examType);
+      trigger.kind === 'reload' ? this.loadOptionsThenPanel() : this.loadPanel(trigger.examType);
 
     return source$.pipe(
       finalize(() => this.loading.set(false)),
@@ -236,31 +241,31 @@ export class ExamRequirementsListComponent implements OnInit {
         if (trigger.kind === 'reload') {
           this.options.set(null);
         }
-        this.requirements.set(null);
+        this.panel.set(null);
         this.loadError.set(`${EXAM_REQUEST_ERROR_I18N_SCOPE}.${this.examRequests.mapError(error)}`);
         return EMPTY;
       }),
     );
   }
 
-  private loadOptionsThenRequirements(): Observable<ExamRequirementsResponse> {
+  private loadOptionsThenPanel(): Observable<ExamPanelResponse> {
     return this.examRequests.getOptions().pipe(
       switchMap((options) => {
         this.options.set(options);
         const selected = this.resolveExamType(options.examTypes);
         this.examTypeForm.patchValue({ examType: selected }, { emitEvent: false });
-        return this.examRequests.getRequirements(selected);
+        return this.examRequests.getPanel(selected);
       }),
     );
   }
 
-  private loadRequirements(examType: ExamType): Observable<ExamRequirementsResponse> {
+  private loadPanel(examType: ExamType): Observable<ExamPanelResponse> {
     const allowed = this.options()?.examTypes ?? [];
     if (!allowed.includes(examType)) {
       return EMPTY;
     }
 
-    return this.examRequests.getRequirements(examType);
+    return this.examRequests.getPanel(examType);
   }
 
   /** Prefiere GRADO si el servidor lo permite; si no, el primer tipo de examTypes. */
@@ -279,7 +284,7 @@ export class ExamRequirementsListComponent implements OnInit {
   private clearAcademicState(): void {
     this.clearPendingSelections();
     this.options.set(null);
-    this.requirements.set(null);
+    this.panel.set(null);
     this.loadError.set(null);
     this.loading.set(false);
     this.examTypeForm.reset({ examType: 'GRADO' }, { emitEvent: false });
